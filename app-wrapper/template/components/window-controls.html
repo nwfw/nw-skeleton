@@ -1,0 +1,63 @@
+<div class="window-controls-wrapper">
+	<transition name="fade">
+		<span class="window-controls window-controls-debug" v-if="!appState.hideDebug && appState.debug">
+			<span class="window-control-wrapper">
+				<a class="window-control window-control-reload-css " v-on:click="callViewHandler" data-click-handler="windowManager.reloadCss" v-bind:title="translate('Reload CSS')">
+					<span data-event-target="parent" class="fa fa-retweet"></span>
+				</a>
+			</span>
+			<span class="window-control-wrapper">
+				<a class="window-control window-control-devtools " v-bind:class="{'devtools-open': appState.devToolsOpened}" v-on:click="callViewHandler" data-click-handler="windowManager.toggleDevTools" v-bind:title="translate('Toggle dev tools')">
+					<span data-event-target="parent" class="fa fa-wrench"></span>
+				</a>
+			</span>
+			<span v-if="!appState.appBusy" class="window-control-wrapper">
+				<a class="window-control window-control-reload " v-on:click="callViewHandler" data-click-handler="windowManager.reloadWindow" v-bind:title="translate('Reload window')">
+					<span data-event-target="parent" class="fa fa-refresh"></span>
+				</a>
+			</span>
+		</span>
+	</transition>
+	<span class="window-controls">
+		<span class="window-control-wrapper" v-if="appState.hasUserConfig">
+			<a class="window-control window-control-clear-configuration" v-on:click="callViewHandler" data-click-handler="clearUserConfigHandler" v-bind:title="translate('Clear saved configuration')">
+				<span data-event-target="parent" class="fa fa-eraser"></span>
+			</a>
+		</span>
+		<span class="window-control-wrapper" v-if="appState.debug">
+			<a class="window-control window-control-edit-configuration" v-on:click="callViewHandler" data-click-handler="openConfigEditorHandler" v-bind:title="translate('Edit configuration')">
+				<span data-event-target="parent" class="fa fa-cog"></span>
+			</a>
+		</span>
+		<span class="window-control-wrapper">
+			<a class="window-control window-control-fullscreen" v-on:click="callViewHandler" data-click-handler="windowManager.toggleFullScreen" v-bind:title="translate('Toggle full screen')">
+				<span data-event-target="parent" class="fa fa-arrows-alt"></span>
+			</a>
+		</span>
+		<span class="window-control-wrapper">
+			<a class="window-control window-control-move " v-bind:class="{'window-control-moving': appState.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="moveWindowMouseup" v-bind:title="translate('Move window')">
+				<span data-event-target="parent" class="fa fa-arrows"></span>
+			</a>
+		</span>
+		<span class="window-control-wrapper">
+			<a class="window-control window-control-minimize" v-on:click="callViewHandler" data-click-handler="windowManager.minimizeWindow" v-bind:title="translate('Minimize window')">
+				<span data-event-target="parent" class="fa fa-window-minimize"></span>
+			</a>
+		</span>
+		<span v-if="appState.windowState.maximized" class="window-control-wrapper">
+			<a class="window-control window-control-restore" v-on:click="callViewHandler" data-click-handler="windowManager.restoreWindow" v-bind:title="translate('Restore window')">
+				<span data-event-target="parent" class="fa fa-window-restore"></span>
+			</a>
+		</span>
+		<span v-else class="window-control-wrapper">
+			<a class="window-control window-control-maximize" v-on:click="callViewHandler" data-click-handler="windowManager.maximizeWindow" v-bind:title="translate('Maximize window')">
+				<span data-event-target="parent" class="fa fa-window-maximize"></span>
+			</a>
+		</span>
+		<span class="window-control-wrapper">
+			<a class="window-control window-control-close " v-on:click="callViewHandler" data-click-handler="windowManager.closeWindow" v-bind:title="translate('Close window')">
+				<span data-event-target="parent" class="fa fa-remove"></span>
+			</a>
+		</span>
+	</span>
+</div>

@@ -1,0 +1,14 @@
+<div class="form-control-field">
+	<div class="form-row form-control-row form-control-subrow">
+		<label class="object-label" v-bind:title="control.path">
+			{{ control.name }}
+		</label>
+		<ul>
+			<template v-for="subControl in control.value">
+				<li>
+					<form-control v-bind:control="subControl"></form-control>
+				</li>
+			</template>
+		</ul>
+	</div>
+</div>

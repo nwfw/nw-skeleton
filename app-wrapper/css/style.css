@@ -1,0 +1,462 @@
+*, *:before, *:after {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+/*! normalize.css v3.0.0 | MIT License | git.io/normalize */
+html {
+	-webkit-text-size-adjust:100%;
+	-webkit-font-smoothing: subpixel-antialiased;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+	font-family: 'Source Sans Pro', sans-serif;
+	-webkit-font-smoothing: subpixel-antialiased;
+	min-height:100vh;
+	overflow: hidden;
+}
+
+body.nw-body {
+	opacity: 0;
+	transition: opacity ease-in var(--long-animation-duration);
+}
+
+body.nw-body.nw-body-debug {
+	transition: none;
+	opacity: 1;
+}
+
+body.nw-body-initialized {
+	opacity: 1;
+}
+
+*::selection {
+    background:transparent;
+}
+
+h1, h2 {
+	font-weight: 600;
+}
+
+a {
+	color: var(--link-color);
+	cursor: pointer;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.app-body {
+	position: relative;
+	font-size: 0.8rem;
+	justify-content: center;
+	display: flex;
+	border-radius: var(--app-element-border-radius);
+}
+
+.app-content {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	font-size: 0.8rem;
+	justify-content: center;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.app-body.moving-window {
+	opacity: 0.7;
+}
+
+header {
+	display: flex;
+	flex: 0 0 100px;
+	height: 100px;
+	border-radius: var(--app-element-border-radius) var(--app-element-border-radius) 0 0;
+	border-width: var(--app-element-border-width) var(--app-element-border-width) 0 var(--app-element-border-width);
+	border-style: var(--app-element-border-style);
+	border-color: var(--app-header-border-color);
+}
+
+.app-debug-wrapper {
+	display: flex;
+	flex: 0 0 0px;
+	border-radius: 0;
+	border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
+	border-style: var(--app-element-border-style);
+	border-color: var(--app-debug-wrapper-border-color);
+	transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+	background: #eee;
+	list-style: none;
+	position: relative;
+	right: 0px;
+	font-size: 0.7rem;
+	margin: 0;
+	max-height: 100px;
+}
+
+.debug-enabled .app-debug-wrapper {
+	flex: 0 0 26px;
+	max-height: unset;
+	overflow: hidden;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper {
+	background: #F8F8F8;
+	flex: 0 0 100px;
+	transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+}
+
+.app-debug-wrapper .app-debug {
+	overflow: hidden;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug {
+	position: absolute;
+	right: 0;
+	transition: width ease-in-out var(--short-animation-duration) var(--long-animation-duration);
+	width: 85px;
+	height: 100%;
+}
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug {
+	transition: width ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+ 	width: 100vw;
+}
+
+.app-debug-wrapper .app-debug-header {
+	color: var(--debug-header-text-color);
+	background-color: var(--debug-header-background-color);
+	background: var(--debug-header-background);
+	opacity: 0.6;
+	float: right;
+}
+.debug-enabled .app-debug-wrapper .app-debug-header {
+	width: 100%;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
+	opacity: 1;
+	position: fixed;
+}
+
+.app-debug-wrapper .app-debug-header h2 {
+	color: #FFF;
+	margin: 0;
+	padding: 5px;
+	font-size: 0.8rem;
+	display: inline-block;
+}
+
+.app-debug-wrapper .app-debug-header a {
+	color:#FFF;
+	display: inline-block;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+.app-debug-wrapper .app-debug-header a:hover {
+	color:#fff;
+	text-shadow: 0 0 4px #000;
+	text-decoration: none;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug-header .debug-header-tool{
+	display: none;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .debug-header-tool{
+	display:inline-block;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug-header .toggle-debug-link{
+	display: inline-block;
+}
+
+.app-debug-body ul {
+	margin: 0;
+	padding: 5px;
+	list-style: none;
+}
+
+.app-debug-body ul {
+	padding-top: 30px;
+	max-height: 95px;
+	overflow: auto;
+}
+
+footer {
+	display: flex;
+	flex-flow: column;
+	flex: 0 0 70px;
+	border-radius: 0 0 var(--app-element-border-radius) var(--app-element-border-radius);
+	border-width: 0 var(--app-element-border-width) var(--app-element-border-width) var(--app-element-border-width);
+	border-style: var(--app-element-border-style);
+	border-color: var(--app-footer-border-color);
+	color: var(--footer-text-color);
+	background-color: var(--footer-background-color);
+	background: var(--footer-background);
+	transition-property: flex-basis;
+	transition-duration: 0.3s;
+}
+
+footer.user-messages-toolbar-visible {
+	flex: 0 0 95px;
+}
+
+footer.user-messages-expanded {
+	flex: 0 0 150px;
+}
+
+footer.user-messages-toolbar-visible.user-messages-expanded {
+	flex: 0 0 180px;
+}
+
+.footer-info {
+	flex: 1 1 30px;
+	margin: 0;
+	padding: 0;
+	/*position: relative;*/
+	bottom: 0px;
+	text-align: center;
+	width: 100%;
+}
+
+.app-body.has-debug-window .app-debug-wrapper {
+	display: none;
+	flex: 0 0 0px;
+}
+
+.app-body.has-debug-window .debug-toggle {
+	display: none;
+}
+
+.main-loader {
+	font-size: 120px;
+	text-align: center;
+	background: #eee;
+	min-height: 300px;
+	flex: 0 0 100%;
+	position: relative;
+}
+
+.main-loader .main-loader-title {
+	font-size: 1rem;
+}
+.main-loader .main-loader-spinner {
+	display: block;
+	position: relative;
+	top: 50%;
+	margin-top: -60px;
+}
+
+.app-debug .message {
+	color: var(--message-text-color);
+}
+
+.app-debug .info {
+	color: var(--message-info-text-color);
+}
+
+.app-debug .warning {
+	color: var(--message-warning-text-color);
+}
+
+.app-debug .error {
+	color: var(--message-error-text-color);
+}
+
+.app-debug .debug {
+	color: var(--message-debug-text-color);
+}
+
+.app-debug .important {
+	font-weight: bold;
+}
+
+.app-debug .message:nth-child(2n) {
+	background:#FFF;
+}
+
+.app-debug .message:nth-child(2n+1) {
+	background:#DDD;
+}
+
+.form-row {
+	padding: 3px;
+}
+
+.form-row.form-row-has-error {
+	border: 1px solid #FF9999;
+	padding: 2px;
+}
+
+.form-row .form-row-error {
+	display: none;
+	color: #CC0000;
+}
+
+.form-row.form-row-has-error .form-row-error {
+	display: block;
+}
+
+.sync-tools, .sync-form {
+	flex: 1 1 45%;
+}
+
+.is-visible {
+	visibility: visible !important;
+}
+
+.not-visible {
+	visibility: hidden !important;
+}
+
+.is-displayed {
+	display: unset !important;
+}
+
+.not-displayed {
+	display: none !important;
+}
+
+
+.tabs {
+
+}
+
+.tabs .tab-links {
+
+}
+
+.tabs .tab-links .tab-link {
+	display: inline-block;
+	color:#666;
+	padding: 3px 5px;
+	border: 1px solid #999;
+	border-radius: 3px;
+	margin-left: 5px;
+	margin-bottom: -1px;
+}
+
+.tabs .tab-links .tab-link:hover {
+	text-decoration: none;
+	background: #F8F8F8;
+}
+
+.tabs .tab-links .tab-link.active {
+	border-bottom: 1px solid #F8F8F8;
+	background: #F8F8F8;
+	font-weight: bold;
+}
+
+.tabs .tab-items {
+	border: 1px solid #999;
+}
+
+.tabs .tab-items .tab-item {
+	display: none;
+	padding: 10px;
+}
+
+.tabs .tab-items .tab-item.active {
+	display: block;
+}
+
+.translation-editor {
+}
+
+.translation-editor .tab-item {
+	max-height: 300px;
+	overflow: auto;
+	background: #F8F8F8;
+}
+
+.translation-editor fieldset {
+	border: none;
+}
+
+.translation-editor legend {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-left: 10px;
+}
+
+.translation-editor fieldset > h2 {
+	margin: 0;
+	color:#666;
+}
+
+.translation-editor fieldset label {
+
+}
+
+.translation-editor fieldset label .not-translated,
+.translation-editor fieldset label .copy-translation-label {
+	float: right;
+}
+
+.translation-editor fieldset label .not-translated {
+	color: #999;
+	margin-top: -3px;
+}
+
+.translation-editor fieldset label .copy-translation-label {
+	color: #666;
+	margin-left: 4px;
+}
+
+.translation-editor fieldset label .copy-translation-label:hover {
+	color: #FFF;
+	text-decoration: none;
+	text-shadow: 0 0 2px #000;
+}
+
+.translation-editor textarea {
+	width: 100%;
+	border: 1px solid #666;
+	padding: 4px;
+	border-radius: 4px;
+}
+
+.translation-editor .lang-form-row-not-translated textarea {
+	background: #FFFFCC;
+}
+
+
+.app-error {
+	text-align: center;
+	background: #eee;
+	min-height: 300px;
+	flex: 0 0 100%;
+	position: relative;
+}
+
+.app-error-content {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.app-error-title {
+	color: #990000;
+	font-size: 2rem;
+}
+
+.app-error-text {
+	color: #990000;
+	font-size: 1rem;
+}
+
+.config-editor-modal .modal-dialog {
+	max-height: 80vh;
+	overflow: auto;
+}
+
+
+.form-control-row label {
+	display: inline-block;
+	width: 150px;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body background-color:rgba(0,0,0,0); class="nw-body">
+	<div id="app-body" class="app-body" v-bind:class="{ 'moving-window': movingWindow, 'debug-enabled': debug, 'debug-visible': !hideDebug, 'has-debug-window': hasDebugWindow, 'modal-visible': modalData.modalVisible }">
+		<div class="app-content">
+				<app-header></app-header>
+			<template v-if="appInitialized">
+				<app-main :state="info"></app-main>
+				<app-debug></app-debug>
+			</template>
+			<template v-else>
+				<div class="main-loader">
+					<span class="main-loader-spinner fa fa-spin fa-circle-o-notch"></span>
+				</div>
+			</template>
+			<app-footer></app-footer>
+		</div>
+		<modal-dialog></modal-dialog>
+	</div>
+	<script>
+		var _ = require('lodash');
+		var AppWrapper = require('../js/appWrapper').AppWrapper;
+
+		window.onload = async function(){
+
+			var appAppState = require('../../app/js/appState').appState;
+			var appWrapperAppState = require('../../app-wrapper/js/appState').appState;
+			window.appState = _.merge({}, appWrapperAppState, appAppState);
+
+			window.appWrapper = new AppWrapper();
+			await window.appWrapper.initialize();
+			window.feApp = await window.appWrapper.initializeFeApp();
+		};
+	</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+:root {
+
+    --short-animation-duration: 0.2s;
+    --medium-animation-duration: 0.4s;
+    --long-animation-duration: 0.6s;
+
+    --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
+
+
+    --link-color: #3333CC;
+    --app-border: 1px solid #333;
+
+
+    --header-background-color: #45484D;
+    --header-background: -webkit-linear-gradient(top, var(--header-background-color) 0%, #000000 80%);
+    --header-background-reverse: -webkit-linear-gradient(top, #000000 0%, var(--header-background-color) 100%);
+    --header-text-color: #FFFFFF;
+
+    --footer-background-color: #45484D;
+    --footer-background: -webkit-linear-gradient(top,  var(--footer-background-color) 0%,#000000 100%);
+    --footer-text-color: #CCCCCC;
+
+    --debug-header-background-color: #ff3019;
+    --debug-header-background: -webkit-linear-gradient(top, var(--debug-header-background-color) 0%, #cf0404 100%);
+    --debug-header-text-color: #FFFFFF;
+
+    --app-element-border-radius: 8px;
+    --app-element-border-width: 1px;
+    --app-element-border-color: #333;
+    --app-element-border-style: solid;
+
+    --app-header-border-color: #666666 #666666 var(--header-background-color) #666666;
+    --app-main-border-color: #333333 #333333 #333333 #333333;
+    --app-debug-wrapper-border-color: #333333 #333333 #333333 #333333;
+    --app-footer-border-color: #666666 var(--header-background-color) #666666 #666666;
+
+    --main-bg-color: #EEEEEE;
+
+    /* user and debug messages */
+    --message-text-color: #999;
+    --message-info-text-color: #009900;
+    --message-warning-text-color: #CC9900;
+    --message-error-text-color: #CC0000;
+    --message-debug-text-color: #999;
+
+    --message-highlight-background-color: #FFFFCC !important;
+    --message-debug-highlight-background-color: #EEEEEE !important;
+    --message-info-highlight-background-color: #66FF66 !important;
+    --message-error-highlight-background-color: #FFCCCC !important;
+    --message-warning-highlight-background-color: #FFCC00 !important;
+
+    --message-highlight-text-color: #000 !important;
+    --message-debug-highlight-text-color: #000 !important;
+    --message-info-highlight-text-color: #006600 !important;
+    --message-error-highlight-text-color: #660000 !important;
+    --message-warning-highlight-text-color: #666600 !important;
+
+    --message-delimiter-fill-color: #CCC;
+    --message-delimiter-stroke-color: #000;
+    --message-delimiter-stroke-width: 1;
+}

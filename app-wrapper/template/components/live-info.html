@@ -1,0 +1,6 @@
+<div class="live-info">
+    <span class="live-info-item app-status" v-bind:class="appStatusWrapperClassObject">
+    	<span v-html="translate('Application status')"></span>
+        <span class="status fa app-status" v-bind:title="[appState.appBusy ? 'busy' : 'idle']" v-bind:class="appStatusClassObject"></span>
+    </span>
+</div>

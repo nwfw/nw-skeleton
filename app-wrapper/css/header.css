@@ -1,0 +1,150 @@
+
+
+header {
+	color: var(--header-text-color);
+	background-color: var(--header-background-color);
+	background: var(--header-background);
+	opacity: 0.9;
+	overflow: hidden;
+	position: relative;
+}
+
+.logo {
+	margin-left: 10px;
+	margin-bottom: -6px;
+}
+
+.window-controls-wrapper {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	display: flex;
+}
+
+.window-controls-wrapper .window-controls {
+	display: flex;
+	position: relative;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper {
+	display: flex;
+	flex: 0 0 auto;
+	display: inline-block;
+	position: relative;
+	overflow: auto;
+	margin-right: 5px;
+	font-size: 1.4rem;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control {
+	color:#999;
+	text-decoration: none;
+	cursor: default;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa:before {
+	display: block;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control:hover {
+	color:#ccc;
+	text-decoration: none;
+	-webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #666;
+    text-shadow: 0 0 2px #FFF;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.devtools-open,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
+	color:#FFFFFF;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
+	-webkit-text-stroke-color: #FFFFFF;
+}
+
+.header-toolbar {
+	position: absolute;
+	top: 70px;
+	right: 4px;
+	text-align: right;
+}
+
+
+.app-language-wrapper {
+	float: right;
+	margin-right: 5px;
+}
+
+.live-info {
+	margin: 0 auto;
+	color:#ccc;
+	font-size: 0.8rem;
+	position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    border: 1px solid #999;
+    border-bottom: none;
+    min-width: 240px;
+    text-align: center;
+    height: 24px;
+    z-index: 5;
+    background: #000;
+    transition: box-shadow linear var(--short-animation-duration);
+}
+
+.has-progress-bar .live-info {
+	box-shadow: 0 0 20px #fff;
+	z-index: 3;
+}
+
+.live-info-item {
+
+}
+
+.live-info .status {
+	position:relative;
+	top:1px;
+	color:#CCC;
+	font-size: 1rem;
+}
+
+.live-info .status:hover {
+	text-decoration: none;
+}
+
+.live-info .status:before {
+	width: 12px;
+	height: 12px;
+	line-height: 12px;
+	/*border: 1px solid #ccc;*/
+}
+
+.live-info-item.offline .status {
+	color:#CCC;
+}
+
+.live-info-item.online .status,
+.live-info-item.not-busy .status {
+	color:#00CC00;
+}
+
+.live-info-item.error .status {
+	color:#FF0000;
+}
+
+.live-info-item.connecting .status {
+	color:#ffcc33;
+}
+
+.live-info-item.busy .status {
+	color:#ffcc33;
+}
+
+.live-info-item.debug-toggle status {
+	cursor: pointer;
+}

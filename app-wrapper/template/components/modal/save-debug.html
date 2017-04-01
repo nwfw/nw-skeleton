@@ -1,0 +1,27 @@
+<div class="save-debug-dialog">
+	<div class="form-row modal-form-row" v-if="appState.allDebugMessages.length - appState.debugMessages.length > 0">
+		<label class="checkbox-label">
+			{{ translate('Save hidden debug messages as well') }} ({{ appState.allDebugMessages.length - appState.debugMessages.length }}):
+			<input type="checkbox" name="save_hidden_debug" value="1" />
+		</label>
+	</div>
+	<template v-if="currentModal.fileExists">
+		<div class="form-row modal-form-row">
+			<label class="radio-label">
+				<input type="radio" name="overwrite_file" checked="checked" value="overwrite" />
+				{{ translate('Overwrite existing file') }}
+			</label>
+		</div>
+		<div class="form-row modal-form-row">
+			<label class="radio-label">
+				<input type="radio" name="overwrite_file" value="append" />
+				{{ translate('Append to existing file') }}
+			</label>
+		</div>
+	</template>
+	<div class="form-row modal-form-row" v-bind:class="{ 'form-row-has-error' : currentModal.saveDebugFileError }">
+		<div class="form-row-error modal-form-row-error" v-html="translate('No file selected')"></div>
+		<label>{{ translate('Please select file') }}:</label>
+		<input type="file" v-bind:nwsaveas="currentModal.defaultFilename" v-on:change="callViewHandler" data-change-handler="debugHelper.saveDebugFileChange" v-on:click="callViewHandler" data-click-handler="debugHelper.saveDebugFileClick" />
+	</div>
+</div>

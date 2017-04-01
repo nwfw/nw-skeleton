@@ -1,0 +1,76 @@
+
+.progress-bar-wrapper {
+    padding: 0px 10px 5px 10px;
+    transition: opacity linear 0.3s;
+    font-size: 0.7rem;
+    text-align: center;
+    position: fixed;
+    top: 78px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition-property: top, max-height, box-shadow;
+    transition-duration: var(--short-animation-duration);
+    border-radius: 4px;
+    border: 1px solid #999;
+    border-top: none;
+    z-index: 4;
+    min-width: 240px;
+    max-height: 20px;
+    background: var(--header-background-reverse);
+    overflow: hidden;
+}
+
+.has-progress-bar .progress-bar-wrapper {
+	box-shadow: 0 0 20px #000;
+}
+
+.progress-bar-wrapper.progress-bar-wrapper-active {
+	top: 98px;
+	max-height: 50px;
+}
+
+.progress-bar-wrapper .progress-operation {
+	display: block;
+	text-align: center;
+	padding: 3px 0px 5px 0px;
+}
+
+.progress-bar-wrapper .progress-bar {
+	display: inline-block;
+	width: 160px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	position: relative;
+	height: 18px;
+	background: #666;
+}
+
+
+.progress-bar-wrapper .progress-bar-inner,
+.progress-bar-wrapper .progress-bar-inner-below {
+	transition: width linear 0.1s;
+	display: inline-block;
+	width: 0%;
+	height: 17px;
+	background :#00CC00;
+	color: #FFF;
+	text-align: center;
+	text-indent: 4px;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	float: left;
+	border-radius: 5px;
+	white-space: nowrap;
+}
+
+.progress-bar-wrapper .progress-bar-inner-below {
+	color: #00FF00;
+	text-align: center;
+	overflow: visible;
+}
+
+.progress-bar-wrapper .progress-detail {
+
+}

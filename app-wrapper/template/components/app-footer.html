@@ -1,0 +1,4 @@
+<footer v-bind:class="{ 'user-messages-expanded': appState.userMessagesData.messagesExpanded, 'user-messages-toolbar-visible': appState.userMessagesData.toolbarVisible }">
+	<user-messages></user-messages>
+	<div class="footer-info" v-html="translate('_footer_info_')"></div>
+</footer>

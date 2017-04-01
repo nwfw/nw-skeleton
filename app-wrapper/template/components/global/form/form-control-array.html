@@ -1,0 +1,16 @@
+<div class="form-control-field">
+	<div class="form-row form-control-row form-control-subrow">
+		<label class="object-label" v-bind:title="control.path">
+			{{ control.name }}
+			<a href="#" v-on:click="addNewArrayRow" class="add-new-row add-new-row-array fa fa-plus"></a>
+		</label>
+		<ul>
+			<template v-for="subControl in control.value">
+				<li v-bind:data-name="subControl.name">
+					<a href="#" v-on:click="removeArrayRow" class="remove-row remove-row-array fa fa-minus"></a>
+					<form-control v-bind:control="subControl"></form-control>
+				</li>
+			</template>
+		</ul>
+	</div>
+</div>

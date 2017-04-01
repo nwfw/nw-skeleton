@@ -1,0 +1,15 @@
+<div class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress}">
+	<div class="progress-operation">
+		{{ progressData.operationText }} <span v-if="progressData.detailText" class="progress-detail">
+			({{ progressData.detailText }})
+		</span>
+	</div>
+	<div class="progress-bar" v-bind:class="progressData.progressBarClass">
+		<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">
+			{{ progressData.percentComplete }}
+		</div>
+		<div class="progress-bar-inner" v-bind:style="progressData.styleObject">
+			{{ progressData.percentComplete }}
+		</div>
+	</div>
+</div>

@@ -1,0 +1,13 @@
+<header v-bind:class="{'has-progress-bar': appState.progressData.inProgress}">
+	<h1>
+		<img class="logo" src="/app/images/logo.png" width="170" alt="Mascom Store" />
+		{{ appState.info.appName }}
+	</h1>
+
+	<window-controls></window-controls>
+	<div class="header-toolbar">
+		<language-select></language-select>
+	</div>
+	<progress-bar></progress-bar>
+	<live-info></live-info>
+</header>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body background-color:rgba(0,0,0,0); class="nw-body nw-debug-body">
+	<div id="app-body" class="app-body debug-window debug-enabled debug-visible" v-bind:class="{ 'moving-window': movingWindow, 'modal-visible': modalData.modalVisible }">
+		<div class="app-content">
+			<app-header></app-header>
+			<app-debug></app-debug>
+		</div>
+		<modal-dialog></modal-dialog>
+	</div>
+	<script>
+		var AppWrapper = require('../js/appWrapper').AppWrapper;
+		var _parentWrapper = window.opener.getAppWrapper();
+
+		window.onload = async function(){
+			_parentWrapper.debugWindow = window;
+			// window.appState = require('../js/appState').appState;
+			await _parentWrapper.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
+			window.appWrapper = new AppWrapper();
+			await window.appWrapper.initialize();
+
+			// await _parentWrapper.debugHelper.initializeDebugWindow();
+			window.feApp = await window.getAppWrapper().initializeFeApp();
+
+		};
+	</script>
+</body>
+</html>

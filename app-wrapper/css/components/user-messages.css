@@ -1,0 +1,260 @@
+@keyframes message-delimiter-animation-left {
+  0%   {transform: translateX(-100%)}
+  100% {transform: translateX(0)}
+}
+
+@keyframes message-delimiter-animation-right {
+  0%   {transform: translateX(100%)}
+  100% {transform: translateX(0)}
+}
+
+.user-messages {
+	padding: 5px 5px;
+}
+
+.user-messages-contents {
+	width: 100%;
+	transition-property: height, margin-top;
+	transition-duration: var(--short-animation-duration);
+}
+
+.user-messages-toolbar-visible .user-messages-contents {
+	margin-top: 25px;
+}
+
+.user-messages .user-messages-toolbar {
+	padding: 3px 5px;
+	text-align: right;
+	width: inherit;
+	text-align: center;
+	overflow: hidden;
+	display: none;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	/*display: flex;*/
+	/*justify-content: space-between;*/
+	/*flex: 0 0 30px;*/
+}
+
+.user-messages-toolbar-visible .user-messages .user-messages-toolbar {
+	display: inline-block;
+}
+
+.user-messages .user-messages-toolbar h2 {
+	margin: 0;
+	padding: 0;
+	font-size: 0.8rem;
+	/*flex: 1.5;*/
+}
+
+.user-messages .user-messages-toolbar .user-messages-tools {
+	/*flex: 1;
+	display: flex;
+	flex-wrap: nowrap;*/
+}
+.user-messages .user-message-level-picker {
+	display: inline-block;
+}
+
+.user-messages .clear-user-messages {
+	color:#CC0000;
+	visibility: hidden;
+	margin-left: 5px;
+	margin-top: 3px;
+}
+
+.user-messages .clear-user-messages:hover {
+	text-decoration: none;
+	color:#CC0000;
+}
+
+.user-messages .user-message-list {
+	border: 1px solid #666;
+	overflow: hidden;
+	height: 20px;
+	margin: 0 5px;
+	padding: 1px 0px;
+	list-style: none;
+	bottom: 0;
+	transition-property: height, margin-top;
+	transition-duration: var(--short-animation-duration);
+}
+
+.user-messages-expanded .user-messages .user-message-list {
+	height: 100px;
+	overflow: auto;
+}
+
+.user-messages .user-messages-settings {
+	margin-right: 10px;
+	margin-top: 0px;
+	float: left;
+	clear: both;
+	position: relative;
+	width: 100%;
+}
+
+.user-messages .user-messages-settings h4 {
+	display: none;
+	float: left;
+	margin: 0;
+}
+
+.user-messages-expanded .user-messages .user-messages-settings h4 {
+	display: block;
+}
+
+
+.user-messages .user-messages-settings-tools {
+	float: right;
+	margin-right: 10px;
+	margin-top: 0px;
+	position: relative;
+	transition-property: height, margin-top;
+	transition-duration: var(--short-animation-duration);
+}
+
+
+.user-messages .user-messages-settings-tools a {
+	color: #CCC;
+}
+
+.user-messages-expanded .user-messages .user-messages-settings-tools {
+	margin-top: 0px;
+}
+
+.user-messages .user-message-list li.message {
+	padding: 1px 5px;
+	margin: 0;
+	color: var(--message-text-color);
+	text-shadow: 0 0 1px #999;
+}
+
+.user-messages .user-message-list li.message:nth-child(2n) {
+	/*background:#DDD;*/
+	border-top: 1px solid #999;
+}
+
+.user-messages .user-message-list li.message:nth-child(2n+1) {
+	/*background:#FFF;*/
+	border-top: 1px solid #666;
+}
+
+.user-messages .user-message-list li.message:first-child {
+	border-top: none;
+}
+
+.user-messages .user-message-list li.message.important {
+	font-weight: bold;
+}
+
+
+.user-messages .user-message-list li.message.info {
+	color: var(--message-info-text-color);
+}
+
+.user-messages .user-message-list li.message.warning {
+	color: var(--message-warning-text-color);
+}
+
+.user-messages .user-message-list li.message.error {
+	color: var(--message-error-text-color);
+}
+
+.user-messages .user-message-list li.message.debug {
+	color: var(--message-debug-text-color);
+}
+
+/* delimiter */
+.user-messages .user-message-list li.message.delimiter {
+	background: none;
+	text-align: center;
+	padding: 2px 0px;
+}
+
+/*delimiter SVG*/
+.user-messages .user-message-list li.message.delimiter {
+	background-color: none;
+}
+
+.user-messages .user-message-list li.message.delimiter .message-delimiter {
+	height: 20px;
+	background-color: none;
+	opacity: 0.5;
+}
+
+.user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon {
+	fill: url(#delimiterGradient);
+  	stroke: var(--message-delimiter-stroke-color);
+  	stroke-width: var(--message-delimiter-stroke-width);
+}
+
+.user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon.message-delimiter-polygon-center {
+	fill: #333;
+}
+
+.user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon.message-delimiter-polygon-left {
+	animation: message-delimiter-animation-left var(--medium-animation-duration) ease-in-out 1;
+}
+
+.user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon.message-delimiter-polygon-right {
+	animation: message-delimiter-animation-right var(--medium-animation-duration) ease-in-out 1;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-0 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 0.1;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-10 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 0.3;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-30 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 1;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-70 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 1;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-90 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 0.3;
+}
+
+.user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-100 {
+	stop-color: var(--message-delimiter-fill-color);
+	stop-opacity: 0.1;
+}
+
+/*highlight transition*/
+
+.user-messages .user-message-list li.message.highlight-enter {
+  background-color: #FFFFCC !important;
+  color: #000 !important;
+}
+
+.user-messages .user-message-list li.message.debug.highlight-enter {
+  background-color: #EEEEEE !important;
+  color: #000 !important;
+}
+
+.user-messages .user-message-list li.message.info.highlight-enter {
+  background-color: #66FF66 !important;
+  color: #006600 !important;
+}
+
+.user-messages .user-message-list li.message.error.highlight-enter {
+  background-color: #FFCCCC !important;
+  color: #660000 !important;
+}
+
+.user-messages .user-message-list li.message.warning.highlight-enter {
+  background-color: #FFCC00 !important;
+  color: #666600 !important;
+}
