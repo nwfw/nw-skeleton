@@ -1,0 +1,4 @@
+/node_modules/*
+/app/var/*
+!/app/var/README.MD
+/config.js
