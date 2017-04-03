@@ -174,6 +174,13 @@ class AppWrapper {
 
 		await this.app.initialize();
 
+		window.feApp = await this.initializeFeApp();
+
+		this.htmlHelper.updateProgress(0, 100, this.appTranslations.translate("Initializing application"));
+		await appUtil.wait(200);
+		this.htmlHelper.updateProgress(10, 100, this.appTranslations.translate("Initializing application"));
+		await appUtil.wait(200);
+
 		return this;
 	}
 
@@ -183,42 +190,6 @@ class AppWrapper {
 		var userConfigFile;
 
 		return this.initialAppConfig;
-
-		// var customConfigFile = "";
-		// if (nw.App.argv && nw.App.argv.length) {
-		// 	_.each(nw.App.argv, function(arg){
-		// 		if (arg.match(/^--config=+/)) {
-		// 			var confParamChunks = arg.split('=');
-		// 			if (confParamChunks.length > 1) {
-		// 				customConfigFile = confParamChunks[1];
-		// 			}
-		// 		}
-		// 	});
-		// }
-		// userConfigPath = customConfigFile.replace(/\.js$/, '');
-		// userConfigFile = userConfigPath + '.js';
-		// if (!(customConfigFile && fs.existsSync(userConfigFile))){
-		// 	userConfigPath = path.join(processPath, 'config');
-		// 	userConfigFile = userConfigPath + '.js';
-		// 	if (!fs.existsSync(userConfigFile)){
-		// 		userConfigPath = path.join(process.cwd(), 'config');
-		// 		userConfigFile = userConfigPath + '.js';
-		// 	}
-		// }
-
-		// if (fs.existsSync(userConfigFile)){
-		// 	config = require(userConfigPath).config;
-		// 	appState.activeConfigFile = userConfigFile;
-		// } else {
-		// 	try {
-		// 		config = require('../../config/config').config;
-		// 		appState.activeConfigFile = '../../config/config.js';
-		// 	} catch (ex) {
-		// 		appUtil.log("Can't load custom config, file '{1}' does not exist", "error", ['../../config/config'], false, true);
-		// 		appUtil.log(ex, "error", [], true, true, true);
-		// 		process.exit();
-		// 	}
-		// }
 	}
 
 	initializeConfig () {
@@ -314,8 +285,11 @@ class AppWrapper {
 	}
 
 	async finalize () {
+		this.htmlHelper.updateProgress(80, 100, this.appTranslations.translate("Initializing application"));
+		await appUtil.wait(200);
 		var retValue = await this.app.finalize();
 		window.appState.appReady = true;
+		this.htmlHelper.clearProgress();
 		return retValue;
 	}
 
@@ -378,21 +352,6 @@ class AppWrapper {
 
 		appUtil.log("Mapping component children...", "debug", [], false, this.forceDebug);
 
-
-
-
-
-		// for(var i=0; i < componentNames.length; i++){
-		// 	var parentComponentName = componentNames[i];
-		// 	var childComponents = appState.config.app.componentMapping[parentComponentName];
-		// 	if (this.vueComponents[parentComponentName]){
-		// 		var parentComponent = this.vueComponents[parentComponentName];
-		// 		// console.log(parentComponent)
-		// 		await this.mapComponent(childComponents, parentComponent);
-		// 	}
-		// };
-
-
 		var componentNames = _.keys(appState.config.app.componentMapping);
 		for(var i=0; i < componentNames.length; i++){
 			var parentComponentName = componentNames[i];
@@ -402,29 +361,6 @@ class AppWrapper {
 		};
 
 
-
-
-
-
-		// _.each(appState.config.app.componentMapping, function(childComponents, parentComponentName){
-		// 	_.each(childComponents.components, function(childComponent){
-		// 		var childComponentName = childComponent.name;
-		// 		if (self.vueComponents[parentComponentName]){
-		// 			self.vueComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-		// 			appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-		// 		} else if (self.vueGlobalComponents[parentComponentName]){
-		// 			self.vueGlobalComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-		// 			appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-		// 		} else if (self.vueModalComponents[parentComponentName]){
-		// 			self.vueModalComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-		// 			appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-		// 		}
-		// 	})
-		// });
-		//
-		//
-		//
-
 		appUtil.log("Mapping app component children...", "debug", [], false, this.forceDebug);
 		_.each(appState.config.appConfig.appComponentMapping, function(childComponents, parentComponentName){
 			_.each(childComponents.components, function(childComponent){
@@ -433,10 +369,6 @@ class AppWrapper {
 				appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
 			})
 		});
-
-
-
-
 
 		var globalComponentNames = _.keys(this.vueGlobalComponents);
 		for(var i=0; i < globalComponentNames.length; i++){
@@ -496,12 +428,6 @@ class AppWrapper {
 
 		}
 	}
-
-
-
-
-
-
 
 	async reinitializeFeApp(){
 		window.getFeApp().$destroy();

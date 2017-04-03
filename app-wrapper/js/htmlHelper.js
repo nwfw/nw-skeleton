@@ -12,6 +12,13 @@ class HtmlHelper extends eventEmitter {
 		super();
 		this.tweens = {};
 		this.tweenIntervals = {};
+
+		this.operationStart = null;
+		this.lastTimeCalculation = null;
+		this.lastTimeValue = 0;
+		this.timeCalculationDelay = 1;
+		this.minPercentComplete = 0.3;
+
 		_appWrapper = window.getAppWrapper();
 		appUtil = _appWrapper.getAppUtil();
 		appState = appUtil.getAppState()
@@ -285,6 +292,50 @@ class HtmlHelper extends eventEmitter {
 		});
 		_appWrapper.openCurrentModal();
 		return _appWrapper.closeModalPromise;
+	}
+
+	updateProgress (completed, total, operationText) {
+		if (!this.operationStart){
+			this.operationStart = (+ new Date()) / 1000;
+		}
+		var appState = appUtil.getAppState();
+		var percentComplete = (completed / total) * 100;
+		var remainingTime = this.calculateTime(percentComplete);
+		appState.progressData.inProgress = true;
+		percentComplete = parseInt(percentComplete);
+		if (operationText){
+			appState.progressData.operationText = operationText;
+		}
+		appState.progressData.detailText = completed + ' / ' + total;
+		var formattedDuration = _appWrapper.appTranslations.translate('calculating');
+		if (percentComplete >= this.minPercentComplete){
+			formattedDuration = appUtil.formatDuration(remainingTime);
+		}
+		appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
+		appState.progressData.styleObject = {
+			width: percentComplete + '%'
+		};
+	}
+
+	clearProgress () {
+		appState.progressData.inProgress = false;
+		this.operationStart = null;
+	}
+
+	calculateTime(percent){
+		var currentTime = (+ new Date()) / 1000;
+		var remainingTime = null;
+		if (percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
+			var remaining = 100 - percent;
+			this.lastTimeCalculation = currentTime;
+			var elapsedTime = currentTime - this.operationStart;
+			var timePerPercent = elapsedTime / percent;
+			remainingTime = remaining * timePerPercent;
+			this.lastTimeValue = remainingTime;
+		} else {
+			remainingTime = this.lastTimeValue;
+		}
+		return remainingTime;
 	}
 }
 

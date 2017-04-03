@@ -73,7 +73,14 @@ exports.appState = {
 
 	},
 	progressData: {
-
+		inProgress: false,
+		percentComplete: 0,
+		operationText: '',
+		detailText: '',
+		progressBarClass: '',
+		styleObject: {
+			width: '0%'
+		}
 	},
 	windowData: {
 
