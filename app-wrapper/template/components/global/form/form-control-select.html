@@ -1,0 +1,12 @@
+<div class="form-control-field">
+
+	<label class="text-label" v-bind:title="control.path">
+		{{ control.name }}
+	</label>
+	<select v-bind:name="control.name" v-bind:data-path="control.path" >
+		<template v-for="(value, key) in control.controlData.items">
+			<option v-if="key == control.value" v-bind:value="key" v-html="value" selected="selected" />
+			<option v-else v-bind:value="key" v-html="value" />
+		</template>
+	</select>
+</div>

@@ -95,6 +95,88 @@ exports.config = {
 		appComponentCodeRegex: /\.js$/,
 	},
 
+	configData: {
+		uneditableConfig: [],
+		defaultVar: {
+			editable: true,
+			control: 'text'
+		},
+		vars: {
+			app: {
+				editable: false
+			},
+			appConfig: {
+				editable: false
+			},
+			logDir: {
+				editable: false
+			},
+			varDir: {
+				editable: false
+			},
+			debugMessagesFilename: {
+				editable: false
+			},
+			userMessagesFilename: {
+				editable: false
+			},
+			debugLevels: {
+				editable: false
+			},
+			componentMapping: {
+				editable: false
+			},
+			currentLanguage: {
+				editable: true,
+				type: 'string',
+				control: 'select',
+				controlData: {
+					items: {
+						sr_RS: 'Srpski',
+						en_US: 'English'
+					}
+				}
+			},
+			currentLocale: {
+				editable: true,
+				type: 'string',
+				control: 'select',
+				controlData: {
+					items: {
+						'sr-rs': 'Srpski',
+						'en-us': 'English'
+					}
+				}
+			},
+			debugLevel: {
+				editable: true,
+				type: 'string',
+				control: 'select',
+				controlData: {
+					items: {
+						0: 'debug',
+						1: 'info',
+						2: 'warning',
+						3: 'error'
+					}
+				}
+			},
+			userMessageLevel: {
+				editable: true,
+				type: 'string',
+				control: 'select',
+				controlData: {
+					items: {
+						0: 'debug',
+						1: 'info',
+						2: 'warning',
+						3: 'error'
+					}
+				}
+			},
+		}
+	},
+
 	varDir: './app/var',
 	logDir: './app/var/log',
 

@@ -86,7 +86,9 @@ class AppWrapper {
 
 		appStateConfig = require('../../config/appWrapperConfig').config;
 
-		appState.config = this.initializeConfig();
+		config = this.initializeConfig();
+
+		appState.config = _.cloneDeep(config);
 
 		this.loadUserConfig();
 
@@ -179,7 +181,8 @@ class AppWrapper {
 		this.htmlHelper.updateProgress(0, 100, this.appTranslations.translate("Initializing application"));
 		await appUtil.wait(200);
 		this.htmlHelper.updateProgress(10, 100, this.appTranslations.translate("Initializing application"));
-		await appUtil.wait(200);
+
+		await this.finalize();
 
 		return this;
 	}
@@ -194,16 +197,21 @@ class AppWrapper {
 
 	initializeConfig () {
 		var theConfig = appUtil.mergeDeep({}, appStateConfig, this.initialAppConfig);
+		_.each(theConfig.configData.vars, function(value, key){
+			if (!value.editable){
+				theConfig.configData.uneditableConfig.push(key);
+			}
+		});
 		return theConfig;
 	}
 
 	loadUserConfig () {
-		if (localStorage && localStorage.config){
+		if (localStorage && localStorage.getItem('config')){
 			appUtil.log("Loading user config...", "info", [], false, this.forceDebug);
 			var appState = appUtil.getAppState();
 			var userConfig = {};
 			try {
-				userConfig = JSON.parse(localStorage.config);
+				userConfig = JSON.parse(localStorage.getItem('config'));
 			} catch (e) {
 				appUtil.log("Can't parse user config.!", "warning", [], false, this.forceDebug);
 			}
@@ -226,12 +234,17 @@ class AppWrapper {
 			var userConfig = appUtil.difference(config, appState.config);
 			appUtil.log("Saving user config...", "info", [], false, this.forceDebug);
 			try {
-				localStorage.config = JSON.stringify(userConfig);
-				appUtil.addUserMessage("Configuration data saved", "info", [], false,  false, true, this.forceDebug);
 				if (userConfig && _.keys(userConfig).length){
+					localStorage.setItem('config', JSON.stringify(userConfig));
+					appUtil.addUserMessage("Configuration data saved", "info", [], false,  false, true, this.forceDebug);
 					appState.hasUserConfig = true;
+					this.windowManager.win.reload();
 				} else {
-					appState.hasUserConfig = false;
+					if (localStorage.getItem('config')){
+						localStorage.removeItem('config');
+						appState.hasUserConfig = false;
+						this.windowManager.win.reload();
+					}
 				}
 			} catch (e) {
 				appUtil.addUserMessage("Configuration data could not be saved - '{1}'", "error", [e], false,  false, this.forceUserMessages, this.forceDebug);
@@ -247,10 +260,10 @@ class AppWrapper {
 			var userConfig = {};
 			appUtil.log("Clearing user config...", "info", [], false, this.forceDebug);
 			try {
-				localStorage.config = JSON.stringify(userConfig);
+				localStorage.removeItem('config');
 				appUtil.addUserMessage("Configuration data cleared", "info", [], false,  false, true, this.forceDebug);
 				appState.hasUserConfig = false;
-				this.loadUserConfig();
+				// this.loadUserConfig();
 				this.windowManager.win.reload();
 			} catch (ex) {
 				appUtil.addUserMessage("Configuration data could not be cleared - '{1}'", "error", [ex], false,  false, this.forceUserMessages, this.forceDebug);
@@ -1044,8 +1057,45 @@ class AppWrapper {
 		}
 		this.openConfigEditor();
 	}
+
+	async prepareConfigEditorData () {
+		var self = this;
+		appState.configEditorData = {};
+		var keys = _.keys(appState.config);
+		for(var i=0; i<keys.length; i++){
+			var key = keys[i];
+			var value = appState.config[key];
+			if (key !== 'configData'){
+				if (!_.includes(appState.config.configData.uneditableConfig, key)){
+					appState.configEditorData[key] = await self.prepareConfigEditorDataItem(value, key);
+				}
+			}
+		}
+	}
+
+	async prepareConfigEditorDataItem (value, key) {
+		var self = this;
+		if (_.isArray(value)){
+			for(var i=0; i<value.length; i++) {
+				var innerValue = value[i];
+				var innerKey = i;
+				value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
+			}
+		} else if (_.isObject(value)){
+			var keys = _.keys(value);
+			for(var i=0; i<keys.length; i++){
+				var innerKey = keys[i];
+				var innerValue = value[innerKey];
+				value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
+			}
+		}
+		return value;
+	}
+
 	async openConfigEditor () {
 		// this.windowManager.noHandlingKeys = true;
+
+		await this.prepareConfigEditorData();
 
 		appState.modalData.currentModal = _.cloneDeep(appState.configEditorModal);
 		appState.modalData.currentModal.title = this.appTranslations.translate('Config editor');
@@ -1106,12 +1156,10 @@ class AppWrapper {
 		});
 		var oldConfig = _.cloneDeep(appState.config);
 		var difference = appUtil.difference(oldConfig, newConfig);
-		// console.log(newConfig);
-		// console.log(difference);
+
 		if (difference && _.isObject(difference) && _.keys(difference).length){
-			// console.log(difference);
-			appState.config = appUtil.mergeDeep({}, appState.config, difference);
-			// appState.config = _.cloneDeep(newConfig);
+			var finalConfig = appUtil.mergeDeep({}, appState.config, difference);
+			appState.config = _.cloneDeep(finalConfig);
 			this.saveUserConfig();
 			this.closeCurrentModal();
 		} else {

@@ -34,20 +34,20 @@
 							</p>
 							<template v-if="currentModal.showCancelButton || currentModal.showConfirmButton">
 								<div class="modal-dialog-buttons">
-									<template v-if="currentModal.showCancelButton">
-										<template v-if="currentModal.cancelDisabled">
-											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-										</template>
-										<template v-else>
-											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-										</template>
-									</template>
 									<template v-if="currentModal.showConfirmButton">
 										<template v-if="currentModal.confirmDisabled">
 											<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
 										</template>
 										<template v-else>
 											<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+										</template>
+									</template>
+									<template v-if="currentModal.showCancelButton">
+										<template v-if="currentModal.cancelDisabled">
+											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+										</template>
+										<template v-else>
+											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
 										</template>
 									</template>
 								</div>
