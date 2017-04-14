@@ -37,92 +37,111 @@ class ComponentHelper extends BaseClass {
 
 	async initialize () {
 		await super.initialize();
-
-		this.vueMixins = await this.initVueMixins();
-		// this.appVueMixins = await this.initVueMixins();
-		// this.vueMixins = _.merge(this.vueMixins, this.appVueMixins);
-
-		this.vueGlobalComponents = await this.initVueGlobalComponents();
-		this.vueComponents = await this.initVueComponents();
-		this.vueAppComponents = await this.initAppVueComponents();
-		this.vueComponents = _.merge(this.vueComponents, this.vueAppComponents);
-		this.allComponents = _.merge(this.vueComponents, this.vueGlobalComponents);
-
-		appUtil.log("Preparing components...", "group", [], false, this.forceDebug);
-		this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.app.componentMapping);
-		appUtil.log("Preparing components...", "groupend", [], false, this.forceDebug);
-
-		appUtil.log("Preparing app components...", "group", [], false, this.forceDebug);
-		this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.appConfig.appComponentMapping);
-		appUtil.log("Preparing app components...", "groupend", [], false, this.forceDebug);
-
-		appUtil.log("Preparing global components...", "group", [], false, this.forceDebug);
-		this.vueGlobalComponents = await this.prepareComponents(this.vueGlobalComponents, this.allComponents, {});
-		appUtil.log("Preparing global components...", "groupend", [], false, this.forceDebug);
+		this.vueMixins = await this.loadMixins();
+		await this.initComponents();
 	}
 
-	async initVueMixins (){
-		appUtil.addUserMessage("Initializing global vue mixins...", "debug", [], false, false, this.forceUserMessages, true);
+	async loadMixins(){
 		var vueMixins = [];
-		var vueMixinData = require(path.resolve(appState.config.app.mixinRoot + '/index')).mixins;
+		var appVueMixins = [];
+
+		var mixinIndexFile = path.resolve(appState.config.app.mixinRoot + '/index');
+		if (fs.existsSync(mixinIndexFile + '.js')){
+			vueMixins = await this.initMixins(mixinIndexFile);
+		}
+
+		var appMixinIndexFile = path.resolve(appState.config.appConfig.mixinRoot + '/index');
+		if (fs.existsSync(appMixinIndexFile + '.js')){
+			appVueMixins = await this.initMixins(appMixinIndexFile);
+		}
+
+		vueMixins = _.union(vueMixins, appVueMixins);
+		return vueMixins;
+	}
+
+	async initMixins (mixinIndexFile){
+		var vueMixins = [];
+		var vueMixinData = require(mixinIndexFile).mixins;
 		vueMixinData.forEach((MixinObj) => {
 			vueMixins.push(MixinObj.mixin);
 			Vue.mixin(MixinObj.mixin);
 		});
-		appUtil.addUserMessage("{1} global Vue mixins initialized.", "debug", [vueMixins.length], false, false, this.forceUserMessages, true);
 		return vueMixins;
 	}
 
-	async initVueAppMixins (){
-		var vueMixins = [];
-		if (fs.existsSync(path.resolve(appState.config.appConfig.appMixinRoot))){
-			appUtil.addUserMessage("Initializing vue app mixins...", "debug", [], false, false, this.forceUserMessages, true);
-			var vueMixinData = require(path.resolve(appState.config.appConfig.appMixinRoot + '/index')).mixins;
-			vueMixinData.forEach((MixinObj) => {
-				vueMixins.push(MixinObj.mixin);
-				Vue.mixin(MixinObj.mixin);
-			});
-			appUtil.addUserMessage("{1} Vue app mixins initialized.", "debug", [vueMixins.length], false, false, this.forceUserMessages, true);
+	async loadDirComponents(componentDirs){
+		var components = {};
+		for(let i=0; i<componentDirs.length;i++){
+			if (fs.existsSync(componentDirs[i])){
+				appUtil.log("Loading components from directory '{1}'.", "debug", [componentDirs[i]], false, this.forceDebug);
+				var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], appState.config.app.componentCodeRegex, true);
+				if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
+					components = _.merge(components, newComponents)
+				}
+			} else {
+				appUtil.log("Component directory '{1}' does not exist.", "warning", [componentDirs[i]], false, this.forceDebug);
+			}
 		}
-		return vueMixins;
+		return components
 	}
 
-	async loadVueComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.app.componentCodeRoot, appState.config.app.componentCodeRegex, true);
-	}
+	async initComponents (){
+		await this.loadComponents();
 
-	async loadVueGlobalComponents () {
-		var files = {};
-		var appFiles = {};
-		if (fs.existsSync(appState.config.app.globalComponentCodeRoot)){
-			files = await appUtil.loadFilesFromDir(appState.config.app.globalComponentCodeRoot, appState.config.app.componentCodeRegex, true);
+		appUtil.log("Preparing wrapper components...", "group", [], false, this.forceDebug);
+		this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.app.componentMapping);
+		appUtil.log("Preparing wrapper components...", "groupend", [], false, this.forceDebug);
+
+		appUtil.log("Preparing app components...", "group", [], false, this.forceDebug);
+		this.vueAppComponents = await this.prepareComponents(this.vueAppComponents, this.allComponents, appState.config.appConfig.appComponentMapping);
+		appUtil.log("Preparing app components...", "groupend", [], false, this.forceDebug);
+
+		appUtil.log("Preparing modal components...", "group", [], false, this.forceDebug);
+		this.vueModalComponents = await this.prepareComponents(this.vueModalComponents, this.allComponents, {});
+		appUtil.log("Preparing modal components...", "groupend", [], false, this.forceDebug);
+
+		appUtil.log("Preparing global components...", "group", [], false, this.forceDebug);
+		this.vueGlobalComponents = await this.prepareComponents(this.vueGlobalComponents, this.allComponents, {});
+		appUtil.log("Preparing global components...", "groupend", [], false, this.forceDebug);
+
+		this.vueComponents = _.merge(this.vueComponents, this.vueAppComponents);
+
+		// add modal dialog components
+		this.vueGlobalComponents["modal-dialog"].components = this.vueModalComponents;
+
+		// register global components
+		var globalComponentNames = _.keys(this.vueGlobalComponents);
+		for(let i=0; i<globalComponentNames.length;i++){
+			Vue.component(globalComponentNames[i], this.vueGlobalComponents[globalComponentNames[i]]);
 		}
-		if (fs.existsSync(appState.config.appConfig.appGlobalComponentCodeRoot)){
-			appFiles = await appUtil.loadFilesFromDir(appState.config.appConfig.appGlobalComponentCodeRoot, appState.config.app.componentCodeRegex, true);
-		}
-		var allFiles = _.merge(files, appFiles);
-		return allFiles;
-
 	}
 
-	async loadVueModalComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.app.modalComponentCodeRoot, appState.config.app.componentCodeRegex, true);
+	async loadComponents (){
+		appUtil.log("Loading components...", "group", [], false, this.forceDebug);
+
+		var components = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.component'));
+		var globalComponents = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.globalComponent'));
+		var modalComponents = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.modalComponent'));
+		var appComponents = await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.component'));
+
+		this.allComponents = _.merge(components, globalComponents, modalComponents, appComponents);
+
+		appUtil.log("Loading components...", "groupend", [], false, this.forceDebug);
+
+		appUtil.log("Initializing components...", "group", [], false, this.forceDebug);
+
+
+		this.vueGlobalComponents = await this.initComponentGroup(globalComponents);
+		this.vueModalComponents = await this.initComponentGroup(modalComponents);
+		this.vueComponents = await this.initComponentGroup(components);
+		this.vueAppComponents = await this.initComponentGroup(appComponents);
+
+		appUtil.log("Initializing components...", "groupend", [], false, this.forceDebug);
 	}
 
-	async loadAppVueComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.appConfig.appComponentCodeRoot, appState.config.appConfig.appComponentCodeRegex, true);
-	}
-
-	async initVueGlobalComponents (){
-		appUtil.addUserMessage("Initializing vue global components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueGlobalComponents();
-
-		appUtil.addUserMessage("Loading vue modal components...", "debug", [], false, false, this.forceUserMessages, true);
-		this.vueModalComponents = await this.loadVueModalComponents();
-		var modalComponentNames = _.keys(this.vueModalComponents);
-		appUtil.addUserMessage("{1} vue modal components loaded.", "debug", [modalComponentNames.length], false, false, this.forceUserMessages, true);
-
+	async initComponentGroup (componentData){
+		var self = this;
+		var appState = appUtil.getAppState();
 		var subComponentCount = 0;
 		var components = {};
 		var initializedMessage = '';
@@ -134,76 +153,9 @@ class ComponentHelper extends BaseClass {
 				subComponents = this.vueModalComponents;
 			}
 			components[componentName] = await this.initVueComponent(componentName, componentData[componentName], subComponents);
+
 		}
-
-		appUtil.addUserMessage("Global component initialization finished. {1} global vue components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initVueComponents (){
-		appUtil.addUserMessage("Initializing vue components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueComponents();
-
-		var self = this;
-		var appState = appUtil.getAppState();
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-
-		for (var componentName in componentData){
-			components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-			var baseComponent = _.cloneDeep(BaseComponent);
-			components[componentName] = Object.assign(baseComponent, components[componentName]);
-		}
-
 		appUtil.addUserMessage("Component initialization finished. {1} vue root components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initDebugVueComponents (){
-		appUtil.addUserMessage("Initializing debug vue components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueComponents();
-
-		var self = this;
-		var appState = appUtil.getAppState();
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-		var componentName = 'app-debug';
-
-		components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-
-		appUtil.addUserMessage("Component initialization finished. {1} vue root components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initAppVueComponents () {
-		appUtil.log("Initializing app vue components...", "debug", [], false, this.forceDebug);
-
-		var componentData = await this.loadAppVueComponents();
-
-		var self = this;
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-
-		for (var componentName in componentData){
-			components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-		}
-
-		appUtil.log("App component initialization finished. {1} app vue components initialized.", "debug", [_.keys(components).length], false, this.forceDebug);
-
 		return components;
 	}
 

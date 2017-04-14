@@ -17,10 +17,17 @@ exports.config = {
 			]
 		},
 
-		componentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/',
-		globalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/global/',
-		modalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/modal/',
 		componentCodeRegex: /\.js$/,
+		componentDirectories: {
+			component: ['./node_modules/nw-skeleton/app-wrapper/js/components/'],
+			globalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/global/', './node_modules/nw-skeleton/app-wrapper/js/components/global/form'],
+			modalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/modal/']
+		},
+
+		// componentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/',
+		// globalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/global/',
+		// modalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/modal/',
+
 
 		mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixins/',
 
@@ -90,7 +97,7 @@ exports.config = {
 
 		debugJsFiles: [],
 
-		appMixinRoot: './node_modules/nw-skeleton/app/js/mixins/',
+		mixinRoot: './app/js/mixins/',
 
 		appTemplateExtensionRegex: /\.html$/,
 		templateDirectories: {
