@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
+var util = require('util');
 
 var appStateConfig;
 var config;
@@ -13,6 +14,7 @@ var AppTranslations = require('./appTranslations').AppTranslations;
 var WindowManager = require('./windowManager').WindowManager;
 var FileManager = require('./fileManager').FileManager;
 var HtmlHelper = require('./htmlHelper').HtmlHelper;
+var BaseComponent;
 
 class AppWrapper {
 
@@ -54,7 +56,7 @@ class AppWrapper {
 		};
 
 		this.intervals = {
-			syncStoppedInterval : null
+
 		},
 
 		this.debugWindow = null;
@@ -98,6 +100,8 @@ class AppWrapper {
 		if (appUtil.getConfig("userMessagesToFile")){
 			fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
 		}
+
+		BaseComponent = require('./mixins/baseComponent').component;
 
 		var mainAppFile = path.join(process.cwd(), appState.config.app.appFile);
 
@@ -543,6 +547,8 @@ class AppWrapper {
 
 		for (var componentName in componentData){
 			components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
+			var baseComponent = _.cloneDeep(BaseComponent);
+			components[componentName] = Object.assign(baseComponent, components[componentName]);
 		}
 
 		appUtil.addUserMessage("Component initialization finished. {1} vue root components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
@@ -595,6 +601,12 @@ class AppWrapper {
 	async initVueComponent(componentName, componentData, additionalSubComponents){
 		appUtil.log("* Initializing component '{1}'...", "debug", [componentName], false, this.forceDebug);
 		var component = componentData;
+
+		if (component.mixins){
+			component.mixins.push(BaseComponent);
+		} else {
+			component.mixins = [BaseComponent];
+		}
 
 		if (additionalSubComponents){
 			if (!component.components) {
@@ -683,18 +695,6 @@ class AppWrapper {
 			if (e && e.preventDefault && _.isFunction(e.preventDefault)){
 				e.preventDefault();
 			}
-		}
-	}
-
-	checkSyncStopped (callback) {
-		var appState = appUtil.getAppState();
-		if (appUtil.getStateVar('syncInProgress') || (appUtil.getStateVar('stopSync') && !appUtil.getStateVar('stopSuccessful'))){
-			return false;
-		} else {
-			if (callback && _.isFunction(callback)){
-				callback(true);
-			}
-			return true;
 		}
 	}
 
@@ -843,9 +843,7 @@ class AppWrapper {
 	}
 
 	resetAppStatus (){
-		appState.syncInProgress = false;
 		appState.appBusy = false;
-		appState.stopSync = false;
 	}
 
 	async showModalCloseConfirm (e){
@@ -982,8 +980,6 @@ class AppWrapper {
 	 		appState.closeModalResolve(true);
 	 	}
 	 }
-
-
 
 	 modalBusy (message) {
 	 	var appState = appUtil.getAppState();
