@@ -3,18 +3,19 @@ var path = require('path');
 var fs = require('fs');
 var util = require('util');
 
-var appStateConfig;
-var config;
-
 var App;
 var appUtil = require('./appUtil').appUtil;
-var DebugHelper = require('./debugHelper').DebugHelper;
+
 var AppTemplates = require('./appTemplates').AppTemplates;
 var AppTranslations = require('./appTranslations').AppTranslations;
+
 var WindowManager = require('./windowManager').WindowManager;
 var FileManager = require('./fileManager').FileManager;
-var HtmlHelper = require('./htmlHelper').HtmlHelper;
-var BaseComponent;
+
+var DebugHelper = require('./helper/debugHelper').DebugHelper;
+var HtmlHelper = require('./helper/htmlHelper').HtmlHelper;
+var ComponentHelper = require('./helper/componentHelper').ComponentHelper;
+var ConfigHelper = require('./helper/configHelper').ConfigHelper;
 
 class AppWrapper {
 
@@ -28,18 +29,11 @@ class AppWrapper {
 		this.templateContents = null;
 		this.translations = null;
 
-		this.vueComponents = {};
-		this.vueAppComponents = {};
-		this.vueGlobalComponents = {};
-		this.vueModalComponents = {};
-		this.debugVueComponents = {};
-
-		this.vueMixins = null;
-		this.appVueMixins = null;
-
 		this.windowManager = null;
 		this.fileManager = null;
 		this.debugHelper = null;
+		this.componentHelper = null;
+		this.configHelper = null;
 
 		this.jsFileLoadResolves = {};
 
@@ -86,13 +80,10 @@ class AppWrapper {
 		var self = this;
 		var appState = appUtil.getAppState();
 
-		appStateConfig = require('../../config/appWrapperConfig').config;
+		this.configHelper = new ConfigHelper(this.initialAppConfig);
 
-		config = this.initializeConfig();
-
-		appState.config = _.cloneDeep(config);
-
-		this.loadUserConfig();
+		appState.config = await this.configHelper.initializeConfig();
+		appState.config = await this.configHelper.loadUserConfig();
 
 		if (appUtil.getConfig("debugToFile")){
 			fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), '', {flag: 'w'});
@@ -101,60 +92,19 @@ class AppWrapper {
 			fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
 		}
 
-		BaseComponent = require('./mixins/baseComponent').component;
-
 		var mainAppFile = path.join(process.cwd(), appState.config.app.appFile);
 
 		App = require(mainAppFile).App;
 
-		var cssFiles = appUtil.getConfig('appConfig.initCssFiles');
+		await this.loadCssFiles();
+		await this.loadJsFiles();
 
-		for (var i=0; i<cssFiles.length; i++){
-			await this.loadCss(cssFiles[i]);
-		}
-
-		cssFiles = appUtil.getConfig('appConfig.cssFiles');
-
-		for (var i=0; i<cssFiles.length; i++){
-			await this.loadCss(cssFiles[i]);
-		}
-
-		if (window.isDebugWindow){
-			cssFiles = appUtil.getConfig('appConfig.debugCssFiles');
-
-			for (var i=0; i<cssFiles.length; i++){
-				await this.loadCss(cssFiles[i]);
-			}
-			for (var i=0; i<appState.config.appConfig.debugCssFiles.length; i++){
-				await this.loadCss(appState.config.appConfig.debugCssFiles[i]);
-			}
-		}
-
-		var jsFiles = appUtil.getConfig('appConfig.initJsFiles');
-
-		for (var i=0; i<jsFiles.length; i++){
-			await this.loadJs(jsFiles[i]);
-		}
-
-		var jsFiles = appUtil.getConfig('appConfig.jsFiles');
-
-		for (var i=0; i<jsFiles.length; i++){
-			await this.loadJs(jsFiles[i]);
-		}
-
-		appState.languageData.currentLanguage = appUtil.getConfig('currentLanguage');
-		appState.languageData.currentLocale = appUtil.getConfig('currentLocale');
-		appState.hideDebug = appUtil.getConfig('hideDebug');
-		appState.debug = appUtil.getConfig('debug');
-		appState.debugLevel = appUtil.getConfig('debugLevel');
-		appState.debugLevels = appUtil.getConfig('debugLevels');
-		appState.userMessageLevel = appUtil.getConfig('userMessageLevel');
-		appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
-		appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
-
-		appState.closeModalResolve = null;
+		this.setDynamicAppStateValues();
 
 		this.debugHelper = new DebugHelper();
+		this.htmlHelper = new HtmlHelper();
+		this.fileManager = new FileManager();
+		this.windowManager = new WindowManager();
 
 		if (window.isDebugWindow){
 			this.mainWindow = window.opener;
@@ -164,17 +114,16 @@ class AppWrapper {
 
 		this.app = new App();
 
-		this.htmlHelper = new HtmlHelper();
-		this.fileManager = new FileManager();
-
-		this.windowManager = new WindowManager();
-
-		if (appState.config.devTools){
+		if (appUtil.getConfig('devTools')){
 			this.windowManager.winState.devTools = true;
 		}
 
 		this.addBoundMethods();
-		await this.initializeTemplates();
+		this.appTemplates = new AppTemplates();
+		this.templateContents = await this.appTemplates.initializeTemplates();
+
+		this.componentHelper = new ComponentHelper();
+		await this.componentHelper.initialize();
 
 		this.addEventListeners();
 
@@ -182,131 +131,14 @@ class AppWrapper {
 
 		window.feApp = await this.initializeFeApp();
 
-		this.htmlHelper.updateProgress(0, 100, this.appTranslations.translate("Initializing application"));
-		await appUtil.wait(200);
-		this.htmlHelper.updateProgress(10, 100, this.appTranslations.translate("Initializing application"));
-
 		await this.finalize();
 
 		return this;
 	}
 
-	async loadConfig () {
-		var processPath = path.dirname(process.execPath);
-		var userConfigPath;
-		var userConfigFile;
-
-		return this.initialAppConfig;
-	}
-
-	initializeConfig () {
-		var theConfig = appUtil.mergeDeep({}, appStateConfig, this.initialAppConfig);
-		_.each(theConfig.configData.vars, function(value, key){
-			if (!value.editable){
-				theConfig.configData.uneditableConfig.push(key);
-			}
-		});
-		return theConfig;
-	}
-
-	loadUserConfig () {
-		if (localStorage && localStorage.getItem('config')){
-			appUtil.log("Loading user config...", "info", [], false, this.forceDebug);
-			var appState = appUtil.getAppState();
-			var userConfig = {};
-			try {
-				userConfig = JSON.parse(localStorage.getItem('config'));
-			} catch (e) {
-				appUtil.log("Can't parse user config.!", "warning", [], false, this.forceDebug);
-			}
-			if (userConfig && _.keys(userConfig).length){
-				appState.hasUserConfig = true;
-			} else {
-				appState.hasUserConfig = false;
-			}
-			userConfig = _.merge({}, appState.config, userConfig);
-			appState.config = userConfig;
-
-		} else {
-			appUtil.log("No user config found.", "info", [], false, this.forceDebug);
-		}
-	}
-
-	saveUserConfig () {
-		if (localStorage){
-			var appState = appUtil.getAppState();
-			var userConfig = appUtil.difference(config, appState.config);
-			appUtil.log("Saving user config...", "info", [], false, this.forceDebug);
-			try {
-				if (userConfig && _.keys(userConfig).length){
-					localStorage.setItem('config', JSON.stringify(userConfig));
-					appUtil.addUserMessage("Configuration data saved", "info", [], false,  false, true, this.forceDebug);
-					appState.hasUserConfig = true;
-					this.windowManager.win.reload();
-				} else {
-					if (localStorage.getItem('config')){
-						localStorage.removeItem('config');
-						appState.hasUserConfig = false;
-						this.windowManager.win.reload();
-					}
-				}
-			} catch (e) {
-				appUtil.addUserMessage("Configuration data could not be saved - '{1}'", "error", [e], false,  false, this.forceUserMessages, this.forceDebug);
-			}
-		} else {
-			appUtil.log("Can't save user config.", "warning", [], false, this.forceDebug);
-		}
-	}
-
-	async clearUserConfig () {
-		if (localStorage){
-			var appState = appUtil.getAppState();
-			var userConfig = {};
-			appUtil.log("Clearing user config...", "info", [], false, this.forceDebug);
-			try {
-				localStorage.removeItem('config');
-				appUtil.addUserMessage("Configuration data cleared", "info", [], false,  false, true, this.forceDebug);
-				appState.hasUserConfig = false;
-				// this.loadUserConfig();
-				this.windowManager.win.reload();
-			} catch (ex) {
-				appUtil.addUserMessage("Configuration data could not be cleared - '{1}'", "error", [ex], false,  false, this.forceUserMessages, this.forceDebug);
-			}
-		} else {
-			appUtil.log("Can't clear user config.", "warning", [], false, this.forceDebug);
-		}
-	}
-
-	async clearUserConfigHandler (e) {
-		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-			e.preventDefault();
-		}
-		var confirmed = await this.htmlHelper.confirm(this.appTranslations.translate('Are you sure?'), this.appTranslations.translate('This will delete your saved configuration data.'))
-		if (confirmed){
-			this.clearUserConfig();
-		} else {
-			this.closeCurrentModal();
-		}
-	}
-
-	setConfigVar(name, value){
-		appState.config[name] = value;
-		this.saveUserConfig();
-	}
-
-	setConfig(data){
-		if (data && _.isObject(data)){
-			appState.config = _.merge(appState.config, data);
-			this.saveUserConfig();
-		}
-	}
-
 	async finalize () {
-		this.htmlHelper.updateProgress(80, 100, this.appTranslations.translate("Initializing application"));
-		await appUtil.wait(200);
 		var retValue = await this.app.finalize();
 		window.appState.appReady = true;
-		this.htmlHelper.clearProgress();
 		return retValue;
 	}
 
@@ -348,57 +180,17 @@ class AppWrapper {
 		return await this.appTranslations.initializeLanguage();
 	}
 
-	async initializeTemplates () {
-		this.appTemplates = new AppTemplates();
-		this.templateContents = await this.appTemplates.loadTemplates();
-		return true;
-	}
-
 	async initializeFeApp(){
 		var self = this;
 		var appState = appUtil.getAppState();
 
-		this.vueMixins = await this.initVueMixins();
-		this.appVueMixins = await this.initVueMixins();
-		this.vueMixins = _.merge(this.vueMixins, this.appVueMixins);
 
-		this.vueGlobalComponents = await this.initVueGlobalComponents();
-		this.vueComponents = await this.initVueComponents();
-		this.vueAppComponents = await this.initAppVueComponents();
-		this.vueComponents = _.merge(this.vueComponents, this.vueAppComponents);
-
-		appUtil.log("Mapping component children...", "debug", [], false, this.forceDebug);
-
-		var componentNames = _.keys(appState.config.app.componentMapping);
-		for(var i=0; i < componentNames.length; i++){
-			var parentComponentName = componentNames[i];
-			if (this.vueComponents[parentComponentName]){
-				await this.mapComponentChildren(parentComponentName, appState.config.app.componentMapping[parentComponentName]);
-			}
-		};
-
-
-		appUtil.log("Mapping app component children...", "debug", [], false, this.forceDebug);
-		_.each(appState.config.appConfig.appComponentMapping, function(childComponents, parentComponentName){
-			_.each(childComponents.components, function(childComponent){
-				var childComponentName = childComponent.name;
-				self.vueComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-				appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-			})
-		});
-
-		var globalComponentNames = _.keys(this.vueGlobalComponents);
-		for(var i=0; i < globalComponentNames.length; i++){
-			appUtil.log("Registering global Vue component '{1}'...", "debug", [globalComponentNames[i]], false, this.forceDebug);
-			Vue.component(globalComponentNames[i], this.vueGlobalComponents[globalComponentNames[i]]);
-			appUtil.log("Global Vue component '{1} registered.'", "debug", [globalComponentNames[i]], false, this.forceDebug);
-		}
 		appUtil.log("Initializing Vue app...'", "debug", [], false, this.forceDebug);
 		var vm = new Vue({
 			el: '#app-body',
 			template: window.indexTemplate,
 			data: appState,
-			components: this.vueComponents,
+			components: this.componentHelper.vueComponents,
 			translations: appState.translations,
 			// methods: {
 			// 	showModalConfirm: this.showModalCloseConfirm.bind(this)
@@ -420,218 +212,120 @@ class AppWrapper {
 		return vm;
 	}
 
-
-
-	async mapComponentChildren (parentComponentName, childComponentsMapping) {
-		var self = this;
-		for (var i = 0; i<childComponentsMapping.components.length; i++){
-			var childComponentMapping = childComponentsMapping.components[i];
-			var childComponentName = childComponentMapping.name;
-
-			if (childComponentMapping.components){
-				await self.mapComponentChildren(childComponentName, childComponentMapping);
-			}
-
-			if (self.vueComponents[parentComponentName]){
-				self.vueComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-				appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-			} else if (self.vueGlobalComponents[parentComponentName]){
-				self.vueGlobalComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-				appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-			} else if (self.vueModalComponents[parentComponentName]){
-				self.vueModalComponents[parentComponentName].components[childComponentName] = self.vueComponents[childComponentName];
-				appUtil.log("Registered sub-component '{1}' for parent '{2}'.", "debug", [childComponentName, parentComponentName], false, self.forceDebug);
-			}
-
-		}
-	}
-
 	async reinitializeFeApp(){
 		window.getFeApp().$destroy();
 		return await this.initializeFeApp();
 	}
 
+	async loadCssFiles() {
+		var cssFiles = appUtil.getConfig('appConfig.initCssFiles');
+		var appCssFiles = appUtil.getConfig('appConfig.cssFiles');
+		var debugCssFiles = appUtil.getConfig('appConfig.debugCssFiles');
+		var appDebugCssFiles = appUtil.getConfig('appConfig.appDebugCssFiles');
+
+		var totalCssFiles = 0;
+		var cssFileCount = 0;
+		var appCssFileCount = 0;
+		var debugCssFileCount = 0;
+		var appDebugCssFileCount = 0;
+
+		if (cssFiles && cssFiles.length){
+			cssFileCount = cssFiles.length;
+		}
+		if (appCssFiles && appCssFiles.length){
+			appCssFileCount = appCssFiles.length;
+		}
+
+		if (debugCssFiles && debugCssFiles.length){
+			debugCssFileCount = debugCssFiles.length;
+		}
+
+		if (appDebugCssFiles && appDebugCssFiles.length){
+			appDebugCssFileCount = appDebugCssFiles.length;
+		}
+
+		totalCssFiles = cssFileCount + appCssFileCount;
+
+		if (window.isDebugWindow){
+			totalCssFiles += debugCssFileCount + appDebugCssFileCount;
+		}
+
+		if (totalCssFiles){
+			appUtil.log("Loading {1} CSS files", "group", [totalCssFiles], false, this.forceDebug);
+			if (cssFileCount){
+				appUtil.log("Loading {1} wrapper CSS files", "group", [cssFileCount], false, this.forceDebug);
+				for (let i=0; i<cssFiles.length; i++){
+					await this.loadCss(cssFiles[i]);
+				}
+				appUtil.log("Loading {1} wrapper CSS files", "groupend", [cssFileCount], false, this.forceDebug);
+			}
+			if (appCssFileCount){
+				appUtil.log("Loading {1} app CSS files", "group", [appCssFileCount], false, this.forceDebug);
+				for (let i=0; i<appCssFiles.length; i++){
+					await this.loadCss(appCssFiles[i]);
+				}
+				appUtil.log("Loading {1} app CSS files", "groupend", [appCssFileCount], false, this.forceDebug);
+			}
+			if (window.isDebugWindow){
+				if (debugCssFileCount){
+					appUtil.log("Loading {1} debug window wrapper CSS files", "group", [debugCssFileCount], false, this.forceDebug);
+					for (let i=0; i<debugCssFiles.length; i++){
+						await this.loadCss(debugCssFiles[i]);
+					}
+					appUtil.log("Loading {1} debug window wrapper CSS files", "groupend", [debugCssFileCount], false, this.forceDebug);
+				}
+				if (appDebugCssFileCount){
+					appUtil.log("Loading {1} debug window app CSS files", "group", [appDebugCssFileCount], false, this.forceDebug);
+					for (let i=0; i<appDebugCssFiles.length; i++){
+						await this.loadCss(appDebugCssFiles[i]);
+					}
+					appUtil.log("Loading {1} debug window app CSS files", "groupend", [appDebugCssFileCount], false, this.forceDebug);
+				}
+			}
+			appUtil.log("Loading {1} CSS files", "groupend", [totalCssFiles], false, this.forceDebug);
+		}
+	}
+
+	async loadJsFiles() {
+		var jsFiles = appUtil.getConfig('appConfig.initJsFiles');
+		var appJsFiles = appUtil.getConfig('appConfig.jsFiles');
+
+		var jsFileCount = 0;
+		var appJsFileCount = 0;
+		var totalJsFileCount = 0;
+
+		if (jsFiles && jsFiles.length){
+			jsFileCount = jsFiles.length;
+		}
+
+		if (appJsFiles && appJsFiles.length){
+			appJsFileCount = appJsFiles.length;
+		}
+
+		totalJsFileCount = jsFileCount + appJsFileCount;
+
+		if (totalJsFileCount){
+			appUtil.log("Loading {1} JS files", "group", [totalJsFileCount], false, this.forceDebug);
+			if (jsFileCount){
+				appUtil.log("Loading {1} wrapper JS files", "group", [jsFileCount], false, this.forceDebug);
+				for (let i=0; i<jsFiles.length; i++){
+					await this.loadJs(jsFiles[i]);
+				}
+				appUtil.log("Loading {1} wrapper JS files", "groupend", [jsFileCount], false, this.forceDebug);
+			}
+			if (appJsFileCount){
+				appUtil.log("Loading {1} app JS files", "group", [appJsFileCount], false, this.forceDebug);
+				for (let i=0; i<appJsFiles.length; i++){
+					await this.loadJs(appJsFiles[i]);
+				}
+				appUtil.log("Loading {1} app JS files", "groupend", [appJsFileCount], false, this.forceDebug);
+			}
+			appUtil.log("Loading {1} JS files", "groupend", [totalJsFileCount], false, this.forceDebug);
+		}
+	}
+
 	getAppUtil () {
 		return appUtil;
-	}
-
-	async initVueMixins (){
-		appUtil.addUserMessage("Initializing global vue mixins...", "debug", [], false, false, this.forceUserMessages, true);
-		var vueMixins = [];
-		var vueMixinData = require(path.resolve(appState.config.app.mixinRoot + '/index')).mixins;
-		vueMixinData.forEach((MixinObj) => {
-			vueMixins.push(MixinObj.mixin);
-			Vue.mixin(MixinObj.mixin);
-		});
-		appUtil.addUserMessage("{1} global Vue mixins initialized.", "debug", [vueMixins.length], false, false, this.forceUserMessages, true);
-		return vueMixins;
-	}
-
-	async initVueAppMixins (){
-		var vueMixins = [];
-		if (fs.existsSync(path.resolve(appState.config.appConfig.appMixinRoot))){
-			appUtil.addUserMessage("Initializing vue app mixins...", "debug", [], false, false, this.forceUserMessages, true);
-			var vueMixinData = require(path.resolve(appState.config.appConfig.appMixinRoot + '/index')).mixins;
-			vueMixinData.forEach((MixinObj) => {
-				vueMixins.push(MixinObj.mixin);
-				Vue.mixin(MixinObj.mixin);
-			});
-			appUtil.addUserMessage("{1} Vue app mixins initialized.", "debug", [vueMixins.length], false, false, this.forceUserMessages, true);
-		}
-		return vueMixins;
-	}
-
-	async loadVueComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.app.componentCodeRoot, appState.config.app.componentCodeRegex, true);
-		// return await appUtil.loadFilesFromDir('./app/js/components', "/\.js$/", true);
-	}
-
-	async loadVueGlobalComponents () {
-		var globalComponents = await appUtil.loadFilesFromDir(appState.config.app.globalComponentCodeRoot, appState.config.app.componentCodeRegex, true);
-		var formControlComponents = await appUtil.loadFilesFromDir(path.resolve(appState.config.app.globalComponentCodeRoot + '/form/'), appState.config.app.componentCodeRegex, true);
-		var components = _.merge(globalComponents, formControlComponents);
-		return components;
-		// return await appUtil.loadFilesFromDir('./app/js/components/global', "/\.js$/", true);
-	}
-
-	async loadVueModalComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.app.modalComponentCodeRoot, appState.config.app.componentCodeRegex, true);
-		// return await appUtil.loadFilesFromDir('./app/js/components/modal', "/\.js$/", true);
-	}
-
-	async loadAppVueComponents () {
-		return await appUtil.loadFilesFromDir(appState.config.appConfig.appComponentCodeRoot, appState.config.appConfig.appComponentCodeRegex, true);
-	}
-
-	async initVueGlobalComponents (){
-		appUtil.addUserMessage("Initializing vue global components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueGlobalComponents();
-
-		appUtil.addUserMessage("Loading vue modal components...", "debug", [], false, false, this.forceUserMessages, true);
-		this.vueModalComponents = await this.loadVueModalComponents();
-		var modalComponentNames = _.keys(this.vueModalComponents);
-		appUtil.addUserMessage("{1} vue modal components loaded.", "debug", [modalComponentNames.length], false, false, this.forceUserMessages, true);
-
-		var appState = appUtil.getAppState();
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-
-		for (var componentName in componentData){
-			var subComponents = {};
-			if (componentName == 'modal-dialog'){
-				subComponents = this.vueModalComponents;
-			}
-			components[componentName] = await this.initVueComponent(componentName, componentData[componentName], subComponents);
-		}
-
-		appUtil.addUserMessage("Global component initialization finished. {1} global vue components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initVueComponents (){
-		appUtil.addUserMessage("Initializing vue components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueComponents();
-
-		var self = this;
-		var appState = appUtil.getAppState();
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-
-		for (var componentName in componentData){
-			components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-			var baseComponent = _.cloneDeep(BaseComponent);
-			components[componentName] = Object.assign(baseComponent, components[componentName]);
-		}
-
-		appUtil.addUserMessage("Component initialization finished. {1} vue root components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initDebugVueComponents (){
-		appUtil.addUserMessage("Initializing debug vue components...", "debug", [], false, false, this.forceUserMessages, true);
-
-		var componentData = await this.loadVueComponents();
-
-		var self = this;
-		var appState = appUtil.getAppState();
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-		var componentName = 'app-debug';
-
-		components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-
-		appUtil.addUserMessage("Component initialization finished. {1} vue root components initialized.", "debug", [_.keys(components).length], false, false, this.forceUserMessages, true);
-
-		return components;
-
-	}
-
-	async initAppVueComponents () {
-		appUtil.log("Initializing app vue components...", "debug", [], false, this.forceDebug);
-
-		var componentData = await this.loadAppVueComponents();
-
-		var self = this;
-		var subComponentCount = 0;
-		var components = {};
-		var initializedMessage = '';
-		var initializedMessageData = [];
-
-		for (var componentName in componentData){
-			components[componentName] = await this.initVueComponent(componentName, componentData[componentName]);
-		}
-
-		appUtil.log("App component initialization finished. {1} app vue components initialized.", "debug", [_.keys(components).length], false, this.forceDebug);
-
-		return components;
-	}
-
-	async initVueComponent(componentName, componentData, additionalSubComponents){
-		appUtil.log("* Initializing component '{1}'...", "debug", [componentName], false, this.forceDebug);
-		var component = componentData;
-
-		if (component.mixins){
-			component.mixins.push(BaseComponent);
-		} else {
-			component.mixins = [BaseComponent];
-		}
-
-		if (additionalSubComponents){
-			if (!component.components) {
-				component.components = {};
-			}
-		}
-
-		if (additionalSubComponents && _.keys(additionalSubComponents).length){
-			component.components = _.merge(component.components, additionalSubComponents);
-		}
-
-		var initializedMessage = "* Componenent '{1}' initialized";
-		var initializedMessageData = [componentName];
-		var subComponentNames = component.components ? _.keys(component.components) : [];
-		var subComponentCount = component.components && subComponentNames.length ? subComponentNames.length : 0;
-		if (subComponentCount){
-			initializedMessage += " with {2} sub-components ({3}).";
-			initializedMessageData.push(subComponentCount);
-			initializedMessageData.push("'" + subComponentNames.join("', '") + "'.");
-		} else {
-			initializedMessage += '.';
-		}
-
-		appUtil.log(initializedMessage, "debug", initializedMessageData, false, this.forceDebug);
-		return component;
 	}
 
 	async callViewHandler (e) {
@@ -703,46 +397,6 @@ class AppWrapper {
 		this.closeCurrentModal(true);
 		if (!appState.isDebugWindow){
 			appState.appError = false;
-			if (appState.syncInProgress || (appState.stopSync && !appState.stopSuccessful)){
-				this.confirmCloseModalAction = async (e) => {
-					if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-						e.preventDefault();
-					}
-					this.modalBusy(this.appTranslations.translate('Please wait until synchronization stops...'));
-
-					this.windowCloseTimeout = setTimeout(() => {
-						clearTimeout(this.windowCloseTimeout);
-						this.cleanupCancelled = true;
-						appUtil.addUserMessage('Could not stop synchronization, please try closing again', 'error', [], true, false, true, true);
-						setTimeout(() => {
-							this.closeCurrentModal(true);
-						}, 1000);
-					}, appState.config.windowCloseTimeoutDuration);
-
-					this.cleanupCancelled = false;
-					var canClose = await this.cleanup();
-					if (!this.cleanupCancelled && canClose){
-						clearTimeout(this.windowCloseTimeout);
-						this.modalBusy(this.appTranslations.translate('Synchronization stopped, closing...'));
-						this.beforeWindowClose();
-						setTimeout(() => {
-							this.windowManager.closeWindowForce();
-						}, 1000);
-					} else {
-						clearTimeout(this.windowCloseTimeout);
-						this.modalBusy(this.appTranslations.translate('Could not stop synchronization'));
-						appUtil.addUserMessage('Could not stop synchronization', 'error', [], true, false, true, true);
-						setTimeout(() => {
-							this.closeCurrentModal(true);
-						}, 1000);
-					}
-				};
-				await this.showModalCloseConfirm();
-			} else {
-				await this.cleanup();
-				this.windowManager.closeWindowForce();
-			}
-		} else {
 			this.windowManager.closeWindowForce();
 		}
 	}
@@ -751,32 +405,15 @@ class AppWrapper {
 		var appState = appUtil.getAppState();
 		var returnPromise;
 		appUtil.addUserMessage("Performing pre-close cleanup...", "info", [], false, false, this.forceUserMessages, this.forceDebug);
-		if (appState.syncInProgress || (appState.stopSync && !appState.stopSuccessful)){
-			appUtil.addUserMessage("Trying to stop syncing...", "warning", [], false, false, this.forceUserMessages, this.forceDebug);
-			var syncStopped = this.app.doStopSynchronization();
-			if (syncStopped){
-				return true;
-			}
-			returnPromise = new Promise((resolve, reject) => {
-				var _resolve = (result) => {
-					if (result){
-						this.beforeWindowClose();
-					}
-					resolve(result);
-				};
-				this.intervals.syncStoppedInterval = setInterval(this.checkSyncStopped.bind(this, _resolve), 300);
-			});
-		} else {
-			var resolveReference;
-			returnPromise = new Promise((resolve, reject) => {
-				resolveReference = resolve;
-			});
-			setTimeout(async () => {
-				await this.shutdownApp();
-				await appUtil.finalizeLogs();
-				resolveReference(true);
-			}, 200);
-		}
+		var resolveReference;
+		returnPromise = new Promise((resolve, reject) => {
+			resolveReference = resolve;
+		});
+		setTimeout(async () => {
+			await this.shutdownApp();
+			await appUtil.finalizeLogs();
+			resolveReference(true);
+		}, 200);
 		return returnPromise;
 	}
 
@@ -803,43 +440,8 @@ class AppWrapper {
 	async beforeUnload (e) {
 		var appState = appUtil.getAppState();
 		this.closeCurrentModal(true);
-		if (appState.syncInProgress || (appState.stopSync && !appState.stopSuccessful)){
-
-			if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-				e.preventDefault();
-			}
-			appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
-			this.modalBusy(this.appTranslations.translate('Please wait until synchronization stops...'));
-			this.openCurrentModal();
-
-			this.windowReloadTimeout = setTimeout(() => {
-				clearTimeout(this.windowReloadTimeout);
-				this.cleanupCancelled = true;
-				appUtil.addUserMessage('Could not stop synchronization, please try reloading again', 'error', [], true, false, true, true);
-				setTimeout(() => {
-					this.closeCurrentModal(true);
-				}, 5000);
-			}, appState.config.windowReloadTimeoutDuration);
-
-			this.cleanupCancelled = false;
-			var canReload = await this.cleanup();
-			if (!this.cleanupCancelled && canReload){
-				this.modalBusy(this.appTranslations.translate('Synchronization stopped, reloading...'));
-				clearTimeout(this.windowReloadTimeout);
-				await this.shutdownApp();
-				this.windowManager.reloadWindow(null, true);
-			} else {
-				clearTimeout(this.windowReloadTimeout);
-				this.modalBusy(this.appTranslations.translate('Could not stop synchronization'));
-				appUtil.addUserMessage('Could not stop synchronization', 'error', [], true, false, true, true);
-				setTimeout(() => {
-					this.closeCurrentModal(true);
-				}, 1000);
-			}
-		} else {
-			await this.shutdownApp();
-			this.windowManager.reloadWindow(null, true);
-		}
+		await this.shutdownApp();
+		this.windowManager.reloadWindow(null, true);
 	}
 
 	resetAppStatus (){
@@ -1047,122 +649,6 @@ class AppWrapper {
 	 	return returnPromise;
 	}
 
-	async openConfigEditorHandler (e) {
-		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-			e.preventDefault();
-		}
-		this.openConfigEditor();
-	}
-
-	async prepareConfigEditorData () {
-		var self = this;
-		appState.configEditorData = {};
-		var keys = _.keys(appState.config);
-		for(var i=0; i<keys.length; i++){
-			var key = keys[i];
-			var value = appState.config[key];
-			if (key !== 'configData'){
-				if (!_.includes(appState.config.configData.uneditableConfig, key)){
-					appState.configEditorData[key] = await self.prepareConfigEditorDataItem(value, key);
-				}
-			}
-		}
-	}
-
-	async prepareConfigEditorDataItem (value, key) {
-		var self = this;
-		if (_.isArray(value)){
-			for(var i=0; i<value.length; i++) {
-				var innerValue = value[i];
-				var innerKey = i;
-				value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
-			}
-		} else if (_.isObject(value)){
-			var keys = _.keys(value);
-			for(var i=0; i<keys.length; i++){
-				var innerKey = keys[i];
-				var innerValue = value[innerKey];
-				value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
-			}
-		}
-		return value;
-	}
-
-	async openConfigEditor () {
-		// this.windowManager.noHandlingKeys = true;
-
-		await this.prepareConfigEditorData();
-
-		appState.modalData.currentModal = _.cloneDeep(appState.configEditorModal);
-		appState.modalData.currentModal.title = this.appTranslations.translate('Config editor');
-		appState.modalData.currentModal.confirmButtonText = this.appTranslations.translate('Save');
-		appState.modalData.currentModal.cancelButtonText = this.appTranslations.translate('Cancel');
-		this.modalBusy(this.appTranslations.translate('Please wait...'));
-		this._confirmModalAction = this.saveConfig.bind(this);
-		this._cancelModalAction = function(evt){
-			if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
-				evt.preventDefault();
-			}
-			// this.windowManager.noHandlingKeys = false;
-			this.modalNotBusy();
-			// clearTimeout(this.appTranslations.timeouts.translationModalInitTimeout);
-			this._cancelModalAction = this.__cancelModalAction;
-			return this.__cancelModalAction();
-		};
-		this.openCurrentModal();
-	}
-
-	async saveConfig (e) {
-		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-			e.preventDefault();
-		}
-		var form = e.target;
-		var newConfig = {};
-		_.each(form, function(input){
-			var currentConfig = newConfig;
-			var appConfig = _.cloneDeep(appState.config);
-			var dataPath = input.getAttribute("data-path");
-			if (dataPath && dataPath.split){
-				var pathChunks = _.drop(dataPath.split('.'), 1);
-				var chunkCount = pathChunks.length - 1;
-				_.each(pathChunks, function(pathChunk, i){
-					if (i == chunkCount){
-						if (input.getAttribute('type') == 'checkbox'){
-							currentConfig[pathChunk] = input.checked;
-							// console.log(input);
-							// console.log(input.getAttribute('name'));
-							// console.log(currentConfig[pathChunk]);
-							// console.log(appConfig[pathChunk]);
-						} else {
-							currentConfig[pathChunk] = input.value;
-						}
-					} else {
-						if (_.isUndefined(currentConfig[pathChunk])){
-							if (!_.isNaN(parseInt(pathChunks[i+1], 10))){
-								currentConfig[pathChunk] = [];
-							} else {
-								currentConfig[pathChunk] = {};
-							}
-						}
-					}
-					currentConfig = currentConfig[pathChunk];
-					appConfig = appConfig[pathChunk];
-				});
-			}
-		});
-		var oldConfig = _.cloneDeep(appState.config);
-		var difference = appUtil.difference(oldConfig, newConfig);
-
-		if (difference && _.isObject(difference) && _.keys(difference).length){
-			var finalConfig = appUtil.mergeDeep({}, appState.config, difference);
-			appState.config = _.cloneDeep(finalConfig);
-			this.saveUserConfig();
-			this.closeCurrentModal();
-		} else {
-			this.closeCurrentModal();
-		}
-	}
-
 	showUserMessageSettings (e) {
 		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
 			e.preventDefault();
@@ -1187,6 +673,19 @@ class AppWrapper {
 
 	userMessageLevelSelectBlur (e) {
 		appState.userMessagesData.selectFocused = false;
+	}
+
+	setDynamicAppStateValues () {
+		appState.languageData.currentLanguage = appUtil.getConfig('currentLanguage');
+		appState.languageData.currentLocale = appUtil.getConfig('currentLocale');
+		appState.hideDebug = appUtil.getConfig('hideDebug');
+		appState.debug = appUtil.getConfig('debug');
+		appState.debugLevel = appUtil.getConfig('debugLevel');
+		appState.debugLevels = appUtil.getConfig('debugLevels');
+		appState.userMessageLevel = appUtil.getConfig('userMessageLevel');
+		appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
+		appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
+		appState.closeModalResolve = null;
 	}
 
 }

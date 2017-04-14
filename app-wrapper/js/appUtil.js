@@ -2,7 +2,6 @@ var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
 
-
 var appUtil = {
 
     forceDebug: false,
@@ -27,6 +26,10 @@ var appUtil = {
             }
         }
 
+        if (type == 'group' || type == 'groupend'){
+            doLog = true;
+        }
+
         // if (!dontTranslate && this.varExists("appTranslations.translationsLoaded", window.getAppWrapper()) && window.getAppWrapper().appTranslations.translationsLoaded){
         //  message = window.getAppWrapper().appTranslations.translate(message);
         // }
@@ -46,7 +49,17 @@ var appUtil = {
         };
 
         if (doLog){
-            if (type == 'error'){
+            if (type == 'group'){
+                if (this.getConfig('debugGroupsCollapsed')){
+                    console.groupCollapsed(message);
+                } else {
+                    console.group(message);
+                }
+            } else if (type == 'groupcollapsed'){
+                console.groupCollapsed(message);
+            } else if (type == 'groupend'){
+                console.groupEnd(message);
+            } else if (type == 'error'){
                 console.error(message);
             } else if (type == 'warning'){
                 console.warn(message);

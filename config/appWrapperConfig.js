@@ -5,11 +5,17 @@ exports.config = {
 		appFile: '../../app/js/app',
 
 		templateExtensionRegex: /\.html$/,
-		templateRoot: './node_modules/nw-skeleton/app-wrapper/template/',
-		componentTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/',
-		modalTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/modal/',
-		globalTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/global/',
-		formTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/global/form/',
+		templateDirectories: {
+			template: [
+				'./node_modules/nw-skeleton/app-wrapper/template/',
+				'./node_modules/nw-skeleton/app-wrapper/template/components/global/'
+			],
+			componentTemplate: [
+				'./node_modules/nw-skeleton/app-wrapper/template/components/',
+				'./node_modules/nw-skeleton/app-wrapper/template/components/modal/',
+				'./node_modules/nw-skeleton/app-wrapper/template/components/global/form/'
+			]
+		},
 
 		componentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/',
 		globalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/global/',
@@ -71,23 +77,31 @@ exports.config = {
 			'/node_modules/nw-skeleton/app-wrapper/css/components/progress-bar.css',
 			'/node_modules/nw-skeleton/app-wrapper/css/style.css'
 		],
+
 		initJsFiles: [],
 		jsFiles: [
 			'/node_modules/nw-skeleton/app-wrapper/js/lib/vue.js'
 		],
+
 		debugCssFiles: [
 			'/node_modules/nw-skeleton/app-wrapper/css/debug.css'
 		],
+
 		debugJsFiles: [],
 
 		appMixinRoot: './node_modules/nw-skeleton/app/js/mixins/',
 
 		appTemplateExtensionRegex: /\.html$/,
-		appTemplateRoot: './node_modules/nw-skeleton/app/template/',
-		appComponentTemplateRoot: './node_modules/nw-skeleton/app/template/components/',
-		appModalTemplateRoot: './node_modules/nw-skeleton/app/template/components/modal/',
-		appGlobalTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/global/',
-		appFormTemplateRoot: './node_modules/nw-skeleton/app-wrapper/template/components/global/form/',
+		templateDirectories: {
+			template: [
+				'./app/template/',
+				'./app/template/components/global/'
+			],
+			componentTemplate: [
+				'./app/template/components/',
+				'./app/template/components/modal/',
+			]
+		},
 
 		appComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/',
 		appGlobalComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/global/',
@@ -97,37 +111,48 @@ exports.config = {
 
 	configData: {
 		uneditableConfig: [],
+		noReloadConfig: [],
 		defaultVar: {
 			editable: true,
+			reload: true,
 			control: 'text'
 		},
 		vars: {
 			app: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			appConfig: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			logDir: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			varDir: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			debugMessagesFilename: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			userMessagesFilename: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			debugLevels: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			componentMapping: {
-				editable: false
+				editable: false,
+				reload: true
 			},
 			currentLanguage: {
 				editable: true,
+				reload: false,
 				type: 'string',
 				control: 'select',
 				controlData: {
@@ -139,6 +164,7 @@ exports.config = {
 			},
 			currentLocale: {
 				editable: true,
+				reload: false,
 				type: 'string',
 				control: 'select',
 				controlData: {
@@ -150,6 +176,7 @@ exports.config = {
 			},
 			debugLevel: {
 				editable: true,
+				reload: false,
 				type: 'string',
 				control: 'select',
 				controlData: {
@@ -163,6 +190,7 @@ exports.config = {
 			},
 			userMessageLevel: {
 				editable: true,
+				reload: false,
 				type: 'string',
 				control: 'select',
 				controlData: {
@@ -197,6 +225,7 @@ exports.config = {
 		'warning': 2,
 		'error': 3
 	},
+	debugGroupsCollapsed: true,
 	userMessageLevel: 2,
 	maxUserMessages: 1000,
 	userMessagesToFile: true,

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-var BaseClass = require('./base').BaseClass;
+var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var _parentAppWrapper;

@@ -6,7 +6,7 @@ var appState = appUtil.getAppState();
 var component;
 component = {
     name: 'modal-dialog',
-    template: _appWrapper.templateContents.componentTemplates['modal-dialog'],
+    template: _appWrapper.appTemplates.getTemplateContents('modal-dialog'),
     methods: {
         _confirmModalAction: _appWrapper.confirmModalAction.bind(_appWrapper),
         _cancelModalAction: _appWrapper.cancelModalAction.bind(_appWrapper),
