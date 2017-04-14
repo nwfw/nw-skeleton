@@ -48,7 +48,7 @@ class ConfigHelper extends BaseClass {
 				theConfig.configData.noReloadConfig.push(key);
 			}
 		});
-		this.config = theConfig;
+		this.config = _.cloneDeep(theConfig);
 		return theConfig;
 	}
 
@@ -67,9 +67,11 @@ class ConfigHelper extends BaseClass {
 				appState.hasUserConfig = false;
 			}
 			userConfig = _.merge({}, appState.config, userConfig);
+			this.config = _.cloneDeep(userConfig);
 			return userConfig;
 		} else {
 			appUtil.log("No user config found.", "info", [], false, this.forceDebug);
+			this.config = _.cloneDeep(appState.config);
 			return appState.config;
 		}
 	}
@@ -78,18 +80,33 @@ class ConfigHelper extends BaseClass {
 		if (localStorage){
 			var appState = appUtil.getAppState();
 			var userConfig = appUtil.difference(this.config, appState.config);
+			var userConfigKeys = _.keys(userConfig);
+			var noReloadConfig = appUtil.getConfig('configData.noReloadConfig');
+
+			var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
+
+			var shouldReload = (userConfigKeys.length - noReloadChanges.length) <= 0;
+
 			appUtil.log("Saving user config...", "info", [], false, this.forceDebug);
 			try {
 				if (userConfig && _.keys(userConfig).length){
 					localStorage.setItem('config', JSON.stringify(userConfig));
 					appUtil.addUserMessage("Configuration data saved", "info", [], false,  false, true, this.forceDebug);
 					appState.hasUserConfig = true;
-					_appWrapper.windowManager.win.reload();
+					if (shouldReload){
+						_appWrapper.windowManager.reloadWindow(null, true);
+					} else {
+						this.config = _.cloneDeep(appState.config)
+					}
 				} else {
 					if (localStorage.getItem('config')){
 						localStorage.removeItem('config');
 						appState.hasUserConfig = false;
-						_appWrapper.windowManager.win.reload();
+						if (shouldReload){
+							_appWrapper.windowManager.reloadWindow(null, true);
+						} else {
+							this.config = _.cloneDeep(appState.config)
+						}
 					}
 				}
 			} catch (e) {
@@ -108,7 +125,12 @@ class ConfigHelper extends BaseClass {
 				localStorage.removeItem('config');
 				appUtil.addUserMessage("Configuration data cleared", "info", [], false,  false, true, this.forceDebug);
 				appState.hasUserConfig = false;
-				_appWrapper.windowManager.win.reload();
+				_appWrapper.closeCurrentModal(true);
+				appState.appShuttingDown = true;
+				appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
+				setTimeout(() => {
+					_appWrapper.windowManager.reloadWindow(null, true, appState.mainLoaderTitle);
+				}, 500);
 			} catch (ex) {
 				appUtil.addUserMessage("Configuration data could not be cleared - '{1}'", "error", [ex], false,  false, this.forceUserMessages, this.forceDebug);
 			}

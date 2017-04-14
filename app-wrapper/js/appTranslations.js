@@ -92,6 +92,7 @@ class AppTranslations extends BaseClass {
 		_appWrapper.windowManager.noHandlingKeys = true;
 
 		appState.modalData.currentModal = _.cloneDeep(appState.translationModal);
+		appState.modalData.currentModal.hasSearch = false;
 		appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Translation editor');
 		appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
 		appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');

@@ -75,6 +75,7 @@ exports.config = {
 			'/node_modules/nw-skeleton/app-wrapper/css/modals.css',
 			'/node_modules/nw-skeleton/app-wrapper/css/components/user-messages.css',
 			'/node_modules/nw-skeleton/app-wrapper/css/components/progress-bar.css',
+			'/node_modules/nw-skeleton/app-wrapper/css/components/translation-editor.css',
 			'/node_modules/nw-skeleton/app-wrapper/css/style.css'
 		],
 
@@ -233,4 +234,5 @@ exports.config = {
 
 	windowCloseTimeoutDuration: 15000,
 	windowReloadTimeoutDuration: 15000
+
 };

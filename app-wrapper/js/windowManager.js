@@ -599,13 +599,20 @@ class WindowManager extends eventEmitter {
 		}
 	}
 
-	reloadWindow (e, force) {
+	reloadWindow (e, force, message) {
 		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
 			e.preventDefault();
 		}
+
+
 		if (!force){
 			this.win.window.getAppWrapper().beforeUnload();
 		} else {
+			if (!message){
+				message = _appWrapper.appTranslations.translate('Please wait while application restarts...')
+			}
+			appState.mainLoaderTitle = message;
+			appState.appShuttingDown = true;
 			this.win.reload();
 		}
 	}

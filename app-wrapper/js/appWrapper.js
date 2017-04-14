@@ -204,7 +204,7 @@ class AppWrapper {
 			appUtil.addUserMessage("Debug window application initialized", "info", [], false,  false, true, true);
 		} else {
 			appUtil.addUserMessage("Application initialized", "info", [], false,  false, true, true);
-			if (appState.activeConfigFile != '../../config/config.js'){
+			if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
 				appUtil.addUserMessage("Active config file: '{1}'", "info", [appState.activeConfigFile], false, false, true, true);
 			}
 		}

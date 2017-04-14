@@ -279,7 +279,6 @@ class ComponentHelper extends BaseClass {
 	}
 
 	async prepareComponents(components, allComponents, componentMapping){
-		this.forceDebug = true;
 		if (componentMapping && _.isObject(componentMapping) && _.keys(componentMapping).length){
 			for (var parentComponentName in componentMapping){
 				if (componentMapping[parentComponentName].components && componentMapping[parentComponentName].components.length){
@@ -292,7 +291,6 @@ class ComponentHelper extends BaseClass {
 				}
 			}
 		}
-		this.forceDebug = false;
 		return components;
 	}
 

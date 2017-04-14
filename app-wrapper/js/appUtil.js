@@ -27,7 +27,7 @@ var appUtil = {
         }
 
         if (type == 'group' || type == 'groupend'){
-            doLog = true;
+            // doLog = true;
         }
 
         // if (!dontTranslate && this.varExists("appTranslations.translationsLoaded", window.getAppWrapper()) && window.getAppWrapper().appTranslations.translationsLoaded){
@@ -566,21 +566,7 @@ var appUtil = {
         if (!context){
             context = window;
         }
-        var varChunks = varPath.split('.');
-        var currentVar = false;
-        if (varChunks && varChunks.length){
-            currentVar = context[varChunks[0]];
-        }
-        if (!_.isUndefined(currentVar) && currentVar){
-            for (var i=1; i<varChunks.length;i++){
-                if (!_.isUndefined(currentVar[varChunks[i]])){
-                    currentVar = currentVar[varChunks[i]];
-                } else {
-                    currentVar = false;
-                }
-            }
-        }
-        return currentVar;
+        return _.get(context, varPath);
     },
 
     nextTick: async function(){

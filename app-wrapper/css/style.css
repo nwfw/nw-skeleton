@@ -366,67 +366,6 @@ footer.user-messages-toolbar-visible.user-messages-expanded {
 	display: block;
 }
 
-.translation-editor {
-}
-
-.translation-editor .tab-item {
-	max-height: 300px;
-	overflow: auto;
-	background: #F8F8F8;
-}
-
-.translation-editor fieldset {
-	border: none;
-}
-
-.translation-editor legend {
-	font-size: 1rem;
-	font-weight: 600;
-	margin-left: 10px;
-}
-
-.translation-editor fieldset > h2 {
-	margin: 0;
-	color:#666;
-}
-
-.translation-editor fieldset label {
-
-}
-
-.translation-editor fieldset label .not-translated,
-.translation-editor fieldset label .copy-translation-label {
-	float: right;
-}
-
-.translation-editor fieldset label .not-translated {
-	color: #999;
-	margin-top: -3px;
-}
-
-.translation-editor fieldset label .copy-translation-label {
-	color: #666;
-	margin-left: 4px;
-}
-
-.translation-editor fieldset label .copy-translation-label:hover {
-	color: #FFF;
-	text-decoration: none;
-	text-shadow: 0 0 2px #000;
-}
-
-.translation-editor textarea {
-	width: 100%;
-	border: 1px solid #666;
-	padding: 4px;
-	border-radius: 4px;
-}
-
-.translation-editor .lang-form-row-not-translated textarea {
-	background: #FFFFCC;
-}
-
-
 .app-error {
 	text-align: center;
 	background: #eee;

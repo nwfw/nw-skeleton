@@ -1,0 +1,101 @@
+.translation-editor {
+}
+
+.translation-editor .tab-item {
+	height: 75vw;
+	overflow: auto;
+	background: #F8F8F8;
+}
+
+.translation-editor fieldset {
+	border: none;
+}
+
+.translation-editor legend {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-left: 10px;
+}
+
+.translation-editor fieldset > h2 {
+	margin: 0;
+	color:#666;
+}
+
+.translation-editor .textarea-label {
+	height: 1rem;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: inherit;
+	display: block;
+}
+
+
+.translation-editor textarea {
+	width: 100%;
+	border: 1px solid #666;
+	padding: 4px;
+	border-radius: 4px;
+}
+.translation-editor .lang-form-row {
+	max-width: 75vw;
+	overflow: hidden;
+}
+
+.translation-editor .lang-form-row-not-translated textarea {
+	background: #FFFFCC;
+}
+
+.translation-editor .translation-editor-tools {
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+.translation-editor .translation-editor-tools .translation-editor-copy-all,
+.translation-editor .translation-editor-copy-all-tab {
+	font-size: 0.8rem;
+	float: right;
+	color: #666;
+	text-decoration: none;
+}
+
+.translation-editor .translation-editor-copy-all-tab {
+	margin-top: 7px;
+}
+
+.translation-editor .translation-editor-tools .translation-editor-copy-all:hover,
+.translation-editor .translation-editor-copy-all-tab:hover {
+	font-weight: bold;
+}
+.translation-editor .lang-form-row-hidden {
+	visibility: hidden;
+	height: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.translation-editor .lang-form-row-tools {
+	display: flex;
+	flex-direction: row;
+	margin: 3px 0;
+}
+
+.translation-editor .lang-form-row-tools a {
+	flex: 0 0 20px;
+	align-self: flex-end;
+	color: #666;
+}
+
+.translation-editor .lang-form-row-tools a:hover {
+	color: #FFF;
+	text-decoration: none;
+	text-shadow: 0 0 2px #000;
+}
+
+.translation-editor .lang-form-row-tools span {
+	flex: 1 1 auto;
+	text-align: center;
+	color: #999;
+}
