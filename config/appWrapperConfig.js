@@ -1,7 +1,7 @@
 var path = require('path');
 
 exports.config = {
-	app : {
+	wrapper : {
 		appFile: '../../app/js/app',
 
 		templateExtensionRegex: /\.html$/,
@@ -23,11 +23,6 @@ exports.config = {
 			globalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/global/', './node_modules/nw-skeleton/app-wrapper/js/components/global/form'],
 			modalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/modal/']
 		},
-
-		// componentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/',
-		// globalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/global/',
-		// modalComponentCodeRoot: './node_modules/nw-skeleton/app-wrapper/js/components/modal/',
-
 
 		mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixins/',
 
@@ -150,9 +145,21 @@ exports.config = {
 				editable: false,
 				reload: true
 			},
+			hideDebug: {
+				editable: true,
+				reload: false
+			},
 			debugLevels: {
 				editable: false,
 				reload: true
+			},
+			windowWidth: {
+				editable: false,
+				reload: false
+			},
+			windowHeight: {
+				editable: false,
+				reload: false
 			},
 			componentMapping: {
 				editable: false,
@@ -226,20 +233,25 @@ exports.config = {
 	debugToFile: true,
 	debugMessagesFilename: './app/var/log/debug-messages.log',
 	devTools: true,
-	debugLevel: 2,
+	debugLevel: 3,
 	debugLevels: {
-		'debug': 0,
-		'info': 1,
-		'warning': 2,
-		'error': 3
+		'debug': 1,
+		'info': 2,
+		'warning': 3,
+		'error': 4
 	},
 	debugGroupsCollapsed: true,
+	debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
+
 	userMessageLevel: 2,
 	maxUserMessages: 1000,
 	userMessagesToFile: true,
 	userMessagesFilename: './app/var/log/user-messages.log',
 
 	windowCloseTimeoutDuration: 15000,
-	windowReloadTimeoutDuration: 15000
+	windowReloadTimeoutDuration: 15000,
+
+	windowWidth: null,
+	windowHeight: null
 
 };

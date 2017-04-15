@@ -27,13 +27,13 @@ class AppTemplates {
 
 	async loadTemplates () {
 
-		var templateDirs = appState.config.app.templateDirectories.template;
+		var templateDirs = appState.config.wrapper.templateDirectories.template;
 		if (!(templateDirs && _.isArray(templateDirs) && templateDirs.length)){
 			appUtil.log("No app wrapper template dirs defined", "error", [], false, this.forceDebug);
 			templateDirs = [];
 		}
 
-		var componentTemplateDirs = appState.config.app.templateDirectories.componentTemplate;
+		var componentTemplateDirs = appState.config.wrapper.templateDirectories.componentTemplate;
 		if (!(componentTemplateDirs && _.isArray(componentTemplateDirs) && componentTemplateDirs.length)){
 			appUtil.log("No app wrapper component template dirs defined", "error", [], false, this.forceDebug);
 			componentTemplateDirs = [];
@@ -106,7 +106,7 @@ class AppTemplates {
 			appUtil.log("Loading templates from directory '{1}'.", "group", [templateDirs[i]], false, this.forceDebug);
 			var currentPath = path.resolve(templateDirs[i]);
 			if (fs.existsSync(currentPath)){
-				var newTemplates = await this.loadTemplatesFromDir(currentPath, appState.config.app.templateExtensionRegex);
+				var newTemplates = await this.loadTemplatesFromDir(currentPath, appState.config.wrapper.templateExtensionRegex);
 				if (newTemplates){
 					loadedTemplates = _.merge(loadedTemplates, newTemplates);
 				}

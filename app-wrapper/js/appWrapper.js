@@ -92,7 +92,7 @@ class AppWrapper {
 			fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
 		}
 
-		var mainAppFile = path.join(process.cwd(), appState.config.app.appFile);
+		var mainAppFile = path.join(process.cwd(), appState.config.wrapper.appFile);
 
 		App = require(mainAppFile).App;
 
@@ -424,7 +424,7 @@ class AppWrapper {
 		appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
 		appState.appShuttingDown = true;
 
-		await appUtil.wait(500);
+		await appUtil.wait(200);
 		return true;
 	}
 
@@ -438,9 +438,10 @@ class AppWrapper {
 	}
 
 	async beforeUnload (e) {
-		var appState = appUtil.getAppState();
 		this.closeCurrentModal(true);
-		await this.shutdownApp();
+		if (!appState.isDebugWindow){
+			await this.shutdownApp();
+		}
 		this.windowManager.reloadWindow(null, true);
 	}
 

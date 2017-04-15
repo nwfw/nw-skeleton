@@ -59,7 +59,7 @@ html, body {
 	max-height: calc(100vh - 100px);
 	min-height: calc(100vh - 100px);
 	overflow: auto;
-	flex: 0 0 auto;
+	flex: 1 1 auto;
 }
 
 

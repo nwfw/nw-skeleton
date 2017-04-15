@@ -45,7 +45,7 @@ class ComponentHelper extends BaseClass {
 		var vueMixins = [];
 		var appVueMixins = [];
 
-		var mixinIndexFile = path.resolve(appState.config.app.mixinRoot + '/index');
+		var mixinIndexFile = path.resolve(appState.config.wrapper.mixinRoot + '/index');
 		if (fs.existsSync(mixinIndexFile + '.js')){
 			vueMixins = await this.initMixins(mixinIndexFile);
 		}
@@ -74,7 +74,7 @@ class ComponentHelper extends BaseClass {
 		for(let i=0; i<componentDirs.length;i++){
 			if (fs.existsSync(componentDirs[i])){
 				appUtil.log("Loading components from directory '{1}'.", "debug", [componentDirs[i]], false, this.forceDebug);
-				var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], appState.config.app.componentCodeRegex, true);
+				var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], appState.config.wrapper.componentCodeRegex, true);
 				if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
 					components = _.merge(components, newComponents)
 				}
@@ -89,7 +89,7 @@ class ComponentHelper extends BaseClass {
 		await this.loadComponents();
 
 		appUtil.log("Preparing wrapper components...", "group", [], false, this.forceDebug);
-		this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.app.componentMapping);
+		this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.wrapper.componentMapping);
 		appUtil.log("Preparing wrapper components...", "groupend", [], false, this.forceDebug);
 
 		appUtil.log("Preparing app components...", "group", [], false, this.forceDebug);
@@ -119,9 +119,9 @@ class ComponentHelper extends BaseClass {
 	async loadComponents (){
 		appUtil.log("Loading components...", "group", [], false, this.forceDebug);
 
-		var components = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.component'));
-		var globalComponents = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.globalComponent'));
-		var modalComponents = await this.loadDirComponents(appUtil.getConfig('app.componentDirectories.modalComponent'));
+		var components = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.component'));
+		var globalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.globalComponent'));
+		var modalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.modalComponent'));
 		var appComponents = await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.component'));
 
 		this.allComponents = _.merge(components, globalComponents, modalComponents, appComponents);

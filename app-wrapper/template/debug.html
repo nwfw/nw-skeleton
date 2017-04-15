@@ -12,17 +12,19 @@
 		<modal-dialog></modal-dialog>
 	</div>
 	<script>
-		var AppWrapper = require('../js/appWrapper').AppWrapper;
+
+		var _ = require('lodash');
+		var initialConfig = require('../../../../config/config').config;
+		var nws = require('nw-skeleton');
+
 		var _parentWrapper = window.opener.getAppWrapper();
 
 		window.onload = async function(){
 			_parentWrapper.debugWindow = window;
-			// window.appState = require('../js/appState').appState;
 			await _parentWrapper.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
-			window.appWrapper = new AppWrapper();
+			window.appWrapper = new nws.AppWrapper(initialConfig);
 			await window.appWrapper.initialize();
 
-			// await _parentWrapper.debugHelper.initializeDebugWindow();
 			window.feApp = await window.getAppWrapper().initializeFeApp();
 
 		};

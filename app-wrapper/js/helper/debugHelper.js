@@ -38,7 +38,7 @@ class DebugHelper extends BaseClass {
 	openDebugWindow (){
 		appUtil.log("Opening standalone debug window", "info", [], false, this.forceDebug);
 		appState.hasDebugWindow = true;
-		_appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow('/app-wrapper/template/debug.html', {
+		_appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(appUtil.getConfig('debugWindowFile'), {
 			id: 'debugWindow',
 			frame: false
 		});
@@ -54,6 +54,7 @@ class DebugHelper extends BaseClass {
 	async prepareDebugWindow () {
 		_appWrapper.debugWindow.appState = _.cloneDeep(appState);
 		_appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
+		_appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
 		_appWrapper.debugWindow.appState.config = appState.config;
 
 		_appWrapper.debugWindow.appState.isDebugWindow = true;

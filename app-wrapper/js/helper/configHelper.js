@@ -78,7 +78,6 @@ class ConfigHelper extends BaseClass {
 
 	saveUserConfig () {
 		if (localStorage){
-			var appState = appUtil.getAppState();
 			var userConfig = appUtil.difference(this.config, appState.config);
 			var userConfigKeys = _.keys(userConfig);
 			var noReloadConfig = appUtil.getConfig('configData.noReloadConfig');
@@ -87,7 +86,7 @@ class ConfigHelper extends BaseClass {
 
 			var shouldReload = (userConfigKeys.length - noReloadChanges.length) <= 0;
 
-			appUtil.log("Saving user config...", "info", [], false, this.forceDebug);
+			appUtil.log("Saving user config...", "warning", [], false, this.forceDebug);
 			try {
 				if (userConfig && _.keys(userConfig).length){
 					localStorage.setItem('config', JSON.stringify(userConfig));

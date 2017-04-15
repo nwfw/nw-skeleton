@@ -2,13 +2,13 @@
 		<div class="app-debug">
 			<div class="app-debug-header">
 				<template v-if="!appState.hideDebug">
-					<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
+					<h2 v-html="translate('Debug') + ' (' + debugMessages.length + ') ' + translate('messages')"></h2>
 				</template>
 				<template v-else>
 					<h2 v-html="translate('Debug')"></h2>
 				</template>
 				<a class="debug-header-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" v-on:click="callViewHandler" data-click-handler="debugHelper.clearDebugMessages"></a>
-				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="appState.debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="debugHelper.saveDebug"></a>
+				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="debugHelper.saveDebug"></a>
 				<a class="debug-header-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" v-on:click="callViewHandler" data-click-handler="debugHelper.openDebugWindow"></a>
 				<select class="debug-header-tool" name="debugLevels" v-on:change="callViewHandler" data-change-handler="debugHelper.changeDebugLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
@@ -25,7 +25,7 @@
 			</div>
 			<div class="app-debug-body">
 				<ul>
-					<li class="message" v-for="debugMessage in appState.debugMessages" v-bind:class="debugMessage.type">
+					<li class="message" v-for="debugMessage in debugMessages" v-bind:class="debugMessage.type">
 						<span class="message-timestamp">
 							{{ debugMessage.timestamp }}
 						</span>

@@ -8,7 +8,7 @@ exports.component = {
 	name: 'app-debug',
 	template: window.getAppWrapper().templateContents.componentTemplates['app-debug'],
 	data: function () {
-		return appState.debugData;
+		return {debugMessages: appState.debugMessages};
 	},
 	computed: {
 		appState: function(){
@@ -17,11 +17,5 @@ exports.component = {
 	},
 	methods: {
 		callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
-	},
-	watch: {
-        debugMessages: function(messages){
-        	var el = this.$el;
-        	_appWrapper.debugHelper.processDebugMessages.call(_appWrapper.debugHelper, el);
-        }
-    }
+	}
 };

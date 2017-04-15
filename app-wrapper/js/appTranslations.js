@@ -52,7 +52,7 @@ class AppTranslations extends BaseClass {
 	}
 
 	async loadTranslations () {
-		var translationData = await this.loadTranslationsFromDir(path.resolve(appState.config.app.translationsRoot), appState.config.app.translationExtensionRegex);
+		var translationData = await this.loadTranslationsFromDir(path.resolve(appState.config.wrapper.translationsRoot), appState.config.wrapper.translationExtensionRegex);
 		appState.languageData.availableLanguages = translationData.availableLanguages;
 		appState.languageData.translations = translationData.translations;
 		return translationData;
@@ -269,10 +269,10 @@ class AppTranslations extends BaseClass {
 	}
 
 	getLanguageFilePath(languageCode){
-		var translationFileName = (appState.config.app.translationExtensionRegex + '');
+		var translationFileName = (appState.config.wrapper.translationExtensionRegex + '');
 		translationFileName = translationFileName.replace(/\\./g, '.').replace(/\$/, '').replace(/^\//, '').replace(/\/$/, '');
 		translationFileName = languageCode + translationFileName;
-		var translationFilePath = path.join(path.resolve(appState.config.app.translationsRoot), translationFileName);
+		var translationFilePath = path.join(path.resolve(appState.config.wrapper.translationsRoot), translationFileName);
 		return translationFilePath;
 	}
 
@@ -284,7 +284,7 @@ class AppTranslations extends BaseClass {
 		}
 		appUtil.log("Auto-adding label '{1}'...", "debug", [label], false, this.forceDebug);
 		var self = this;
-		var translationRegex = appState.config.app.translationExtensionRegex
+		var translationRegex = appState.config.wrapper.translationExtensionRegex
 		var languageData = appUtil.getAppState().languageData;
 
 		var translationData = appState.languageData;
@@ -387,10 +387,10 @@ class AppTranslations extends BaseClass {
 
 			if (!skipOtherWindow && appState.isDebugWindow){
 				appUtil.addUserMessage("Changing language in main window to '{1}'.", "info", [selectedLanguageName], false, false, true, this.forceDebug);
-				this.mainWindow.getAppWrapper().appTranslations.doChangeLanguage.call(this.mainWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
+				_appWrapper.mainWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.mainWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
 			} else if (!skipOtherWindow && appState.hasDebugWindow){
 				appUtil.addUserMessage("Changing language in debug window to '{1}'.", "info", [selectedLanguageName], false, false, true, this.forceDebug);
-				this.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(this.debugWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
+				_appWrapper.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.debugWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
 			}
 			return true;
 		} else {

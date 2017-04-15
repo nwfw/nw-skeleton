@@ -171,12 +171,9 @@ class WindowManager extends eventEmitter {
 		var defaultH = 400;
 		var screenW = nw.Screen.screens[0].bounds.width;
 		var screenH = nw.Screen.screens[0].bounds.height;
-		var appW = parseInt(screenW*0.66, 10);
+		var appW = parseInt(screenW*0.50, 10);
 		var appH = parseInt(screenH*0.66, 10);
 		var windowPosition = 'center';
-
-
-		appW = 500;
 
 
 		if (appState.isDebugWindow){
