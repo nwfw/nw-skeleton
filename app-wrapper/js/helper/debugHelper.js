@@ -31,8 +31,8 @@ class DebugHelper extends BaseClass {
 		return this;
 	}
 
-	initialize () {
-		return super.initialize();
+	async initialize () {
+		return await super.initialize();
 	}
 
 	openDebugWindow (){
@@ -79,14 +79,14 @@ class DebugHelper extends BaseClass {
 
 	toggleDebug () {
 		appState.hideDebug = !appState.hideDebug;
-		_appWrapper.configHelper.setConfigVar('hideDebug', appState.hideDebug);
+		_appWrapper.appConfig.setConfigVar('hideDebug', appState.hideDebug);
 	}
 
 	changeDebugLevel(e){
 		var level = e.target.value;
 		appUtil.addUserMessage("Changing debug level to '{1}'.", "info", [level], false, false, this.forceUserMessages, this.forceDebug);
 		appState.debugLevel = level;
-		_appWrapper.configHelper.setConfigVar('debugLevel', level);
+		_appWrapper.appConfig.setConfigVar('debugLevel', level);
 		if (window.isDebugWindow) {
 			appUtil.addUserMessage("Changing debug level in main window to '{1}'.", "info", [level], false, false, this.forceUserMessages, this.forceDebug);
 			_appWrapper.mainWindow.appState.debugLevel = level;
@@ -307,7 +307,7 @@ class DebugHelper extends BaseClass {
 	changeUserMessageLevel (e) {
 		var level = e.target.value;
 		appState.userMessageLevel = level;
-		_appWrapper.configHelper.setConfigVar('userMessageLevel', level);
+		_appWrapper.appConfig.setConfigVar('userMessageLevel', level);
 		appState.userMessagesData.selectFocused = false;
 	}
 }

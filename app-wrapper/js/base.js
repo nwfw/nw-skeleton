@@ -19,7 +19,7 @@ class BaseClass {
 		return this;
 	}
 
-	initialize () {
+	async initialize () {
 		this.addBoundMethods();
 		return this;
 	}

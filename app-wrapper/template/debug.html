@@ -21,7 +21,7 @@
 
 		window.onload = async function(){
 			_parentWrapper.debugWindow = window;
-			await _parentWrapper.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
+			await _parentWrapper.helpers.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
 			window.appWrapper = new nws.AppWrapper(initialConfig);
 			await window.appWrapper.initialize();
 

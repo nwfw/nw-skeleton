@@ -44,16 +44,16 @@ exports.component = {
 					var label = rows[i].getAttribute('data-label');
 					var translation = rows[i].getAttribute('data-translation');
 					if ((label && label.match(valueRegex)) || (translation && translation.match(valueRegex))){
-						_appWrapper.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
+						_appWrapper.helpers.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
 					} else {
-						_appWrapper.htmlHelper.addClass(rows[i], 'lang-form-row-hidden');
+						_appWrapper.helpers.htmlHelper.addClass(rows[i], 'lang-form-row-hidden');
 					}
 				}
 			} else {
 				this.currentModal.hasSearch = false;
 				var rows = this.$el.querySelectorAll('.lang-form-row-hidden');
 				for (let i=0; i<rows.length; i++){
-					_appWrapper.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
+					_appWrapper.helpers.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
 				}
 			}
 		},

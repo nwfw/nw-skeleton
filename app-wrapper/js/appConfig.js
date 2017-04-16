@@ -1,13 +1,13 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+var BaseClass = require('./base').BaseClass;
 
 var _appWrapper;
 var appUtil;
 var appState;
 
-class ConfigHelper extends BaseClass {
+class AppConfig extends BaseClass {
 	constructor(initialAppConfig) {
 		super();
 
@@ -37,7 +37,7 @@ class ConfigHelper extends BaseClass {
 
 	async initializeConfig () {
 
-		this.appStateConfig = require('../../../config/appWrapperConfig').config;
+		this.appStateConfig = require('../../config/appWrapperConfig').config;
 
 		var theConfig = appUtil.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
 		_.each(theConfig.configData.vars, function(value, key){
@@ -142,7 +142,7 @@ class ConfigHelper extends BaseClass {
 		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
 			e.preventDefault();
 		}
-		var confirmed = await _appWrapper.htmlHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'))
+		var confirmed = await _appWrapper.helpers.htmlHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'))
 		if (confirmed){
 			this.clearUserConfig();
 		} else {
@@ -285,4 +285,4 @@ class ConfigHelper extends BaseClass {
 
 }
 
-exports.ConfigHelper = ConfigHelper;
+exports.AppConfig = AppConfig;

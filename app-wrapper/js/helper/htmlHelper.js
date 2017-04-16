@@ -25,6 +25,10 @@ class HtmlHelper extends eventEmitter {
 
 	}
 
+	async initialize () {
+		return this;
+	}
+
 	getCssVarValue (name, defaultValue, element) {
 		if (!element){
 			element = document.body;
@@ -337,6 +341,11 @@ class HtmlHelper extends eventEmitter {
 		}
 		return remainingTime;
 	}
+
+	formatCurrency (value){
+		var returnValue = Intl.NumberFormat().format(value);
+		return returnValue;
+	};
 }
 
 exports.HtmlHelper = HtmlHelper;

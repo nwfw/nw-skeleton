@@ -12,7 +12,7 @@
 		<div class="user-messages-tools">
 			<div class="user-message-level-picker">
 				<label v-html="translate('User message level')"></label>
-				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="appWrapper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="appWrapper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="debugHelper.changeUserMessageLevel">
+				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="appWrapper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="appWrapper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
 						<template v-if="levelValue == appState.userMessageLevel">
 							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
@@ -23,7 +23,7 @@
 					</template>
 				</select>
 			</div>
-			<a class="clear-user-messages fa fa-ban" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }" v-bind:title="translate('Clear user messages')" v-on:click="callViewHandler" data-click-handler="debugHelper.clearUserMessages"></a>
+			<a class="clear-user-messages fa fa-ban" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }" v-bind:title="translate('Clear user messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages"></a>
 		</div>
 	</div>
 </div>

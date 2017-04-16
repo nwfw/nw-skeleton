@@ -7,10 +7,10 @@
 				<template v-else>
 					<h2 v-html="translate('Debug')"></h2>
 				</template>
-				<a class="debug-header-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" v-on:click="callViewHandler" data-click-handler="debugHelper.clearDebugMessages"></a>
-				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="debugHelper.saveDebug"></a>
-				<a class="debug-header-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" v-on:click="callViewHandler" data-click-handler="debugHelper.openDebugWindow"></a>
-				<select class="debug-header-tool" name="debugLevels" v-on:change="callViewHandler" data-change-handler="debugHelper.changeDebugLevel">
+				<a class="debug-header-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearDebugMessages"></a>
+				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
+				<a class="debug-header-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow"></a>
+				<select class="debug-header-tool" name="debugLevels" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeDebugLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
 						<template v-if="levelValue == appState.debugLevel">
 							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
@@ -21,7 +21,7 @@
 					</template>
 				</select>
 				<a class="debug-header-tool open-translation-editor fa fa-globe" v-on:click="callViewHandler" data-click-handler="appTranslations.openTranslationEditor"></a>
-				<a class="debug-header-tool toggle-debug-link fa fa-check-square-o" v-on:click="callViewHandler" data-click-handler="debugHelper.toggleDebug" v-bind:class="{'fa-square-o' : appState.hideDebug}"></a>
+				<a class="debug-header-tool toggle-debug-link fa fa-check-square-o" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-bind:class="{'fa-square-o' : appState.hideDebug}"></a>
 			</div>
 			<div class="app-debug-body">
 				<ul>

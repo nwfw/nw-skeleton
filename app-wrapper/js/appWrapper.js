@@ -12,10 +12,7 @@ var AppTranslations = require('./appTranslations').AppTranslations;
 var WindowManager = require('./windowManager').WindowManager;
 var FileManager = require('./fileManager').FileManager;
 
-var DebugHelper = require('./helper/debugHelper').DebugHelper;
-var HtmlHelper = require('./helper/htmlHelper').HtmlHelper;
-var ComponentHelper = require('./helper/componentHelper').ComponentHelper;
-var ConfigHelper = require('./helper/configHelper').ConfigHelper;
+var AppConfig = require('./appConfig').AppConfig;
 
 class AppWrapper {
 
@@ -29,11 +26,12 @@ class AppWrapper {
 		this.templateContents = null;
 		this.translations = null;
 
+		this.helperData = {};
+		this.helpers = {};
+
 		this.windowManager = null;
 		this.fileManager = null;
-		this.debugHelper = null;
-		this.componentHelper = null;
-		this.configHelper = null;
+		this.appConfig = null;
 
 		this.jsFileLoadResolves = {};
 
@@ -80,10 +78,10 @@ class AppWrapper {
 		var self = this;
 		var appState = appUtil.getAppState();
 
-		this.configHelper = new ConfigHelper(this.initialAppConfig);
+		this.appConfig = new AppConfig(this.initialAppConfig);
 
-		appState.config = await this.configHelper.initializeConfig();
-		appState.config = await this.configHelper.loadUserConfig();
+		appState.config = await this.appConfig.initializeConfig();
+		appState.config = await this.appConfig.loadUserConfig();
 
 		if (appUtil.getConfig("debugToFile")){
 			fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), '', {flag: 'w'});
@@ -101,10 +99,13 @@ class AppWrapper {
 
 		this.setDynamicAppStateValues();
 
-		this.debugHelper = new DebugHelper();
-		this.htmlHelper = new HtmlHelper();
 		this.fileManager = new FileManager();
 		this.windowManager = new WindowManager();
+
+		this.appTemplates = new AppTemplates();
+		this.templateContents = await this.appTemplates.initializeTemplates();
+
+		this.helpers = await this.initializeHelpers(appUtil.getConfig('wrapper.helperDirectories'));
 
 		if (window.isDebugWindow){
 			this.mainWindow = window.opener;
@@ -119,12 +120,6 @@ class AppWrapper {
 		}
 
 		this.addBoundMethods();
-		this.appTemplates = new AppTemplates();
-		this.templateContents = await this.appTemplates.initializeTemplates();
-
-		this.componentHelper = new ComponentHelper();
-		await this.componentHelper.initialize();
-
 		this.addEventListeners();
 
 		await this.app.initialize();
@@ -148,7 +143,7 @@ class AppWrapper {
 			this.windowManager.win.on('close', this.boundMethods.onWindowClose);
 			// WatchJs.watch(appState.config, this.boundMethods.saveUserConfig);
 		} else {
-			this.windowManager.win.on('close', window.opener.getAppWrapper().debugHelper.onDebugWindowClose.bind(window.opener.getAppWrapper().debugHelper));
+			this.windowManager.win.on('close', window.opener.getAppWrapper().helpers.debugHelper.onDebugWindowClose.bind(window.opener.getAppWrapper().debugHelper));
 		}
 	}
 
@@ -180,17 +175,55 @@ class AppWrapper {
 		return await this.appTranslations.initializeLanguage();
 	}
 
+	async initializeHelpers(helperDirs){
+		var helpers = {};
+		var classHelpers = await this.loadHelpers(helperDirs)
+
+		for (let helperIdentifier in classHelpers){
+			helpers[helperIdentifier] = new classHelpers[helperIdentifier]();
+			if (helpers[helperIdentifier] && !_.isUndefined(helpers[helperIdentifier].initialize) && _.isFunction(helpers[helperIdentifier].initialize)){
+				await helpers[helperIdentifier].initialize();
+			}
+		}
+
+		return helpers;
+	}
+
+	async loadHelpers (helperDirs) {
+		var helpers = {};
+
+		if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
+			appUtil.log("No wrapper helper dirs defined", "warning", [], false, this.forceDebug);
+			appUtil.log("You should define this in ./config/config.js file under 'appConfig.templateDirectories.helperDirectories' variable", "debug", [], false, this.forceDebug);
+			helperDirs = [];
+		} else {
+			appUtil.log("Loading wrapper helpers from {1} directories.", "group", [helperDirs.length], false, this.forceDebug);
+			var currentHelpers;
+			for (let i=0; i<helperDirs.length; i++){
+				var helperDir = path.resolve(helperDirs[i])
+				currentHelpers = await appUtil.loadFilesFromDir(helperDir, '/\.js$/', true);
+				if (currentHelpers && _.isObject(currentHelpers) && _.keys(currentHelpers).length){
+					helpers = _.merge(helpers, currentHelpers);
+				}
+			}
+			appUtil.log("Loading wrapper helpers from {1} directories.", "groupend", [helperDirs.length], false, this.forceDebug);
+		}
+
+		return helpers;
+	}
+
 	async initializeFeApp(){
 		var self = this;
 		var appState = appUtil.getAppState();
 
-
 		appUtil.log("Initializing Vue app...'", "debug", [], false, this.forceDebug);
+
 		var vm = new Vue({
 			el: '#app-body',
 			template: window.indexTemplate,
 			data: appState,
-			components: this.componentHelper.vueComponents,
+			mixins: this.helpers.componentHelper.vueMixins,
+			components: this.helpers.componentHelper.vueComponents,
 			translations: appState.translations,
 			// methods: {
 			// 	showModalConfirm: this.showModalCloseConfirm.bind(this)
@@ -337,10 +370,12 @@ class AppWrapper {
 		var eventTargetInstruction = '';
 		if (target){
 			eventTargetAttrName = "data-event-target";
-			eventTargetInstruction = target.getAttribute(eventTargetAttrName);
-			if (eventTargetInstruction && eventTargetInstruction == 'parent'){
-				target = target.parentNode;
-			}
+			do {
+				eventTargetInstruction = target.getAttribute(eventTargetAttrName);
+				if (eventTargetInstruction && eventTargetInstruction == 'parent'){
+					target = target.parentNode;
+				}
+			} while (eventTargetInstruction == 'parent');
 
 			dataHandlerAttrName = ['data', eventType, 'handler'].join('-');
 			eventHandlerName = target.getAttribute(dataHandlerAttrName);
@@ -359,26 +394,30 @@ class AppWrapper {
 				var eventMethodPath = '';
 				if (eventChunks && eventChunks.length && eventChunks.length > 1){
 					eventMethod = _.takeRight(eventChunks);
-					eventMethodPath = _.slice(eventChunks, 0, eventChunks.length-1);
+					eventMethodPath = _.slice(eventChunks, 0, eventChunks.length-1).join('.');
 				} else {
 					eventMethod = eventHandlerName;
 				}
 
-				var handlerObj = this;
-				if (eventMethodPath && eventMethodPath.length){
-					for (let i=0; i<eventMethodPath.length; i++){
-						if (handlerObj && handlerObj[eventMethodPath[i]] && !_.isUndefined(handlerObj[eventMethodPath[i]])){
-							handlerObj = handlerObj[eventMethodPath[i]];
-						}
-					}
+				var handlerObj = this.app;
+				if (eventMethodPath){
+					handlerObj = _.get(handlerObj, eventMethodPath);
 				}
 
-				if (handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
-					return await handlerObj[eventMethod](e);
+				if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
+					return await handlerObj[eventMethod](e, target);
 				} else {
-					appUtil.log("Can't find event handler '{1}'", "warning", [eventHandlerName], false, this.forceDebug);
-					if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-						e.preventDefault();
+					var handlerObj = this;
+					if (eventMethodPath){
+						handlerObj = _.get(handlerObj, eventMethodPath);
+					}
+					if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
+						return await handlerObj[eventMethod](e);
+					} else {
+						appUtil.log("Can't find event handler '{1}'", "warning", [eventHandlerName], false, this.forceDebug);
+						if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+							e.preventDefault();
+						}
 					}
 				}
 			} else {
@@ -419,12 +458,13 @@ class AppWrapper {
 
 	async shutdownApp () {
 		if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
-			this.debugHelper.onDebugWindowClose();
+			this.helpers.debugHelper.onDebugWindowClose();
 		}
 		appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
 		appState.appShuttingDown = true;
-
-		await appUtil.wait(200);
+		if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
+			await this.app.shutdown();
+		}
 		return true;
 	}
 
@@ -648,46 +688,46 @@ class AppWrapper {
 	 		parentEl.appendChild(jsNode);
 	 	}
 	 	return returnPromise;
-	}
+	 }
 
-	showUserMessageSettings (e) {
-		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-			e.preventDefault();
-		}
-		appState.userMessagesData.toolbarVisible = !appState.userMessagesData.toolbarVisible;
-	}
+	 showUserMessageSettings (e) {
+	 	if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+	 		e.preventDefault();
+	 	}
+	 	appState.userMessagesData.toolbarVisible = !appState.userMessagesData.toolbarVisible;
+	 }
 
-	toggleUserMessages (e) {
-		if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-			e.preventDefault();
-		}
-		appState.userMessagesData.messagesExpanded = !appState.userMessagesData.messagesExpanded;
-		setTimeout(() => {
-			var ul = document.querySelector('.user-message-list');
-			ul.scrollTop = ul.scrollHeight;
-		}, 50);
-	}
+	 toggleUserMessages (e) {
+	 	if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+	 		e.preventDefault();
+	 	}
+	 	appState.userMessagesData.messagesExpanded = !appState.userMessagesData.messagesExpanded;
+	 	setTimeout(() => {
+	 		var ul = document.querySelector('.user-message-list');
+	 		ul.scrollTop = ul.scrollHeight;
+	 	}, 50);
+	 }
 
-	userMessageLevelSelectFocus (e) {
-		appState.userMessagesData.selectFocused = true;
-	}
+	 userMessageLevelSelectFocus (e) {
+	 	appState.userMessagesData.selectFocused = true;
+	 }
 
-	userMessageLevelSelectBlur (e) {
-		appState.userMessagesData.selectFocused = false;
-	}
+	 userMessageLevelSelectBlur (e) {
+	 	appState.userMessagesData.selectFocused = false;
+	 }
 
-	setDynamicAppStateValues () {
-		appState.languageData.currentLanguage = appUtil.getConfig('currentLanguage');
-		appState.languageData.currentLocale = appUtil.getConfig('currentLocale');
-		appState.hideDebug = appUtil.getConfig('hideDebug');
-		appState.debug = appUtil.getConfig('debug');
-		appState.debugLevel = appUtil.getConfig('debugLevel');
-		appState.debugLevels = appUtil.getConfig('debugLevels');
-		appState.userMessageLevel = appUtil.getConfig('userMessageLevel');
-		appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
-		appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
-		appState.closeModalResolve = null;
-	}
+	 setDynamicAppStateValues () {
+	 	appState.languageData.currentLanguage = appUtil.getConfig('currentLanguage');
+	 	appState.languageData.currentLocale = appUtil.getConfig('currentLocale');
+	 	appState.hideDebug = appUtil.getConfig('hideDebug');
+	 	appState.debug = appUtil.getConfig('debug');
+	 	appState.debugLevel = appUtil.getConfig('debugLevel');
+	 	appState.debugLevels = appUtil.getConfig('debugLevels');
+	 	appState.userMessageLevel = appUtil.getConfig('userMessageLevel');
+	 	appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
+	 	appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
+	 	appState.closeModalResolve = null;
+	 }
 
-}
-exports.AppWrapper = AppWrapper;
+	}
+	exports.AppWrapper = AppWrapper;

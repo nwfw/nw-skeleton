@@ -380,7 +380,7 @@ class AppTranslations extends BaseClass {
 			appState.languageData.currentLanguage = selectedLanguage;
 			appState.languageData.currentLocale = selectedLocale;
 
-			_appWrapper.configHelper.setConfig({
+			_appWrapper.appConfig.setConfig({
 				currentLanguage: selectedLanguage,
 				currentLocale: selectedLocale
 			});

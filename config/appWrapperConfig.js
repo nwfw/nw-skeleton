@@ -24,7 +24,9 @@ exports.config = {
 			modalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/modal/']
 		},
 
-		mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixins/',
+		helperDirectories: ['./node_modules/nw-skeleton/app-wrapper/js/helper/'],
+
+		mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixin/',
 
 		translationExtensionRegex: /\.i18n\.js$/,
 		translationsRoot: './app/data/translations/',
@@ -92,7 +94,7 @@ exports.config = {
 
 		debugJsFiles: [],
 
-		mixinRoot: './app/js/mixins/',
+		mixinRoot: './app/js/mixin/',
 
 		appTemplateExtensionRegex: /\.html$/,
 		templateDirectories: {

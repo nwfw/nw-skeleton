@@ -265,7 +265,7 @@ var appUtil = {
             var _appWrapper = window.getAppWrapper();
             if (_appWrapper){
                 if (appState.userMessageQueue && appState.userMessageQueue.length){
-                    var transitionDuration = parseFloat(_appWrapper.htmlHelper.getCssVarValue('--short-animation-duration'), 10) * 1000;
+                    var transitionDuration = parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--short-animation-duration'), 10) * 1000;
                     var userMessage = appState.userMessageQueue.shift();
                     if (userMessage){
                         appState.userMessages.push(userMessage);
@@ -273,8 +273,8 @@ var appUtil = {
                         clearTimeout(appState.timeouts.scrollTo);
                         if (ul){
                             appState.timeouts.scrollTo = setTimeout( () => {
-                                // _appWrapper.htmlHelper.scrollElementTo(ul, ul.scrollHeight, transitionDuration);
-                                _appWrapper.htmlHelper.scrollElementTo(ul, ul.scrollHeight, 0);
+                                // _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight, transitionDuration);
+                                _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight, 0);
                             }, 100);
                         }
                     }
@@ -423,7 +423,7 @@ var appUtil = {
         var _appWrapper = window.getAppWrapper();
         var appState = this.getAppState();
         var ul = document.querySelector('ul.user-message-list');
-        _appWrapper.htmlHelper.scrollElementTo(ul, ul.scrollHeight + 100, 300);
+        _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight + 100, 300);
 
         // clearTimeout(appState.timeouts.userMessageScroll);
         // appState.timeouts.userMessageScroll = setTimeout(() => {
@@ -499,15 +499,15 @@ var appUtil = {
                 } else {
                     appUtil.log("No eligible files found in '{1}'...", "warning", [directory], false, self.forceDebug);
                 }
-                return filesData;
             } else {
                 appUtil.log("Directory '{1}' is not a directory!", "error", [directory], false, this.forceDebug);
-                return false;
+                filesData = false;
             }
         } else {
             appUtil.log("Directory '{1}' does not exist!", "error", [directory], false, this.forceDebug);
-            return false;
+            filesData = false;
         }
+        return filesData;
     },
 
     loadFile: async function(filePath, requireFile){
@@ -677,6 +677,10 @@ var appUtil = {
             value = this.getVar(path, appState.u);
         }
         return value;
+    },
+
+    getBaseClass: function(){
+        return require('./base').BaseClass;
     }
 }
 

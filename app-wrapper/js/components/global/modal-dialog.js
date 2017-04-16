@@ -41,18 +41,18 @@ component = {
 
         beforeEnter: function (element) {
             if (appState.modalData.currentModal.animateSize){
-                _appWrapper.htmlHelper.addClass(element, 'transition-wh');
-                _appWrapper.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
+                _appWrapper.helpers.htmlHelper.addClass(element, 'transition-wh');
+                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
             }
         },
         enter: function (element, done) {
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
-                var duration = parseInt(parseFloat(_appWrapper.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-                var dimensions = _appWrapper.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
+                var duration = parseInt(parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+                var dimensions = _appWrapper.helpers.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
 
-                _appWrapper.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
 
                 setTimeout(done, duration + 100);
             } else {
@@ -63,15 +63,15 @@ component = {
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
-                _appWrapper.htmlHelper.addClass(element, 'transition-wh');
-                var dimensions = _appWrapper.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
-                _appWrapper.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+                _appWrapper.helpers.htmlHelper.addClass(element, 'transition-wh');
+                var dimensions = _appWrapper.helpers.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
+                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
             }
         },
         leave: function (element, done) {
             if (appState.modalData.currentModal.animateSize){
-                var duration = parseInt(parseFloat(_appWrapper.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-                _appWrapper.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
+                var duration = parseInt(parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
 
                 setTimeout(done, duration + 100);
             } else {
@@ -80,8 +80,8 @@ component = {
         },
         afterCancel: function (element) {
             if (appState.modalData.currentModal.animateSize){
-                _appWrapper.htmlHelper.removeClass(element, 'transition-wh');
-                _appWrapper.htmlHelper.removeElementStyles(element, ['height', 'width']);
+                _appWrapper.helpers.htmlHelper.removeClass(element, 'transition-wh');
+                _appWrapper.helpers.htmlHelper.removeElementStyles(element, ['height', 'width']);
             }
         }
     },

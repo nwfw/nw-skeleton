@@ -30,7 +30,7 @@ class ComponentHelper extends BaseClass {
 		this.vueMixins = null;
 		this.appVueMixins = null;
 
-		BaseComponent = require('../mixins/baseComponent').component;
+		BaseComponent = require('../mixin/baseComponent').component;
 
 		return this;
 	}
@@ -39,6 +39,7 @@ class ComponentHelper extends BaseClass {
 		await super.initialize();
 		this.vueMixins = await this.loadMixins();
 		await this.initComponents();
+		return this;
 	}
 
 	async loadMixins(){
