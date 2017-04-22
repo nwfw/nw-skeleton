@@ -5,59 +5,59 @@ var appState;
 
 class BaseClass {
 
-	constructor () {
-		if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
-			_appWrapper = window.getAppWrapper();
-			appUtil = _appWrapper.getAppUtil();
-			appState = appUtil.getAppState();
-		}
+    constructor () {
+        if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
+            _appWrapper = window.getAppWrapper();
+            appUtil = _appWrapper.getAppUtil();
+            appState = appUtil.getAppState();
+        }
 
-		this.forceUserMessages = false;
-		this.forceDebug = false;
-		this.boundMethods = {};
+        this.forceUserMessages = false;
+        this.forceDebug = false;
+        this.boundMethods = {};
 
-		return this;
-	}
+        return this;
+    }
 
-	async initialize () {
-		this.addBoundMethods();
-		return this;
-	}
+    async initialize () {
+        this.addBoundMethods();
+        return this;
+    }
 
-	getAppWrapper () {
-		return _appWrapper;
-	}
+    getAppWrapper () {
+        return _appWrapper;
+    }
 
-	getAppUtil () {
-		return appUtil;
-	}
+    getAppUtil () {
+        return appUtil;
+    }
 
-	getAppState () {
-		return appState;
-	}
+    getAppState () {
+        return appState;
+    }
 
-	addBoundMethods () {
-		if (this.boundMethods){
-			var keys = _.keys(this.boundMethods);
-			for (let i=0; i<keys.length; i++){
-				if (this[keys[i]] && _.isFunction(this[keys[i]]) && this[keys[i]].bind && _.isFunction(this[keys[i]].bind)){
-					this.boundMethods[keys[i]] = this[keys[i]].bind(this);
-				}
-			}
-		}
-	}
+    addBoundMethods () {
+        if (this.boundMethods){
+            var keys = _.keys(this.boundMethods);
+            for (let i=0; i<keys.length; i++){
+                if (this[keys[i]] && _.isFunction(this[keys[i]]) && this[keys[i]].bind && _.isFunction(this[keys[i]].bind)){
+                    this.boundMethods[keys[i]] = this[keys[i]].bind(this);
+                }
+            }
+        }
+    }
 
-	removeBoundMethods () {
-		var keys = _.keys(this.boundMethods);
-		for (let i=0; i<keys.length; i++){
-			this.boundMethods[keys[i]] = null;
-		}
-		this.boundMethods = {};
-	}
+    removeBoundMethods () {
+        var keys = _.keys(this.boundMethods);
+        for (let i=0; i<keys.length; i++){
+            this.boundMethods[keys[i]] = null;
+        }
+        this.boundMethods = {};
+    }
 
-	destroy () {
-		this.removeBoundMethods();
-	}
+    destroy () {
+        this.removeBoundMethods();
+    }
 
 }
 exports.BaseClass = BaseClass;

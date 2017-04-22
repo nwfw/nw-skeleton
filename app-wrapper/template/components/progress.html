@@ -1,15 +1,20 @@
-<div class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress}">
-	<div class="progress-operation">
-		{{ progressData.operationText }} <span v-if="progressData.detailText" class="progress-detail">
-			({{ progressData.detailText }})
-		</span>
-	</div>
-	<div class="progress-bar" v-bind:class="progressData.progressBarClass">
-		<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">
-			{{ progressData.percentComplete }}
+<transition name="height">
+	<div v-if="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress}">
+		<div class="progress-operation">
+			{{ progressData.operationText }} <span v-if="progressData.detailText" class="progress-detail">
+				({{ progressData.detailText }})
+			</span>
 		</div>
-		<div class="progress-bar-inner" v-bind:style="progressData.styleObject">
-			{{ progressData.percentComplete }}
+		<div class="progress-bar" v-bind:class="progressData.progressBarClass">
+			<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">
+				{{ progressData.percentComplete }}
+			</div>
+			<div class="progress-bar-inner" v-bind:style="progressData.styleObject">
+				{{ progressData.percentComplete }}
+			</div>
 		</div>
+		<a v-on:click="callViewHandler" data-click-handler="cancelOperation" v-if="appState.appOperation.cancelable" class="progress-cancel">
+			<span class="fa fa-ban" data-event-target="parent"></span>
+		</a>
 	</div>
-</div>
+</transition>

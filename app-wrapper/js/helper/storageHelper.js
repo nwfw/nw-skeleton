@@ -1,51 +1,52 @@
-var fs = require('fs');
-var path = require('path');
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var _parentAppWrapper;
 var appUtil;
 var appState;
 
 
 class StorageHelper extends BaseClass {
-	constructor() {
-		super();
+    constructor() {
+        super();
 
-		_appWrapper = this.getAppWrapper();
-		appUtil = this.getAppUtil();
-		appState = this.getAppState();
+        _appWrapper = this.getAppWrapper();
+        appUtil = this.getAppUtil();
+        appState = this.getAppState();
 
-		this.forceDebug = false;
-		this.forceUserMessages = false;
+        _.noop(_appWrapper);
+        _.noop(appState);
+        _.noop(appUtil);
 
-		return this;
-	}
+        this.forceDebug = false;
+        this.forceUserMessages = false;
 
-	async set (name, value){
-		var returnValue = null;
-		var savedValue;
-		if (localStorage && localStorage.setItem && _.isFunction(localStorage.setItem)){
-			var savedValue = JSON.stringify(value);
-			localStorage.setItem(name, savedValue);
-			returnValue = savedValue == localStorage.getItem(name);
-		}
-		return returnValue;
-	}
+        return this;
+    }
 
-	async get (name){
-		var returnValue = null;
-		if (localStorage && localStorage.getItem && _.isFunction(localStorage.getItem)){
-			var savedValue = localStorage.getItem(name);
-			try {
-				returnValue = JSON.parse(savedValue);
-			} catch (ex) {
-				console.error(ex);
-			}
-		}
-		return returnValue;
-	}
+    async set (name, value){
+        var returnValue = null;
+        var savedValue;
+        if (localStorage && localStorage.setItem && _.isFunction(localStorage.setItem)){
+            savedValue = JSON.stringify(value);
+            localStorage.setItem(name, savedValue);
+            returnValue = savedValue == localStorage.getItem(name);
+        }
+        return returnValue;
+    }
+
+    async get (name){
+        var returnValue = null;
+        if (localStorage && localStorage.getItem && _.isFunction(localStorage.getItem)){
+            var savedValue = localStorage.getItem(name);
+            try {
+                returnValue = JSON.parse(savedValue);
+            } catch (ex) {
+                console.error(ex);
+            }
+        }
+        return returnValue;
+    }
 
 
 }

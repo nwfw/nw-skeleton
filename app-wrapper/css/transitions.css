@@ -152,31 +152,33 @@
 }
 
 .width-long-leave-active {
-  transition: width linear var(--long-animation-duration)
+  transition: width linear var(--long-animation-duration);
 }
 
 .width-long-leave-to {
   width: 0;
 }
 
-
 /* height */
 
 .height-enter {
-  overflow: hidden;
   height: 0;
 }
 
 .height-enter-active {
-  transition: height linear 4s;
+  transition-property: height;
+  transition-timing-function: linear;
+  transition-duration: var(--short-animation-duration);
 }
 
 .height-enter-to {
-  height: unset;
+  /*height: unset;*/
 }
 
 .height-leave-active {
-  transition: height linear 4s;
+  transition-property: height;
+  transition-timing-function: linear;
+  transition-duration: var(--short-animation-duration);
 }
 
 .height-leave-to {
@@ -184,29 +186,33 @@
 }
 
 
+
 /* height-long */
 
 .height-long-enter {
-  overflow: hidden;
   height: 0;
 }
 
 .height-long-enter-active {
-  transition: height linear var(--long-animation-duration);
+  transition-property: height;
+  transition-timing-function: linear;
+  transition-duration: var(--long-animation-duration);
 }
 
 .height-long-enter-to {
-  height: auto;
+  /*height: unset;*/
 }
 
 .height-long-leave-active {
-  transition: height linear var(--long-animation-duration);
+  transition-property: height;
+  transition-timing-function: linear;
+  transition-duration: var(--long-animation-duration);
 }
 
 .height-long-leave-to {
-  overflow: hidden;
   height: 0;
 }
+
 
 
 
@@ -260,7 +266,6 @@
   max-width: auto;
   flex: unset;
 }
-
 
 /* max-width-height */
 

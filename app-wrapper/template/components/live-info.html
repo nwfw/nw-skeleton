@@ -1,6 +1,8 @@
-<div class="live-info">
-    <span class="live-info-item app-status" v-bind:class="appStatusWrapperClassObject">
-    	<span v-html="translate('Application status')"></span>
-        <span class="status fa app-status" v-bind:title="[appState.appBusy ? 'busy' : 'idle']" v-bind:class="appStatusClassObject"></span>
-    </span>
-</div>
+<transition name="height-long">
+	<div class="live-info" v-if="appState.appStatusChanging">
+	    <span class="live-info-item app-status" v-bind:class="appStatusWrapperClassObject">
+	    	<span class="app-operation-text" v-html="appState.appOperation.operationText"></span>
+	        <span class="status fa app-status" v-bind:title="appState.appStatus" v-bind:class="appStatusClassObject"></span>
+	    </span>
+	</div>
+</transition>

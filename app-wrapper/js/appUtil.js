@@ -30,7 +30,7 @@ var appUtil = {
             // doLog = true;
         }
 
-        // if (!dontTranslate && this.varExists("appTranslations.translationsLoaded", window.getAppWrapper()) && window.getAppWrapper().appTranslations.translationsLoaded){
+        // if (!dontTranslate && this.varExists('appTranslations.translationsLoaded', window.getAppWrapper()) && window.getAppWrapper().appTranslations.translationsLoaded){
         //  message = window.getAppWrapper().appTranslations.translate(message);
         // }
 
@@ -146,7 +146,7 @@ var appUtil = {
         return {
             offsetLeft: offsetLeft,
             offsetTop: offsetTop
-        }
+        };
     },
     addUserMessage: async function(message, type, data, important, dontTranslate, force, passToDebug){
         var appState = this.getAppState();
@@ -164,9 +164,9 @@ var appUtil = {
             this.log(message, type, data, dontTranslate);
         }
 
-        if (type == "warning"){
+        if (type == 'warning'){
             iconClass = 'fa fa-exclamation-circle';
-        } else if (type == "error"){
+        } else if (type == 'error'){
             iconClass = 'fa fa-exclamation-triangle';
         }
 
@@ -265,7 +265,7 @@ var appUtil = {
             var _appWrapper = window.getAppWrapper();
             if (_appWrapper){
                 if (appState.userMessageQueue && appState.userMessageQueue.length){
-                    var transitionDuration = parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--short-animation-duration'), 10) * 1000;
+                    // var transitionDuration = parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--short-animation-duration'), 10) * 1000;
                     var userMessage = appState.userMessageQueue.shift();
                     if (userMessage){
                         appState.userMessages.push(userMessage);
@@ -307,7 +307,7 @@ var appUtil = {
 
         if (!time){
             var num = parseInt(Math.random() * 100 / 33, 10);
-            var val = ''
+            var val = '';
             for (var i = 0; i<num; i++){
                 val += '.';
             }
@@ -325,15 +325,15 @@ var appUtil = {
         }
 
         if (hours   < 10) {
-            hours   = "0" + hours;
+            hours   = '0' + hours;
         }
 
         if (minutes < 10) {
-            minutes = "0" + minutes;
+            minutes = '0' + minutes;
         }
 
         if (seconds < 10) {
-            seconds = "0" + seconds;
+            seconds = '0' + seconds;
         }
 
         var formattedTime;
@@ -374,7 +374,6 @@ var appUtil = {
     },
 
     formatDateNormalize: function(date, options, includeTime, omitSeconds){
-        var appState = this.getAppState();
 
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
@@ -385,26 +384,26 @@ var appUtil = {
         var seconds = date.getSeconds();
 
         if (month < 10){
-            month = "0" + month;
+            month = '0' + month;
         }
 
 
         if (day < 10){
-            day = "0" + day;
+            day = '0' + day;
         }
 
         if (hours < 10){
-            hours = "0" + hours;
+            hours = '0' + hours;
         }
 
         if (minutes < 10){
-            minutes = "0" + minutes;
+            minutes = '0' + minutes;
         }
         if (seconds < 10){
-            seconds = "0" + seconds;
+            seconds = '0' + seconds;
         }
 
-        var formattedDate = year + '-' + month + '-' + day
+        var formattedDate = year + '-' + month + '-' + day;
 
         if (includeTime) {
             formattedDate += ' ';
@@ -421,7 +420,6 @@ var appUtil = {
 
     _processUserMessageScroll: function(){
         var _appWrapper = window.getAppWrapper();
-        var appState = this.getAppState();
         var ul = document.querySelector('ul.user-message-list');
         _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight + 100, 300);
 
@@ -435,6 +433,7 @@ var appUtil = {
     loadFilesFromDir: async function(directory, extensionMatch, requireFiles) {
         var self = this;
         var filesData = {};
+        var extRegex;
 
         if (!extensionMatch){
             extRegex = /.*/;
@@ -451,7 +450,7 @@ var appUtil = {
         if (fs.existsSync(directory)){
             var stats = fs.statSync(directory);
             if (stats.isDirectory()){
-                appUtil.log("Loading files from '{1}'...", "debug", [directory], false, self.forceDebug);
+                appUtil.log('Loading files from \'{1}\'...', 'debug', [directory], false, self.forceDebug);
                 var files = fs.readdirSync(directory);
 
                 var eligibleFiles = _.filter(files, function checkFileExtension(file){
@@ -459,15 +458,15 @@ var appUtil = {
                     if (fileStats.isFile()){
                         return true;
                     } else {
-                        appUtil.log("Omitting file '{1}' - file is a directory.", "debug", [file], false, self.forceDebug);
+                        appUtil.log('Omitting file \'{1}\' - file is a directory.', 'debug', [file], false, self.forceDebug);
                     }
                 });
 
-                var eligibleFiles = _.filter(eligibleFiles, function checkFileExtension(file){
+                eligibleFiles = _.filter(eligibleFiles, function checkFileExtension(file){
                     if (file.match(extRegex)){
                         return true;
                     } else {
-                        appUtil.log("Omitting file '{1}', extension invalid.", "debug", [file], false, self.forceDebug);
+                        appUtil.log('Omitting file \'{1}\', extension invalid.', 'debug', [file], false, self.forceDebug);
                     }
                 });
 
@@ -480,12 +479,12 @@ var appUtil = {
                     if (fileStat.isFile()){
                         return true;
                     } else {
-                        appUtil.log("Omitting file '{1}', not a file.", "warning", [path.basename(file)], false, self.forceDebug);
+                        appUtil.log('Omitting file \'{1}\', not a file.', 'warning', [path.basename(file)], false, self.forceDebug);
                     }
                 });
 
                 if (filesToLoad && filesToLoad.length){
-                    appUtil.log("Found {1} eligible files of {2} total files in '{3}'...", "debug", [filesToLoad.length, files.length, directory], false, self.forceDebug);
+                    appUtil.log('Found {1} eligible files of {2} total files in \'{3}\'...', 'debug', [filesToLoad.length, files.length, directory], false, self.forceDebug);
 
                     for (var i =0 ; i < filesToLoad.length; i++){
                         var fullPath = filesToLoad[i];
@@ -497,14 +496,14 @@ var appUtil = {
                         filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles);
                     }
                 } else {
-                    appUtil.log("No eligible files found in '{1}'...", "warning", [directory], false, self.forceDebug);
+                    appUtil.log('No eligible files found in \'{1}\'...', 'warning', [directory], false, self.forceDebug);
                 }
             } else {
-                appUtil.log("Directory '{1}' is not a directory!", "error", [directory], false, this.forceDebug);
+                appUtil.log('Directory \'{1}\' is not a directory!', 'error', [directory], false, this.forceDebug);
                 filesData = false;
             }
         } else {
-            appUtil.log("Directory '{1}' does not exist!", "error", [directory], false, this.forceDebug);
+            appUtil.log('Directory \'{1}\' does not exist!', 'error', [directory], false, this.forceDebug);
             filesData = false;
         }
         return filesData;
@@ -515,28 +514,28 @@ var appUtil = {
         var fileName = path.basename(filePath);
         var directory = path.dirname(filePath);
 
-        appUtil.log("* Loading file '{1}' from '{2}'...", "debug", [fileName, directory], false, self.forceDebug);
+        appUtil.log('* Loading file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false, self.forceDebug);
         if (!requireFile){
             fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
         } else {
-            var fileData = require(path.resolve(filePath));
+            fileData = require(path.resolve(filePath));
             if (fileData.exported){
                 fileData = require(filePath).exported;
             } else {
                 var fileKeys = _.keys(fileData);
                 if (fileKeys && fileKeys.length && fileKeys[0] && fileData[fileKeys[0]]){
-                    appUtil.log("* While requiring file '{1}' from '{2}', 'exported' key was not found, using '{3}' instead.", "debug", [fileName, directory, fileKeys[0]], false, self.forceDebug);
+                    appUtil.log('* While requiring file \'{1}\' from \'{2}\', \'exported\' key was not found, using \'{3}\' instead.', 'debug', [fileName, directory, fileKeys[0]], false, self.forceDebug);
                     fileData = fileData[fileKeys[0]];
                 } else {
                     fileData = null;
-                    appUtil.log("* Problem Loading file '{1}' from '{2}', in order to require file, it has to export value 'exported'!", "error", [fileName, directory], false, self.forceDebug);
+                    appUtil.log('* Problem Loading file \'{1}\' from \'{2}\', in order to require file, it has to export value \'exported\'!', 'error', [fileName, directory], false, self.forceDebug);
                 }
             }
         }
         if (fileData){
-            appUtil.log("* Successfully loaded file '{1}' from '{2}'...", "debug", [fileName, directory], false, self.forceDebug);
+            appUtil.log('* Successfully loaded file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false, self.forceDebug);
         } else {
-            appUtil.log("* Failed loading file '{1}' from '{2}'...", "error", [fileName, directory], false, self.forceDebug);
+            appUtil.log('* Failed loading file \'{1}\' from \'{2}\'...', 'error', [fileName, directory], false, self.forceDebug);
         }
         return fileData;
     },
@@ -570,7 +569,7 @@ var appUtil = {
     },
 
     nextTick: async function(){
-        var returnPromise = new Promise((resolve, reject) => {
+        var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
             }, 0);
@@ -578,7 +577,8 @@ var appUtil = {
         return returnPromise;
     },
     wait: async function(duration){
-        var returnPromise = new Promise((resolve, reject) => {
+        appUtil.log('Waiting {1} ms', 'info', [duration], false, true);
+        var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
             }, duration);
@@ -588,15 +588,16 @@ var appUtil = {
 
     difference: function(template, override) {
         var ret = {};
+        var diff;
         for (var name in template) {
             if (name in override) {
                 if (_.isObject(override[name]) && !_.isArray(override[name])) {
-                    var diff = appUtil.difference(template[name], override[name]);
+                    diff = appUtil.difference(template[name], override[name]);
                     if (!_.isEmpty(diff)) {
                         ret[name] = diff;
                     }
                 } else if (_.isArray(override[name])) {
-                    var diff = appUtil.difference(template[name], override[name]);
+                    diff = appUtil.difference(template[name], override[name]);
                     if (!_.isEmpty(diff)) {
                         ret[name] = diff;
                     }
@@ -643,12 +644,12 @@ var appUtil = {
     finalizeLogs: async function(){
         var appState = this.getAppState();
         if (appState.config.debugToFile){
-            var debugLogContents = "[\n" + fs.readFileSync(path.resolve(appState.config.debugMessagesFilename)) + "\n]";
+            var debugLogContents = '[\n' + fs.readFileSync(path.resolve(appState.config.debugMessagesFilename)) + '\n]';
             fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), debugLogContents, {flag: 'w'});
         }
 
         if (appState.config.userMessagesToFile){
-            var messageLogContents = "[\n" + fs.readFileSync(path.resolve(appState.config.userMessagesFilename)) + "\n]";
+            var messageLogContents = '[\n' + fs.readFileSync(path.resolve(appState.config.userMessagesFilename)) + '\n]';
             fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), messageLogContents, {flag: 'w'});
         }
 
@@ -682,6 +683,6 @@ var appUtil = {
     getBaseClass: function(){
         return require('./base').BaseClass;
     }
-}
+};
 
 exports.appUtil = appUtil;

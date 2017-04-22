@@ -92,12 +92,15 @@ header {
     min-width: 240px;
     text-align: center;
     height: 24px;
+    min-height: 0;
     z-index: 5;
     background: #000;
-    transition: box-shadow linear var(--short-animation-duration);
+    overflow: hidden;
+    transition-property: height box-shadow !important;
+    transition-timing-function: ease-out !important;
 }
 
-.has-progress-bar .live-info {
+.app-status-changing .live-info {
 	box-shadow: 0 0 20px #fff;
 	z-index: 3;
 }

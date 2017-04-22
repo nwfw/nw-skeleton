@@ -23,13 +23,13 @@ component = {
                     } else if (appState.modalData.currentModal.confirmSelected){
                         focusElement = el.querySelector('.modal-button-confirm');
                     }
-                    if (!(focusElement && !focusElement.getAttribute("disabled"))){
+                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
                         focusElement = el.querySelector('.modal-button');
                     }
-                    if (!(focusElement && !focusElement.getAttribute("disabled"))){
+                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
                         focusElement = el.querySelector('input, button');
                     }
-                    if (!(focusElement && !focusElement.getAttribute("disabled"))){
+                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
                         focusElement = el;
                     }
                 }
@@ -98,6 +98,6 @@ component = {
     updated: function(){
         this.setFocus();
     }
-}
+};
 
 exports.component = component;
