@@ -43,6 +43,7 @@ class WindowManager extends eventEmitter {
         this.keyCodes = {
             debugKeys: [68,69,66,85,71],
             commandKeyCodes: [224, 17, 91, 93],
+            shiftKeyCodes: [16],
             reloadKeyCodes: [82],
             closeKeyCodes: [87],
             escKeyCodes: [27],
@@ -111,6 +112,14 @@ class WindowManager extends eventEmitter {
                 appState.ctrlPressed = true;
             } else if (e.type == 'keyup'){
                 appState.ctrlPressed = false;
+            }
+        } else if (_.includes(this.keyCodes.shiftKeyCodes, keyCode)){
+            e.stopImmediatePropagation();
+            this.pressedKeys = [];
+            if (e.type == 'keydown') {
+                appState.shiftPressed = true;
+            } else if (e.type == 'keyup'){
+                appState.shiftPressed = false;
             }
         } else {
             if (e.type == 'keydown') {

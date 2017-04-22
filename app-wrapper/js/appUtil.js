@@ -114,14 +114,25 @@ var appUtil = {
 
     getAppState: function(){
         var win = nw.Window.get().window;
+        var appStateFile;
+        var appAppState;
+        var initialAppState;
         if (win && win.appState){
             return win.appState;
         } else {
-            var appWrapperState = require('./appState').appState;
-            if (win){
-                win.appState = appWrapperState;
+            initialAppState = require('./appState').appState;
+            appStateFile = path.resolve('./app/js/appState');
+            try {
+                appAppState = require(appStateFile).appState;
+                initialAppState = this.mergeDeep(initialAppState, appAppState);
+            } catch (ex) {
+                console.error(ex);
             }
-            return appWrapperState;
+
+            if (win){
+                win.appState = initialAppState;
+            }
+            return initialAppState;
         }
     },
     getStateVar: function(varPath){
@@ -265,7 +276,6 @@ var appUtil = {
             var _appWrapper = window.getAppWrapper();
             if (_appWrapper){
                 if (appState.userMessageQueue && appState.userMessageQueue.length){
-                    // var transitionDuration = parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--short-animation-duration'), 10) * 1000;
                     var userMessage = appState.userMessageQueue.shift();
                     if (userMessage){
                         appState.userMessages.push(userMessage);
@@ -273,7 +283,6 @@ var appUtil = {
                         clearTimeout(appState.timeouts.scrollTo);
                         if (ul){
                             appState.timeouts.scrollTo = setTimeout( () => {
-                                // _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight, transitionDuration);
                                 _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight, 0);
                             }, 100);
                         }
@@ -496,7 +505,7 @@ var appUtil = {
                         filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles);
                     }
                 } else {
-                    appUtil.log('No eligible files found in \'{1}\'...', 'warning', [directory], false, self.forceDebug);
+                    appUtil.log('No eligible files found in \'{1}\'...', 'info', [directory], false, self.forceDebug);
                 }
             } else {
                 appUtil.log('Directory \'{1}\' is not a directory!', 'error', [directory], false, this.forceDebug);
@@ -682,6 +691,17 @@ var appUtil = {
 
     getBaseClass: function(){
         return require('./base').BaseClass;
+    },
+    randomString: function(size) {
+        if (!size){
+            size = 4;
+        }
+        var randomString = '';
+        do {
+            randomString += Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        } while (randomString.length < size);
+
+        return randomString.substr(0, size);
     }
 };
 

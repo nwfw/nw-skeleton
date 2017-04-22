@@ -17,6 +17,18 @@ class ModalHelper extends BaseClass {
         this.forceDebug = false;
         this.forceUserMessages = false;
 
+        this.boundMethods = {
+            confirmResolve: null
+        };
+
+        this.timeouts = {
+            autoClose: null
+        };
+
+        this.intervals = {
+            autoClose: null
+        };
+
         return this;
     }
 
@@ -65,6 +77,94 @@ class ModalHelper extends BaseClass {
             }
             this.modalNotBusy();
         }
+        if (appState.modalData.currentModal.autoCloseTime) {
+            this.timeouts.autoClose = setTimeout(() => {
+                clearInterval(this.intervals.autoClose);
+                clearTimeout(this.timeouts.autoClose);
+                this.closeCurrentModal();
+            }, appState.modalData.currentModal.autoCloseTime);
+
+            var seconds = parseInt(appState.modalData.currentModal.autoCloseTime / 1000, 10);
+            var confirmButtonText = appState.modalData.currentModal.confirmButtonText;
+
+            this.intervals.autoClose = setInterval(() => {
+                seconds--;
+                if (seconds < 0){
+                    seconds = 0;
+                }
+                appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
+            }, 1000);
+
+        }
+    }
+
+    async openSimpleModal(title, text, options) {
+        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+        if (options && _.isObject(options)){
+            appState.modalData.currentModal = _.merge(appState.modalData.currentModal, options);
+        }
+        appState.modalData.currentModal.title = title;
+        appState.modalData.currentModal.body = text;
+        // appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
+        // appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        // appState.modalData.currentModal.showCancelButton = false;
+        // appState.modalData.currentModal.confirmDisabled = true;
+        // appState.modalData.currentModal.saveDebugFileError = false;
+        // appState.modalData.currentModal.messages = [];
+        // this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        // appState.modalData.currentModal.defaultFilename = 'debug-' + appUtil.formatDateNormalize(new Date(), false, true) + '.txt';
+        // _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
+        appState.currentModalClosePromise = new Promise((resolve) => {
+            appState.closeModalResolve = resolve;
+        });
+        this.openCurrentModal();
+        return appState.currentModalClosePromise;
+    }
+
+    async confirmResolve (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
+            appState.closeModalResolve(true);
+        }
+        this.closeCurrentModal();
+    }
+
+    async confirm (title, text, confirmButtonText, cancelButtonText) {
+        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+
+        if (!text){
+            text = '';
+        }
+
+        if (!confirmButtonText){
+            confirmButtonText = _appWrapper.appTranslations.translate('Confirm');
+        }
+
+        if (!cancelButtonText){
+            cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        }
+
+        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+
+        appState.modalData.currentModal.bodyComponent = 'modal-body';
+        appState.modalData.currentModal.title = title;
+        appState.modalData.currentModal.body = text;
+        appState.modalData.currentModal.confirmButtonText = confirmButtonText;
+        appState.modalData.currentModal.cancelButtonText = cancelButtonText;
+        appState.modalData.currentModal.modalClassName = 'confirm-modal';
+        appState.modalData.currentModal.cancelSelected = true;
+        appState.modalData.currentModal.confirmSelected = false;
+
+        this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        _appWrapper._confirmModalAction = this.boundMethods.confirmResolve;
+        _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
+            appState.closeModalResolve = resolve;
+            appState.closeModalReject = reject;
+        });
+        this.openCurrentModal();
+        return _appWrapper.closeModalPromise;
     }
 }
 

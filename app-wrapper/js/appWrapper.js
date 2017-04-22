@@ -293,6 +293,7 @@ class AppWrapper {
                     eventMethod = eventHandlerName;
                 }
 
+
                 var handlerObj = this.app;
                 if (eventMethodPath){
                     handlerObj = _.get(handlerObj, eventMethodPath);
@@ -308,6 +309,9 @@ class AppWrapper {
                     if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
                         return await handlerObj[eventMethod](e);
                     } else {
+                        console.log('handlerObj', handlerObj);
+                        console.log('eventMethodPath', eventMethodPath);
+                        console.log('eventMethod', eventMethod);
                         appUtil.log('Can\'t find event handler \'{1}\'', 'warning', [eventHandlerName], false, this.forceDebug);
                         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                             e.preventDefault();
@@ -427,7 +431,7 @@ class AppWrapper {
         let appBusy = appState.appOperation.appBusy ? false : appState.appBusy;
 
         if (!timeoutDuration){
-            timeoutDuration = 1000;
+            timeoutDuration = 2000;
         }
 
         appState.appBusy = appBusy;

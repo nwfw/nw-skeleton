@@ -204,6 +204,9 @@ class HtmlHelper extends eventEmitter {
         var maxScrollHeight = element.scrollHeight - element.clientHeight;
 
         if (duration <= 0) {
+            if (to > maxScrollHeight){
+                to = maxScrollHeight;
+            }
             element.scrollTop = to;
             return;
         }
@@ -255,50 +258,6 @@ class HtmlHelper extends eventEmitter {
         } else if (stepIncrease < 0 && nextValue <= finalValue){
             clearInterval(appState.intervals.scrollTo[identifier]);
         }
-    }
-
-    async confirmResolve (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-            appState.closeModalResolve(true);
-        }
-        _appWrapper.helpers.modalHelper.closeCurrentModal();
-    }
-
-    async confirm (title, text, confirmButtonText, cancelButtonText) {
-        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
-
-        if (!text){
-            text = '';
-        }
-
-        if (!confirmButtonText){
-            confirmButtonText = _appWrapper.appTranslations.translate('Confirm');
-        }
-
-        if (!cancelButtonText){
-            cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        }
-
-        appState.modalData.currentModal.bodyComponent = 'modal-body';
-        appState.modalData.currentModal.title = title;
-        appState.modalData.currentModal.body = text;
-        appState.modalData.currentModal.confirmButtonText = confirmButtonText;
-        appState.modalData.currentModal.cancelButtonText = cancelButtonText;
-        appState.modalData.currentModal.modalClassName = 'confirm-modal';
-        appState.modalData.currentModal.cancelSelected = true;
-        appState.modalData.currentModal.confirmSelected = false;
-
-        _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.confirmResolve;
-        _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
-            appState.closeModalResolve = resolve;
-            appState.closeModalReject = reject;
-        });
-        _appWrapper.helpers.modalHelper.openCurrentModal();
-        return _appWrapper.closeModalPromise;
     }
 
     startProgress (total, operationText) {
@@ -353,7 +312,7 @@ class HtmlHelper extends eventEmitter {
     }
 
     formatCurrency (value){
-        var returnValue = Intl.NumberFormat().format(value);
+        var returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
     }
 }

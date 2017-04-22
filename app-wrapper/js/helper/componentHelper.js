@@ -126,9 +126,15 @@ class ComponentHelper extends BaseClass {
         appUtil.log('Loading components...', 'group', [], false, this.forceDebug);
 
         var components = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.component'));
+
         var globalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.globalComponent'));
+        globalComponents = _.merge(globalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.globalComponent')));
+
         var modalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.modalComponent'));
+        modalComponents = _.merge(modalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.modalComponent')));
+
         var appComponents = await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.component'));
+
 
         this.allComponents = _.merge(components, globalComponents, modalComponents, appComponents);
 

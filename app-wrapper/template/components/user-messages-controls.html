@@ -2,17 +2,17 @@
 	<div class="user-messages-settings">
 		<h4 v-html="translate('User messages')"></h4>
 		<div class="user-messages-settings-tools">
-			<a href="#" class="user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="appWrapper.showUserMessageSettings" v-bind:title="translate('User messages settings')">
+			<a href="#" class="user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="showUserMessageSettings" v-bind:title="translate('User messages settings')">
 				<span class="fa fa-cog"></span>
 			</a>
-			<a class="expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !messagesExpanded, 'fa-arrow-down': messagesExpanded }" v-on:click="callViewHandler" data-click-handler="appWrapper.toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
+			<a class="expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !messagesExpanded, 'fa-arrow-down': messagesExpanded }" v-on:click="callViewHandler" data-click-handler="toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
 		</div>
 	</div>
 	<div class="user-messages-toolbar">
 		<div class="user-messages-tools">
 			<div class="user-message-level-picker">
 				<label v-html="translate('User message level')"></label>
-				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="appWrapper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="appWrapper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
+				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
 						<template v-if="levelValue == appState.userMessageLevel">
 							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>

@@ -101,13 +101,34 @@ header {
 }
 
 .app-status-changing .live-info {
-	box-shadow: 0 0 20px #fff;
+	/*box-shadow: 0 0 20px #fff;*/
 	z-index: 3;
+}
+
+.live-info.offline {
+    box-shadow: 0 0 20px #CCC;
+}
+.live-info.not-busy {
+    box-shadow: 0 0 20px #00CC00;
+}
+.live-info.error {
+    box-shadow: 0 0 20px #FF0000;
+}
+.live-info.working {
+    box-shadow: 0 0 20px #ffcc33;
+}
+.live-info.busy {
+    box-shadow: 0 0 20px #ffcc33;
 }
 
 .live-info-item {
 
 }
+
+.live-info-item .app-operation-text {
+    font-weight: bold;
+}
+
 
 .live-info .status {
 	position:relative;
@@ -140,12 +161,28 @@ header {
 	color:#FF0000;
 }
 
-.live-info-item.connecting .status {
+.live-info-item.working .status {
 	color:#ffcc33;
 }
 
 .live-info-item.busy .status {
 	color:#ffcc33;
+}
+
+.live-info-item.offline .app-operation-text  {
+    color: #FFF;
+}
+.live-info-item.not-busy .app-operation-text  {
+    color: #FFF;
+}
+.live-info-item.error .app-operation-text  {
+    color: #FF9999;
+}
+.live-info-item.working .app-operation-text  {
+    color: #FFF;
+}
+.live-info-item.busy .app-operation-text  {
+    color: #FFF;
 }
 
 .live-info-item.debug-toggle status {

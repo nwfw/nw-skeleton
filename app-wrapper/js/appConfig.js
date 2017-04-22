@@ -139,7 +139,7 @@ class AppConfig extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var confirmed = await _appWrapper.helpers.htmlHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'));
+        var confirmed = await _appWrapper.helpers.modalHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'));
         if (confirmed){
             this.clearUserConfig();
         } else {
