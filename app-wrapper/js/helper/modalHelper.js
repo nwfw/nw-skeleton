@@ -105,15 +105,6 @@ class ModalHelper extends BaseClass {
         }
         appState.modalData.currentModal.title = title;
         appState.modalData.currentModal.body = text;
-        // appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        // appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        // appState.modalData.currentModal.showCancelButton = false;
-        // appState.modalData.currentModal.confirmDisabled = true;
-        // appState.modalData.currentModal.saveDebugFileError = false;
-        // appState.modalData.currentModal.messages = [];
-        // this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        // appState.modalData.currentModal.defaultFilename = 'debug-' + appUtil.formatDateNormalize(new Date(), false, true) + '.txt';
-        // _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
         appState.currentModalClosePromise = new Promise((resolve) => {
             appState.closeModalResolve = resolve;
         });

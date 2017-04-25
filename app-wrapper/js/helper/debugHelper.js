@@ -128,7 +128,7 @@ class DebugHelper extends BaseClass {
         appState.modalData.currentModal.saveDebugFileError = false;
         appState.modalData.currentModal.messages = [];
         _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        appState.modalData.currentModal.defaultFilename = 'debug-' + appUtil.formatDateNormalize(new Date(), false, true) + '.txt';
+        appState.modalData.currentModal.defaultFilename = 'debug-' + _appWrapper.helpers.htmlHelper.formatDateNormalize(new Date(), false, true) + '.txt';
         _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
         _appWrapper.closeModalPromise = new Promise((resolve) => {
             appState.closeModalResolve = resolve;
@@ -215,7 +215,7 @@ class DebugHelper extends BaseClass {
 
     saveDebugFileClick (e){
         var el = e.target;
-        el.setAttribute('nwsaveas', 'debug-' + appUtil.formatDateNormalize(new Date(), false, true) + '.txt');
+        el.setAttribute('nwsaveas', 'debug-' + _appWrapper.helpers.htmlHelper.formatDateNormalize(new Date(), false, true) + '.txt');
     }
 
     saveDebugFileChange (e) {

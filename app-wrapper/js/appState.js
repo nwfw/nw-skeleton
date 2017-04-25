@@ -45,6 +45,7 @@ exports.appState = {
     movingWindow: false,
     ctrlPressed: false,
     shiftPressed: false,
+    altPressed: false,
 
     appOperation: {
         cancelable: false,

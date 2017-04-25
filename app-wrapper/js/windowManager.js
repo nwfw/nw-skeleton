@@ -21,6 +21,9 @@ class WindowManager extends eventEmitter {
         this.forceDebug = false;
         this.forceUserMessages = false;
 
+        this.screenWidth = null;
+        this.screenHeight = null;
+
         this.noHandlingKeys = false;
 
         this.boundMethods = {
@@ -44,6 +47,7 @@ class WindowManager extends eventEmitter {
             debugKeys: [68,69,66,85,71],
             commandKeyCodes: [224, 17, 91, 93],
             shiftKeyCodes: [16],
+            altKeyCodes: [18],
             reloadKeyCodes: [82],
             closeKeyCodes: [87],
             escKeyCodes: [27],
@@ -121,6 +125,14 @@ class WindowManager extends eventEmitter {
             } else if (e.type == 'keyup'){
                 appState.shiftPressed = false;
             }
+        } else if (_.includes(this.keyCodes.altKeyCodes, keyCode)){
+            e.stopImmediatePropagation();
+            this.pressedKeys = [];
+            if (e.type == 'keydown') {
+                appState.altPressed = true;
+            } else if (e.type == 'keyup'){
+                appState.altPressed = false;
+            }
         } else {
             if (e.type == 'keydown') {
                 if (appState && appState.modalData.currentModal && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
@@ -175,12 +187,11 @@ class WindowManager extends eventEmitter {
     initWindow () {
         nw.Screen.Init();
         var appState = appUtil.getAppState();
-        var screenW = nw.Screen.screens[0].bounds.width;
-        var screenH = nw.Screen.screens[0].bounds.height;
-        var appW = parseInt(screenW*0.50, 10);
-        var appH = parseInt(screenH*0.66, 10);
+        this.screenWidth = nw.Screen.screens[0].bounds.width;
+        this.screenHeight = nw.Screen.screens[0].bounds.height;
+        var appW = parseInt(this.screenWidth * 0.50, 10);
+        var appH = parseInt(this.screenHeight * 0.66, 10);
         var windowPosition = 'center';
-
 
         if (appState.isDebugWindow){
             appW = 550;
@@ -193,12 +204,11 @@ class WindowManager extends eventEmitter {
             this.win.show();
             this.document.body.className = this.document.body.className + ' nw-body-debug';
             setTimeout(() => {
-                if (windowPosition){
-                    this.winState.position = windowPosition;
-                }
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
+                } else {
+                    this.winState.x = this.screenWidth - (this.winState.width + 5);
                 }
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
