@@ -18,8 +18,8 @@ class WindowManager extends eventEmitter {
         this.window = this.win.window;
         this.document = this.win.window.document;
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.windowManager');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.windowManager');
 
         this.screenWidth = null;
         this.screenHeight = null;

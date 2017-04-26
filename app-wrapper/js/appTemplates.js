@@ -14,8 +14,8 @@ class AppTemplates {
         appUtil = _appWrapper.getAppUtil();
         appState = appUtil.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.appTemplates');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.appTemplates');
 
     }
 

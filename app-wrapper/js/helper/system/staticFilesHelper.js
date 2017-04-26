@@ -14,8 +14,8 @@ class StaticFilesHelper extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.staticFilesHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.staticFilesHelper');
 
         this.jsFileLoadResolves = {};
 

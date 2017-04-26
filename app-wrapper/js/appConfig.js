@@ -13,8 +13,8 @@ class AppConfig extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.appConfig');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.appConfig');
 
         this.initialAppConfig = initialAppConfig;
         this.appStateConfig = {};

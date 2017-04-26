@@ -14,8 +14,8 @@ class ModalHelper extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.modalHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.modalHelper');
 
         this.boundMethods = {
             confirmResolve: null
@@ -55,6 +55,7 @@ class ModalHelper extends BaseClass {
             if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
                 appState.closeModalResolve(false);
             }
+            appState.modalData.currentModal.autoCloseTime = null;
             appState.modalData.modalVisible = false;
             this.modalNotBusy();
         } else {
@@ -64,6 +65,8 @@ class ModalHelper extends BaseClass {
 
     openCurrentModal (showContentImmediately) {
         appState.modalData.modalVisible = true;
+        clearTimeout(this.timeouts.autoClose);
+        clearInterval(this.intervals.autoClose);
         if (!showContentImmediately){
             setTimeout(() => {
                 if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){

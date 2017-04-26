@@ -238,6 +238,7 @@ exports.config = {
     hideDebug: false,
     debug: true,
     debugToFile: true,
+    debugToFileAppend: false,
     debugMessagesFilename: './app/var/log/debug-messages.log',
     devTools: true,
     debugLevel: 3,
@@ -253,12 +254,40 @@ exports.config = {
     userMessageLevel: 2,
     maxUserMessages: 1000,
     userMessagesToFile: true,
+    userMessagesToFileAppend: false,
     userMessagesFilename: './app/var/log/user-messages.log',
 
     windowCloseTimeoutDuration: 15000,
     windowReloadTimeoutDuration: 15000,
 
     windowWidth: null,
-    windowHeight: null
+    windowHeight: null,
+
+    forceDebug: {
+        appWrapper: false,
+        appConfig: false,
+        appTemplates: false,
+        appTranslations: false,
+        componentHelper: false,
+        debugHelper: false,
+        htmlHelper: false,
+        modalHelper: false,
+        storageHelper: false,
+        staticFilesHelper: false,
+        windowManager: false
+    },
+    forceUserMessages: {
+        appWrapper: false,
+        appConfig: false,
+        appTemplates: false,
+        appTranslations: false,
+        componentHelper: false,
+        debugHelper: false,
+        htmlHelper: false,
+        modalHelper: false,
+        storageHelper: false,
+        staticFilesHelper: false,
+        windowManager: false
+    }
 
 };

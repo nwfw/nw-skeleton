@@ -10,11 +10,16 @@ class HtmlHelper extends eventEmitter {
 
     constructor(){
         super();
+
+        _appWrapper = window.getAppWrapper();
+        appUtil = _appWrapper.getAppUtil();
+        appState = appUtil.getAppState();
+
         this.tweens = {};
         this.tweenIntervals = {};
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.htmlHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.htmlHelper');
 
         this.operationStart = null;
         this.lastTimeCalculation = null;

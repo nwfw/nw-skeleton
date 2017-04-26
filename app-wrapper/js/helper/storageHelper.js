@@ -18,8 +18,8 @@ class StorageHelper extends BaseClass {
         _.noop(appState);
         _.noop(appUtil);
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.storageHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.storageHelper');
 
         return this;
     }

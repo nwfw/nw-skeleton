@@ -16,8 +16,8 @@ class AppTranslations extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.appTranslations');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.appTranslations');
 
         this.addingLabels = {};
         this.translationsLoaded = false;

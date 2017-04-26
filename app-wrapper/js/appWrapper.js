@@ -78,10 +78,13 @@ class AppWrapper {
         appState.config = await this.appConfig.initializeConfig();
         appState.config = await this.appConfig.loadUserConfig();
 
-        if (appUtil.getConfig('debugToFile')){
+        this.forceDebug = appUtil.getConfig('forceDebug.appWrapper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.appWrapper');
+
+        if (appUtil.getConfig('debugToFile') && !appUtil.getConfig('debugToFileAppend')){
             fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), '', {flag: 'w'});
         }
-        if (appUtil.getConfig('userMessagesToFile')){
+        if (appUtil.getConfig('userMessagesToFile') && !appUtil.getConfig('userMessagesToFileAppend')){
             fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
         }
 
@@ -127,7 +130,7 @@ class AppWrapper {
         }
 
 
-        await this.finalize();
+        // await this.finalize();
         if (appUtil.getConfig('appConfig.showInitializationStatus')){
             if (appUtil.getConfig('appConfig.showInitializationProgress')){
                 this.operationUpdate(100, 100);
@@ -229,9 +232,9 @@ class AppWrapper {
             mixins: this.helpers.componentHelper.vueMixins,
             components: this.helpers.componentHelper.vueComponents,
             translations: appState.translations,
-            created: () => {
+            mounted: async () => {
                 appState.appInitialized = true;
-                this.finalize();
+                await this.finalize();
             }
         });
         if (window.isDebugWindow){

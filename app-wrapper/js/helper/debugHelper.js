@@ -16,8 +16,8 @@ class DebugHelper extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.debugHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.debugHelper');
         this.boundMethods = {
             onDebugWindowUnload: null,
             onDebugWindowClose: null

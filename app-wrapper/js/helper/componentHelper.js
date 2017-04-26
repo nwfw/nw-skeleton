@@ -17,8 +17,8 @@ class ComponentHelper extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        this.forceDebug = appUtil.getConfig('forceDebug.componentHelper');
+        this.forceUserMessages = appUtil.getConfig('forceUserMessages.componentHelper');
 
         this.allComponents = {};
         this.vueComponents = {};
