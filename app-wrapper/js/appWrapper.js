@@ -570,14 +570,14 @@ class AppWrapper {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        appState.userMessagesData.toolbarVisible = !appState.userMessagesData.toolbarVisible;
+        this.appConfig.setConfigVar('userMessagesToolbarVisible', !appState.config.userMessagesToolbarVisible);
     }
 
     toggleUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        appState.userMessagesData.messagesExpanded = !appState.userMessagesData.messagesExpanded;
+        this.appConfig.setConfigVar('userMessagesExpanded', !appState.config.userMessagesExpanded);
         setTimeout(() => {
             var ul = document.querySelector('.user-message-list');
             ul.scrollTop = ul.scrollHeight;

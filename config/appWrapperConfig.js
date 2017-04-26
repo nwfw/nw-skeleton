@@ -224,6 +224,14 @@ exports.config = {
                     }
                 }
             },
+            userMessagesExpanded: {
+                editable: true,
+                reload: false
+            },
+            userMessagesToolbarVisible: {
+                editable: true,
+                reload: false
+            }
         }
     },
 
@@ -256,6 +264,8 @@ exports.config = {
     userMessagesToFile: true,
     userMessagesToFileAppend: false,
     userMessagesFilename: './app/var/log/user-messages.log',
+    userMessagesExpanded: false,
+    userMessagesToolbarVisible: false,
 
     windowCloseTimeoutDuration: 15000,
     windowReloadTimeoutDuration: 15000,

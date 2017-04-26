@@ -5,7 +5,7 @@
 			<a href="#" class="user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="showUserMessageSettings" v-bind:title="translate('User messages settings')">
 				<span class="fa fa-cog"></span>
 			</a>
-			<a class="expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !messagesExpanded, 'fa-arrow-down': messagesExpanded }" v-on:click="callViewHandler" data-click-handler="toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
+			<a class="expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" v-on:click="callViewHandler" data-click-handler="toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
 		</div>
 	</div>
 	<div class="user-messages-toolbar">

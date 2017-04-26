@@ -112,8 +112,6 @@ exports.appState = {
 
     },
     userMessagesData: {
-        toolbarVisible: false,
-        messagesExpanded: false,
         selectFocused: false
     },
     currentModalClosePromise: null,
