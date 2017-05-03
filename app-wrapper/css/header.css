@@ -7,6 +7,21 @@ header {
 	opacity: 0.9;
 	overflow: hidden;
 	position: relative;
+    flex-direction: column;
+}
+
+.header-top {
+    flex: 0 0 40px;
+}
+
+.header-bottom {
+    flex: 1 1 auto;
+}
+
+.header-app-title {
+    flex: 0 1 auto;
+    font-size: 1rem;
+    padding: 10px;
 }
 
 .logo {
@@ -19,11 +34,16 @@ header {
 	top: 5px;
 	right: 5px;
 	display: flex;
+    flex: 1 1 auto;
 }
 
 .window-controls-wrapper .window-controls {
 	display: flex;
 	position: relative;
+}
+
+.window-controls-wrapper .window-controls.main-window-controls {
+    padding-left: 30px;
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper {

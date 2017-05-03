@@ -1,0 +1,39 @@
+.app-loader {
+    text-align: center;
+    background: #eee;
+}
+
+.app-loader .app-loader-content {
+    min-width: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.app-loader .app-loader-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.app-loader .app-loader-spinner {
+    font-size: 120px;
+    display: block;
+}
+
+.app-loader .user-messages {
+    margin-top: 30px;
+}
+
+.app-loader .user-messages .user-message-controls,
+.app-loader .user-messages .user-messages-toolbar {
+    display: none;
+}
+
+.app-loader .user-messages .user-messages-contents {
+
+}
+
+.app-loader .user-messages .user-message-list {
+    height: 100px;
+    border: 1px solid #CCC;
+}

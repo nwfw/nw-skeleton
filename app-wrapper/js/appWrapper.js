@@ -230,6 +230,7 @@ class AppWrapper {
             template: window.indexTemplate,
             data: appState,
             mixins: this.helpers.componentHelper.vueMixins,
+            filters: this.helpers.componentHelper.vueFilters,
             components: this.helpers.componentHelper.vueComponents,
             translations: appState.translations,
             mounted: async () => {
@@ -312,9 +313,6 @@ class AppWrapper {
                     if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
                         return await handlerObj[eventMethod](e);
                     } else {
-                        console.log('handlerObj', handlerObj);
-                        console.log('eventMethodPath', eventMethodPath);
-                        console.log('eventMethod', eventMethod);
                         appUtil.log('Can\'t find event handler \'{1}\'', 'warning', [eventHandlerName], false, this.forceDebug);
                         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                             e.preventDefault();
@@ -603,6 +601,25 @@ class AppWrapper {
         appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
         appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
         appState.closeModalResolve = null;
+    }
+
+    getHelper(helperName){
+        var helper = false;
+        if (this.app && this.app.helpers){
+            helper = _.get(this.app.helpers, helperName);
+            if (!helper){
+                helper = _.get(this.app.helpers, helperName + 'Helper');
+            }
+        }
+        if (!helper){
+            if (this.helpers){
+                helper = _.get(this.helpers, helperName);
+                if (!helper){
+                    helper = _.get(this.helpers, helperName + 'Helper');
+                }
+            }
+        }
+        return helper;
     }
 
 }

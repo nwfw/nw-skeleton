@@ -23,6 +23,9 @@ exports.component = {
                 }
             }
             return allTranslated;
+        },
+        _: function() {
+            return _;
         }
     },
     methods: {

@@ -1,8 +1,5 @@
 exports.appState = {
     config: {},
-    info: {
-        appName: ''
-    },
     windowState: {
         title: '',
         position: '',
@@ -40,6 +37,7 @@ exports.appState = {
     appError: false,
     appErrorTitle: '',
     appErrorText: '',
+    appErrorUserMessages: true,
     windowMaximized: false,
     devToolsOpened: false,
     movingWindow: false,

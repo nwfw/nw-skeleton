@@ -1,0 +1,80 @@
+.app-body {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.app-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-body.moving-window {
+    opacity: 0.7;
+}
+
+header {
+    display: flex;
+    flex: 0 0 var(--header-height);
+    height: var(--header-height);
+}
+
+.main {
+    position: relative;
+    display: flex;
+    flex: 1 1 0px;
+}
+
+.app-loader {
+    flex: 0 0 100%;
+    position: relative;
+}
+
+.app-error {
+    flex: 0 0 100%;
+    position: relative;
+}
+
+
+.app-debug-wrapper {
+    display: flex;
+    flex: 0 0 0px;
+    position: relative;
+    right: 0px;
+    margin: 0;
+    max-height: 100px;
+}
+
+.debug-enabled .app-debug-wrapper {
+    flex: 0 0 26px;
+    max-height: unset;
+    overflow: hidden;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper {
+    flex: 0 0 100px;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug {
+    position: absolute;
+    right: 0;
+    width: 85px;
+    height: 100%;
+}
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug {
+    width: 100vw;
+}
+
+.app-body.has-debug-window .app-debug-wrapper {
+    flex: 0 0 0px;
+}
+
+footer {
+    display: flex;
+    flex-flow: column;
+    flex: 0 0 70px;
+}

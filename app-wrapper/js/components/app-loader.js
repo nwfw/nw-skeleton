@@ -3,11 +3,14 @@ var appUtil = _appWrapper.getAppUtil();
 var appState = appUtil.getAppState();
 
 exports.component = {
-    name: 'form-control-textarea',
-    template: _appWrapper.appTemplates.getTemplateContents('form-control-textarea'),
-    props: ['control'],
+    name: 'app-loader',
+    template: _appWrapper.appTemplates.getTemplateContents('app-loader'),
     data: function () {
         return appState.appInfo;
     },
-    components: []
+    computed: {
+        appState: function(){
+            return appState;
+        }
+    }
 };

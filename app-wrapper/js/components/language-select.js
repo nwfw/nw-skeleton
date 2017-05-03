@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'language-select',
-    template: _appWrapper.templateContents.componentTemplates['language-select'],
+    template: _appWrapper.appTemplates.getTemplateContents('language-select'),
     methods: {
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     },

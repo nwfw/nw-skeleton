@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'app-header',
-    template: _appWrapper.templateContents.componentTemplates['app-header'],
+    template: _appWrapper.appTemplates.getTemplateContents('app-header'),
     data: function () {
         return appState.headerData;
     },

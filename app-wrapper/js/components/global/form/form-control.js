@@ -6,7 +6,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'form-control',
-    template: _appWrapper.templateContents.componentTemplates['form-control'],
+    template: _appWrapper.appTemplates.getTemplateContents('form-control'),
     props: ['control'],
     data: function () {
         return appState.appInfo;

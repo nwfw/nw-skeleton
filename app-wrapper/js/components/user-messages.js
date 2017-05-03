@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'user-messages',
-    template: _appWrapper.templateContents.componentTemplates['user-messages'],
+    template: _appWrapper.appTemplates.getTemplateContents('user-messages'),
     methods: {
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     },

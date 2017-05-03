@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'user-messages-controls',
-    template: _appWrapper.templateContents.componentTemplates['user-messages-controls'],
+    template: _appWrapper.appTemplates.getTemplateContents('user-messages-controls'),
     methods: {
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     },

@@ -34,7 +34,7 @@ body.nw-body-initialized {
 }
 
 *::selection {
-    background:transparent;
+    background: var(--selection-background);
 }
 
 h1, h2 {
@@ -51,21 +51,12 @@ a:hover {
 }
 
 .app-body {
-	position: relative;
 	font-size: 0.8rem;
-	justify-content: center;
-	display: flex;
 	border-radius: var(--app-element-border-radius);
 }
 
 .app-content {
-	display: flex;
-	flex-direction: column;
-	flex: 1 1 auto;
 	font-size: 0.8rem;
-	justify-content: center;
-	height: 100vh;
-	overflow: hidden;
 }
 
 .app-body.moving-window {
@@ -73,216 +64,18 @@ a:hover {
 }
 
 header {
-	display: flex;
-	flex: 0 0 100px;
-	height: 100px;
 	border-radius: var(--app-element-border-radius) var(--app-element-border-radius) 0 0;
 	border-width: var(--app-element-border-width) var(--app-element-border-width) 0 var(--app-element-border-width);
 	border-style: var(--app-element-border-style);
 	border-color: var(--app-header-border-color);
 }
 
-.app-debug-wrapper {
-	display: flex;
-	flex: 0 0 0px;
-	border-radius: 0;
-	border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
-	border-style: var(--app-element-border-style);
-	border-color: var(--app-debug-wrapper-border-color);
-	transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
-	background: #eee;
-	list-style: none;
-	position: relative;
-	right: 0px;
-	font-size: 0.7rem;
-	margin: 0;
-	max-height: 100px;
-}
-
-.debug-enabled .app-debug-wrapper {
-	flex: 0 0 26px;
-	max-height: unset;
-	overflow: hidden;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper {
-	background: #F8F8F8;
-	flex: 0 0 100px;
-	transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
-}
-
-.app-debug-wrapper .app-debug {
-	overflow: hidden;
-}
-
-.debug-enabled .app-debug-wrapper .app-debug {
-	position: absolute;
-	right: 0;
-	transition: width ease-in-out var(--short-animation-duration) var(--long-animation-duration);
-	width: 85px;
-	height: 100%;
-}
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug {
-	transition: width ease-in-out var(--long-animation-duration) var(--short-animation-duration);
- 	width: 100vw;
-}
-
-.app-debug-wrapper .app-debug-header {
-	color: var(--debug-header-text-color);
-	background-color: var(--debug-header-background-color);
-	background: var(--debug-header-background);
-	opacity: 0.6;
-	float: right;
-}
-.debug-enabled .app-debug-wrapper .app-debug-header {
-	width: 100%;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
-	opacity: 1;
-	position: fixed;
-}
-
-.app-debug-wrapper .app-debug-header h2 {
-	color: #FFF;
-	margin: 0;
-	padding: 5px;
-	font-size: 0.8rem;
-	display: inline-block;
-}
-
-.app-debug-wrapper .app-debug-header a {
-	color:#FFF;
-	display: inline-block;
-	margin-left: 5px;
-	cursor: pointer;
-}
-
-.app-debug-wrapper .app-debug-header a:hover {
-	color:#fff;
-	text-shadow: 0 0 4px #000;
-	text-decoration: none;
-}
-
-.debug-enabled .app-debug-wrapper .app-debug-header .debug-header-tool{
-	display: none;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .debug-header-tool{
-	display:inline-block;
-}
-
-.debug-enabled .app-debug-wrapper .app-debug-header .toggle-debug-link{
-	display: inline-block;
-}
-
-.app-debug-body ul {
-	margin: 0;
-	padding: 5px;
-	list-style: none;
-}
-
-.app-debug-body ul {
-	padding-top: 30px;
-	max-height: 95px;
-	overflow: auto;
-}
-
-footer {
-	display: flex;
-	flex-flow: column;
-	flex: 0 0 70px;
-	border-radius: 0 0 var(--app-element-border-radius) var(--app-element-border-radius);
-	border-width: 0 var(--app-element-border-width) var(--app-element-border-width) var(--app-element-border-width);
-	border-style: var(--app-element-border-style);
-	border-color: var(--app-footer-border-color);
-	color: var(--footer-text-color);
-	background-color: var(--footer-background-color);
-	background: var(--footer-background);
-	transition-property: flex-basis;
-	transition-duration: 0.3s;
-}
-
-footer.user-messages-toolbar-visible {
-	flex: 0 0 95px;
-}
-
-footer.user-messages-expanded {
-	flex: 0 0 150px;
-}
-
-footer.user-messages-toolbar-visible.user-messages-expanded {
-	flex: 0 0 180px;
-}
-
-.footer-info {
-	flex: 1 1 30px;
-	margin: 0;
-	padding: 0;
-	/*position: relative;*/
-	bottom: 0px;
-	text-align: center;
-	width: 100%;
-}
-
-.app-body.has-debug-window .app-debug-wrapper {
-	display: none;
-	flex: 0 0 0px;
-}
-
-.app-body.has-debug-window .debug-toggle {
-	display: none;
-}
-
-.main-loader {
-	font-size: 120px;
-	text-align: center;
-	background: #eee;
-	min-height: 300px;
-	flex: 0 0 100%;
-	position: relative;
-}
-
-.main-loader .main-loader-title {
-	font-size: 1rem;
-}
-.main-loader .main-loader-spinner {
-	display: block;
-	position: relative;
-	top: 50%;
-	margin-top: -60px;
-}
-
-.app-debug .message {
-	color: var(--message-text-color);
-}
-
-.app-debug .info {
-	color: var(--message-info-text-color);
-}
-
-.app-debug .warning {
-	color: var(--message-warning-text-color);
-}
-
-.app-debug .error {
-	color: var(--message-error-text-color);
-}
-
-.app-debug .debug {
-	color: var(--message-debug-text-color);
-}
-
-.app-debug .important {
-	font-weight: bold;
-}
-
-.app-debug .message:nth-child(2n) {
-	background:#FFF;
-}
-
-.app-debug .message:nth-child(2n+1) {
-	background:#DDD;
+.main {
+    background: var(--main-bg-color);
+    border-radius: 0;
+    border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
+    border-style: var(--app-element-border-style);
+    border-color: var(--app-element-border-color);
 }
 
 .form-row {
@@ -301,10 +94,6 @@ footer.user-messages-toolbar-visible.user-messages-expanded {
 
 .form-row.form-row-has-error .form-row-error {
 	display: block;
-}
-
-.sync-tools, .sync-form {
-	flex: 1 1 45%;
 }
 
 .is-visible {
@@ -366,34 +155,10 @@ footer.user-messages-toolbar-visible.user-messages-expanded {
 	display: block;
 }
 
-.app-error {
-	text-align: center;
-	background: #eee;
-	min-height: 300px;
-	flex: 0 0 100%;
-	position: relative;
-}
-
-.app-error-content {
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
-}
-.app-error-title {
-	color: #990000;
-	font-size: 2rem;
-}
-
 .app-error-text {
 	color: #990000;
 	font-size: 1rem;
 }
-
-.config-editor-modal .modal-dialog {
-	max-height: 80vh;
-	overflow: auto;
-}
-
 
 .form-control-row label {
 	display: inline-block;

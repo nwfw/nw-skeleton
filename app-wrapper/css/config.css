@@ -1,5 +1,7 @@
 :root {
 
+    --selection-background: transparent;
+
     --short-animation-duration: 0.2s;
     --medium-animation-duration: 0.4s;
     --long-animation-duration: 0.6s;
@@ -10,6 +12,7 @@
     --link-color: #3333CC;
     --app-border: 1px solid #333;
 
+    --header-height: auto;
 
     --header-background-color: #45484D;
     --header-background: -webkit-linear-gradient(top, var(--header-background-color) 0%, #000000 80%);
@@ -34,7 +37,7 @@
     --app-debug-wrapper-border-color: #333333 #333333 #333333 #333333;
     --app-footer-border-color: #666666 var(--header-background-color) #666666 #666666;
 
-    --main-bg-color: #EEEEEE;
+    --main-bg-color: #FFFFFF;
 
     /* user and debug messages */
     --message-text-color: #999;

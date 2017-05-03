@@ -1,0 +1,125 @@
+.app-debug-wrapper {
+    border-radius: 0;
+    border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
+    border-style: var(--app-element-border-style);
+    border-color: var(--app-debug-wrapper-border-color);
+    transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+    background: #eee;
+    list-style: none;
+    font-size: 0.7rem;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper {
+    background: #F8F8F8;
+    transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+}
+
+.app-debug-wrapper .app-debug {
+    overflow: hidden;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug {
+    transition: width ease-in-out var(--short-animation-duration) var(--long-animation-duration);
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug {
+    transition: width ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+}
+
+.app-debug-wrapper .app-debug-header {
+    color: var(--debug-header-text-color);
+    background-color: var(--debug-header-background-color);
+    background: var(--debug-header-background);
+    opacity: 0.6;
+    float: right;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug-header {
+    width: 100%;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
+    opacity: 1;
+    position: fixed;
+}
+
+.app-debug-wrapper .app-debug-header h2 {
+    color: #FFF;
+    margin: 0;
+    padding: 5px;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.app-debug-wrapper .app-debug-header a {
+    color:#FFF;
+    display: inline-block;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.app-debug-wrapper .app-debug-header a:hover {
+    color:#fff;
+    text-shadow: 0 0 4px #000;
+    text-decoration: none;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug-header .debug-header-tool{
+    display: none;
+}
+
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .debug-header-tool{
+    display:inline-block;
+}
+
+.debug-enabled .app-debug-wrapper .app-debug-header .toggle-debug-link{
+    display: inline-block;
+}
+
+.app-debug-body ul {
+    margin: 0;
+    padding: 30px 5px 5px 5px;
+    list-style: none;
+    max-height: 95px;
+    overflow: auto;
+}
+
+.app-debug .message {
+    color: var(--message-text-color);
+}
+
+.app-debug .info {
+    color: var(--message-info-text-color);
+}
+
+.app-debug .warning {
+    color: var(--message-warning-text-color);
+}
+
+.app-debug .error {
+    color: var(--message-error-text-color);
+}
+
+.app-debug .debug {
+    color: var(--message-debug-text-color);
+}
+
+.app-debug .important {
+    font-weight: bold;
+}
+
+.app-debug .message:nth-child(2n) {
+    background:#FFF;
+}
+
+.app-debug .message:nth-child(2n+1) {
+    background:#DDD;
+}
+
+.app-body.has-debug-window .app-debug-wrapper {
+    display: none;
+}
+
+.app-body.has-debug-window .debug-toggle {
+    display: none;
+}

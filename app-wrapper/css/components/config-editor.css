@@ -1,0 +1,31 @@
+.config-editor-modal .modal-dialog-body {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.config-editor-modal ul {
+    margin: 0;
+    padding: 0;
+    min-width: 300px;
+}
+
+.config-editor-modal li {
+    list-style: none;
+}
+
+.config-editor-modal input[type=text] {
+    border: 1px solid #999;
+    padding: 3px;
+    min-width: 200px;
+}
+
+.config-editor-modal .form-row {
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    padding-left: 5px;
+}
+
+.config-editor-modal .form-row.form-control-subrow {
+    border: none;
+}

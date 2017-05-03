@@ -35,10 +35,12 @@
 			</a>
 		</span>
 		<span class="window-control-wrapper">
-			<a class="window-control window-control-move " v-bind:class="{'window-control-moving': appState.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="moveWindowMouseup" v-bind:title="translate('Move window')">
+			<a class="window-control window-control-move" v-bind:class="{'window-control-moving': appState.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="moveWindowMouseup" v-bind:title="translate('Move window')">
 				<span data-event-target="parent" class="fa fa-arrows"></span>
 			</a>
 		</span>
+	</span>
+	<span class="window-controls main-window-controls">
 		<span class="window-control-wrapper">
 			<a class="window-control window-control-minimize" v-on:click="callViewHandler" data-click-handler="windowManager.minimizeWindow" v-bind:title="translate('Minimize window')">
 				<span data-event-target="parent" class="fa fa-window-minimize"></span>

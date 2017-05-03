@@ -1,0 +1,8 @@
+<div class="inspector-json-wrapper" v-bind:data-jsonData="toJson(jsonData, true)">
+    <a class="inspector-json-drag" v-on:mousedown="startDrag" v-on:mouseup="stopDrag" v-on:mouseout="stopDrag" v-on:mousemove="drag">
+        <span class="fa fa-arrows-h"></span>
+    </a>
+    <div class="inspector-json">
+
+    </div>
+</div>

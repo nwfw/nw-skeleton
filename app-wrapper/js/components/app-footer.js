@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'app-footer',
-    template: _appWrapper.templateContents.componentTemplates['app-footer'],
+    template: _appWrapper.appTemplates.getTemplateContents('app-footer'),
     data: function () {
         return appState.footerData;
     },

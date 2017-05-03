@@ -30,6 +30,9 @@ class ComponentHelper extends BaseClass {
         this.vueMixins = null;
         this.appVueMixins = null;
 
+        this.vueFilters = null;
+        this.appVueFilters = null;
+
         BaseComponent = require('../mixin/baseComponent').component;
 
         return this;
@@ -38,6 +41,7 @@ class ComponentHelper extends BaseClass {
     async initialize () {
         _.noop(_appWrapper);
         await super.initialize();
+        this.vueFilters = await this.initFilters();
         this.vueMixins = await this.loadMixins();
         await this.initComponents();
         return this;
@@ -73,6 +77,32 @@ class ComponentHelper extends BaseClass {
             Vue.mixin(MixinObj.mixin);
         });
         return vueMixins;
+    }
+
+    async initFilters(){
+        var vueFilters = [];
+        var appVueFilters = [];
+
+        var filtersDir = appUtil.getConfig('wrapper.filterRoot');
+        if (filtersDir){
+            filtersDir = path.resolve(appState.config.wrapper.filterRoot);
+            var filterRegex = appUtil.getConfig('wrapper.filterExtensionRegex');
+            if (fs.existsSync(filtersDir)){
+                vueFilters = await appUtil.loadFilesFromDir(filtersDir, filterRegex, true);
+            }
+        }
+
+        var appFiltersDir = appUtil.getConfig('appConfig.filterRoot');
+        if (appFiltersDir){
+            appFiltersDir = path.resolve(appFiltersDir);
+            var appFilterRegex = appUtil.getConfig('appConfig.filterExtensionRegex');
+            if (fs.existsSync(filtersDir)){
+                appVueFilters = await appUtil.loadFilesFromDir(appFiltersDir, appFilterRegex, true);
+            }
+
+            vueFilters = _.merge(vueFilters, appVueFilters);
+        }
+        return vueFilters;
     }
 
     async loadDirComponents(componentDirs){
@@ -197,6 +227,8 @@ class ComponentHelper extends BaseClass {
         } else {
             initializedMessage += '.';
         }
+
+        component.filters = this.vueFilters;
 
         appUtil.log(initializedMessage, 'debug', initializedMessageData, false, this.forceDebug);
         return component;

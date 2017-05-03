@@ -65,7 +65,7 @@ class AppConfig extends BaseClass {
                 appState.hasUserConfig = false;
             }
             userConfig = _.merge({}, appState.config, userConfig);
-            this.config = _.cloneDeep(userConfig);
+            // this.config = _.cloneDeep(userConfig);
             return userConfig;
         } else {
             appUtil.log('No user config found.', 'info', [], false, this.forceDebug);
@@ -79,9 +79,7 @@ class AppConfig extends BaseClass {
             var userConfig = appUtil.difference(this.config, appState.config);
             var userConfigKeys = _.keys(userConfig);
             var noReloadConfig = appUtil.getConfig('configData.noReloadConfig');
-
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
-
             var shouldReload = (userConfigKeys.length - noReloadChanges.length) <= 0;
 
             appUtil.log('Saving user config...', 'warning', [], false, this.forceDebug);
@@ -147,15 +145,23 @@ class AppConfig extends BaseClass {
         }
     }
 
-    setConfigVar(name, value){
-        appState.config[name] = value;
-        this.saveUserConfig();
+    hasConfigVar(name){
+        return !_.isUndefined(appState.config[name]);
     }
 
-    setConfig(data){
+    setConfigVar(name, value, noSave){
+        appState.config[name] = value;
+        if (!noSave){
+            this.saveUserConfig();
+        }
+    }
+
+    setConfig(data, noSave){
         if (data && _.isObject(data)){
             appState.config = _.merge(appState.config, data);
-            this.saveUserConfig();
+            if (!noSave){
+                this.saveUserConfig();
+            }
         }
     }
 

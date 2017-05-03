@@ -354,6 +354,7 @@ var appUtil = {
                     return path.join(directory, file);
                 });
 
+
                 var filesToLoad = _.filter(eligibleFiles, function checkFileStat(file){
                     var fileStat = fs.statSync(file);
                     if (fileStat.isFile()){
@@ -456,6 +457,10 @@ var appUtil = {
         });
         return returnPromise;
     },
+    onNextTick: async function(callable){
+        await this.nextTick();
+        callable();
+    },
     wait: async function(duration){
         appUtil.log('Waiting {1} ms', 'info', [duration], false, true);
         var returnPromise = new Promise((resolve) => {
@@ -466,24 +471,26 @@ var appUtil = {
         return returnPromise;
     },
 
-    difference: function(template, override) {
+    difference: function(original, modified) {
         var ret = {};
         var diff;
-        for (var name in template) {
-            if (name in override) {
-                if (_.isObject(override[name]) && !_.isArray(override[name])) {
-                    diff = appUtil.difference(template[name], override[name]);
+        for (var name in modified) {
+            if (name in original) {
+                if (_.isObject(modified[name]) && !_.isArray(modified[name])) {
+                    diff = appUtil.difference(original[name], modified[name]);
                     if (!_.isEmpty(diff)) {
                         ret[name] = diff;
                     }
-                } else if (_.isArray(override[name])) {
-                    diff = appUtil.difference(template[name], override[name]);
+                } else if (_.isArray(modified[name])) {
+                    diff = appUtil.difference(original[name], modified[name]);
                     if (!_.isEmpty(diff)) {
                         ret[name] = diff;
                     }
-                } else if (!_.isEqualWith(template[name], override[name], function(one, two){ return one == two; })) {
-                    ret[name] = override[name];
+                } else if (!_.isEqualWith(original[name], modified[name], function(originalValue, modifiedValue){ return originalValue == modifiedValue; })) {
+                    ret[name] = modified[name];
                 }
+            } else {
+                ret[name] = modified[name];
             }
         }
         return ret;

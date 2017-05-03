@@ -1,6 +1,9 @@
 <div class="app-error">
-	<div class="app-error-content">
-		<h2 v-if="appState.appErrorTitle" class="app-error-title" v-html="appState.appErrorTitle"></h2>
-		<p v-if="appState.appErrorText" class="app-error-text" v-html="appState.appErrorText"></p>
-	</div>
+    <div class="app-error-content">
+        <h2 v-if="appState.appErrorTitle" class="app-error-title" v-html="appState.appErrorTitle"></h2>
+        <div class="app-error-icon">
+            <span class="fa fa-exclamation-triangle"></span>
+        </div>
+        <p v-if="appState.appErrorText" class="app-error-text" v-html="appState.appErrorText"></p>
+    </div>
 </div>

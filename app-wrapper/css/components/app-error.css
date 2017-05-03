@@ -1,0 +1,24 @@
+.app-error {
+    text-align: center;
+    background: #eee;
+    color: #DD0000;
+}
+
+.app-error-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.app-error-title {
+    font-size: 2rem;
+}
+
+.app-error-icon {
+    text-align: center;
+}
+
+.app-error-icon span {
+    font-size: 10rem;
+}

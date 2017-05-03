@@ -1,0 +1,32 @@
+footer {
+    border-radius: 0 0 var(--app-element-border-radius) var(--app-element-border-radius);
+    border-width: 0 var(--app-element-border-width) var(--app-element-border-width) var(--app-element-border-width);
+    border-style: var(--app-element-border-style);
+    border-color: var(--app-footer-border-color);
+    color: var(--footer-text-color);
+    background-color: var(--footer-background-color);
+    background: var(--footer-background);
+    transition-property: flex-basis;
+    transition-duration: 0.3s;
+}
+
+footer.user-messages-toolbar-visible {
+    flex: 0 0 95px;
+}
+
+footer.user-messages-expanded {
+    flex: 0 0 150px;
+}
+
+footer.user-messages-toolbar-visible.user-messages-expanded {
+    flex: 0 0 180px;
+}
+
+.footer-info {
+    flex: 1 1 30px;
+    margin: 0;
+    padding: 0;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+}

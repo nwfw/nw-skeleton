@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'live-info',
-    template: _appWrapper.templateContents.componentTemplates['live-info'],
+    template: _appWrapper.appTemplates.getTemplateContents('live-info'),
     computed: {
         appStatusClassObject: function () {
             var appState = appUtil.getAppState();

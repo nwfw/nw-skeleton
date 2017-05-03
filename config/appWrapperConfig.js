@@ -27,6 +27,9 @@ exports.config = {
 
         mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixin/',
 
+        filterRoot: './node_modules/nw-skeleton/app-wrapper/js/filter/',
+        filterExtensionRegex: /\.js$/,
+
         translationExtensionRegex: /\.i18n\.js$/,
         translationsRoot: './app/data/translations/',
 
@@ -45,6 +48,22 @@ exports.config = {
                     },
                     {
                         name: 'progress-bar'
+                    }
+                ]
+            },
+            'app-main': {
+                name: 'app-main',
+                components: [
+                    {
+                        name: 'app-error'
+                    },
+                    {
+                        name: 'app-loader',
+                        components: [
+                            {
+                                name: 'user-messages'
+                            }
+                        ]
                     }
                 ]
             },
@@ -75,11 +94,18 @@ exports.config = {
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
         cssFiles: [
+            '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
             '/node_modules/nw-skeleton/app-wrapper/css/header.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/footer.css',
             '/node_modules/nw-skeleton/app-wrapper/css/modals.css',
             '/node_modules/nw-skeleton/app-wrapper/css/components/user-messages.css',
             '/node_modules/nw-skeleton/app-wrapper/css/components/progress-bar.css',
             '/node_modules/nw-skeleton/app-wrapper/css/components/translation-editor.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/inspector-json.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/config-editor.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/app-debug.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/app-loader.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/app-error.css',
             '/node_modules/nw-skeleton/app-wrapper/css/style.css',
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
         ],
@@ -284,6 +310,7 @@ exports.config = {
         modalHelper: false,
         storageHelper: false,
         staticFilesHelper: false,
+        utilHelper: false,
         windowManager: false
     },
     forceUserMessages: {
@@ -297,6 +324,7 @@ exports.config = {
         modalHelper: false,
         storageHelper: false,
         staticFilesHelper: false,
+        utilHelper: false,
         windowManager: false
     }
 

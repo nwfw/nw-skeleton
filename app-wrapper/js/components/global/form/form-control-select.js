@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'form-control-select',
-    template: _appWrapper.templateContents.componentTemplates['form-control-select'],
+    template: _appWrapper.appTemplates.getTemplateContents('form-control-select'),
     props: ['control'],
     data: function () {
         return appState.appInfo;

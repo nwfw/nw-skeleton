@@ -4,7 +4,7 @@ var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'save-debug',
-    template: _appWrapper.templateContents.componentTemplates['save-debug'],
+    template: _appWrapper.appTemplates.getTemplateContents('save-debug'),
     data: function () {
         return appState.modalData;
     },
