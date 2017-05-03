@@ -311,11 +311,11 @@ class HtmlHelper extends eventEmitter {
         var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
 
         if (!time){
-            var num = parseInt(Math.random() * 100 / 33, 10);
+            // var num = parseInt(Math.random() * 100 / 33, 10);
             var val = '';
-            for (var i = 0; i<num; i++){
-                val += '.';
-            }
+            // for (var i = 0; i<num; i++){
+            //     val += '.';
+            // }
             return val;
         }
 

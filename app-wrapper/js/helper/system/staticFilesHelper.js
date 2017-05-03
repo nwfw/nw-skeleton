@@ -1,4 +1,8 @@
 var _ = require('lodash');
+var fs = require('fs');
+var path = require('path');
+var postcss = require('postcss');
+
 var BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
@@ -30,6 +34,14 @@ class StaticFilesHelper extends BaseClass {
     }
 
     async loadCss (href) {
+
+        var cssFilePath = path.resolve(path.join('.' + href));
+        var fileContents = fs.readFileSync(cssFilePath);
+
+        return postcss().process(fileContents, { from: href, to: appState.config.appConfig.cssCompiledFile });
+    }
+
+    async addCss (href) {
 
         var parentEl = document.getElementsByTagName('head')[0];
 
@@ -91,6 +103,10 @@ class StaticFilesHelper extends BaseClass {
 
 
     async loadCssFiles() {
+
+        var compiledCssPath = path.resolve(path.join('.', appState.config.appConfig.cssCompiledFile));
+        fs.writeFileSync(compiledCssPath, '', {flag: 'w'});
+
         var cssFiles = appUtil.getConfig('appConfig.initCssFiles');
         var appCssFiles = appUtil.getConfig('appConfig.cssFiles');
         var debugCssFiles = appUtil.getConfig('appConfig.debugCssFiles');
@@ -128,14 +144,18 @@ class StaticFilesHelper extends BaseClass {
             if (cssFileCount){
                 appUtil.log('Loading {1} wrapper CSS files', 'group', [cssFileCount], false, this.forceDebug);
                 for (let i=0; i<cssFiles.length; i++){
-                    await this.loadCss(cssFiles[i]);
+                    let cssResult = await this.loadCss(cssFiles[i]);
+                    let cssContents = cssResult.css;
+                    fs.writeFileSync(compiledCssPath, cssContents, {flag: 'a'});
                 }
                 appUtil.log('Loading {1} wrapper CSS files', 'groupend', [cssFileCount], false, this.forceDebug);
             }
             if (appCssFileCount){
                 appUtil.log('Loading {1} app CSS files', 'group', [appCssFileCount], false, this.forceDebug);
                 for (let i=0; i<appCssFiles.length; i++){
-                    await this.loadCss(appCssFiles[i]);
+                    let cssResult = await this.loadCss(appCssFiles[i]);
+                    let cssContents = cssResult.css;
+                    fs.writeFileSync(compiledCssPath, cssContents, {flag: 'a'});
                 }
                 appUtil.log('Loading {1} app CSS files', 'groupend', [appCssFileCount], false, this.forceDebug);
             }
@@ -143,20 +163,25 @@ class StaticFilesHelper extends BaseClass {
                 if (debugCssFileCount){
                     appUtil.log('Loading {1} debug window wrapper CSS files', 'group', [debugCssFileCount], false, this.forceDebug);
                     for (let i=0; i<debugCssFiles.length; i++){
-                        await this.loadCss(debugCssFiles[i]);
+                        let cssResult = await this.loadCss(debugCssFiles[i]);
+                        let cssContents = cssResult.css;
+                        fs.writeFileSync(compiledCssPath, cssContents, {flag: 'a'});
                     }
                     appUtil.log('Loading {1} debug window wrapper CSS files', 'groupend', [debugCssFileCount], false, this.forceDebug);
                 }
                 if (appDebugCssFileCount){
                     appUtil.log('Loading {1} debug window app CSS files', 'group', [appDebugCssFileCount], false, this.forceDebug);
                     for (let i=0; i<appDebugCssFiles.length; i++){
-                        await this.loadCss(appDebugCssFiles[i]);
+                        let cssResult = await this.loadCss(appDebugCssFiles[i]);
+                        let cssContents = cssResult.css;
+                        fs.writeFileSync(compiledCssPath, cssContents, {flag: 'a'});
                     }
                     appUtil.log('Loading {1} debug window app CSS files', 'groupend', [appDebugCssFileCount], false, this.forceDebug);
                 }
             }
             appUtil.log('Loading {1} CSS files', 'groupend', [totalCssFiles], false, this.forceDebug);
         }
+        this.addCss(appState.config.appConfig.cssCompiledFile);
     }
 
     async loadJsFiles() {
