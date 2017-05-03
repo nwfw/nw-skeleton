@@ -1,11 +1,9 @@
-
-
 header {
 	color: var(--header-text-color);
 	background-color: var(--header-background-color);
 	background: var(--header-background);
 	opacity: 0.9;
-	overflow: hidden;
+	overflow: visible;
 	position: relative;
     flex-direction: column;
 }
@@ -15,7 +13,8 @@ header {
 }
 
 .header-bottom {
-    flex: 1 1 auto;
+    flex: 1 1 10px;
+    overflow: visible;
 }
 
 .header-app-title {

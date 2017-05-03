@@ -52,6 +52,18 @@ class UtilHelper extends BaseClass {
         return value;
     }
 
+    preloadImageCallback (imgSrc, callback){
+        var imgEl = document.createElement('img');
+        if (callback && _.isFunction(callback)){
+            imgEl.onload = () => {
+                imgEl.onload = null;
+                imgEl = null;
+                callback();
+            };
+        }
+        imgEl.src = imgSrc;
+    }
+
 
 }
 

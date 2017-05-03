@@ -3,17 +3,16 @@ var appUtil = _appWrapper.getAppUtil();
 var appState = appUtil.getAppState();
 
 exports.component = {
-    name: 'app-debug',
-    template: _appWrapper.appTemplates.getTemplateContents('app-debug'),
+    name: 'app-main',
+    template: _appWrapper.appTemplates.getTemplateContents('app-main'),
+    props: ['state'],
     data: function () {
-        return {debugMessages: appState.debugMessages};
+        return appState.mainData;
     },
     computed: {
         appState: function(){
             return appState;
         }
     },
-    methods: {
-        callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
-    }
+    components: {}
 };

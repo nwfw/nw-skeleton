@@ -18,6 +18,7 @@ class StaticFilesHelper extends BaseClass {
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.staticFilesHelper');
 
         this.jsFileLoadResolves = {};
+        this.cssFileLoadResolves = {};
 
         return this;
     }
@@ -32,11 +33,21 @@ class StaticFilesHelper extends BaseClass {
 
         var parentEl = document.getElementsByTagName('head')[0];
 
+        var returnPromise = new Promise((resolve) => {
+            this.cssFileLoadResolves[href] = resolve;
+        });
+
         if (!parentEl){
             throw new Error('No <head> element!');
         } else {
             appUtil.log('Adding CSS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
             var cssNode = document.createElement('link');
+
+            cssNode.onload = () => {
+                appUtil.log('Loaded CSS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
+                this.cssFileLoadResolves[href](true);
+                this.cssFileLoadResolves[href] = null;
+            };
 
             cssNode.setAttribute('rel', 'stylesheet');
             cssNode.setAttribute('type', 'text/css');
@@ -44,7 +55,7 @@ class StaticFilesHelper extends BaseClass {
 
             parentEl.appendChild(cssNode);
         }
-        return true;
+        return returnPromise;
     }
 
     async loadJs (href) {
@@ -68,6 +79,7 @@ class StaticFilesHelper extends BaseClass {
             jsNode.setAttribute('src', href);
 
             jsNode.onload = () => {
+                appUtil.log('Loaded JS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
                 this.jsFileLoadResolves[href](true);
                 this.jsFileLoadResolves[href] = null;
             };

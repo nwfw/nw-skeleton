@@ -1,10 +1,11 @@
 var _ = require('lodash');
-var appUtil = window.getAppWrapper().getAppUtil();
+var _appWrapper = window.getAppWrapper();
+var appUtil = _appWrapper.getAppUtil();
 var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'config-editor',
-    template: window.getAppWrapper().templateContents.componentTemplates['config-editor'],
+    template: _appWrapper.appTemplates.getTemplateContents('config-editor'),
     data: function () {
         var getControlObject = function(configValue, configName, path, isInner){
             if (!path){

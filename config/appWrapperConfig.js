@@ -26,6 +26,7 @@ exports.config = {
         helperDirectories: ['./node_modules/nw-skeleton/app-wrapper/js/helper/'],
 
         mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixin/',
+        mixinExtensionRegex: /\.js$/,
 
         filterRoot: './node_modules/nw-skeleton/app-wrapper/js/filter/',
         filterExtensionRegex: /\.js$/,
@@ -34,58 +35,93 @@ exports.config = {
         translationsRoot: './app/data/translations/',
 
         componentMapping: {
-            'app-header': {
-                name: 'app-header',
+            'app-window' : {
+                name: 'app-window',
                 components: [
-                    {
-                        name: 'language-select'
-                    },
-                    {
-                        name: 'live-info'
-                    },
-                    {
-                        name: 'window-controls'
-                    },
-                    {
-                        name: 'progress-bar'
-                    }
-                ]
-            },
-            'app-main': {
-                name: 'app-main',
-                components: [
-                    {
-                        name: 'app-error'
-                    },
                     {
                         name: 'app-loader',
                         components: [
                             {
-                                name: 'user-messages'
+                                name: 'user-messages',
+                                components: [
+                                    {
+                                        name: 'user-messages-controls'
+                                    },
+                                    {
+                                        name: 'user-messages-list'
+                                    }
+                                ]
                             }
                         ]
-                    }
-                ]
-            },
-            'app-footer': {
-                name: 'app-footer',
-                components: [
+                    },
                     {
-                        name: 'user-messages',
+                        name: 'app-header',
                         components: [
                             {
-                                name: 'user-messages-controls'
+                                name: 'language-select'
                             },
                             {
-                                name: 'user-messages-list'
+                                name: 'live-info'
+                            },
+                            {
+                                name: 'window-controls'
+                            },
+                            {
+                                name: 'progress-bar'
+                            },
+                        ]
+                    },
+                    {
+                        name: 'app-main',
+                        components: [
+                            {
+                                name: 'app-error'
+                            },
+                            {
+                                name: 'app-loader',
+                                components: [
+                                    {
+                                        name: 'user-messages',
+                                        components: [
+                                            {
+                                                name: 'user-messages-controls'
+                                            },
+                                            {
+                                                name: 'user-messages-list'
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         ]
-
+                    },
+                    {
+                        name: 'app-debug'
+                    },
+                    {
+                        name: 'app-footer',
+                        components: [
+                            {
+                                name: 'user-messages',
+                                components: [
+                                    {
+                                        name: 'user-messages-controls'
+                                    },
+                                    {
+                                        name: 'user-messages-list'
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
         },
     },
+
+    shortPauseDuration: 100,
+    mediumPauseDuration: 250,
+    longPauseDuration: 1000,
 
     appConfig: {
         showInitializationStatus: true,
@@ -301,6 +337,7 @@ exports.config = {
 
     forceDebug: {
         appWrapper: false,
+        appUtil: false,
         appConfig: false,
         appTemplates: false,
         appTranslations: false,
@@ -315,6 +352,7 @@ exports.config = {
     },
     forceUserMessages: {
         appWrapper: false,
+        appUtil: false,
         appConfig: false,
         appTemplates: false,
         appTranslations: false,

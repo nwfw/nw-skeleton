@@ -201,7 +201,7 @@ class WindowManager extends eventEmitter {
         this.winState.width = appW;
         this.winState.height = appH;
         if (appState.debug){
-            this.win.show();
+            // this.win.show();
             this.document.body.className = this.document.body.className + ' nw-body-debug';
             setTimeout(() => {
                 if (appState.isDebugWindow){
@@ -223,7 +223,7 @@ class WindowManager extends eventEmitter {
                     this.winState.x = 0;
                     this.winState.y = 0;
                 }
-                this.win.show();
+                // this.win.show();
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
                 this.window.focus();
@@ -622,7 +622,10 @@ class WindowManager extends eventEmitter {
             this.win.window.getAppWrapper().beforeUnload();
         } else {
             if (!message){
-                message = _appWrapper.appTranslations.translate('Please wait while application restarts...');
+                message = 'Please wait while application restarts...';
+                if (_appWrapper && _appWrapper.appTranslations && _appWrapper.appTranslations.translate){
+                    message = _appWrapper.appTranslations.translate(message);
+                }
             }
             appState.mainLoaderTitle = message;
             appState.appShuttingDown = true;

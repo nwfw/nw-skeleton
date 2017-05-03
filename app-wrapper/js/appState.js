@@ -26,6 +26,7 @@ exports.appState = {
         userMessageQueue: null,
         scrollTo: {}
     },
+    appLoaded: false,
     appReady: false,
     appInitialized: false,
     appShuttingDown: false,

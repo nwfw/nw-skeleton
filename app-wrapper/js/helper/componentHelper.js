@@ -5,7 +5,7 @@ var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appUtil;
-var appState;
+// var appState;
 
 var BaseComponent;
 
@@ -15,7 +15,7 @@ class ComponentHelper extends BaseClass {
 
         _appWrapper = this.getAppWrapper();
         appUtil = this.getAppUtil();
-        appState = this.getAppState();
+        // appState = this.getAppState();
 
         this.forceDebug = appUtil.getConfig('forceDebug.componentHelper');
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.componentHelper');
@@ -55,27 +55,34 @@ class ComponentHelper extends BaseClass {
         var vueMixins = [];
         var appVueMixins = [];
 
-        var mixinIndexFile = path.resolve(appState.config.wrapper.mixinRoot + '/index');
-        if (fs.existsSync(mixinIndexFile + '.js')){
-            vueMixins = await this.initMixins(mixinIndexFile);
+        var mixinsDir = appUtil.getConfig('wrapper.mixinRoot');
+        if (mixinsDir){
+            mixinsDir = path.resolve(mixinsDir);
+            var mixinRegex = appUtil.getConfig('wrapper.mixinExtensionRegex');
+            if (fs.existsSync(mixinsDir)){
+                vueMixins = await this.initMixins(await appUtil.loadFilesFromDir(mixinsDir, mixinRegex, true));
+            }
         }
 
-        var appMixinIndexFile = path.resolve(appState.config.appConfig.mixinRoot + '/index');
-        if (fs.existsSync(appMixinIndexFile + '.js')){
-            appVueMixins = await this.initMixins(appMixinIndexFile);
-        }
+        var appMixinsDir = appUtil.getConfig('appConfig.mixinRoot');
+        if (appMixinsDir){
+            appMixinsDir = path.resolve(appMixinsDir);
+            var appMixinRegex = appUtil.getConfig('appConfig.mixinExtensionRegex');
+            if (fs.existsSync(mixinsDir)){
+                appVueMixins = await this.initMixins(await appUtil.loadFilesFromDir(appMixinsDir, appMixinRegex, true));
+            }
 
-        vueMixins = _.union(vueMixins, appVueMixins);
+            vueMixins = _.merge(vueMixins, appVueMixins);
+        }
         return vueMixins;
     }
 
-    async initMixins (mixinIndexFile){
+    async initMixins (vueMixinData){
         var vueMixins = [];
-        var vueMixinData = require(mixinIndexFile).mixins;
-        vueMixinData.forEach((MixinObj) => {
-            vueMixins.push(MixinObj.mixin);
-            Vue.mixin(MixinObj.mixin);
-        });
+        for (let mixinName in vueMixinData){
+            vueMixins.push(vueMixinData[mixinName]);
+            Vue.mixin(vueMixinData[mixinName]);
+        }
         return vueMixins;
     }
 
@@ -85,7 +92,7 @@ class ComponentHelper extends BaseClass {
 
         var filtersDir = appUtil.getConfig('wrapper.filterRoot');
         if (filtersDir){
-            filtersDir = path.resolve(appState.config.wrapper.filterRoot);
+            filtersDir = path.resolve(filtersDir);
             var filterRegex = appUtil.getConfig('wrapper.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
                 vueFilters = await appUtil.loadFilesFromDir(filtersDir, filterRegex, true);
@@ -107,10 +114,11 @@ class ComponentHelper extends BaseClass {
 
     async loadDirComponents(componentDirs){
         var components = {};
+        var componentCodeRegex = appUtil.getConfig('wrapper.componentCodeRegex');
         for(let i=0; i<componentDirs.length;i++){
             if (fs.existsSync(componentDirs[i])){
                 appUtil.log('Loading components from directory \'{1}\'.', 'debug', [componentDirs[i]], false, this.forceDebug);
-                var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], appState.config.wrapper.componentCodeRegex, true);
+                var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], componentCodeRegex, true);
                 if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
                     components = _.merge(components, newComponents);
                 }
@@ -124,12 +132,15 @@ class ComponentHelper extends BaseClass {
     async initComponents (){
         await this.loadComponents();
 
+        var componentMapping = appUtil.getConfig('wrapper.componentMapping');
+        var appComponentMapping = appUtil.getConfig('appConfig.appComponentMapping');
+
         appUtil.log('Preparing wrapper components...', 'group', [], false, this.forceDebug);
-        this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, appState.config.wrapper.componentMapping);
+        this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, componentMapping);
         appUtil.log('Preparing wrapper components...', 'groupend', [], false, this.forceDebug);
 
         appUtil.log('Preparing app components...', 'group', [], false, this.forceDebug);
-        this.vueAppComponents = await this.prepareComponents(this.vueAppComponents, this.allComponents, appState.config.appConfig.appComponentMapping);
+        this.vueAppComponents = await this.prepareComponents(this.vueAppComponents, this.allComponents, appComponentMapping);
         appUtil.log('Preparing app components...', 'groupend', [], false, this.forceDebug);
 
         appUtil.log('Preparing modal components...', 'group', [], false, this.forceDebug);
@@ -146,19 +157,18 @@ class ComponentHelper extends BaseClass {
         this.vueGlobalComponents['modal-dialog'].components = this.vueModalComponents;
 
         // register global components
-        var globalComponentNames = _.keys(this.vueGlobalComponents);
-        for(let i=0; i<globalComponentNames.length;i++){
-            Vue.component(globalComponentNames[i], this.vueGlobalComponents[globalComponentNames[i]]);
+        for(let globalComponentName in this.vueGlobalComponents){
+            Vue.component(globalComponentName, this.vueGlobalComponents[globalComponentName]);
         }
     }
 
     async loadComponents (){
         appUtil.log('Loading components...', 'group', [], false, this.forceDebug);
 
-        var components = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.component'));
-
         var globalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.globalComponent'));
         globalComponents = _.merge(globalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.globalComponent')));
+
+        var components = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.component'));
 
         var modalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.modalComponent'));
         modalComponents = _.merge(modalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.modalComponent')));
@@ -235,6 +245,17 @@ class ComponentHelper extends BaseClass {
     }
 
     async mapComponentChildren (parentComponent, allComponents, childComponentsMapping) {
+        if (!(!_.isUndefined(parentComponent) && parentComponent)){
+            if (childComponentsMapping && childComponentsMapping.name && allComponents && allComponents[childComponentsMapping.name]){
+                parentComponent = allComponents[childComponentsMapping.name];
+            }
+        }
+
+        if (!(!_.isUndefined(parentComponent) && parentComponent)){
+            appUtil.log('Error preparing child component \'{1}\' - no parent component!', 'error', [childComponentMapping.name], false, this.forceDebug);
+            return;
+        }
+
         var parentComponentName = parentComponent.name;
 
         var childMapping = childComponentsMapping.components;

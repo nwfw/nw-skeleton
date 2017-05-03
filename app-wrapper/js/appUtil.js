@@ -462,7 +462,7 @@ var appUtil = {
         callable();
     },
     wait: async function(duration){
-        appUtil.log('Waiting {1} ms', 'info', [duration], false, true);
+        appUtil.log('Waiting {1} ms', 'info', [duration], false, this.forceDebug);
         var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);

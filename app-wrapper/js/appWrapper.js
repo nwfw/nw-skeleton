@@ -81,6 +81,9 @@ class AppWrapper {
         this.forceDebug = appUtil.getConfig('forceDebug.appWrapper');
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.appWrapper');
 
+        appUtil.forceDebug = appUtil.getConfig('forceDebug.appUtil');
+        appUtil.forceUserMessages = appUtil.getConfig('forceUserMessages.appUtil');
+
         if (appUtil.getConfig('debugToFile') && !appUtil.getConfig('debugToFileAppend')){
             fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), '', {flag: 'w'});
         }
@@ -88,14 +91,16 @@ class AppWrapper {
             fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
         }
 
+        this.setDynamicAppStateValues();
+
         this.helpers = await this.initializeHelpers(appUtil.getConfig('wrapper.systemHelperDirectories'));
 
         App = require(path.join(process.cwd(), appState.config.wrapper.appFile)).App;
 
+
         await this.helpers.staticFilesHelper.loadCssFiles();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
-        this.setDynamicAppStateValues();
 
         this.fileManager = new FileManager();
         this.windowManager = new WindowManager();
@@ -120,7 +125,6 @@ class AppWrapper {
         this.addBoundMethods();
         this.addEventListeners();
 
-
         await this.app.initialize();
 
         window.feApp = await this.initializeFeApp();
@@ -142,8 +146,13 @@ class AppWrapper {
     }
 
     async finalize () {
+        appState.appLoaded = true;
+        await appUtil.wait(parseInt(parseFloat(this.getHelper('html').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
         var retValue = await this.app.finalize();
-        window.appState.appReady = true;
+        if (retValue){
+            window.appState.appInitialized = true;
+            window.appState.appReady = true;
+        }
         return retValue;
     }
 
@@ -226,7 +235,7 @@ class AppWrapper {
         appUtil.log('Initializing Vue app...', 'debug', [], false, this.forceDebug);
 
         let vm = new Vue({
-            el: '#app-body',
+            el: '.nw-app-wrapper',
             template: window.indexTemplate,
             data: appState,
             mixins: this.helpers.componentHelper.vueMixins,
@@ -234,8 +243,7 @@ class AppWrapper {
             components: this.helpers.componentHelper.vueComponents,
             translations: appState.translations,
             mounted: async () => {
-                appState.appInitialized = true;
-                await this.finalize();
+                return await this.finalize();
             }
         });
         if (window.isDebugWindow){
@@ -357,7 +365,10 @@ class AppWrapper {
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.helpers.debugHelper.onDebugWindowClose();
         }
-        appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
+        appState.mainLoaderTitle = 'Please wait while application shuts down...';
+        if (this.appTranslations && this.appTranslations.translate){
+            appState.mainLoaderTitle = this.appTranslations.translate(appState.mainLoaderTitle);
+        }
         appState.appShuttingDown = true;
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();
@@ -375,7 +386,9 @@ class AppWrapper {
     }
 
     async beforeUnload () {
-        this.helpers.modalHelper.closeCurrentModal(true);
+        if (this.helpers && this.helpers.modalHelper){
+            this.helpers.modalHelper.closeCurrentModal(true);
+        }
         if (!appState.isDebugWindow){
             await this.shutdownApp();
         }
