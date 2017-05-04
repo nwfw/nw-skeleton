@@ -701,10 +701,12 @@ class WindowManager extends eventEmitter {
         this.win.moveTo(windowX, windowY);
     }
 
-    reloadCss (e) {
+    async reloadCss (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        var staticFilesHelper = _appWrapper.getHelper('staticFiles');
+        await staticFilesHelper.generateCss();
         var links = this.window.document.querySelectorAll('link');
         _.each(links, function(link){
             if (link.type && link.type == 'text/css'){

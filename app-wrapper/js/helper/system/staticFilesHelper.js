@@ -103,6 +103,11 @@ class StaticFilesHelper extends BaseClass {
 
 
     async loadCssFiles() {
+        await this.generateCss();
+        this.addCss(appState.config.appConfig.cssCompiledFile);
+    }
+
+    async generateCss() {
 
         var compiledCssPath = path.resolve(path.join('.', appState.config.appConfig.cssCompiledFile));
         fs.writeFileSync(compiledCssPath, '', {flag: 'w'});
@@ -181,7 +186,6 @@ class StaticFilesHelper extends BaseClass {
             }
             appUtil.log('Loading {1} CSS files', 'groupend', [totalCssFiles], false, this.forceDebug);
         }
-        this.addCss(appState.config.appConfig.cssCompiledFile);
     }
 
     async loadJsFiles() {
