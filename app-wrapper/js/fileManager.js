@@ -24,7 +24,7 @@ class FileManager extends eventEmitter {
         return fileExists;
     }
 
-    isFile(file){
+    async isFile(file){
         var filePath = path.resolve(file);
         var isFile = true;
         var exists = this.fileExists(filePath);
@@ -180,6 +180,46 @@ class FileManager extends eventEmitter {
         archive.finalize();
 
         return returnPromise;
+    }
+
+    async createDirRecursive(directory, mode){
+        var dirName = path.resolve(directory);
+        var dirChunks = dirName.split(path.sep);
+        var dirPath = '';
+        for(let i=0; i< dirChunks.length;i++){
+            dirPath = path.join(dirPath, path.sep + dirChunks[i]);
+            if (!fs.existsSync(dirPath)){
+                fs.mkdirSync(dirPath, mode);
+            } else if (await this.isFile(dirPath)){
+                appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirPath], true, false, this.forceDebug);
+                return false;
+            }
+        }
+        return fs.existsSync(dirName);
+    }
+
+    async createDirFileRecursive(fileName, mode, flags){
+        if (!flags){
+            flags = {flag: 'w'};
+        }
+        var filePath = path.resolve(fileName);
+        var dirName = path.dirname(filePath);
+        var dirCreated = await this.createDirRecursive(dirName, mode);
+        if (!dirCreated){
+            return false;
+        } else {
+            return fs.writeFileSync(filePath, '', flags);
+        }
+    }
+
+    async writeFileSync(file, data, flags){
+        var saved = false;
+        try {
+            saved = fs.writeFileSync(file, data, flags);
+        } catch (ex) {
+            console.log(ex);
+        }
+        return saved;
     }
 }
 

@@ -124,12 +124,13 @@ exports.config = {
     longPauseDuration: 1000,
 
     appConfig: {
+        tmpDataDir: './app/var',
         showInitializationStatus: true,
         showInitializationProgress: true,
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
-        cssCompiledFile: '/app/var/style.css',
+        cssCompiledFile: '/app/var/css/style.css',
         cssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
             '/node_modules/nw-skeleton/app-wrapper/css/header.css',

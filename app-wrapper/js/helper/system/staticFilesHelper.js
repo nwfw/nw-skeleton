@@ -38,7 +38,7 @@ class StaticFilesHelper extends BaseClass {
         var cssFilePath = path.resolve(path.join('.' + href));
         var fileContents = fs.readFileSync(cssFilePath);
 
-        return postcss().process(fileContents, { from: href, to: appState.config.appConfig.cssCompiledFile });
+        return postcss().process(fileContents, { from: href, to: appUtil.getConfig('appConfig.cssCompiledFile') });
     }
 
     async addCss (href) {
@@ -104,12 +104,13 @@ class StaticFilesHelper extends BaseClass {
 
     async loadCssFiles() {
         await this.generateCss();
-        this.addCss(appState.config.appConfig.cssCompiledFile);
+        this.addCss(appUtil.getConfig('appConfig.cssCompiledFile'));
     }
 
     async generateCss() {
 
-        var compiledCssPath = path.resolve(path.join('.', appState.config.appConfig.cssCompiledFile));
+        var compiledCssPath = path.resolve(path.join('.', appUtil.getConfig('appConfig.cssCompiledFile')));
+        await _appWrapper.fileManager.createDirRecursive(path.dirname(compiledCssPath));
         fs.writeFileSync(compiledCssPath, '', {flag: 'w'});
 
         var cssFiles = appUtil.getConfig('appConfig.initCssFiles');

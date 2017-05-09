@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var path = require('path');
-var fs = require('fs');
+// var fs = require('fs');
 
 var App;
 var appUtil = require('./appUtil').appUtil;
@@ -73,10 +73,11 @@ class AppWrapper {
     }
 
     async initialize(){
+        this.fileManager = new FileManager();
+
         this.appConfig = new AppConfig(this.initialAppConfig);
 
         appState.config = await this.appConfig.initializeConfig();
-        appState.config = await this.appConfig.loadUserConfig();
 
         this.forceDebug = appUtil.getConfig('forceDebug.appWrapper');
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.appWrapper');
@@ -84,12 +85,22 @@ class AppWrapper {
         appUtil.forceDebug = appUtil.getConfig('forceDebug.appUtil');
         appUtil.forceUserMessages = appUtil.getConfig('forceUserMessages.appUtil');
 
+        var tmpDataDir = appUtil.getConfig('appConfig.tmpDataDir');
+        if (tmpDataDir){
+            tmpDataDir = path.resolve(tmpDataDir);
+            this.fileManager.createDirRecursive(tmpDataDir);
+        }
+
         if (appUtil.getConfig('debugToFile') && !appUtil.getConfig('debugToFileAppend')){
-            fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), '', {flag: 'w'});
+            this.fileManager.createDirFileRecursive(appUtil.getConfig('debugMessagesFilename'));
         }
         if (appUtil.getConfig('userMessagesToFile') && !appUtil.getConfig('userMessagesToFileAppend')){
-            fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), '', {flag: 'w'});
+            this.fileManager.createDirFileRecursive(appUtil.getConfig('userMessagesFilename'));
         }
+
+        appState.config = await this.appConfig.loadUserConfig();
+
+        this.windowManager = new WindowManager();
 
         this.setDynamicAppStateValues();
 
@@ -102,8 +113,7 @@ class AppWrapper {
         await this.helpers.staticFilesHelper.loadJsFiles();
 
 
-        this.fileManager = new FileManager();
-        this.windowManager = new WindowManager();
+
 
         this.appTemplates = new AppTemplates();
         this.templateContents = await this.appTemplates.initializeTemplates();

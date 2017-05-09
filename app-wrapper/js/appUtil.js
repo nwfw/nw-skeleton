@@ -80,9 +80,9 @@ var appUtil = {
                 appState.debugMessages.push(debugMessage);
             }
         }
-        if (debugMessage && debugMessage.message && appState.config.debugToFile){
+        if (debugMessage && debugMessage.message && this.getConfig('debugToFile')){
             var messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
-            fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), messageLine, {flag: 'a'});
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), messageLine, {flag: 'a'});
         }
 
         if (appState && appState.allDebugMessages && _.isArray(appState.allDebugMessages)){
@@ -234,9 +234,9 @@ var appUtil = {
             }
         }
 
-        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && appState.config.userMessagesToFile){
+        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessagesToFile')){
             var messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
-            fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), messageLine, {flag: 'a'});
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLine, {flag: 'a'});
 
         }
 
@@ -529,15 +529,14 @@ var appUtil = {
     },
 
     finalizeLogs: async function(){
-        var appState = this.getAppState();
-        if (appState.config.debugToFile){
-            var debugLogContents = '[\n' + fs.readFileSync(path.resolve(appState.config.debugMessagesFilename)) + '\n]';
-            fs.writeFileSync(path.resolve(appState.config.debugMessagesFilename), debugLogContents, {flag: 'w'});
+        if (this.getConfig('debugToFile')){
+            var debugLogContents = '[\n' + fs.readFileSync(path.resolve(this.getConfig('debugMessagesFilename'))) + '\n]';
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), debugLogContents, {flag: 'w'});
         }
 
-        if (appState.config.userMessagesToFile){
-            var messageLogContents = '[\n' + fs.readFileSync(path.resolve(appState.config.userMessagesFilename)) + '\n]';
-            fs.writeFileSync(path.resolve(appState.config.userMessagesFilename), messageLogContents, {flag: 'w'});
+        if (this.getConfig('userMessagesToFile')){
+            var messageLogContents = '[\n' + fs.readFileSync(path.resolve(this.getConfig('userMessagesFilename'))) + '\n]';
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLogContents, {flag: 'w'});
         }
 
         return true;
