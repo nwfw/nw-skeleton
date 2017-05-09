@@ -1,39 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+    <title></title>
 </head>
-<body background-color:rgba(0,0,0,0); class="nw-body">
-	<div id="app-body" class="app-body" v-bind:class="{ 'moving-window': movingWindow, 'debug-enabled': debug, 'debug-visible': !hideDebug, 'has-debug-window': hasDebugWindow, 'modal-visible': modalData.modalVisible }">
-		<div class="app-content">
-				<app-header></app-header>
-			<template v-if="appInitialized">
-				<app-main :state="info"></app-main>
-				<app-debug></app-debug>
-			</template>
-			<template v-else>
-				<div class="main-loader">
-					<span class="main-loader-spinner fa fa-spin fa-circle-o-notch"></span>
-				</div>
-			</template>
-			<app-footer></app-footer>
-		</div>
-		<modal-dialog></modal-dialog>
-	</div>
-	<script>
-		var _ = require('lodash');
-		var AppWrapper = require('../js/appWrapper').AppWrapper;
+    <body background-color:rgba(0,0,0,0); class="nw-body">
+        <div class="nw-app-wrapper">
+            <app-window ref="appWindow"></app-window>
+            <modal-dialog ref="modalDialog"></modal-dialog>
+        </div>
+        <script type="text/javascript">
+            // var _ = require('lodash');
+            var initialConfig = require('../config/config').config;
+            var nws = require('nw-skeleton');
+            var appWrapper;
 
-		window.onload = async function(){
-
-			var appAppState = require('../../app/js/appState').appState;
-			var appWrapperAppState = require('../../app-wrapper/js/appState').appState;
-			window.appState = _.merge({}, appWrapperAppState, appAppState);
-
-			window.appWrapper = new AppWrapper();
-			await window.appWrapper.initialize();
-			window.feApp = await window.appWrapper.initializeFeApp();
-		};
-	</script>
-</body>
+            async function _nwsInit(){
+                appWrapper = new nws.AppWrapper(initialConfig);
+                await appWrapper.initialize();
+            }
+            _nwsInit();
+        </script>
+    </body>
 </html>

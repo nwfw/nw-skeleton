@@ -287,11 +287,10 @@ class AppWrapper {
             eventHandlerName = target.getAttribute(dataHandlerAttrName);
 
             if (!eventHandlerName){
-                target = target.parentNode;
-                eventHandlerName = target.getAttribute(dataHandlerAttrName);
-                if (!eventHandlerName){
-                    target = e.target;
-                }
+                do {
+                    target = target.parentNode;
+                    eventHandlerName = target.getAttribute(dataHandlerAttrName);
+                } while (!eventHandlerName);
             }
 
             if (eventHandlerName){

@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var _appWrapper = window.getAppWrapper();
 // var appUtil = _appWrapper.getAppUtil();
 // var appState = appUtil.getAppState();
@@ -10,12 +12,22 @@ var MixinWrapperMethods  = {
         toJson: function(value, minified){
             return _appWrapper.getHelper('util').toJson(value, minified);
         },
-        def: function(value, defaultText){
-            if (!defaultText){
-                defaultText = '';
+        def: function(){
+            var value;
+            if (arguments && arguments.length){
+                value = arguments[0];
             }
-            if (!value){
-                value = defaultText;
+            var defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
+            if (_.isUndefined(value)){
+                for(let i=0; i<defaultTexts.length;i++){
+                    value = defaultTexts[i];
+                    if (!_.isUndefined(value)){
+                        break;
+                    }
+                }
+            }
+            if (_.isUndefined(value)){
+                value = '';
             }
             return value;
         },

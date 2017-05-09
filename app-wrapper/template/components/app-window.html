@@ -2,13 +2,13 @@
     <div v-show="appLoaded" id="app-body" class="app-body" v-bind:class="{ 'moving-window': movingWindow, 'debug-enabled': debug, 'debug-visible': debug && !hideDebug, 'has-debug-window': hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': appLoaded }">
         <div class="app-content">
             <template v-if="appInitialized">
-                <app-header></app-header>
+                <app-header ref="appHeader"></app-header>
                 <app-main ref="appMain"></app-main>
-                <app-debug></app-debug>
-                <app-footer></app-footer>
+                <app-debug ref="appDebug"></app-debug>
+                <app-footer ref="appFooter"></app-footer>
             </template>
             <template v-else>
-                <app-loader></app-loader>
+                <app-loader ref="appWindowLoader"></app-loader>
             </template>
         </div>
     </div>
