@@ -1,4 +1,5 @@
 exports.appState = {
+    appData: {},
     config: {},
     windowState: {
         title: '',
