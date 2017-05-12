@@ -2,7 +2,7 @@
 	<transition name="fade">
 		<span class="window-controls window-controls-debug" v-if="!appState.hideDebug && appState.debug">
 			<span class="window-control-wrapper">
-				<a class="window-control window-control-reload-css " v-on:click="callViewHandler" data-click-handler="windowManager.reloadCss" v-bind:title="translate('Reload CSS')">
+				<a class="window-control window-control-reload-css " v-on:click="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss" v-bind:title="translate('Reload CSS')">
 					<span data-event-target="parent" class="fa fa-retweet"></span>
 				</a>
 			</span>

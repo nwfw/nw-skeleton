@@ -46,6 +46,7 @@ exports.appState = {
     ctrlPressed: false,
     shiftPressed: false,
     altPressed: false,
+    noHandlingKeys: false,
 
     appOperation: {
         cancelable: false,

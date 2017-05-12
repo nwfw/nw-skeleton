@@ -186,29 +186,49 @@ class FileManager extends eventEmitter {
         var dirName = path.resolve(directory);
         var dirChunks = dirName.split(path.sep);
         var dirPath = '';
-        for(let i=0; i< dirChunks.length;i++){
-            dirPath = path.join(dirPath, path.sep + dirChunks[i]);
-            if (!fs.existsSync(dirPath)){
-                fs.mkdirSync(dirPath, mode);
-            } else if (await this.isFile(dirPath)){
-                appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirPath], true, false, this.forceDebug);
+        if (fs.existsSync(dirName)){
+            if (await this.isFile(dirName)){
+                appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirName], true, false, this.forceDebug);
                 return false;
+            }
+        } else {
+            for(let i=0; i< dirChunks.length;i++){
+                dirPath = path.join(dirPath, path.sep + dirChunks[i]);
+                if (!fs.existsSync(dirPath)){
+                    fs.mkdirSync(dirPath, mode);
+                } else if (await this.isFile(dirPath)){
+                    appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirPath], true, false, this.forceDebug);
+                    return false;
+                }
             }
         }
         return fs.existsSync(dirName);
     }
 
-    async createDirFileRecursive(fileName, mode, flags){
-        if (!flags){
-            flags = {flag: 'w'};
+    async createDirFileRecursive(fileName, mode, options, data){
+        if (!options){
+            options = {flag: 'w'};
         }
+        if (!data){
+            data = '';
+        }
+        if (!mode){
+            mode = 0o755;
+        }
+
         var filePath = path.resolve(fileName);
         var dirName = path.dirname(filePath);
         var dirCreated = await this.createDirRecursive(dirName, mode);
         if (!dirCreated){
             return false;
         } else {
-            return fs.writeFileSync(filePath, '', flags);
+            try {
+                fs.writeFileSync(filePath, data, options);
+                return await this.isFile(filePath);
+            } catch (ex) {
+                appUtil.log('Can\'t create file \'{1}\' - \'{2}\'.', 'error', [filePath, ex && ex.message ? ex.message : ex], true, false, this.forceDebug);
+                return false;
+            }
         }
     }
 

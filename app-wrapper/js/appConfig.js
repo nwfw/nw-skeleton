@@ -212,7 +212,7 @@ class AppConfig extends BaseClass {
     }
 
     async openConfigEditor () {
-        // this.windowManager.noHandlingKeys = true;
+        // appState.noHandlingKeys = true;
 
         await this.prepareConfigEditorData();
 
@@ -226,7 +226,7 @@ class AppConfig extends BaseClass {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
-            // this.windowManager.noHandlingKeys = false;
+            // appState.noHandlingKeys = false;
             _appWrapper.helpers.modalHelper.modalNotBusy();
             // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;

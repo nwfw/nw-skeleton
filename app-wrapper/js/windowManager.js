@@ -24,9 +24,9 @@ class WindowManager extends eventEmitter {
         this.screenWidth = null;
         this.screenHeight = null;
 
-        this.noHandlingKeys = false;
-
+        this.menu = null;
         this.menuMethodMap = [];
+        this.menuShortcutMap = [];
 
         this.boundMethods = {
             minimizeWindow: this.minimizeWindow.bind(this),
@@ -35,8 +35,6 @@ class WindowManager extends eventEmitter {
             toggleDevTools: this.toggleDevTools.bind(this),
             closeWindow: this.closeWindow.bind(this),
             toggleFullScreen: this.toggleFullScreen.bind(this),
-            reloadCss: this.reloadCss.bind(this),
-            handleKeyDown: this.handleKeyDown.bind(this),
             dragWindow: this.dragWindow.bind(this),
             moveWindowMousedown: this.moveWindowMousedown.bind(this),
             moveWindowMouseup: this.moveWindowMouseup.bind(this),
@@ -45,44 +43,18 @@ class WindowManager extends eventEmitter {
             beforeUnload: this.beforeUnload.bind(this)
         };
 
-        this.keyCodes = {
-            debugKeys: [68,69,66,85,71],
-            commandKeyCodes: [224, 17, 91, 93],
-            shiftKeyCodes: [16],
-            altKeyCodes: [18],
-            reloadKeyCodes: [82],
-            closeKeyCodes: [87],
-            escKeyCodes: [27],
-            reloadCssKeyCodes: [85]
-        };
-        this.pressedKeys = [];
-
         this.addEventListeners();
         this.initWinState();
         this.initWindow();
     }
 
-    addKeyEvents (){
-        this.window.addEventListener('keydown', this.boundMethods.handleKeyDown);
-        this.window.addEventListener('keyup', this.boundMethods.handleKeyDown);
-    }
-
-    removeKeyEvents (){
-        this.window.removeEventListener('keydown', this.boundMethods.handleKeyDown);
-        this.window.removeEventListener('keyup', this.boundMethods.handleKeyDown);
-    }
-
     addEventListeners () {
-
-        this.addKeyEvents();
-
         this.on('winStateChange', this.boundMethods.winStateChanged);
         this.win.on('restore', this.boundMethods.windowRestored);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
     }
 
     removeEventListeners () {
-        this.removeKeyEvents();
         this.removeListener('winStateChange', this.boundMethods.winStateChanged);
         this.win.removeListener('restore', this.boundMethods.windowRestored);
         this.window.removeEventListener('beforeunload', this.boundMethods.beforeUnload);
@@ -107,68 +79,6 @@ class WindowManager extends eventEmitter {
         var appState = appUtil.getAppState();
         appState.windowState[data.name] = data.value;
     }
-
-    handleKeyDown (e){
-        var appState = appUtil.getAppState();
-        var keyCode = e.keyCode;
-        if (_.includes(this.keyCodes.commandKeyCodes, keyCode)){
-            e.stopImmediatePropagation();
-            this.pressedKeys = [];
-            if (e.type == 'keydown') {
-                appState.ctrlPressed = true;
-            } else if (e.type == 'keyup'){
-                appState.ctrlPressed = false;
-            }
-        } else if (_.includes(this.keyCodes.shiftKeyCodes, keyCode)){
-            e.stopImmediatePropagation();
-            this.pressedKeys = [];
-            if (e.type == 'keydown') {
-                appState.shiftPressed = true;
-            } else if (e.type == 'keyup'){
-                appState.shiftPressed = false;
-            }
-        } else if (_.includes(this.keyCodes.altKeyCodes, keyCode)){
-            e.stopImmediatePropagation();
-            this.pressedKeys = [];
-            if (e.type == 'keydown') {
-                appState.altPressed = true;
-            } else if (e.type == 'keyup'){
-                appState.altPressed = false;
-            }
-        } else {
-            if (e.type == 'keydown') {
-                if (appState && appState.modalData.currentModal && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
-                    _appWrapper.helpers.modalHelper.closeCurrentModal();
-                } else if (!this.noHandlingKeys && appState && appState.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
-                    this.closeWindow();
-                } else if (appState && appState.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
-                    this.reloadCss();
-                } else if (!this.noHandlingKeys && appState && !appState.hideDebug && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
-                    this.pressedKeys = [];
-                    this.reloadWindow();
-                } else {
-                    var nextDebugCode = this.keyCodes.debugKeys[this.pressedKeys.length];
-                    if (keyCode == nextDebugCode){
-                        this.pressedKeys.push(keyCode);
-                    } else {
-                        this.pressedKeys = [];
-                    }
-
-                    if (this.pressedKeys.length == this.keyCodes.debugKeys.length){
-                        this.pressedKeys = [];
-                        appState.debug = !appState.debug;
-                        _appWrapper.appConfig.setConfigVar('debug', appState.debug);
-                        var message = 'Debug mode disabled.';
-                        if (appState.debug){
-                            message = 'Debug mode enabled.';
-                        }
-                        appUtil.addUserMessage(message, 'info', [], true, false, true, this.forceDebug);
-                    }
-                }
-            }
-        }
-    }
-
 
     windowRestored (){
         var appState = appUtil.getAppState();
@@ -703,21 +613,6 @@ class WindowManager extends eventEmitter {
         this.win.moveTo(windowX, windowY);
     }
 
-    async reloadCss (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        var staticFilesHelper = _appWrapper.getHelper('staticFiles');
-        await staticFilesHelper.generateCss();
-        var links = this.window.document.querySelectorAll('link');
-        _.each(links, function(link){
-            if (link.type && link.type == 'text/css'){
-                link.href = link.href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
-            }
-        });
-        appUtil.log('CSS styles reloaded.', 'info', [], false, this.forceDebug);
-    }
-
     beforeUnload (){
         this.document.body.className = this.document.body.className.replace(/nw-body-initialized/, '');
         this.removeEventListeners();
@@ -729,53 +624,89 @@ class WindowManager extends eventEmitter {
         return window._newWindow;
     }
 
-    initializeMenu() {
-        var menuData = appUtil.getConfig('appConfig.menuData');
-        this.menuMethodMap = [];
-        if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
-            var menu = new nw.Menu({type: 'menubar'});
-            this.menu = [];
-
+    initializeAppMenu() {
+        if (!(!_.isUndefined(this.menu) && this.menu)){
+            var menuData = appUtil.getConfig('appConfig.menuData');
+            this.menu = new nw.Menu({type: 'menubar'});
             if (appUtil.isMac()){
-                menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
             }
-
-            for(let i=0; i<menuData.menus.length; i++){
-                var menuMethodData =  this.initializeMenuItemData(menuData.menus[i], i);
-                this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
-                menu.append(this.initializeMenuItem(menuData.menus[i], i));
-            }
-
-            nw.Window.get().menu = menu;
         }
 
     }
 
-    initializeMenuItem (menuItemData, menuIndex) {
+    setupAppMenu() {
+        var menuData = appUtil.getConfig('appConfig.menuData');
+        this.menuMethodMap = [];
+        if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
+            for(let i=0; i<menuData.menus.length; i++){
+                var menuMethodData = this.initializeAppMenuItemData(menuData.menus[i], i);
+                this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
+                this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
+            }
+            // for(let j=0; j<this.menuMethodMap.length; j++){
+            //     if (this.menuMethodMap[j] && this.menuMethodMap[j].method && this.menuMethodMap[j].shortcut && this.menuMethodMap[j].shortcut.key){
+            //         _appWrapper.getHelper('keyboard').registerGlobalShortcut(this.menuMethodMap[j].shortcut.key, this.menuMethodMap[j].shortcut.modifiers, this.menuMethodMap[j].method);
+            //     }
+            // }
+
+            nw.Window.get().menu = this.menu;
+
+        }
+    }
+
+    initializeAppMenuItem (menuItemData, menuIndex) {
         var menuItem;
+        var menuItemObj = _.extend(menuItemData.menuItem, {
+            click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)
+        });
+        if (menuItemData.menuItem.shortcut){
+            var modifiers = [];
+            if (menuItemData.menuItem.shortcut.key){
+                menuItemObj.key = menuItemData.menuItem.shortcut.key;
+            }
+            if (menuItemData.menuItem.shortcut.modifiers){
+                if (menuItemData.menuItem.shortcut.modifiers.ctrl){
+                    if (appUtil.isMac()){
+                        modifiers.push('cmd');
+                    } else {
+                        modifiers.push('ctrl');
+                    }
+                }
+                if (menuItemData.menuItem.shortcut.modifiers.alt){
+                    modifiers.push('alt');
+                }
+                if (menuItemData.menuItem.shortcut.modifiers.shift){
+                    modifiers.push('shift');
+                }
+            }
+            menuItemObj.modifiers = modifiers.join('+');
+        }
         if (menuItemData.children && menuItemData.children.length){
             let submenu = new nw.Menu();
             for(let i=0; i<menuItemData.children.length; i++){
-                submenu.append(this.initializeMenuItem(menuItemData.children[i], menuIndex + '_' + i));
+                submenu.append(this.initializeAppMenuItem(menuItemData.children[i], menuIndex + '_' + i));
             }
-            menuItem = new nw.MenuItem(_.extend(menuItemData.menuItem, {submenu: submenu, click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
+
+            menuItem = new nw.MenuItem(_.extend(menuItemObj, {submenu: submenu, click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
         } else {
-            menuItem = new nw.MenuItem(_.extend(menuItemData.menuItem, {click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
+            menuItem = new nw.MenuItem(_.extend(menuItemObj));
         }
         return menuItem;
     }
 
-    initializeMenuItemData (menuItemData, menuIndex) {
+    initializeAppMenuItemData (menuItemData, menuIndex) {
         var menuData = [];
         if (menuItemData.menuItem.type != 'separator'){
             if (menuItemData.children && menuItemData.children.length){
                 for(let i=0; i<menuItemData.children.length; i++){
-                    menuData = _.union(menuData, this.initializeMenuItemData(menuItemData.children[i], menuIndex + '_' + i));
+                    menuData = _.union(menuData, this.initializeAppMenuItemData(menuItemData.children[i], menuIndex + '_' + i));
                 }
             } else {
                 menuData.push({
                     menuIndex: menuIndex,
                     label: menuItemData.menuItem.label,
+                    shortcut: menuItemData.menuItem.shortcut,
                     method: menuItemData.menuItem.method
 
                 });
@@ -788,11 +719,10 @@ class WindowManager extends eventEmitter {
         return _.find(this.menuMethodMap, {menuIndex: menuItemIndex}).method;
     }
 
-    removeMenu (){
-        var menu = nw.Window.get().menu;
-        var items = menu.items;
+    removeAppMenu (){
+        var items = this.menu.items;
         for(let i=0; i<items.length;i++){
-            menu.removeAt(i);
+            this.menu.removeAt(i);
         }
     }
 }

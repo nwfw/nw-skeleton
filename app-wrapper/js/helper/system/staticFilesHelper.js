@@ -226,6 +226,20 @@ class StaticFilesHelper extends BaseClass {
             appUtil.log('Loading {1} JS files', 'groupend', [totalJsFileCount], false, this.forceDebug);
         }
     }
+
+    async reloadCss (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        await this.generateCss();
+        var links = window.document.querySelectorAll('link');
+        _.each(links, function(link){
+            if (link.type && link.type == 'text/css'){
+                link.href = link.href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
+            }
+        });
+        appUtil.log('CSS styles reloaded.', 'info', [], false, this.forceDebug);
+    }
 }
 
 exports.StaticFilesHelper = StaticFilesHelper;

@@ -12,9 +12,11 @@ class DebugHelper extends BaseClass {
     constructor() {
         super();
 
-        _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
-        appState = this.getAppState();
+        if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
+            _appWrapper = window.getAppWrapper();
+            appUtil = _appWrapper.getAppUtil();
+            appState = appUtil.getAppState();
+        }
 
         this.forceDebug = appUtil.getConfig('forceDebug.debugHelper');
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.debugHelper');

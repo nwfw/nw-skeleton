@@ -69,6 +69,8 @@ class AppWrapper {
             return window.feApp;
         };
 
+        this.noop = _.noop;
+
         return this;
     }
 
@@ -101,6 +103,7 @@ class AppWrapper {
         appState.config = await this.appConfig.loadUserConfig();
 
         this.windowManager = new WindowManager();
+        this.windowManager.initializeAppMenu();
 
         this.setDynamicAppStateValues();
 
@@ -160,7 +163,7 @@ class AppWrapper {
             window.appState.appInitialized = true;
             window.appState.appReady = true;
         }
-        this.windowManager.initializeMenu();
+        this.windowManager.setupAppMenu();
         return retValue;
     }
 
@@ -302,38 +305,7 @@ class AppWrapper {
             }
 
             if (eventHandlerName){
-                var eventChunks = eventHandlerName.split('.');
-                var eventMethod;
-                var eventMethodPath = '';
-                if (eventChunks && eventChunks.length && eventChunks.length > 1){
-                    eventMethod = _.takeRight(eventChunks);
-                    eventMethodPath = _.slice(eventChunks, 0, eventChunks.length-1).join('.');
-                } else {
-                    eventMethod = eventHandlerName;
-                }
-
-
-                var handlerObj = this.app;
-                if (eventMethodPath){
-                    handlerObj = _.get(handlerObj, eventMethodPath);
-                }
-
-                if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
-                    return await handlerObj[eventMethod](e, target);
-                } else {
-                    handlerObj = this;
-                    if (eventMethodPath){
-                        handlerObj = _.get(handlerObj, eventMethodPath);
-                    }
-                    if (handlerObj && handlerObj[eventMethod] && _.isFunction(handlerObj[eventMethod])){
-                        return await handlerObj[eventMethod](e);
-                    } else {
-                        appUtil.log('Can\'t find event handler \'{1}\'', 'warning', [eventHandlerName], false, this.forceDebug);
-                        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-                            e.preventDefault();
-                        }
-                    }
-                }
+                return await this.callObjMethod(eventHandlerName, [e, target]);
             } else {
                 appUtil.log('Element {1} doesn\'t have attribute \'{2}\'', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false, this.forceDebug);
             }
@@ -369,6 +341,7 @@ class AppWrapper {
     }
 
     async shutdownApp () {
+        await this.windowManager.removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.helpers.debugHelper.onDebugWindowClose();
         }
@@ -380,6 +353,7 @@ class AppWrapper {
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();
         }
+
         return true;
     }
 
@@ -644,16 +618,90 @@ class AppWrapper {
 
     handleMenuClick (menuIndex) {
         var methodIdentifier = this.windowManager.getMenuItemMethodName(menuIndex);
-        var objectIdentifier = methodIdentifier.replace(/\.[^\.]+$/, '');
+        var objectIdentifier;
         var method;
-        var object;
+        var object = this;
+        if (methodIdentifier.match(/\./)){
+            objectIdentifier = methodIdentifier.replace(/\.[^\.]+$/, '');
+        }
+
         if (methodIdentifier){
-            object = _.get(this, objectIdentifier);
             method = _.get(this, methodIdentifier);
         }
+
+        if (objectIdentifier){
+            object = _.get(this, objectIdentifier);
+        }
+
         if (object && method && _.isFunction(method)){
             return method.call(object);
+        } else {
+            appUtil.log('Can\t call menu click handler \'{1}\' for menuIndex \'{2}\'!', 'error', [methodIdentifier, menuIndex], false, this.forceDebug);
+            return false;
         }
+    }
+
+    async getObjMethod(methodString, methodArgs, context){
+        var methodChunks = methodString.split('.');
+        var targetMethod;
+        var methodPath = '';
+        var objMethod = false;
+        if (methodChunks && methodChunks.length && methodChunks.length > 1){
+            targetMethod = _.takeRight(methodChunks);
+            methodPath = _.slice(methodChunks, 0, methodChunks.length-1).join('.');
+        } else {
+            targetMethod = methodString;
+        }
+
+
+        var handlerObj = this.app;
+        if (methodPath){
+            handlerObj = _.get(handlerObj, methodPath);
+        }
+
+        if (handlerObj && handlerObj[targetMethod] && _.isFunction(handlerObj[targetMethod])){
+            if (context && _.isObject(context)){
+                objMethod = async function() {
+                    return await handlerObj[targetMethod].apply(context, methodArgs);
+                };
+            } else {
+                objMethod = async function() {
+                    return await handlerObj[targetMethod].apply(handlerObj, methodArgs);
+                };
+            }
+        } else {
+            handlerObj = this;
+            if (methodPath){
+                handlerObj = _.get(handlerObj, methodPath);
+            }
+            if (handlerObj && handlerObj[targetMethod] && _.isFunction(handlerObj[targetMethod])){
+                if (context && _.isObject(context)){
+                    objMethod = async function() {
+                        return await handlerObj[targetMethod].apply(context, methodArgs);
+                    };
+                } else {
+                    objMethod = async function() {
+                        return await handlerObj[targetMethod].apply(handlerObj, methodArgs);
+                    };
+                }
+            } else {
+                appUtil.log('Can\'t find object method \'{1}\'', 'warning', [methodString], false, this.forceDebug);
+            }
+        }
+        return objMethod;
+    }
+
+    async callObjMethod(methodString, methodArgs, context){
+        var objMethod = await this.getObjMethod(methodString, methodArgs, context);
+        if (objMethod && _.isFunction(objMethod)){
+            return await objMethod();
+        } else {
+            return false;
+        }
+    }
+
+    exitApp(){
+        this.windowManager.closeWindow();
     }
 
 }

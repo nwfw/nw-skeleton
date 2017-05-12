@@ -89,7 +89,7 @@ class AppTranslations extends BaseClass {
             e.preventDefault();
         }
 
-        _appWrapper.windowManager.noHandlingKeys = true;
+        appState.noHandlingKeys = true;
 
         appState.modalData.currentModal = _.cloneDeep(appState.translationModal);
         appState.modalData.currentModal.hasSearch = false;
@@ -107,7 +107,7 @@ class AppTranslations extends BaseClass {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
-            _appWrapper.windowManager.noHandlingKeys = false;
+            appState.noHandlingKeys = false;
             _appWrapper.helpers.modalHelper.modalNotBusy();
             clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
@@ -172,7 +172,7 @@ class AppTranslations extends BaseClass {
                 appUtil.addUserMessage('* Can\'t save {1} translations for {2} languages (\'{3}\') in translation files.', 'error', [translationsCount, savedLangs.length, savedLangs.join(', ')], false, false, this.forceUserMessages, this.forceDebug);
             }
         }
-        _appWrapper.windowManager.noHandlingKeys = false;
+        appState.noHandlingKeys = false;
         clearTimeout(this.timeouts.translationModalInitTimeout);
         _appWrapper.helpers.modalHelper.closeCurrentModal(true);
 
