@@ -26,6 +26,8 @@ class WindowManager extends eventEmitter {
 
         this.noHandlingKeys = false;
 
+        this.menuMethodMap = [];
+
         this.boundMethods = {
             minimizeWindow: this.minimizeWindow.bind(this),
             toggleMaximize: this.toggleMaximize.bind(this),
@@ -725,6 +727,73 @@ class WindowManager extends eventEmitter {
     openNewWindow(url, options){
         window._newWindow = nw.Window.open(url, options);
         return window._newWindow;
+    }
+
+    initializeMenu() {
+        var menuData = appUtil.getConfig('appConfig.menuData');
+        this.menuMethodMap = [];
+        if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
+            var menu = new nw.Menu({type: 'menubar'});
+            this.menu = [];
+
+            if (appUtil.isMac()){
+                menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+            }
+
+            for(let i=0; i<menuData.menus.length; i++){
+                var menuMethodData =  this.initializeMenuItemData(menuData.menus[i], i);
+                this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
+                menu.append(this.initializeMenuItem(menuData.menus[i], i));
+            }
+
+            nw.Window.get().menu = menu;
+        }
+
+    }
+
+    initializeMenuItem (menuItemData, menuIndex) {
+        var menuItem;
+        if (menuItemData.children && menuItemData.children.length){
+            let submenu = new nw.Menu();
+            for(let i=0; i<menuItemData.children.length; i++){
+                submenu.append(this.initializeMenuItem(menuItemData.children[i], menuIndex + '_' + i));
+            }
+            menuItem = new nw.MenuItem(_.extend(menuItemData.menuItem, {submenu: submenu, click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
+        } else {
+            menuItem = new nw.MenuItem(_.extend(menuItemData.menuItem, {click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
+        }
+        return menuItem;
+    }
+
+    initializeMenuItemData (menuItemData, menuIndex) {
+        var menuData = [];
+        if (menuItemData.menuItem.type != 'separator'){
+            if (menuItemData.children && menuItemData.children.length){
+                for(let i=0; i<menuItemData.children.length; i++){
+                    menuData = _.union(menuData, this.initializeMenuItemData(menuItemData.children[i], menuIndex + '_' + i));
+                }
+            } else {
+                menuData.push({
+                    menuIndex: menuIndex,
+                    label: menuItemData.menuItem.label,
+                    method: menuItemData.menuItem.method
+
+                });
+            }
+        }
+        return menuData;
+    }
+
+    getMenuItemMethodName (menuItemIndex){
+        return _.find(this.menuMethodMap, {menuIndex: menuItemIndex}).method;
+    }
+
+    removeMenu (){
+        var menu = nw.Window.get().menu;
+        var items = menu.items;
+        for(let i=0; i<items.length;i++){
+            menu.removeAt(i);
+        }
     }
 }
 

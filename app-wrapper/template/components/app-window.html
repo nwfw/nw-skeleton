@@ -3,7 +3,7 @@
         <div class="app-content">
             <template v-if="appInitialized">
                 <app-header ref="appHeader"></app-header>
-                <app-main ref="appMain"></app-main>
+                <app-main keep-alive ref="appMain"></app-main>
                 <app-debug ref="appDebug"></app-debug>
                 <app-footer ref="appFooter"></app-footer>
             </template>

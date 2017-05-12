@@ -177,6 +177,8 @@ exports.config = {
         appGlobalComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/global/',
         appModalComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/modal/',
         appComponentCodeRegex: /\.js$/,
+
+        menuData: {}
     },
 
     configData: {

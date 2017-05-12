@@ -112,9 +112,6 @@ class AppWrapper {
         await this.helpers.staticFilesHelper.loadCssFiles();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
-
-
-
         this.appTemplates = new AppTemplates();
         this.templateContents = await this.appTemplates.initializeTemplates();
 
@@ -163,6 +160,7 @@ class AppWrapper {
             window.appState.appInitialized = true;
             window.appState.appReady = true;
         }
+        this.windowManager.initializeMenu();
         return retValue;
     }
 
@@ -257,11 +255,11 @@ class AppWrapper {
             }
         });
         if (window.isDebugWindow){
-            appUtil.addUserMessage('Debug window application initialized', 'info', [], false,  false, true, true);
+            appUtil.addUserMessage('Debug window application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
         } else {
-            appUtil.addUserMessage('Application initialized', 'info', [], false,  false, true, true);
+            appUtil.addUserMessage('Application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
             if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                appUtil.addUserMessage('Active config file: \'{1}\'', 'info', [appState.activeConfigFile], false, false, true, true);
+                appUtil.addUserMessage('Active config file: \'{1}\'', 'info', [appState.activeConfigFile], false, false, this.forceUserMessages, this.forceDebug);
             }
         }
 
@@ -642,6 +640,20 @@ class AppWrapper {
             }
         }
         return helper;
+    }
+
+    handleMenuClick (menuIndex) {
+        var methodIdentifier = this.windowManager.getMenuItemMethodName(menuIndex);
+        var objectIdentifier = methodIdentifier.replace(/\.[^\.]+$/, '');
+        var method;
+        var object;
+        if (methodIdentifier){
+            object = _.get(this, objectIdentifier);
+            method = _.get(this, methodIdentifier);
+        }
+        if (object && method && _.isFunction(method)){
+            return method.call(object);
+        }
     }
 
 }

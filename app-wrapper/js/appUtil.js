@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
+var os = require('os');
+
 
 var appUtil = {
 
@@ -171,7 +173,7 @@ var appUtil = {
         var timestamp = new Date().toISOString().slice(11, 19);
         var iconClass = 'fa fa-info-circle';
 
-        if (message && (typeLevel > 1 || passToDebug)){
+        if (message && (typeLevel > 2 || passToDebug)){
             this.log(message, type, data, dontTranslate);
         }
 
@@ -377,7 +379,7 @@ var appUtil = {
                         filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles);
                     }
                 } else {
-                    appUtil.log('No eligible files found in \'{1}\'...', 'info', [directory], false, self.forceDebug);
+                    appUtil.log('No eligible files found in \'{1}\'...', 'debug', [directory], false, self.forceDebug);
                 }
             } else {
                 appUtil.log('Directory \'{1}\' is not a directory!', 'error', [directory], false, this.forceDebug);
@@ -446,7 +448,8 @@ var appUtil = {
         if (!context){
             context = window;
         }
-        return _.get(context, varPath);
+        var value = _.get(context, varPath);
+        return value;
     },
 
     nextTick: async function(){
@@ -462,7 +465,7 @@ var appUtil = {
         callable();
     },
     wait: async function(duration){
-        appUtil.log('Waiting {1} ms', 'info', [duration], false, this.forceDebug);
+        appUtil.log('Waiting {1} ms', 'debug', [duration], false, this.forceDebug);
         var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
@@ -549,14 +552,14 @@ var appUtil = {
             path = 'config.' + name;
         }
         value = this.getVar(path, appState);
-        if (!value){
+        if (_.isUndefined(value)){
             path = name;
             if (!path.match(/^appWrapperConfig\./)){
                 path = 'appWrapperConfig.' + name;
             }
             value = this.getVar(path, appState.u);
         }
-        if (!value){
+        if (_.isUndefined(value)){
             path = name;
             if (!path.match(/^userConfig\./)){
                 path = 'userConfig.' + name;
@@ -579,6 +582,44 @@ var appUtil = {
         } while (randomString.length < size);
 
         return randomString.substr(0, size);
+    },
+
+    getPlatformData: function(){
+        var name = os.platform();
+        var platform = {
+            isLinux: false,
+            isMac: false,
+            isWindows: false,
+            isWindows8: false,
+            version: os.release()
+        };
+
+        if(name === 'darwin'){
+            platform.name = 'mac';
+            platform.isMac = true;
+        } else if(name === 'linux'){
+            platform.name = 'linux';
+            platform.isLinux = true;
+        } else {
+            platform.name = 'windows';
+            platform.isWindows = true;
+        }
+
+        platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+
+        return platform;
+    },
+
+    isMac: function(){
+        return this.getPlatformData().isMac;
+    },
+
+    isWindows: function(){
+        return this.getPlatformData().isWindows;
+    },
+
+    isLinux: function(){
+        return this.getPlatformData().isLinux;
     }
 };
 
