@@ -42,11 +42,11 @@ class AppWrapper {
             cleanupTimeout: null,
             windowCloseTimeout: null,
             modalContentVisibleTimeout: null,
-            appStatusChangingTimeout: null
+            appStatusChangingTimeout: null,
+            liveCss: null
         };
 
         this.intervals = {
-
         };
 
         this.debugWindow = null;
@@ -76,6 +76,7 @@ class AppWrapper {
 
     async initialize(){
         this.fileManager = new FileManager();
+        await this.fileManager.initialize();
 
         this.appConfig = new AppConfig(this.initialAppConfig);
 
@@ -119,6 +120,13 @@ class AppWrapper {
         this.templateContents = await this.appTemplates.initializeTemplates();
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(appUtil.getConfig('wrapper.helperDirectories')));
+
+        var globalKeyHandlers = appUtil.getConfig('appConfig.globalKeyHandlers');
+        if (globalKeyHandlers && globalKeyHandlers.length){
+            for(let j=0; j<globalKeyHandlers.length; j++){
+                this.getHelper('keyboard').registerGlobalShortcut(globalKeyHandlers[j]);
+            }
+        }
 
         if (window.isDebugWindow){
             this.mainWindow = window.opener;
@@ -353,7 +361,10 @@ class AppWrapper {
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();
         }
-
+        this.clearTimeouts();
+        this.clearIntervals();
+        await this.fileManager.unwatchAllFiles();
+        await this.fileManager.unwatchAll();
         return true;
     }
 
@@ -595,6 +606,18 @@ class AppWrapper {
         appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
         appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
         appState.closeModalResolve = null;
+    }
+
+    clearTimeouts (){
+        for (let name in this.timeouts){
+            clearTimeout(this.timeouts[name]);
+        }
+    }
+
+    clearIntervals (){
+        for (let name in this.intervals){
+            clearInterval(this.intervals[name]);
+        }
     }
 
     getHelper(helperName){

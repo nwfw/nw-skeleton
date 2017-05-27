@@ -64,6 +64,27 @@ class UtilHelper extends BaseClass {
         imgEl.src = imgSrc;
     }
 
+    getArrayDuplicates (arr){
+        var sorted_arr = arr.slice().sort();
+        var results = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+            if (sorted_arr[i + 1] == sorted_arr[i]) {
+                results.push(sorted_arr[i]);
+            }
+        }
+        return results;
+    }
+
+    copyToClipboard (text) {
+        var clipboard = nw.Clipboard.get();
+        clipboard.set(text, 'text');
+    }
+
+    pasteFromClipboard (text) {
+        var clipboard = nw.Clipboard.get();
+        return clipboard.get();
+    }
+
 
 }
 

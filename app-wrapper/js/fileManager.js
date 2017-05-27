@@ -13,6 +13,16 @@ class FileManager extends eventEmitter {
         super();
     }
 
+    async initialize () {
+        this.watchedFiles = [];
+        this.watched = {};
+        return true;
+    }
+
+    async shutdown () {
+        await this.unwatchAllFiles();
+    }
+
     fileExists(file){
         var fileExists = true;
         var filePath = path.resolve(file);
@@ -240,6 +250,48 @@ class FileManager extends eventEmitter {
             console.log(ex);
         }
         return saved;
+    }
+
+    async watchFile(filePath, options, listener){
+        this.watchedFiles.push(filePath);
+        fs.watchFile(filePath, options, listener);
+    }
+
+    async unWatchFile(filePath, listener){
+        var watchIndex = _.indexOf(this.watchedFiles, filePath);
+        if (watchIndex != -1){
+            fs.unwatchFile(filePath, listener);
+            _.pullAt(this.watchedFiles, watchIndex);
+        }
+    }
+
+    async unwatchAllFiles () {
+        let watchedFiles = _.clone(this.watchedFiles);
+        for (let i=0; i<watchedFiles.length; i++){
+            await this.unwatchFile(watchedFiles[i]);
+        }
+        this.watchedFiles = [];
+    }
+
+    async watch(filePath, options, listener){
+        var listenerName = listener.name ? listener.name : listener;
+        this.watched[filePath + ':' + listenerName] = fs.watch(filePath, options, listener);
+    }
+
+    async unwatch(filePath, listener){
+        var listenerName = listener.name ? listener.name : listener;
+        if (this.watched && this.watched[filePath + ':' + listenerName] && this.watched[filePath + ':' + listenerName].close && _.isFunction(this.watched[filePath + ':' + listenerName].close)){
+            this.watched[filePath + ':' + listenerName].close();
+            delete this.watched[filePath + ':' + listenerName];
+        }
+    }
+
+    async unwatchAll () {
+        for (let name in this.watched){
+            this.watched[name].close();
+            delete this.watched[name];
+        }
+        this.watched = [];
     }
 }
 

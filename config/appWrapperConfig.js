@@ -309,6 +309,8 @@ exports.config = {
     allowLanguageChange: true,
     autoAddLabels: true,
 
+    liveCss: false,
+
     hideDebug: false,
     debug: true,
     debugToFile: true,

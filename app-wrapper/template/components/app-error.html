@@ -1,9 +1,15 @@
 <div class="app-error">
-    <div class="app-error-content">
-        <h2 v-if="appState.appErrorTitle" class="app-error-title" v-html="def(appState.appErrorTitle, 'Error')"></h2>
-        <div class="app-error-icon">
-            <span class="fa fa-exclamation-triangle"></span>
+    <template v-if="appState.appErrorComponent">
+        <component v-bind:is="appState.appErrorComponent"></component>
+    </template>
+    <template v-else>
+        <div class="app-error-content">
+            <h2 v-if="appState.appErrorTitle" class="app-error-title" v-html="def(appState.appErrorTitle, 'Error')"></h2>
+            <div class="app-error-icon">
+                <span class="fa fa-exclamation-triangle"></span>
+            </div>
+            <p v-if="appState.appErrorText" class="app-error-text" v-html="appState.appErrorText"></p>
+
         </div>
-        <p v-if="appState.appErrorText" class="app-error-text" v-html="appState.appErrorText"></p>
-    </div>
+    </template>
 </div>

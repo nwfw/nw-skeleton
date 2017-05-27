@@ -8,6 +8,10 @@
 	background: #FFF;
 	opacity: 0.7;
 }
+.modal-dialog-background.fade-slow-enter-to,
+.modal-dialog-background.fade-slow-leave {
+	opacity: 0.7;
+}
 
 .modal-dialog-wrapper {
 	overflow: auto;

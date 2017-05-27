@@ -13,24 +13,41 @@ component = {
 
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper),
 
+        getTitle: function(){
+            let title = '';
+            if (appState.modalData.currentModal.title){
+                if (_.isFunction(appState.modalData.currentModal.title)){
+                    title = appState.modalData.currentModal.title();
+                } else {
+                    title = appState.modalData.currentModal.title;
+                }
+            }
+            return title;
+        },
+
         setFocus: function(){
             if (appState && appState.modalData.currentModal && appState.modalData.modalVisible){
                 var focusElement;
                 var el = this.$el;
                 if (el && el.querySelector && _.isFunction(el.querySelector)){
-                    if (appState.modalData.currentModal.cancelSelected){
-                        focusElement = el.querySelector('.modal-button-cancel');
-                    } else if (appState.modalData.currentModal.confirmSelected){
-                        focusElement = el.querySelector('.modal-button-confirm');
-                    }
-                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
-                        focusElement = el.querySelector('.modal-button');
-                    }
-                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
-                        focusElement = el.querySelector('input, button');
-                    }
-                    if (!(focusElement && !focusElement.getAttribute('disabled'))){
-                        focusElement = el;
+                    let firstInput = el.querySelector('input,select,textarea');
+                    if (firstInput && firstInput.getAttribute('type') != 'button'){
+                        focusElement = firstInput;
+                    } else {
+                        if (appState.modalData.currentModal.cancelSelected){
+                            focusElement = el.querySelector('.modal-button-cancel');
+                        } else if (appState.modalData.currentModal.confirmSelected){
+                            focusElement = el.querySelector('.modal-button-confirm');
+                        }
+                        if (!(focusElement && !focusElement.getAttribute('disabled'))){
+                            focusElement = el.querySelector('.modal-button');
+                        }
+                        if (!(focusElement && !focusElement.getAttribute('disabled'))){
+                            focusElement = el.querySelector('input, button');
+                        }
+                        if (!(focusElement && !focusElement.getAttribute('disabled'))){
+                            focusElement = el;
+                        }
                     }
                 }
                 if (focusElement && focusElement.focus && _.isFunction(focusElement.focus)){
@@ -96,7 +113,10 @@ component = {
     },
 
     updated: function(){
-        this.setFocus();
+        var activeElement = document.activeElement;
+        if (!(activeElement && activeElement.tagName && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
+            this.setFocus();
+        }
     }
 };
 

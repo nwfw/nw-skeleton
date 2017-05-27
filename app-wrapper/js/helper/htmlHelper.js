@@ -189,6 +189,8 @@ class HtmlHelper extends eventEmitter {
             classes = classes.split(' ');
             classes.push(className);
             element.setAttribute('class', classes.join(' '));
+        } else {
+            element.setAttribute('class', className);
         }
         return element;
     }
@@ -201,6 +203,62 @@ class HtmlHelper extends eventEmitter {
             element.setAttribute('class', classes.join(' '));
         }
         return element;
+    }
+
+    hasClass (element, className){
+        var hasClass = false;
+        var classes = element.getAttribute('class');
+        if (classes && classes.split && _.isFunction(classes.split)){
+            classes = classes.split(' ');
+            hasClass = _.includes(classes, className);
+        }
+        return hasClass;
+    }
+
+    toggleClass (element, className){
+        let hasClass = this.hasClass(element, className);
+        if (hasClass){
+            return this.removeClass(element, className);
+        } else {
+            return this.addClass(element, className);
+        }
+    }
+
+    show (element) {
+        if (element){
+            this.removeElementStyles(element, 'display');
+        }
+    }
+
+    hide (element) {
+        if (element){
+            this.setElementStyles(element, {display: 'none'}, true);
+        }
+    }
+
+    toggle (element) {
+        if (element){
+            if (!element.clientHeight && !element.clientWidth){
+                var defaultDisplay = this.getElementDefaultDisplay(element);
+                console.log(defaultDisplay);
+                this.setElementStyles(element, {display: defaultDisplay}, true);
+            } else {
+                this.hide(element);
+            }
+        }
+    }
+
+    getElementDefaultDisplay(element) {
+        var tag = element.tagName;
+        var cStyle;
+        var newElement = document.createElement(tag);
+        var gcs = 'getComputedStyle' in window;
+
+        document.body.appendChild(newElement);
+        cStyle = (gcs ? window.getComputedStyle(newElement, '') : newElement.currentStyle).display;
+        document.body.removeChild(newElement);
+
+        return cStyle;
     }
 
     scrollElementTo (element, to, duration) {
@@ -447,6 +505,29 @@ class HtmlHelper extends eventEmitter {
     formatCurrency (value){
         var returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
+    }
+
+    getParentByClass(element, targetClass){
+        var parent;
+        if (element && element.parentNode){
+            parent = element;
+            while (!this.hasClass(parent, targetClass)) {
+                parent = parent.parentNode;
+            }
+        }
+        return parent;
+    }
+
+    nl2br (value) {
+        return value.replace(/\r?\n/g, '<br />');
+    }
+
+    selectAll (element){
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(element);
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 }
 

@@ -39,6 +39,7 @@ exports.appState = {
     appError: false,
     appErrorTitle: '',
     appErrorText: '',
+    appErrorComponent: '',
     appErrorUserMessages: true,
     windowMaximized: false,
     devToolsOpened: false,
@@ -47,6 +48,8 @@ exports.appState = {
     shiftPressed: false,
     altPressed: false,
     noHandlingKeys: false,
+    preventReload: false,
+    preventClose: false,
 
     appOperation: {
         cancelable: false,

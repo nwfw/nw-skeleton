@@ -11,7 +11,7 @@
 					<span data-event-target="parent" class="fa fa-wrench"></span>
 				</a>
 			</span>
-			<span v-if="!appState.appBusy" class="window-control-wrapper">
+			<span v-if="!appState.appBusy" class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventReload}" >
 				<a class="window-control window-control-reload " v-on:click="callViewHandler" data-click-handler="windowManager.reloadWindow" v-bind:title="translate('Reload window')">
 					<span data-event-target="parent" class="fa fa-refresh"></span>
 				</a>
@@ -56,7 +56,7 @@
 				<span data-event-target="parent" class="fa fa-window-maximize"></span>
 			</a>
 		</span>
-		<span class="window-control-wrapper">
+		<span class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventClose}">
 			<a class="window-control window-control-close " v-on:click="callViewHandler" data-click-handler="windowManager.closeWindow" v-bind:title="translate('Close window')">
 				<span data-event-target="parent" class="fa fa-remove"></span>
 			</a>

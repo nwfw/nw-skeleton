@@ -37,6 +37,12 @@ body.nw-body-initialized {
     background: var(--selection-background);
 }
 
+.can-select::selection,
+textarea::selection,
+input::selection {
+    background: #EEEEEE;
+}
+
 h1, h2 {
 	font-weight: 600;
 }

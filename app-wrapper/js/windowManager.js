@@ -112,10 +112,14 @@ class WindowManager extends eventEmitter {
         }
         this.winState.width = appW;
         this.winState.height = appH;
+
         if (appState.debug){
-            // this.win.show();
             this.document.body.className = this.document.body.className + ' nw-body-debug';
-            setTimeout(() => {
+        }
+
+        setTimeout(() => {
+            if (appState.debug){
+                // this.win.show();
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
@@ -125,9 +129,7 @@ class WindowManager extends eventEmitter {
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
                 this.window.focus();
-            }, 200);
-        } else {
-            setTimeout(() => {
+            } else {
                 if (windowPosition){
                     this.winState.position = windowPosition;
                 }
@@ -139,8 +141,8 @@ class WindowManager extends eventEmitter {
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
                 this.window.focus();
-            }, 200);
-        }
+            }
+        }, 200);
     }
 
     initWinState () {
@@ -528,7 +530,9 @@ class WindowManager extends eventEmitter {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-
+        if (appState.preventReload){
+            return false;
+        }
 
         if (!force){
             this.win.window.getAppWrapper().beforeUnload();
@@ -563,14 +567,18 @@ class WindowManager extends eventEmitter {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.win.close();
+        if (!appState.preventClose){
+            this.win.close();
+        }
     }
 
     closeWindowForce (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.win.close(true);
+        if (!appState.preventClose){
+            this.win.close(true);
+        }
     }
 
     closeNewWindow(newWindow){
@@ -644,11 +652,6 @@ class WindowManager extends eventEmitter {
                 this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
                 this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
             }
-            // for(let j=0; j<this.menuMethodMap.length; j++){
-            //     if (this.menuMethodMap[j] && this.menuMethodMap[j].method && this.menuMethodMap[j].shortcut && this.menuMethodMap[j].shortcut.key){
-            //         _appWrapper.getHelper('keyboard').registerGlobalShortcut(this.menuMethodMap[j].shortcut.key, this.menuMethodMap[j].shortcut.modifiers, this.menuMethodMap[j].method);
-            //     }
-            // }
 
             nw.Window.get().menu = this.menu;
 
@@ -720,8 +723,7 @@ class WindowManager extends eventEmitter {
     }
 
     removeAppMenu (){
-        var items = this.menu.items;
-        for(let i=0; i<items.length;i++){
+        for(let i=1; i<this.menu.items.length;i++){
             this.menu.removeAt(i);
         }
     }

@@ -60,29 +60,30 @@ class KeyboardHelper extends BaseClass {
         window.removeEventListener('keyup', this.boundMethods.handleKeyDown);
     }
 
-    registerGlobalShortcut (key, modifiers, handler){
-        this.globalKeyData.push({
-            key,
-            modifiers,
-            handler
-        });
+    registerGlobalShortcut (keyHandler){
+        this.globalKeyData.push(keyHandler);
     }
 
-    unRegisterGlobalShortcut (key, modifiers, handler){
+    unRegisterGlobalShortcut (keyHandler){
         this.globalKeyData = _.filter(this.globalKeyData, {
-            key: key,
-            modifiers: modifiers,
-            handler: handler
+            keyCode: keyHandler.keyCode,
+            handler: keyHandler.handler
         });
     }
 
     handleKeyDown (e){
-        this.handleAppKeyDown(e);
-        this.handleGlobalKeyDown(e);
+        if (!this.handleAppKeyDown(e)){
+            this.handleGlobalKeyDown(e);
+        }
     }
 
     handleAppKeyDown(e){
+        var fulfilled = false;
         var keyCode = e.keyCode;
+        if (appState.noHandlingKeys){
+            e.stopImmediatePropagation();
+            return false;
+        }
         if (_.includes(this.keyCodes.commandKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
@@ -91,6 +92,7 @@ class KeyboardHelper extends BaseClass {
             } else if (e.type == 'keyup'){
                 appState.ctrlPressed = false;
             }
+            fulfilled = true;
         } else if (_.includes(this.keyCodes.shiftKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
@@ -99,6 +101,7 @@ class KeyboardHelper extends BaseClass {
             } else if (e.type == 'keyup'){
                 appState.shiftPressed = false;
             }
+            fulfilled = true;
         } else if (_.includes(this.keyCodes.altKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
@@ -107,17 +110,22 @@ class KeyboardHelper extends BaseClass {
             } else if (e.type == 'keyup'){
                 appState.altPressed = false;
             }
+            fulfilled = true;
         } else {
             if (e.type == 'keydown') {
                 if (appState && appState.modalData.currentModal && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
                     _appWrapper.helpers.modalHelper.closeCurrentModal();
+                    fulfilled = true;
                 } else if (!appState.noHandlingKeys && appState && appState.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
                     _appWrapper.windowManager.closeWindow();
+                    fulfilled = true;
                 } else if (appState && appState.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     _appWrapper.getHelper('staticFiles').reloadCss();
+                    fulfilled = true;
                 } else if ( appState.ctrlPressed && !appState.noHandlingKeys && appState && !appState.hideDebug && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     this.pressedKeys = [];
                     _appWrapper.windowManager.reloadWindow();
+                    fulfilled = true;
                 } else {
                     var nextDebugCode = this.keyCodes.debugKeys[this.pressedKeys.length];
                     if (keyCode == nextDebugCode){
@@ -129,6 +137,7 @@ class KeyboardHelper extends BaseClass {
                     if (this.pressedKeys.length == this.keyCodes.debugKeys.length){
                         this.pressedKeys = [];
                         appState.debug = !appState.debug;
+                        fulfilled = true;
                         _appWrapper.appConfig.setConfigVar('debug', appState.debug);
                         var message = 'Debug mode disabled.';
                         if (appState.debug){
@@ -139,21 +148,23 @@ class KeyboardHelper extends BaseClass {
                 }
             }
         }
+        return fulfilled;
     }
 
     handleGlobalKeyDown (e) {
         var keyCode = e.keyCode;
         var key = e.key;
-        var globalKeys = _.map(this.globalKeyData, function(item){
-            return item.key;
-        });
-        if (_.includes(globalKeys, key)){
+        var globalKeys = _.flattenDeep(_.map(this.globalKeyData, function(item){
+            return item.keyCodes;
+        }));
+
+        if (_.includes('*', globalKeys) || _.intersection(globalKeys, [keyCode]).length){
             var allHandlers = _.filter(this.globalKeyData, function(item){
                 var found = false;
                 if (item.key && item.key == key){
                     found = true;
                 }
-                if (item.keyCode && item.keyCode == keyCode){
+                if (_.includes('*', globalKeys) || (item.keyCodes && _.includes(item.keyCodes, keyCode))){
                     found = true;
                 }
                 return found;
@@ -185,9 +196,9 @@ class KeyboardHelper extends BaseClass {
                 var shortcut = shortcutData[j];
                 if (shortcut.handler){
                     if (_.isFunction(shortcut.handler)){
-                        shortcut.handler();
+                        shortcut.handler(e);
                     } else if (_.isString(shortcut.handler)){
-                        _appWrapper.callObjMethod(shortcut.handler);
+                        _appWrapper.callObjMethod(shortcut.handler, [e]);
                     }
                 }
             }
