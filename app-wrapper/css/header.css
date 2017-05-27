@@ -6,6 +6,7 @@ header {
 	overflow: visible;
 	position: relative;
     flex-direction: column;
+    z-index: 2;
 }
 
 .header-top {
