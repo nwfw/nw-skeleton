@@ -42,6 +42,9 @@ exports.config = {
                         name: 'app-loader',
                         components: [
                             {
+                                name: 'app-loader-spinner'
+                            },
+                            {
                                 name: 'user-messages',
                                 components: [
                                     {

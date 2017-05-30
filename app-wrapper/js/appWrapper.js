@@ -88,6 +88,8 @@ class AppWrapper {
         appUtil.forceDebug = appUtil.getConfig('forceDebug.appUtil');
         appUtil.forceUserMessages = appUtil.getConfig('forceUserMessages.appUtil');
 
+        appState.platformData = appUtil.getPlatformData();
+
         var tmpDataDir = appUtil.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
             tmpDataDir = path.resolve(tmpDataDir);
@@ -391,12 +393,17 @@ class AppWrapper {
         appState.appBusy = false;
     }
 
-    operationStart(operationText, cancelable, appBusy, useProgress, progressText){
+    operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation){
         if (!operationText){
             operationText = '';
         }
         if (!cancelable){
             cancelable = false;
+        }
+        if (preventAnimation){
+            appState.progressData.animated = false;
+        } else {
+            appState.progressData.animated = true;
         }
 
         appState.appOperation = {
@@ -458,6 +465,7 @@ class AppWrapper {
                 appBusy: null
             };
         }, timeoutDuration);
+        appState.progressData.animated = true;
     }
 
     operationCancel (e) {

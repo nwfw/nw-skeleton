@@ -110,16 +110,19 @@ class WindowManager extends eventEmitter {
             appH = 400;
             windowPosition = '';
         }
-        this.winState.width = appW;
-        this.winState.height = appH;
 
         if (appState.debug){
             this.document.body.className = this.document.body.className + ' nw-body-debug';
         }
 
         setTimeout(() => {
+            this.winState.width = appW;
+            this.winState.height = appH;
+        }, 10);
+
+        setTimeout(() => {
             if (appState.debug){
-                // this.win.show();
+                this.win.show();
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
@@ -137,7 +140,7 @@ class WindowManager extends eventEmitter {
                     this.winState.x = 0;
                     this.winState.y = 0;
                 }
-                // this.win.show();
+                this.win.show();
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
                 this.window.focus();

@@ -1,4 +1,5 @@
 exports.appState = {
+    platformData: {},
     appData: {},
     config: {},
     windowState: {
@@ -90,6 +91,7 @@ exports.appState = {
 
     },
     progressData: {
+        animated: true,
         inProgress: false,
         percentComplete: 0,
         operationText: '',

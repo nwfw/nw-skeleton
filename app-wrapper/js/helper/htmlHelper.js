@@ -529,6 +529,35 @@ class HtmlHelper extends eventEmitter {
         selection.removeAllRanges();
         selection.addRange(range);
     }
+
+    getComputedStyles (element) {
+        var style;
+        var returns = {};
+        if (element && element.tagName){
+            style = window.getComputedStyle(element, null);
+            for(let i=0; i<style.length; i++){
+                var prop = style[i];
+                var val = style.getPropertyValue(prop);
+                returns[prop] = val;
+            }
+        }
+        return returns;
+    }
+
+    getComputedStyle (element, propName) {
+        let style;
+        let val = '';
+        if (propName && element && element.tagName){
+            style = window.getComputedStyle(element, null);
+            for(let i=0; i<style.length; i++){
+                if (style[i] == propName){
+                    val = style.getPropertyValue(style[i]);
+                    break;
+                }
+            }
+        }
+        return val;
+    }
 }
 
 exports.HtmlHelper = HtmlHelper;

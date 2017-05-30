@@ -1,9 +1,12 @@
 <transition name="height">
-	<div v-if="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress}">
+	<div v-if="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
 		<div class="progress-operation">
-			{{ progressData.operationText }} <span v-if="progressData.detailText" class="progress-detail">
+			<div class="progress-detail-text" v-bind:title="progressData.operationText">
+			{{ progressData.operationText }}
+			</div>
+			<div v-if="progressData.detailText" class="progress-detail">
 				({{ progressData.detailText }})
-			</span>
+			</div>
 		</div>
 		<div class="progress-bar" v-bind:class="progressData.progressBarClass">
 			<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">

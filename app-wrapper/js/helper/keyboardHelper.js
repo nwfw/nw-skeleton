@@ -154,6 +154,7 @@ class KeyboardHelper extends BaseClass {
     handleGlobalKeyDown (e) {
         var keyCode = e.keyCode;
         var key = e.key;
+        var type = e.type;
         var globalKeys = _.flattenDeep(_.map(this.globalKeyData, function(item){
             return item.keyCodes;
         }));
@@ -161,10 +162,10 @@ class KeyboardHelper extends BaseClass {
         if (_.includes('*', globalKeys) || _.intersection(globalKeys, [keyCode]).length){
             var allHandlers = _.filter(this.globalKeyData, function(item){
                 var found = false;
-                if (item.key && item.key == key){
+                if (item.key && item.key == key && item.event == type){
                     found = true;
                 }
-                if (_.includes('*', globalKeys) || (item.keyCodes && _.includes(item.keyCodes, keyCode))){
+                if (item.event == type && (_.includes('*', globalKeys) || (item.keyCodes && _.includes(item.keyCodes, keyCode)))){
                     found = true;
                 }
                 return found;
@@ -199,6 +200,7 @@ class KeyboardHelper extends BaseClass {
                         shortcut.handler(e);
                     } else if (_.isString(shortcut.handler)){
                         _appWrapper.callObjMethod(shortcut.handler, [e]);
+
                     }
                 }
             }

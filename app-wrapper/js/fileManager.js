@@ -202,7 +202,8 @@ class FileManager extends eventEmitter {
                 return false;
             }
         } else {
-            for(let i=0; i< dirChunks.length;i++){
+            dirPath = dirChunks[0];
+            for(let i=1; i< dirChunks.length;i++){
                 dirPath = path.join(dirPath, path.sep + dirChunks[i]);
                 if (!fs.existsSync(dirPath)){
                     fs.mkdirSync(dirPath, mode);
