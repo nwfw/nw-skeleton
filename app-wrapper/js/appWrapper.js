@@ -459,6 +459,7 @@ class AppWrapper {
             appState.appStatusChanging = false;
             appState.appOperation = {
                 cancelable: null,
+                cancelling: null,
                 operationText: null,
                 useProgress: null,
                 progressText: null,
@@ -472,6 +473,8 @@ class AppWrapper {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        appState.appOperation.cancelling = true;
+        appState.appOperation.operationText = 'Cancelling...';
     }
 
     async showModalCloseConfirm (e){

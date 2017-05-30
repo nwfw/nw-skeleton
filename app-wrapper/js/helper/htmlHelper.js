@@ -330,7 +330,7 @@ class HtmlHelper extends eventEmitter {
 
     updateProgress (completed, total, operationText) {
         if (!appState.progressData.inProgress){
-            appUtil.log('Trying to update progress while appState.progressData.inProgress is false', 'warning', [], false, this.forceDebug);
+            appUtil.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false, this.forceDebug);
             return;
         }
         if (!this.operationStart){

@@ -54,6 +54,7 @@ exports.appState = {
 
     appOperation: {
         cancelable: false,
+        cancelling: false,
         operationText: null,
         useProgress: null,
         progressText: null,

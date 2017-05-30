@@ -16,7 +16,7 @@
 				{{ progressData.percentComplete }}
 			</div>
 		</div>
-		<a v-on:click="callViewHandler" data-click-handler="cancelOperation" v-if="appState.appOperation.cancelable" class="progress-cancel">
+		<a v-on:click="callViewHandler" data-click-handler="operationCancel" v-if="appState.appOperation.cancelable" class="progress-cancel">
 			<span class="fa fa-ban" data-event-target="parent"></span>
 		</a>
 	</div>
