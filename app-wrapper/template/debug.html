@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title></title>
-</head>
-<body background-color:rgba(0,0,0,0); class="nw-body nw-debug-body">
-	<div id="app-body" class="app-body debug-window debug-enabled debug-visible" v-bind:class="{ 'moving-window': movingWindow, 'modal-visible': modalData.modalVisible }">
-		<div class="app-content">
-			<app-header></app-header>
-			<app-debug></app-debug>
-		</div>
-		<modal-dialog></modal-dialog>
-	</div>
-	<script>
+    <head>
+        <title></title>
+    </head>
+    <body background-color:rgba(0,0,0,0); class="nw-body nw-debug-body debug-window">
+        <div class="nw-app-wrapper">
+            <app-window ref="appWindow" v-bind:is-debug="true"></app-window>
+            <modal-dialog ref="modalDialog"></modal-dialog>
+        </div>
+        <script>
+            var initialConfig = require('../../../../config/config').config;
+            var nws = require('nw-skeleton');
+            var appWrapper;
 
-		var _ = require('lodash');
-		var initialConfig = require('../../../../config/config').config;
-		var nws = require('nw-skeleton');
+            window.isDebugWindow = true;
 
-		var _parentWrapper = window.opener.getAppWrapper();
+            var _parentWrapper = window.opener.getAppWrapper();
 
-		window.onload = async function(){
-			_parentWrapper.debugWindow = window;
-			await _parentWrapper.helpers.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
-			window.appWrapper = new nws.AppWrapper(initialConfig);
-			await window.appWrapper.initialize();
-
-			window.feApp = await window.getAppWrapper().initializeFeApp();
-
-		};
-	</script>
-</body>
+            async function _nwsInit(){
+                _parentWrapper.debugWindow = window;
+                await _parentWrapper.helpers.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
+                appWrapper = new nws.AppWrapper(initialConfig);
+                await appWrapper.initialize();
+            }
+            _nwsInit();
+        </script>
+    </body>
 </html>

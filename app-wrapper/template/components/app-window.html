@@ -1,10 +1,15 @@
 <transition name="fade">
-    <div v-show="appLoaded" id="app-body" class="app-body" v-bind:class="{ 'moving-window': movingWindow, 'debug-enabled': debug, 'debug-visible': debug && !hideDebug, 'has-debug-window': hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': appLoaded }">
+    <div v-show="appLoaded" id="app-body" class="app-body" v-bind:class="{ 'moving-window': movingWindow, 'debug-enabled': debug, 'debug-visible': debug && !hideDebug, 'has-debug-window': !isDebugWindow && hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': appLoaded }">
         <div class="app-content">
             <template v-if="appInitialized">
                 <app-header ref="appHeader"></app-header>
-                <app-main keep-alive ref="appMain"></app-main>
-                <app-debug ref="appDebug"></app-debug>
+                <template v-if="!isDebug">
+                    <app-main keep-alive ref="appMain"></app-main>
+                    <app-debug ref="appDebug"></app-debug>
+                </template>
+                <template v-else>
+                    <app-debug ref="appDebug"></app-debug>
+                </template>
                 <app-footer ref="appFooter"></app-footer>
             </template>
             <template v-else>

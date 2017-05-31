@@ -20,10 +20,6 @@ class DebugHelper extends BaseClass {
 
         this.forceDebug = appUtil.getConfig('forceDebug.debugHelper');
         this.forceUserMessages = appUtil.getConfig('forceUserMessages.debugHelper');
-        this.boundMethods = {
-            onDebugWindowUnload: null,
-            onDebugWindowClose: null
-        };
 
         this.timeouts = {
             processDebugMessagesTimeout: null
@@ -46,12 +42,6 @@ class DebugHelper extends BaseClass {
         appUtil.addUserMessage('Debug window opened', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
     }
 
-    async initializeDebugWindow () {
-        var _debugAppWrapper = _appWrapper.debugWindow.getAppWrapper();
-        _debugAppWrapper.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
-        return _appWrapper.debugWindow;
-    }
-
     async prepareDebugWindow () {
         _appWrapper.debugWindow.appState = _.cloneDeep(appState);
         _appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
@@ -63,19 +53,6 @@ class DebugHelper extends BaseClass {
 
         _appWrapper.debugWindow.document.body.className += ' nw-body-initialized';
         return _appWrapper.debugWindow;
-    }
-
-    async onDebugWindowUnload (){
-        var _debugAppWrapper = _appWrapper.debugWindow.getAppWrapper();
-        _debugAppWrapper.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
-    }
-
-    async onDebugWindowClose (){
-        appUtil.log('Closing standalone debug window', 'info', [], false, this.forceDebug);
-        appState.debugMessages = _.cloneDeep(_appWrapper.debugWindow.appState.debugMessages);
-        appState.hasDebugWindow = false;
-        _appWrapper.debugWindow.getAppWrapper().windowManager.closeWindowForce();
-        appUtil.addUserMessage('Debug window closed', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
     }
 
     toggleDebug () {

@@ -34,13 +34,16 @@ body.nw-body-initialized {
 }
 
 *::selection {
-    background: var(--selection-background);
+    background: var(--no-selection-background);
+    color: var(--no-selection-color);
 }
 
 .can-select::selection,
+.can-select *::selection,
 textarea::selection,
 input::selection {
-    background: #EEEEEE;
+    background: var(--selection-background);
+    color: var(--selection-color);
 }
 
 h1, h2 {
@@ -48,12 +51,27 @@ h1, h2 {
 }
 
 a {
-	color: var(--link-color);
-	cursor: pointer;
+	color: var(--link-base-color);
+	text-decoration: var(--link-text-decoration);
+	cursor: var(--link-cursor);
 }
 
 a:hover {
-	text-decoration: underline;
+	color: var(--link-base-color-hovered);
+	text-decoration: var(--link-text-decoration-hovered);
+	cursor: var(--link-cursor-hovered);
+}
+
+a:active {
+	color: var(--link-base-color-active);
+	text-decoration: var(--link-text-decoration-active);
+	cursor: var(--link-cursor-active);
+}
+
+a:visited {
+	color: var(--link-base-color-visited);
+	text-decoration: var(--link-text-decoration-visited);
+	cursor: var(--link-cursor-visited);
 }
 
 .app-body {

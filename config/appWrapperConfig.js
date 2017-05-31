@@ -95,6 +95,9 @@ exports.config = {
                                         ]
                                     }
                                 ]
+                            },
+                            {
+                                name: 'app-debug'
                             }
                         ]
                     },

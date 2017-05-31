@@ -1,54 +1,14 @@
-*, *:before, *:after {
-	-webkit-box-sizing: border-box;
-
-	box-sizing: border-box;
-	-webkit-font-smoothing: subpixel-antialiased;
-}
-
-/*! normalize.css v3.0.0 | MIT License | git.io/normalize */
-html {
-	-webkit-text-size-adjust:100%
-}
-
-html, body {
-	margin: 0;
-	padding: 0;
-	font-size: 100%;
-	font-family: 'Source Sans Pro', sans-serif;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	-webkit-font-smoothing: subpixel-antialiased;
-	min-height:100vh;
-}
-
 .debug-window .live-info,
 .debug-window .progress-bar-wrapper {
-	display: none;
+	visibility: hidden;
 }
 
 .debug-window .debug-toggle {
 	display: block;
 }
 
-.debug-window header {
-	flex: 0 0 100px;
-	min-height: 100px;
-}
-
-.debug-window .debug-toggle .status {
-	display: none;
-}
-.debug-window .app-body {
-
-}
-
-.debug-window .window-controls {
-	/*display: none;*/
-}
-
-.app-debug-wrapper {
+.app-debug-wrapper_ {
 	background: #F8F8F8;
-	list-style: none;
 	position: relative;
 	border-top: 1px solid #000;
 	border-bottom: 1px solid #000;
@@ -62,15 +22,22 @@ html, body {
 	flex: 1 1 auto;
 }
 
+.debug-window .debug-enabled.debug-visible .app-debug-wrapper {
+    flex: 1;
+}
+
+.debug-window .debug-toggle .status {
+	display: none;
+}
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
-	background: #eee;
+	background: #EEEEEE;
 	position: fixed;
 	width: 100%;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header h2 {
-	color: #333;
+	color: #666666;
 	margin: 0;
 	padding: 5px;
 	font-size: 0.8rem;
@@ -79,14 +46,6 @@ html, body {
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header a {
 	color:#990000;
-	display: inline-block;
-	cursor: pointer;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header a:hover {
-	color:#FF0000;
-	text-shadow: 0 0 4px #000;
-	text-decoration: none;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-window,
@@ -94,11 +53,3 @@ html, body {
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .toggle-debug-link {
 	display: none;
 }
-
-.app-debug-body ul {
-	padding-top: 30px;
-	max-height: unset;
-	list-style: none;
-	margin: 0;
-}
-

@@ -5,7 +5,7 @@ var appState = appUtil.getAppState();
 exports.component = {
     name: 'app-window',
     template: _appWrapper.appTemplates.getTemplateContents('app-window'),
-    props: ['state'],
+    props: ['state','isDebug'],
     data: function () {
         return appState;
     },

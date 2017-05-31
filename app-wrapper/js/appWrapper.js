@@ -35,7 +35,8 @@ class AppWrapper {
         this.boundMethods = {
             cleanup: null,
             saveUserConfig: null,
-            onWindowClose: null
+            onWindowClose: null,
+            onDebugWindowClose: null
         };
 
         this.timeouts = {
@@ -181,12 +182,17 @@ class AppWrapper {
         if (!window.isDebugWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
         } else {
-            this.windowManager.win.on('close', window.opener.getAppWrapper().helpers.debugHelper.onDebugWindowClose.bind(window.opener.getAppWrapper().debugHelper));
+            this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
         }
     }
 
     removeEventListeners() {
-        this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
+        if (!window.isDebugWindow){
+            this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
+        } else {
+            this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
+        }
+
     }
 
     addBoundMethods () {
@@ -353,7 +359,7 @@ class AppWrapper {
     async shutdownApp () {
         await this.windowManager.removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
-            this.helpers.debugHelper.onDebugWindowClose();
+            this.debugWindow.getAppWrapper.onDebugWindowClose();
         }
         appState.mainLoaderTitle = 'Please wait while application shuts down...';
         if (this.appTranslations && this.appTranslations.translate){
@@ -387,6 +393,22 @@ class AppWrapper {
             await this.shutdownApp();
         }
         this.windowManager.reloadWindow(null, true);
+    }
+
+    async onDebugWindowUnload (){
+        this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
+    }
+
+    async onDebugWindowClose (){
+        appUtil.log('Closing standalone debug window', 'info', [], false, this.forceDebug);
+        if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
+            this.mainWindow.appState.debugMessages = _.cloneDeep(appState.debugMessages);
+            this.mainWindow.appState.allDebugMessages = _.cloneDeep(appState.allDebugMessages);
+            this.mainWindow.appState.hasDebugWindow = false;
+            this.mainWindow.appWrapper.debugWindow = null;
+        }
+        this.windowManager.closeWindowForce();
+        appUtil.addUserMessage('Debug window closed', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
     }
 
     resetAppStatus (){

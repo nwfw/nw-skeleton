@@ -19,8 +19,8 @@
 
 header {
     display: flex;
-    flex: 0 0 var(--header-height);
-    height: var(--header-height);
+    flex: 0 0 var(--app-header-height);
+    height: var(--app-header-height);
 }
 
 .main {

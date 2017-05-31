@@ -3,9 +3,9 @@ footer {
     border-width: 0 var(--app-element-border-width) var(--app-element-border-width) var(--app-element-border-width);
     border-style: var(--app-element-border-style);
     border-color: var(--app-footer-border-color);
-    color: var(--footer-text-color);
-    background-color: var(--footer-background-color);
-    background: var(--footer-background);
+    color: var(--app-footer-text-color);
+    background-color: var(--app-footer-background-color);
+    background: var(--app-footer-background);
     transition-property: flex-basis;
     transition-duration: 0.3s;
 }
