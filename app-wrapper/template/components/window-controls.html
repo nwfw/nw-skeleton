@@ -1,6 +1,6 @@
 <div class="window-controls-wrapper">
 	<transition name="fade">
-		<span class="window-controls window-controls-debug" v-if="!appState.hideDebug && appState.debug">
+		<span class="window-controls window-controls-debug" v-if="!appState.hideDebug && appState.debug && !appState.isDebugWindow">
 			<span class="window-control-wrapper">
 				<a class="window-control window-control-reload-css " v-on:click="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss" v-bind:title="translate('Reload CSS')">
 					<span data-event-target="parent" class="fa fa-retweet"></span>
@@ -11,7 +11,7 @@
 					<span data-event-target="parent" class="fa fa-wrench"></span>
 				</a>
 			</span>
-			<span v-if="!appState.appBusy" class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventReload}" >
+			<span v-if="!appState.appBusy && !appState.isDebugWindow" class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventReload}" >
 				<a class="window-control window-control-reload " v-on:click="callViewHandler" data-click-handler="windowManager.reloadWindow" v-bind:title="translate('Reload window')">
 					<span data-event-target="parent" class="fa fa-refresh"></span>
 				</a>
@@ -19,12 +19,12 @@
 		</span>
 	</transition>
 	<span class="window-controls">
-		<span class="window-control-wrapper" v-if="appState.hasUserConfig">
+		<span class="window-control-wrapper" v-if="appState.hasUserConfig && !appState.isDebugWindow">
 			<a class="window-control window-control-clear-configuration" v-on:click="callViewHandler" data-click-handler="appConfig.clearUserConfigHandler" v-bind:title="translate('Clear saved configuration')">
 				<span data-event-target="parent" class="fa fa-eraser"></span>
 			</a>
 		</span>
-		<span class="window-control-wrapper" v-if="appState.debug">
+		<span class="window-control-wrapper" v-if="appState.debug && !appState.isDebugWindow">
 			<a class="window-control window-control-edit-configuration" v-on:click="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler" v-bind:title="translate('Edit configuration')">
 				<span data-event-target="parent" class="fa fa-cog"></span>
 			</a>

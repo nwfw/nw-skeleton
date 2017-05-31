@@ -76,10 +76,24 @@ class AppWrapper {
     }
 
     async initialize(){
+
+        let isDebugWindow = false;
+        if (this.initialAppConfig.isDebugWindow){
+            isDebugWindow = true;
+            delete this.initialAppConfig.isDebugWindow;
+        }
+
+        this.appConfig = new AppConfig(this.initialAppConfig);
+        // appState is available from here;
+
+        if (isDebugWindow){
+            appState.isDebugWindow = true;
+            isDebugWindow = null;
+        }
+
         this.fileManager = new FileManager();
         await this.fileManager.initialize();
 
-        this.appConfig = new AppConfig(this.initialAppConfig);
 
         appState.config = await this.appConfig.initializeConfig();
 
@@ -131,7 +145,7 @@ class AppWrapper {
             }
         }
 
-        if (window.isDebugWindow){
+        if (appState.isDebugWindow){
             this.mainWindow = window.opener;
         }
 
@@ -179,7 +193,7 @@ class AppWrapper {
     }
 
     addEventListeners() {
-        if (!window.isDebugWindow){
+        if (!appState.isDebugWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
         } else {
             this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
@@ -187,7 +201,7 @@ class AppWrapper {
     }
 
     removeEventListeners() {
-        if (!window.isDebugWindow){
+        if (!appState.isDebugWindow){
             this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
         } else {
             this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
@@ -273,7 +287,7 @@ class AppWrapper {
                 return await this.finalize();
             }
         });
-        if (window.isDebugWindow){
+        if (appState.isDebugWindow){
             appUtil.addUserMessage('Debug window application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
         } else {
             appUtil.addUserMessage('Application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);

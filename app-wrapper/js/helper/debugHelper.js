@@ -48,8 +48,7 @@ class DebugHelper extends BaseClass {
         _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
         _appWrapper.debugWindow.appState.config = appState.config;
 
-        _appWrapper.debugWindow.appState.isDebugWindow = true;
-        _appWrapper.debugWindow.isDebugWindow = true;
+        // _appWrapper.debugWindow.appState.isDebugWindow = true;
 
         _appWrapper.debugWindow.document.body.className += ' nw-body-initialized';
         return _appWrapper.debugWindow;
@@ -65,7 +64,7 @@ class DebugHelper extends BaseClass {
         appUtil.addUserMessage('Changing debug level to \'{1}\'.', 'info', [level], false, false, this.forceUserMessages, this.forceDebug);
         appState.debugLevel = level;
         _appWrapper.appConfig.setConfigVar('debugLevel', level);
-        if (window.isDebugWindow) {
+        if (appState.isDebugWindow) {
             appUtil.addUserMessage('Changing debug level in main window to \'{1}\'.', 'info', [level], false, false, this.forceUserMessages, this.forceDebug);
             _appWrapper.mainWindow.appState.debugLevel = level;
         }
@@ -74,20 +73,26 @@ class DebugHelper extends BaseClass {
 
     clearDebugMessages () {
         console.clear();
-        var messageCount = appState.debugMessages.length;
-        for (var i =0; i < messageCount; i++){
-            appState.debugMessages.shift();
+        if (appState.isDebugWindow){
+            _appWrapper.mainWindow.appState.allDebugMessages = [];
+            _appWrapper.mainWindow.appState.debugMessages = [];
+            appState.allDebugMessages = _appWrapper.mainWindow.appState.allDebugMessages;
+            appState.debugMessages = _appWrapper.mainWindow.appState.debugMessages;
+        } else {
+            appState.allDebugMessages = [];
+            appState.debugMessages = [];
         }
+        appUtil.addUserMessage('Debug messages cleared', 'info', [], true,  false, true, this.forceDebug);
     }
 
-    processDebugMessages (el){
-        clearTimeout(this.timeouts.processDebugMessagesTimeout);
-        this.timeouts.processDebugMessagesTimeout = setTimeout(() => {
-            var ul = el.querySelector('ul');
-            ul.scrollTop = ul.scrollHeight + 100;
-            clearTimeout(this.timeouts.processDebugMessagesTimeout);
-        }, 100);
-    }
+    // processDebugMessages (el){
+    //     clearTimeout(this.timeouts.processDebugMessagesTimeout);
+    //     this.timeouts.processDebugMessagesTimeout = setTimeout(() => {
+    //         var ul = el.querySelector('ul');
+    //         ul.scrollTop = ul.scrollHeight + 100;
+    //         clearTimeout(this.timeouts.processDebugMessagesTimeout);
+    //     }, 100);
+    // }
 
     async saveDebug (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -166,7 +171,7 @@ class DebugHelper extends BaseClass {
             try {
                 fs.writeFileSync(debugFilePath, data, {
                     encoding: 'utf8',
-                    mode: 0x775,
+                    mode: 0o775,
                     flag: writeMode
                 });
                 _appWrapper.helpers.modalHelper.modalNotBusy();
@@ -177,13 +182,13 @@ class DebugHelper extends BaseClass {
             }
             _appWrapper.helpers.modalHelper.closeCurrentModal();
             if (saved){
-                if (_appWrapper.isDebugWindow){
+                if (appState.isDebugWindow){
                     appUtil.log('Debug log saved successfully', 'info', [], false, true);
                 } else {
                     appUtil.addUserMessage('Debug log saved successfully', 'info', [], true,  false, true, this.forceDebug);
                 }
             } else {
-                if (_appWrapper.isDebugWindow){
+                if (appState.isDebugWindow){
                     appUtil.log('Debug log saving failed', 'error', [], false, true);
                 } else {
                     appUtil.addUserMessage('Debug log saving failed', 'error', [], false,  false, this.forceUserMessages, this.forceDebug);

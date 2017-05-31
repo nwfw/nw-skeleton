@@ -169,7 +169,7 @@ class StaticFilesHelper extends BaseClass {
 
         totalCssFileCount = cssFileCount + appCssFileCount;
 
-        if (window.isDebugWindow){
+        if (appState.isDebugWindow){
             totalCssFileCount += debugCssFileCount + appDebugCssFileCount;
         }
 
@@ -214,7 +214,7 @@ class StaticFilesHelper extends BaseClass {
                 }
                 appUtil.log('Compiling {1} app CSS files', 'groupend', [cssFileData.counts.appCssFileCount], false, this.forceDebug);
             }
-            if (window.isDebugWindow){
+            if (appState.isDebugWindow){
                 if (cssFileData.counts.debugCssFileCount){
                     appUtil.log('Compiling {1} debug window wrapper CSS files', 'group', [cssFileData.counts.debugCssFileCount], false, this.forceDebug);
                     for (let i=0; i<cssFileData.files.debugCssFiles.length; i++){

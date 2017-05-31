@@ -7,21 +7,6 @@
 	display: block;
 }
 
-.app-debug-wrapper_ {
-	background: #F8F8F8;
-	position: relative;
-	border-top: 1px solid #000;
-	border-bottom: 1px solid #000;
-	font-size: 0.7rem;
-	margin: 0;
-	display: block;
-	overflow: auto;
-	max-height: calc(100vh - 100px);
-	min-height: calc(100vh - 100px);
-	overflow: auto;
-	flex: 1 1 auto;
-}
-
 .debug-window .debug-enabled.debug-visible .app-debug-wrapper {
     flex: 1;
 }
@@ -42,6 +27,29 @@
 	padding: 5px;
 	font-size: 0.8rem;
 	display: inline-block;
+}
+
+.debug-window .app-debug {
+	display: flex;
+	flex-flow: column;
+}
+
+.debug-window .debug-enabled.debug-visible .app-debug .app-debug-header {
+	position: unset;
+	float: none;
+	flex: 0 0 26px;
+
+}
+.debug-window .debug-enabled.debug-visible .app-debug .app-debug-body {
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+}
+
+.debug-window .debug-enabled.debug-visible .app-debug .app-debug-body ul {
+	max-height: unset;
+	padding-top: 5px;
+	overflow: auto;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header a {
