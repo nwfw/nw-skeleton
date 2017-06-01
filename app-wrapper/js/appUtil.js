@@ -281,13 +281,6 @@ var appUtil = {
                     var userMessage = appState.userMessageQueue.shift();
                     if (userMessage){
                         appState.userMessages.push(userMessage);
-                        // var ul = document.querySelector('ul.user-message-list');
-                        // clearTimeout(appState.timeouts.scrollTo);
-                        // if (ul){
-                        //     appState.timeouts.scrollTo = setTimeout( () => {
-                        //         _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight, 0);
-                        //     }, 100);
-                        // }
                     }
                 } else {
                     clearInterval(appState.intervals.userMessageQueue);
@@ -299,18 +292,6 @@ var appUtil = {
             clearInterval(appState.intervals.userMessageQueue);
         }
     },
-
-    // _processUserMessageScroll: function(){
-    //     var _appWrapper = window.getAppWrapper();
-    //     var ul = document.querySelector('ul.user-message-list');
-    //     _appWrapper.helpers.htmlHelper.scrollElementTo(ul, ul.scrollHeight + 100, 300);
-
-    //     clearTimeout(appState.timeouts.userMessageScroll);
-    //     appState.timeouts.userMessageScroll = setTimeout(() => {
-    //      var ul = el.querySelector('ul');
-    //      ul.scrollTop = ul.scrollHeight + 100;
-    //     }, 0);
-    // },
 
     loadFilesFromDir: async function(directory, extensionMatch, requireFiles) {
         var self = this;

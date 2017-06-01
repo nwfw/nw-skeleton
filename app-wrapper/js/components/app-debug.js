@@ -7,14 +7,14 @@ exports.component = {
     template: _appWrapper.appTemplates.getTemplateContents('app-debug'),
     data: function () {
         return {
-
+            debugMessages: appState.debugMessages
         };
     },
     updated: function(){
-        clearTimeout(appState.timeouts.scrollTo);
+        clearTimeout(appState.timeouts.debugMessageScroll);
         let ul = this.$el.querySelector('.app-debug-body ul');
         if (ul){
-            appState.timeouts.scrollTo = setTimeout( () => {
+            appState.timeouts.debugMessageScroll = setTimeout( () => {
                 _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
             }, 100);
         }
@@ -22,9 +22,6 @@ exports.component = {
     computed: {
         appState: function(){
             return appState;
-        },
-        debugMessages: function () {
-            return appState.debugMessages
         }
     },
     methods: {

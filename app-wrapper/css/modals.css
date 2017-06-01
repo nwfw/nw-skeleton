@@ -1,91 +1,86 @@
 .modal-dialog-background {
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100vh;
-	width: 100vw;
-	z-index: 10;
-	background: #FFF;
-	opacity: 0.7;
+    background: var(--modal-dialog-backdrop-background);
+    opacity: var(--modal-dialog-backdrop-opacity);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10;
 }
 .modal-dialog-background.fade-slow-enter-to,
 .modal-dialog-background.fade-slow-leave {
-	opacity: 0.7;
+    opacity: var(--modal-dialog-backdrop-opacity);
 }
 
 .modal-dialog-wrapper {
-	overflow: auto;
-	/*transition-property: width, height;
-	transition-duration: var(--short-animation-duration);*/
+    overflow: auto;
 }
 
 
 .modal-dialog {
-	background: #FFF;
-	position: absolute;
-	border: 1px solid #666;
-	box-shadow: 0 0 50px #333;
-	top: 50%;
-	left: 50%;
-	padding: 5px 10px;
-	border-radius: 5px;
-	transform: translate(-50%, -50%);
-	z-index: 11;
-	/*transition-property: height, width;
-	transition-timing-function: ease-in-out;
-	transition-duration: var(--long-animation-duration);*/
+    background: var(--modal-dialog-background);
+    border: var(--modal-dialog-border);
+    box-shadow: var(--modal-dialog-box-shadow);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transform: translate(-50%, -50%);
+    z-index: 11;
 }
 
 .modal-dialog h2 {
-	text-align: center;
-	font-size: 1.2rem;
-	margin: 5px 0;
-	padding: 0;
-	color: #333;
+    color: var(--modal-dialog-title-text-color);
+    font-size: var(--modal-dialog-title-font-size);
+    text-align: center;
+    margin: 5px 0;
+    padding: 0;
 }
 
 .modal-dialog-wrapper .modal-dialog-close {
-	background: #FFF;
-	border: 1px solid #999;
-	border-radius: 20px;
-	width: 22px;
-	height: 22px;
-	text-align: center;
-	position: absolute;
+    background: var(--modal-dialog-close-background);
+    border: var(--modal-dialog-close-border);
+    color: var(--modal-dialog-close-color);
+    border-radius: var(--modal-dialog-close-border-radius);
+    box-shadow: var(--modal-dialog-close-box-shadow);
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    position: absolute;
     right: -11px;
     top: -10px;
     font-size: 20px;
-    color: #666;
     overflow: hidden;
-    box-shadow: 12px -10px 40px #999;
 }
 
 .modal-dialog-wrapper .modal-dialog-close:hover {
-	text-decoration: none;
-	color: #fff;
-	background: #999;
-	text-shadow: 0 0 2px #000;
+    text-decoration: none;
+    color: var(--modal-dialog-close-color-hovered);
+    background: var(--modal-dialog-close-background-hovered);
+    text-shadow: var(--modal-dialog-close-text-shadow-hovered);
 }
 
 .modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close,
 .modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close:hover {
-	border-color: #CCC;;
-	color:#EEE;
-	background: #FFF;
-	text-shadow: none;
-	cursor: not-allowed;
+    background: var(--modal-dialog-close-background-hovered);
+    border: var(--modal-dialog-close-border-hovered);
+    color: var(--modal-dialog-close-color-hovered);
+    text-shadow: none;
+    cursor: not-allowed;
 }
 
 .modal-dialog .modal-dialog-messages {
-	padding: 4px 10px;
+    padding: 4px 10px;
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-message {
-	text-align: center;
+    text-align: center;
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-error {
-	color: #990000;
+    color: var(--modal-dialog-error-text-color);
 }
 
 .modal-dialog .modal-dialog-content {
@@ -93,19 +88,17 @@
 }
 
 .modal-dialog-busy-wrapper {
-	text-align: center;
+    text-align: center;
     font-size: 2rem;
-    /*transform: translate(-50%, -50%);*/
     width: 200px;
     height: 50px;
-    /*width: 100%;*/
-    color:#666;
+    color: var(--modal-dialog-busy-text-color);
 }
 .modal-dialog-wrapper .modal-dialog-busy-text {
-	width: 100%;
-	text-align: center;
-	font-size: 1rem;
-	color:#666;
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--modal-dialog-busy-text-color);
 }
 .modal-dialog-wrapper .modal-dialog-busy-indicator {
 }
@@ -114,69 +107,69 @@
 }
 
 .modal-dialog .modal-dialog-buttons {
-	text-align: right;
+    text-align: right;
 }
 
 .form-row.modal-form-row {
 }
 
 .form-row.modal-form-row label {
-	padding-right: 5px;
+    padding-right: 5px;
 }
 
 .form-row.modal-form-row label.checkbox-label,
 .form-row.modal-form-row label.radio-label {
-	cursor:pointer;
+    cursor:pointer;
 }
 
 .modal-button {
-	background: #FFF;
-	border: 1px solid #999;
-	padding: 3px 5px;
-	color: #666;
-	border-radius: 3px;
-	cursor: pointer;
+    background: var(--modal-dialog-button-background);
+    border: var(--modal-dialog-button-border);
+    color: var(--modal-dialog-button-color);
+    border-radius: var(--modal-dialog-button-border-radius);
+    padding: 3px 5px;
+    cursor: pointer;
 }
 
 .modal-button:hover {
-	background: #eee;
+    background: var(--modal-dialog-button-background-hovered);
 }
 
 .modal-button-cancel {
-	border: 1px solid #993333;
-	color: #993333;
+    border: var(--modal-dialog-button-cancel-border);
+    color: var(--modal-dialog-button-cancel-color);
 }
 
 .modal-button-cancel:hover {
-	background: #FEE;
+    background: var(--modal-dialog-button-cancel-background-hovered);
 }
 
 .modal-button-confirm {
-	border: 1px solid #339933;
-	color: #339933;
-	margin-left: 5px;
+    border: var(--modal-button-confirm-border);
+    color: var(--modal-button-confirm-color);
+    margin-left: 5px;
 }
 
 .modal-button-confirm:hover {
-	background: #eFe;
+    background: var(--modal-dialog-button-confirm-background-hovered);
 }
 
 .modal-button-confirm[disabled],
 .modal-button-confirm[disabled]:hover {
-	background: #CCC;
-	border: 1px solid #EEE;
-	color: #EEE;
-	margin-left: 5px;
-	cursor: not-allowed;
+    background: var(--modal-dialog-button-confirm-disabled-background);
+    border: var(--modal-dialog-button-confirm-disabled-border);
+    color: var(--modal-dialog-button-confirm-disabled-color);
+    margin-left: 5px;
+    cursor: not-allowed;
 }
 
 .modal-dialog-wrapper.confirm-modal {
-	border-color: #FF9999;
+    border-color: var(--modal-dialog-confirm-modal-border-color);
 }
 
 .modal-dialog-wrapper.confirm-modal .modal-dialog {
-	box-shadow: 0 0 50px #CC9999;
+    box-shadow: var(--modal-dialog-confirm-modal-box-shadow);
 }
 .modal-dialog-wrapper.confirm-modal .modal-dialog .modal-dialog-title {
-	color: #990000;
+    color: var(--modal-dialog-confirm-modal-title-color);
 }

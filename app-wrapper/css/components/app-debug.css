@@ -1,16 +1,15 @@
 .app-debug-wrapper {
-    border-radius: 0;
-    border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
-    border-style: var(--app-element-border-style);
+    border-width: 0 var(--app-main-border-width) 0 var(--app-main-border-width);
+    background: var(--app-debug-wrapper-background-color);
+    border-style: var(--app-main-border-style);
     border-color: var(--app-debug-wrapper-border-color);
     transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
-    background: #eee;
+    border-radius: 0;
     list-style: none;
     font-size: 0.7rem;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper {
-    background: #F8F8F8;
     transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
 }
 
@@ -27,9 +26,9 @@
 }
 
 .app-debug-wrapper .app-debug-header {
-    color: var(--debug-header-text-color);
-    background-color: var(--debug-header-background-color);
-    background: var(--debug-header-background);
+    color: var(--app-debug-header-text-color);
+    background-color: var(--app-debug-header-background-color);
+    background: var(--app-debug-header-background);
     opacity: 0.6;
     float: right;
 }
@@ -44,7 +43,7 @@
 }
 
 .app-debug-wrapper .app-debug-header h2 {
-    color: #FFF;
+    color: var(--app-debug-header-title-color);
     margin: 0;
     padding: 5px;
     font-size: 0.8rem;
@@ -52,15 +51,15 @@
 }
 
 .app-debug-wrapper .app-debug-header a {
-    color:#FFF;
+    color: var(--app-debug-header-tool-link-color);
+    text-shadow: var(--app-debug-header-tool-text-shadow);
     display: inline-block;
     margin-left: 5px;
-    cursor: pointer;
 }
 
 .app-debug-wrapper .app-debug-header a:hover {
-    color:#fff;
-    text-shadow: 0 0 4px #000;
+    color: var(--app-debug-header-tool-link-color-hovered);
+    text-shadow: var(--app-debug-header-tool-text-shadow-hovered);
     text-decoration: none;
 }
 
@@ -85,23 +84,23 @@
 }
 
 .app-debug .message {
-    color: var(--message-text-color);
+    color: var(--app-user-messages-message-text-color);
 }
 
 .app-debug .info {
-    color: var(--message-info-text-color);
+    color: var(--app-user-messages-message-info-text-color);
 }
 
 .app-debug .warning {
-    color: var(--message-warning-text-color);
+    color: var(--app-user-messages-message-warning-text-color);
 }
 
 .app-debug .error {
-    color: var(--message-error-text-color);
+    color: var(--app-user-messages-message-error-text-color);
 }
 
 .app-debug .debug {
-    color: var(--message-debug-text-color);
+    color: var(--app-user-messages-message-debug-text-color);
 }
 
 .app-debug .important {
@@ -109,11 +108,11 @@
 }
 
 .app-debug .message:nth-child(2n) {
-    background:#FFF;
+    background: var(--app-debug-message-even-background);
 }
 
 .app-debug .message:nth-child(2n+1) {
-    background:#DDD;
+    background: var(--app-debug-message-odd-background);
 }
 
 .app-body.has-debug-window .app-debug-wrapper {

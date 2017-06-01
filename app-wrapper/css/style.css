@@ -51,55 +51,44 @@ h1, h2 {
 }
 
 a {
-	color: var(--link-base-color);
+	color: var(--link-color);
 	text-decoration: var(--link-text-decoration);
 	cursor: var(--link-cursor);
 }
 
 a:hover {
-	color: var(--link-base-color-hovered);
+	color: var(--link-color-hovered);
 	text-decoration: var(--link-text-decoration-hovered);
 	cursor: var(--link-cursor-hovered);
 }
 
 a:active {
-	color: var(--link-base-color-active);
+	color: var(--link-color-active);
 	text-decoration: var(--link-text-decoration-active);
 	cursor: var(--link-cursor-active);
 }
 
 a:visited {
-	color: var(--link-base-color-visited);
+	color: var(--link-color-visited);
 	text-decoration: var(--link-text-decoration-visited);
 	cursor: var(--link-cursor-visited);
 }
 
 .app-body {
 	font-size: 0.8rem;
-	border-radius: var(--app-element-border-radius);
-}
-
-.app-content {
-	font-size: 0.8rem;
+	border-radius: var(--app-main-border-radius);
 }
 
 .app-body.moving-window {
 	opacity: 0.7;
 }
 
-header {
-	border-radius: var(--app-element-border-radius) var(--app-element-border-radius) 0 0;
-	border-width: var(--app-element-border-width) var(--app-element-border-width) 0 var(--app-element-border-width);
-	border-style: var(--app-element-border-style);
-	border-color: var(--app-header-border-color);
-}
-
 .main {
-    background: var(--main-bg-color);
+    background: var(--app-main-bg-color);
     border-radius: 0;
-    border-width: 0 var(--app-element-border-width) 0 var(--app-element-border-width);
-    border-style: var(--app-element-border-style);
-    border-color: var(--app-element-border-color);
+    border-width: 0 var(--app-main-border-width) 0 var(--app-main-border-width);
+    border-style: var(--app-main-border-style);
+    border-color: var(--app-main-border-color);
     position: relative;
     z-index: 1;
 }

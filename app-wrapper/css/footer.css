@@ -1,7 +1,7 @@
 footer {
-    border-radius: 0 0 var(--app-element-border-radius) var(--app-element-border-radius);
-    border-width: 0 var(--app-element-border-width) var(--app-element-border-width) var(--app-element-border-width);
-    border-style: var(--app-element-border-style);
+    border-radius: 0 0 var(--app-main-border-radius) var(--app-main-border-radius);
+    border-width: 0 var(--app-main-border-width) var(--app-main-border-width) var(--app-main-border-width);
+    border-style: var(--app-main-border-style);
     border-color: var(--app-footer-border-color);
     color: var(--app-footer-text-color);
     background-color: var(--app-footer-background-color);

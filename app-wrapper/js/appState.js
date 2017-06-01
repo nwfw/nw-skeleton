@@ -22,6 +22,7 @@ exports.appState = {
         height: 0
     },
     timeouts: {
+        debugMessageScroll: null,
         userMessageScroll: null
     },
     intervals: {

@@ -1,6 +1,7 @@
 .app-loader {
     text-align: center;
-    background: #eee;
+    background: var(--app-loader-background-color);
+    color: var(--app-loader-text-color);
 }
 
 .app-loader .app-loader-content {
@@ -18,6 +19,7 @@
 .app-loader .app-loader-spinner {
     font-size: 120px;
     display: block;
+    color: var(--app-loader-spinner-text-color);
 }
 
 .app-loader .user-messages {
@@ -35,5 +37,5 @@
 
 .app-loader .user-messages .user-message-list {
     height: 100px;
-    border: 1px solid #CCC;
+    border: var(--app-loader-user-message-list-border);
 }

@@ -133,6 +133,7 @@ exports.config = {
         tmpDataDir: './app/var',
         showInitializationStatus: true,
         showInitializationProgress: true,
+        theme: 'basic',
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],

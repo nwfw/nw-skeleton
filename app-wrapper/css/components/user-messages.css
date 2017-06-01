@@ -32,9 +32,6 @@
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	/*display: flex;*/
-	/*justify-content: space-between;*/
-	/*flex: 0 0 30px;*/
 }
 
 .user-messages-toolbar-visible .user-messages .user-messages-toolbar {
@@ -45,20 +42,14 @@
 	margin: 0;
 	padding: 0;
 	font-size: 0.8rem;
-	/*flex: 1.5;*/
 }
 
-.user-messages .user-messages-toolbar .user-messages-tools {
-	/*flex: 1;
-	display: flex;
-	flex-wrap: nowrap;*/
-}
 .user-messages .user-message-level-picker {
 	display: inline-block;
 }
 
 .user-messages .clear-user-messages {
-	color:#CC0000;
+	color: var(--app-user-messages-clear-messages-link-color);
 	visibility: hidden;
 	margin-left: 5px;
 	margin-top: 3px;
@@ -66,11 +57,11 @@
 
 .user-messages .clear-user-messages:hover {
 	text-decoration: none;
-	color:#CC0000;
+	color: var(--app-user-messages-clear-messages-link-color-hovered);
 }
 
 .user-messages .user-message-list {
-	border: 1px solid #666;
+	border: var(--app-user-messages-list-border);
 	overflow: hidden;
 	height: 20px;
 	margin: 0 5px;
@@ -87,21 +78,20 @@
 }
 
 .user-messages .user-messages-settings {
-	margin-right: 10px;
-	margin-top: 0px;
+	margin: 0 10px 5px 0;
 	float: left;
 	clear: both;
 	position: relative;
 	width: 100%;
 }
 
-.user-messages .user-messages-settings h4 {
+.user-messages .user-messages-settings .user-messages-settings-title {
 	display: none;
 	float: left;
 	margin: 0;
 }
 
-.user-messages-expanded .user-messages .user-messages-settings h4 {
+.user-messages-expanded .user-messages .user-messages-settings .user-messages-settings-title {
 	display: block;
 }
 
@@ -117,28 +107,32 @@
 
 
 .user-messages .user-messages-settings-tools a {
-	color: #CCC;
+	color: var(--app-user-messages-tool-link-color);
 }
+
+.user-messages .user-messages-settings-tools a:hover {
+	color: var(--app-user-messages-tool-link-color-hovered);
+}
+
 
 .user-messages-expanded .user-messages .user-messages-settings-tools {
 	margin-top: 0px;
 }
 
 .user-messages .user-message-list li.message {
+	color: var(--app-user-messages-message-text-color);
+	background: var(--app-user-messages-message-background-color);
+	text-shadow: var(--app-user-messages-message-text-text-shadow);
 	padding: 1px 5px;
 	margin: 0;
-	color: var(--message-text-color);
-	text-shadow: 0 0 1px #999;
 }
 
 .user-messages .user-message-list li.message:nth-child(2n) {
-	/*background:#DDD;*/
-	border-top: 1px solid #999;
+	border-top: var(--app-user-messages-message-border-even);
 }
 
 .user-messages .user-message-list li.message:nth-child(2n+1) {
-	/*background:#FFF;*/
-	border-top: 1px solid #666;
+	border-top: var(--app-user-messages-message-border-odd);
 }
 
 .user-messages .user-message-list li.message:first-child {
@@ -149,49 +143,44 @@
 	font-weight: bold;
 }
 
-
 .user-messages .user-message-list li.message.info {
-	color: var(--message-info-text-color);
+	color: var(--app-user-messages-message-info-text-color);
 }
 
 .user-messages .user-message-list li.message.warning {
-	color: var(--message-warning-text-color);
+	color: var(--app-user-messages-message-warning-text-color);
 }
 
 .user-messages .user-message-list li.message.error {
-	color: var(--message-error-text-color);
+	color: var(--app-user-messages-message-error-text-color);
 }
 
 .user-messages .user-message-list li.message.debug {
-	color: var(--message-debug-text-color);
+	color: var(--app-user-messages-message-debug-text-color);
 }
 
 /* delimiter */
 .user-messages .user-message-list li.message.delimiter {
-	background: none;
 	text-align: center;
 	padding: 2px 0px;
+	background: var(--app-user-messages-message-delimiter-background-color);
+	color: var(--app-user-messages-message-delimiter-text-color);
 }
 
-/*delimiter SVG*/
-.user-messages .user-message-list li.message.delimiter {
-	background-color: none;
-}
-
+/* delimiter SVG */
 .user-messages .user-message-list li.message.delimiter .message-delimiter {
 	height: 20px;
-	background-color: none;
 	opacity: 0.5;
 }
 
 .user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon {
 	fill: url(#delimiterGradient);
-  	stroke: var(--message-delimiter-stroke-color);
-  	stroke-width: var(--message-delimiter-stroke-width);
+  	stroke: var(--app-user-messages-message-delimiter-stroke-color);
+  	stroke-width: var(--app-user-messages-message-delimiter-stroke-width);
 }
 
 .user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon.message-delimiter-polygon-center {
-	fill: #333;
+	fill: var(--app-user-messages-message-delimiter-center-fill);
 }
 
 .user-messages .user-message-list li.message.delimiter .message-delimiter .message-delimiter-polygon.message-delimiter-polygon-left {
@@ -203,58 +192,63 @@
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-0 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-0);
 	stop-opacity: 0.1;
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-10 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-10);
 	stop-opacity: 0.3;
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-30 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-30);
 	stop-opacity: 1;
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-70 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-70);
 	stop-opacity: 1;
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-90 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-90);
 	stop-opacity: 0.3;
 }
 
 .user-messages .user-message-list li.message.delimiter .delimiter-gradient-stop-100 {
-	stop-color: var(--message-delimiter-fill-color);
+	stop-color: var(--app-user-messages-message-delimiter-fill-color-100);
 	stop-opacity: 0.1;
 }
 
 /*highlight transition*/
 
 .user-messages .user-message-list li.message.highlight-enter {
-  background-color: #FFFFCC !important;
-  color: #000 !important;
+  background-color: var(--app-user-messages-message-info-highlight-background) !important;
+  color: var(--app-user-messages-message-info-highlight-color) !important;
+}
+
+.user-messages .user-message-list li.message.delimiter.highlight-enter {
+  background-color: var(--app-user-messages-message-delimiter-highlight-background) !important;
+  color: var(--app-user-messages-message-delimiter-highlight-color) !important;
 }
 
 .user-messages .user-message-list li.message.debug.highlight-enter {
-  background-color: #EEEEEE !important;
-  color: #000 !important;
+  background-color: var(--app-user-messages-message-debug-highlight-background) !important;
+  color: var(--app-user-messages-message-debug-highlight-color) !important;
 }
 
 .user-messages .user-message-list li.message.info.highlight-enter {
-  background-color: #66FF66 !important;
-  color: #006600 !important;
+  background-color: var(--app-user-messages-message-info-highlight-background) !important;
+  color: var(--app-user-messages-message-info-highlight-color) !important;
 }
 
 .user-messages .user-message-list li.message.error.highlight-enter {
-  background-color: #FFCCCC !important;
-  color: #660000 !important;
+  background-color: var(--app-user-messages-message-error-highlight-background) !important;
+  color: var(--app-user-messages-message-error-highlight-color) !important;
 }
 
 .user-messages .user-message-list li.message.warning.highlight-enter {
-  background-color: #FFCC00 !important;
-  color: #666600 !important;
+  background-color: var(--app-user-messages-message-warning-highlight-background) !important;
+  color: var(--app-user-messages-message-warning-highlight-color) !important;
 }

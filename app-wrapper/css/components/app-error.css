@@ -1,7 +1,7 @@
 .app-error {
     text-align: center;
-    background: #eee;
-    color: #DD0000;
+    background: var(--app-error-background-color);
+    color: var(--app-error-text-color);
 }
 
 .app-error-content {

@@ -1,117 +1,61 @@
 :root {
-
-    /* selection styles */
-    --no-selection-background: transparent;
-    --no-selection-color: inherit;
-
-    --selection-background: #999999;
-    --selection-color: #DDDDDD;
-
-    /* transition durations */
-    --short-animation-duration: 0.2s;
-    --medium-animation-duration: 0.4s;
-    --long-animation-duration: 0.6s;
-
-    --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
-
-    /* links */
-    --link-base-color: #3333CC;
+    --link-color: var(--link-base-color);
     --link-cursor: pointer;
     --link-text-decoration: none;
 
-    --link-base-color-hovered: #000066;
+    --link-color-hovered: var(--link-base-color-hovered);
     --link-cursor-hovered: var(--link-cursor);
     --link-text-decoration-hovered: var(--link-text-decoration);
 
-    --link-base-color-active: #9999FF;
+    --link-color-active: var(--link-base-color-active);
     --link-cursor-active: var(--link-cursor);
     --link-text-decoration-active: var(--link-text-decoration);
 
-    --link-base-color-visited: var(--link-base-color);
+    --link-color-visited: var(--link-base-color-visited);
     --link-cursor-visited: var(--link-cursor);
     --link-text-decoration-visited: var(--link-text-decoration);
 
 
-    --app-border: 1px solid #333;
-
+    /* app header */
     --app-header-height: auto;
 
-    --app-header-background-color-top: #45484D;
-    --app-header-background-color-bottom: #000000;
+
     --app-header-background: -webkit-linear-gradient(top, var(--app-header-background-color-top) 0%, var(--app-header-background-color-bottom) 80%);
-    --app-header-background-reverse: -webkit-linear-gradient(top, var(--app-header-background-color-bottom) 0%, var(--app-header-background-color-top) 100%);
-    --app-header-text-color: #FFFFFF;
-    --app-header-border-base-color: #666666;
+
     --app-header-border-color: var(--app-header-border-base-color) var(--app-header-border-base-color) var(--app-header-background-color-top) var(--app-header-border-base-color);
 
+    /* app main */
 
-    --app-footer-background-color-top: #45484D;
-    --app-footer-background-color-bottom: #000000;
-    --app-footer-background: -webkit-linear-gradient(top,  var(--app-footer-background-color-top) 0%, var(--app-footer-background-color-bottom) 100%);
-    --app-footer-text-color: #CCCCCC;
-    --app-footer-border-base-color: #666666;
-    --app-footer-border-color: var(--app-footer-border-base-color) var(--app-header-background-color-top) var(--app-footer-border-base-color) var(--app-footer-border-base-color);
-
-
-    --debug-header-background-color-top: #ff3019;
-    --debug-header-background-color-bottom: #cf0404;
-    --debug-header-background: -webkit-linear-gradient(top, var(--debug-header-background-color-top) 0%, var(--debug-header-background-color-bottom) 100%);
-    --debug-header-text-color: #FFFFFF;
-
-    --app-element-border-radius: 8px;
-    --app-element-border-width: 1px;
-    --app-element-border-color: #333;
-    --app-element-border-style: solid;
-
-    --app-main-border-base-color: #333333;
     --app-main-border-color: var(--app-main-border-base-color) var(--app-main-border-base-color) var(--app-main-border-base-color) var(--app-main-border-base-color);
 
 
-    --app-debug-wrapper-border-base-color: #333333;
+    /* app footer */
+    --app-footer-background-color-top: var(--app-header-background-color-bottom);
+    --app-footer-background-color-bottom: var(--app-header-background-color-top);
+    --app-footer-background: -webkit-linear-gradient(top,  var(--app-footer-background-color-top) 0%, var(--app-footer-background-color-bottom) 100%);
+
+    --app-footer-border-base-color: var(--app-header-border-base-color);
+    --app-footer-border-color: var(--app-footer-border-base-color) var(--app-header-background-color-top) var(--app-footer-border-base-color) var(--app-footer-border-base-color);
+
+    /* progress bar */
+    --app-progress-bar-wrapper-background-color-bottom: var(--app-header-background-color-top);
+    --app-progress-bar-wrapper-background-color-top: var(--app-header-background-color-bottom);
+    --app-progress-bar-wrapper-background: -webkit-linear-gradient(top, var(--app-progress-bar-wrapper-background-color-top) 0%, var(--app-progress-bar-wrapper-background-color-bottom) 100%);
+
+
+
+    --app-progress-bar-inner-border-radius: var(--app-progress-bar-border-radius);
+
+
+
+
     --app-debug-wrapper-border-color: var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color);
+    --app-debug-header-background: -webkit-linear-gradient(top, var(--app-debug-header-background-color-top) 0%, var(--app-debug-header-background-color-bottom) 100%);
+    --app-debug-debug-window-header-background: #EEEEEE;
+    --app-debug-debug-window-header-color: #666666;
+    --app-debug-debug-window-header-link-color: #990000;
 
+    --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
 
-
-
-    --main-bg-color: #FFFFFF;
-
-    /* user and debug messages */
-    --message-text-color: #999999;
-    --message-info-text-color: #009900;
-    --message-warning-text-color: #CC9900;
-    --message-error-text-color: #CC0000;
-    --message-debug-text-color: #999999;
-
-    --message-highlight-background-color: #FFFFCC !important;
-    --message-debug-highlight-background-color: #EEEEEE !important;
-    --message-info-highlight-background-color: #66FF66 !important;
-    --message-error-highlight-background-color: #FFCCCC !important;
-    --message-warning-highlight-background-color: #FFCC00 !important;
-
-    --message-highlight-text-color: #000000 !important;
-    --message-debug-highlight-text-color: #000000 !important;
-    --message-info-highlight-text-color: #006600 !important;
-    --message-error-highlight-text-color: #660000 !important;
-    --message-warning-highlight-text-color: #666600 !important;
-
-    --message-delimiter-fill-color: #CCCCCC;
-    --message-delimiter-stroke-color: #000000;
-    --message-delimiter-stroke-width: 1;
-
-
-    /* window controls */
-    --window-control-link-color: #999999;
-    --window-control-link-color-hovered: #CCCCCC;
-
-    --window-control-link-text-stroke-width: 1px;
-    --window-control-link-text-stroke-color: #333333;
-    --window-control-link-text-shadow: 0 0 1px #FFFFFF;
-
-    --window-control-link-text-stroke-width-hovered: 1px;
-    --window-control-link-text-stroke-color-hovered: #666666;
-    --window-control-link-text-shadow-hovered: 0 0 2px #FFFFFF;
-
-    --window-control-link-text-stroke-width-active: 1px;
-    --window-control-link-text-stroke-color-active: #CCCCCC;
-    --window-control-link-text-shadow-active: 0 0 2px #FFFFFF;
+    --app-loader-user-message-list-border: 1px solid #CCC;
 }

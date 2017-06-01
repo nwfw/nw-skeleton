@@ -16,13 +16,14 @@
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
-	background: #EEEEEE;
+	background: var(--app-debug-debug-window-header-background);
+	color: var(--app-debug-debug-window-header-color);
 	position: fixed;
 	width: 100%;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header h2 {
-	color: #666666;
+	color: var(--app-debug-debug-window-header-color);
 	margin: 0;
 	padding: 5px;
 	font-size: 0.8rem;
@@ -53,7 +54,7 @@
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header a {
-	color:#990000;
+	color: var(--app-debug-debug-window-header-link-color);
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-window,

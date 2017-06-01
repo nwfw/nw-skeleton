@@ -7,6 +7,10 @@ header {
 	position: relative;
     flex-direction: column;
     z-index: 2;
+    border-radius: var(--app-main-border-radius) var(--app-main-border-radius) 0 0;
+    border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
+    border-style: var(--app-main-border-style);
+    border-color: var(--app-header-border-color);
 }
 
 .header-top {
@@ -113,46 +117,45 @@ header {
 }
 
 .live-info {
-	margin: 0 auto;
-	color:#ccc;
-	font-size: 0.8rem;
-	position: absolute;
+    border: var(--app-live-info-border);
+    color: var(--app-live-info-text-color);
+    background: var(--app-live-info-background-color);
+    border-radius: var(--app-live-info-border-radius);
+    margin: 0 auto;
+    font-size: 0.8rem;
+    position: absolute;
     bottom: -2px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 4px;
-    border: 1px solid #999;
     border-bottom: none;
     min-width: 240px;
     text-align: center;
     height: 24px;
     min-height: 0;
     z-index: 5;
-    background: #000;
     overflow: hidden;
     transition-property: height box-shadow !important;
     transition-timing-function: ease-out !important;
 }
 
 .app-status-changing .live-info {
-	/*box-shadow: 0 0 20px #fff;*/
 	z-index: 3;
 }
 
 .live-info.offline {
-    box-shadow: 0 0 20px #CCC;
+    box-shadow: var(--app-live-info-box-shadow-offline);
 }
 .live-info.not-busy {
-    box-shadow: 0 0 20px #00CC00;
+    box-shadow: var(--app-live-info-box-shadow-not-busy);
 }
 .live-info.error {
-    box-shadow: 0 0 20px #FF0000;
+    box-shadow: var(--app-live-info-box-shadow-error);
 }
 .live-info.working {
-    box-shadow: 0 0 20px #ffcc33;
+    box-shadow: var(--app-live-info-box-shadow-working);
 }
 .live-info.busy {
-    box-shadow: 0 0 20px #ffcc33;
+    box-shadow: var(--app-live-info-box-shadow-busy);
 }
 
 .live-info-item {
@@ -167,7 +170,7 @@ header {
 .live-info .status {
 	position:relative;
 	top:1px;
-	color:#CCC;
+	color: var(--app-live-info-status-color);
 	font-size: 1rem;
 }
 
@@ -179,44 +182,45 @@ header {
 	width: 12px;
 	height: 12px;
 	line-height: 12px;
-	/*border: 1px solid #ccc;*/
 }
 
 .live-info-item.offline .status {
-	color:#CCC;
+	color: var(--app-live-info-offline-status-color);
 }
 
-.live-info-item.online .status,
+.live-info-item.online .status {
+	color: var(--app-live-info-online-status-color);
+}
 .live-info-item.not-busy .status {
-	color:#00CC00;
+    color: var(--app-live-info-not-busy-status-color);
 }
 
 .live-info-item.error .status {
-	color:#FF0000;
+	color: var(--app-live-info-error-status-color);
 }
 
 .live-info-item.working .status {
-	color:#ffcc33;
+	color: var(--app-live-info-working-status-color);
 }
 
 .live-info-item.busy .status {
-	color:#ffcc33;
+	color: var(--app-live-info-busy-status-color);
 }
 
 .live-info-item.offline .app-operation-text  {
-    color: #FFF;
+    color: var(--app-live-info-offline-operation-text-color);
 }
 .live-info-item.not-busy .app-operation-text  {
-    color: #FFF;
+    color: var(--app-live-info-not-busy-operation-text-color);
 }
 .live-info-item.error .app-operation-text  {
-    color: #FF9999;
+    color: var(--app-live-info-error-operation-text-color);
 }
 .live-info-item.working .app-operation-text  {
-    color: #FFF;
+    color: var(--app-live-info-working-operation-text-color);
 }
 .live-info-item.busy .app-operation-text  {
-    color: #FFF;
+    color: var(--app-live-info-busy-operation-text-color);
 }
 
 .live-info-item.debug-toggle status {
