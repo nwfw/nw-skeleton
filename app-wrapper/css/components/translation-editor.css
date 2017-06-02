@@ -1,10 +1,28 @@
 .translation-editor {
+	max-height: 75vh;
+	display: flex;
+	flex-flow: column;
 }
 
+.translation-editor .tabs {
+	flex: 1;
+	display: flex;
+	flex-flow: column;
+}
+.translation-editor .translation-editor-tools {
+	flex: 0 0 auto;
+}
+.translation-editor .tab-links {
+	flex: 0 0 auto;
+}
+.translation-editor .tab-items {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+}
 .translation-editor .tab-item {
-	height: 75vw;
 	overflow: auto;
-	background: #F8F8F8;
+	background: var(--modal-dialog-background);
 }
 
 .translation-editor fieldset {
@@ -19,7 +37,7 @@
 
 .translation-editor fieldset > h2 {
 	margin: 0;
-	color:#666;
+	color: var(--modal-dialog-title-text-color);
 }
 
 .translation-editor .textarea-label {
@@ -33,8 +51,8 @@
 
 
 .translation-editor textarea {
+	border: var(--modal-dialog-border);
 	width: 100%;
-	border: 1px solid #666;
 	padding: 4px;
 	border-radius: 4px;
 }
@@ -44,7 +62,9 @@
 }
 
 .translation-editor .lang-form-row-not-translated textarea {
-	background: #FFFFCC;
+	background: var(--input-highlight-background);
+	border: var(--input-highlight-border);
+	color: var(--input-highlight-color);
 }
 
 .translation-editor .translation-editor-tools {
@@ -56,7 +76,6 @@
 .translation-editor .translation-editor-copy-all-tab {
 	font-size: 0.8rem;
 	float: right;
-	color: #666;
 	text-decoration: none;
 }
 
@@ -85,17 +104,12 @@
 .translation-editor .lang-form-row-tools a {
 	flex: 0 0 20px;
 	align-self: flex-end;
-	color: #666;
 }
 
 .translation-editor .lang-form-row-tools a:hover {
-	color: #FFF;
-	text-decoration: none;
-	text-shadow: 0 0 2px #000;
 }
 
 .translation-editor .lang-form-row-tools span {
 	flex: 1 1 auto;
 	text-align: center;
-	color: #999;
 }

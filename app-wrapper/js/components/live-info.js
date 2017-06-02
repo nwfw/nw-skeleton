@@ -9,20 +9,22 @@ exports.component = {
         appStatusClassObject: function () {
             var appState = appUtil.getAppState();
             return {
-                'fa-spin fa-circle-o-notch': appState.appBusy,
+                'fa-spin fa-refresh': appState.appStatus == 'busy',
                 'fa-spin fa-cog': appState.appStatus == 'working',
                 'fa-exclamation-triangle': appState.appStatus == 'error',
-                'fa-check': appState.appStatus == 'idle' && !appState.appBusy,
+                'fa-check': appState.appStatus == 'success',
                 'fa-ban': appState.appStatus == 'offline'
             };
         },
         appStatusWrapperClassObject: function () {
             var appState = appUtil.getAppState();
             return {
-                'busy': appState.appBusy,
-                'not-busy': !appState.appBusy && appState.appStatus == 'idle',
+                '': appState.appStatus == 'idle',
+                'busy': appState.appStatus == 'busy',
+                'not-busy': appState.appStatus == 'success',
                 'working': appState.appStatus == 'working',
-                'error': appState.appStatus == 'error'
+                'error': appState.appStatus == 'error',
+                'offline': appState.appStatus == 'offline'
             };
         },
         appState: function(){

@@ -1,0 +1,13 @@
+<div class="form-control-field">
+	<label class="checkbox-label" v-bind:title="control.path">
+		{{ control.name }}
+	</label>
+    <template v-if="control.value">
+        <input class="hidden-checkbox" type="checkbox" v-bind:value="control.value" v-bind:name="control.name" checked="checked" v-bind:path="control.path" />
+        <span class="checkbox-placeholder fa fa-check-square-o"></span>
+   </template>
+   <template v-else>
+       <input class="hidden-checkbox" type="checkbox" v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
+       <span class="checkbox-placeholder fa fa-square-o"></span>
+   </template>
+</div>

@@ -1,16 +1,24 @@
+@keyframes animatedBackground {
+    0%, 100% {
+        background-position: calc(0px - var(--app-progress-bar-width)) 0;
+    }
+    50% {
+        background-position: var(--app-progress-bar-width) 0;
+    }
+}
 
 .progress-bar-wrapper {
     font-size: var(--app-progress-bar-font-size);
     border: 1px solid var(--app-progress-bar-wrapper-border-color);
+    border-radius: var(--app-progress-bar-wrapper-border-radius);
     background: var(--app-progress-bar-wrapper-background);
+    border-top: none;
     padding: 0px 10px 5px 10px;
     transition: opacity linear 0.3s;
     text-align: center;
     position: fixed;
-    top: 78px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 4px;
     border-top: none;
     z-index: 4;
     width: 240px;
@@ -24,7 +32,7 @@
 }
 
 .progress-bar-wrapper.progress-bar-wrapper-active {
-	top: 98px;
+	top: calc(var(--app-header-height));
 }
 
 .progress-bar-wrapper .progress-operation {
@@ -50,11 +58,11 @@
 
 
 .progress-bar-wrapper .progress-bar {
-    background: var(--app-progress-bar-background-color);
+    background: var(--app-progress-bar-background);
 	border: 1px solid var(--app-progress-bar-border-color);
 	border-radius: var(--app-progress-bar-border-radius);
     display: inline-block;
-    width: 160px;
+    width: var(--app-progress-bar-width);
 	position: relative;
 	height: 18px;
 }
@@ -62,7 +70,10 @@
 
 .progress-bar-wrapper .progress-bar-inner,
 .progress-bar-wrapper .progress-bar-inner-below {
-    background: var(--app-progress-bar-inner-background-color);
+    background-image: var(--app-progress-bar-inner-background);
+    background-color: var(--app-progress-bar-inner-background-fill);
+    background-position: 0 0;
+    background-repeat: no-repeat;
     color: var(--app-progress-bar-inner-color);
     border-radius: var(--app-progress-bar-inner-border-radius);
 	transition: width linear 0.1s;
@@ -77,11 +88,13 @@
 	left: 0;
 	float: left;
 	white-space: nowrap;
+    animation: animatedBackground 6s linear infinite;
 }
 
 .progress-bar-wrapper.no-animation .progress-bar-inner,
 .progress-bar-wrapper.no-animation .progress-bar-inner-below {
     transition-duration: 0s;
+    background-image: none;
 }
 
 .progress-bar-wrapper .progress-bar-inner-below {

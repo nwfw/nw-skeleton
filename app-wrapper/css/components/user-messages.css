@@ -120,9 +120,6 @@
 }
 
 .user-messages .user-message-list li.message {
-	color: var(--app-user-messages-message-text-color);
-	background: var(--app-user-messages-message-background-color);
-	text-shadow: var(--app-user-messages-message-text-text-shadow);
 	padding: 1px 5px;
 	margin: 0;
 }

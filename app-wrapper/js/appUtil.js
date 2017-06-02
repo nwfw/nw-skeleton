@@ -380,7 +380,16 @@ var appUtil = {
 
         appUtil.log('* Loading file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false, self.forceDebug);
         if (!requireFile){
-            fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
+            if (fs.existsSync(filePath)){
+                let fStats = fs.statSync(filePath);
+                if (fStats.isFile()){
+                    fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
+                } else {
+                    appUtil.log('Can\'t load file (not a file) \'{1}\' from \'{2}\'.', 'error', [fileName, directory], false, self.forceDebug);
+                }
+            } else {
+                appUtil.log('Can\'t load file (doesn\'t exist) \'{1}\' from \'{2}\'.', 'error', [fileName, directory], false, self.forceDebug);
+            }
         } else {
             fileData = require(path.resolve(filePath));
             if (fileData.exported){
@@ -399,7 +408,7 @@ var appUtil = {
         if (fileData){
             appUtil.log('* Successfully loaded file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false, self.forceDebug);
         } else {
-            appUtil.log('* Failed loading file \'{1}\' from \'{2}\'...', 'error', [fileName, directory], false, self.forceDebug);
+            // appUtil.log('* Failed loading file \'{1}\' from \'{2}\'...', 'error', [fileName, directory], false, self.forceDebug);
         }
         return fileData;
     },

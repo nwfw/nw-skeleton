@@ -19,7 +19,7 @@ header {
 
 .header-bottom {
     flex: 1 1 10px;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .header-app-title {
@@ -111,31 +111,38 @@ header {
 }
 
 
-.app-language-wrapper {
+.app-language-wrapper,
+.app-theme-wrapper {
 	float: right;
 	margin-right: 5px;
+    position: relative;
+    top: -40px;
 }
 
 .live-info {
     border: var(--app-live-info-border);
-    color: var(--app-live-info-text-color);
-    background: var(--app-live-info-background-color);
-    border-radius: var(--app-live-info-border-radius);
-    margin: 0 auto;
-    font-size: 0.8rem;
+    background: var(--app-live-info-background);
+    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
     position: absolute;
-    bottom: -2px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
     border-bottom: none;
-    min-width: 240px;
+    width: 240px;
     text-align: center;
-    height: 24px;
+    height: 31px;
+    padding: 6px 0;
     min-height: 0;
     z-index: 5;
     overflow: hidden;
-    transition-property: height box-shadow !important;
+    transition-property: height, box-shadow, border, border-bottom, color !important;
     transition-timing-function: ease-out !important;
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.header-bottom.has-progress-bar .live-info {
+    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
+    border-bottom: none;
 }
 
 .app-status-changing .live-info {
@@ -144,83 +151,191 @@ header {
 
 .live-info.offline {
     box-shadow: var(--app-live-info-box-shadow-offline);
+    background: var(--app-live-info-background-offline);
+    border: var(--app-live-info-border-offline);
+    border-bottom: none;
 }
 .live-info.not-busy {
     box-shadow: var(--app-live-info-box-shadow-not-busy);
+    background: var(--app-live-info-background-not-busy);
+    border: var(--app-live-info-border-not-busy);
+    border-bottom: none;
 }
 .live-info.error {
     box-shadow: var(--app-live-info-box-shadow-error);
+    background: var(--app-live-info-background-error);
+    border: var(--app-live-info-border-error);
+    border-bottom: none;
 }
 .live-info.working {
     box-shadow: var(--app-live-info-box-shadow-working);
+    background: var(--app-live-info-background-working);
+    border: var(--app-live-info-border-working);
+    border-bottom: none;
 }
 .live-info.busy {
     box-shadow: var(--app-live-info-box-shadow-busy);
+    background: var(--app-live-info-background-busy);
+    border: var(--app-live-info-border-busy);
+    border-bottom: none;
 }
 
 .live-info-item {
-
+    padding: 1px 10px 2px;
+    background: var(--app-live-info-item-background);
+    box-shadow: var(--app-live-info-item-box-shadow);
 }
 
-.live-info-item .app-operation-text {
-    font-weight: bold;
+.live-info.offline .live-info-item {
+    background: var(--app-live-info-item-offline-background);
+    box-shadow: var(--app-live-info-item-offlin-box-shadow);
 }
 
+.live-info.not-busy .live-info-item {
+    background: var(--app-live-info-item-not-busy-background);
+    box-shadow: var(--app-live-info-item-not-bus-box-shadow);
+}
+
+.live-info.error  .live-info-item {
+    background: var(--app-live-info-item-error-background);
+    box-shadow: var(--app-live-info-item-error-box-shadow);
+}
+
+.live-info.working  .live-info-item {
+    background: var(--app-live-info-item-working-background);
+    box-shadow: var(--app-live-info-item-working-box-shadow);
+}
+
+.live-info.busy  .live-info-item {
+    background: var(--app-live-info-item-busy-background);
+    box-shadow: var(--app-live-info-item-busy-box-shadow);
+}
+
+
+
+.live-info .app-operation-text {
+    font-weight: 600;
+    margin-right: 4px;
+    color: var(--app-live-info-operation-text-color);
+    text-shadow: var(--app-live-info-operation-text-text-shadow);
+    font-size: var(--app-live-info-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-operation-text-text-stroke-color);
+    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
+    transition-timing-function: ease-out !important;
+    transition-duration: var(--short-animation-duration) !important;
+}
 
 .live-info .status {
-	position:relative;
-	top:1px;
-	color: var(--app-live-info-status-color);
-	font-size: 1rem;
+    color: var(--app-live-info-status-color);
+	text-shadow: var(--app-live-info-status-text-shadow);
+	font-size: var(--app-live-info-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-status-text-stroke-color);
+    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
+    transition-timing-function: ease-out !important;
+    transition-duration: var(--short-animation-duration) !important;
 }
 
 .live-info .status:hover {
 	text-decoration: none;
 }
 
-.live-info .status:before {
-	width: 12px;
-	height: 12px;
-	line-height: 12px;
+.live-info .status::before {
+    display: block;
+	width: var(--app-live-info-status-font-size);
+	height: var(--app-live-info-status-font-size);
+	line-height: var(--app-live-info-status-font-size);
+    overflow: visible;
+    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
+    transition-timing-function: ease-out !important;
+    transition-duration: var(--short-animation-duration) !important;
 }
 
-.live-info-item.offline .status {
+.live-info.offline .status {
 	color: var(--app-live-info-offline-status-color);
+    text-shadow: var(--app-live-info-offline-status-text-shadow);
+    font-size: var(--app-live-info-offline-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-offline-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-offline-status-text-stroke-color);
 }
 
-.live-info-item.online .status {
+.live-info.online .status {
 	color: var(--app-live-info-online-status-color);
+    text-shadow: var(--app-live-info-online-status-text-shadow);
+    font-size: var(--app-live-info-online-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-online-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-online-status-text-stroke-color);
 }
-.live-info-item.not-busy .status {
+.live-info.not-busy .status {
     color: var(--app-live-info-not-busy-status-color);
+    text-shadow: var(--app-live-info-not-busy-status-text-shadow);
+    font-size: var(--app-live-info-not-busy-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-not-busy-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-not-busy-status-text-stroke-color);
 }
 
-.live-info-item.error .status {
+.live-info.error .status {
 	color: var(--app-live-info-error-status-color);
+    text-shadow: var(--app-live-info-error-status-text-shadow);
+    font-size: var(--app-live-info-error-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-error-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-error-status-text-stroke-color);
 }
 
-.live-info-item.working .status {
+.live-info.working .status {
 	color: var(--app-live-info-working-status-color);
+    text-shadow: var(--app-live-info-working-status-text-shadow);
+    font-size: var(--app-live-info-working-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-working-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-working-status-text-stroke-color);
 }
 
-.live-info-item.busy .status {
+.live-info.busy .status {
 	color: var(--app-live-info-busy-status-color);
+    text-shadow: var(--app-live-info-busy-status-text-shadow);
+    font-size: var(--app-live-info-busy-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-busy-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-busy-status-text-stroke-color);
 }
 
-.live-info-item.offline .app-operation-text  {
+
+
+
+.live-info.offline .app-operation-text  {
     color: var(--app-live-info-offline-operation-text-color);
+    text-shadow: var(--app-live-info-offline-operation-text-text-shadow);
+    font-size: var(--app-live-info-offline-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-offline-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-offline-operation-text-text-stroke-color);
 }
-.live-info-item.not-busy .app-operation-text  {
+.live-info.not-busy .app-operation-text  {
     color: var(--app-live-info-not-busy-operation-text-color);
+    text-shadow: var(--app-live-info-not-busy-operation-text-text-shadow);
+    font-size: var(--app-live-info-not-busy-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-not-busy-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-not-busy-operation-text-text-stroke-color);
 }
-.live-info-item.error .app-operation-text  {
+.live-info.error .app-operation-text  {
     color: var(--app-live-info-error-operation-text-color);
+    text-shadow: var(--app-live-info-error-operation-text-text-shadow);
+    font-size: var(--app-live-info-error-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-error-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-error-operation-text-text-stroke-color);
 }
-.live-info-item.working .app-operation-text  {
+.live-info.working .app-operation-text  {
     color: var(--app-live-info-working-operation-text-color);
+    text-shadow: var(--app-live-info-working-operation-text-text-shadow);
+    font-size: var(--app-live-info-working-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-working-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-working-operation-text-text-stroke-color);
 }
-.live-info-item.busy .app-operation-text  {
+.live-info.busy .app-operation-text  {
     color: var(--app-live-info-busy-operation-text-color);
+    text-shadow: var(--app-live-info-busy-operation-text-text-shadow);
+    font-size: var(--app-live-info-busy-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-busy-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-busy-operation-text-text-stroke-color);
 }
 
 .live-info-item.debug-toggle status {

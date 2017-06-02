@@ -80,7 +80,7 @@ class AppConfig extends BaseClass {
             var userConfigKeys = _.keys(userConfig);
             var noReloadConfig = appUtil.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
-            var shouldReload = (userConfigKeys.length - noReloadChanges.length) <= 0;
+            var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
 
             appUtil.log('Saving user config...', 'warning', [], false, this.forceDebug);
             try {

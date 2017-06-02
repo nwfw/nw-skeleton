@@ -1,0 +1,14 @@
+.checkbox-styled {
+    position: relative;
+}
+
+.hidden-checkbox {
+    visibility: hidden;
+}
+
+.styled-checkbox-placeholder {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    pointer-events: none;
+}

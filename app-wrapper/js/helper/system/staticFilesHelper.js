@@ -41,16 +41,24 @@ class StaticFilesHelper extends BaseClass {
     async loadCss (href, noWatch, resolvePath) {
 
         let cssFilePath = href;
+        let cssContents = '';
+        let compiledCssPath = appUtil.getConfig('appConfig.cssCompiledFile');
+
         if (!resolvePath){
             cssFilePath  = path.resolve(path.join('.' + href));
         }
-        let fileContents = fs.readFileSync(cssFilePath);
+
+        cssContents = await appUtil.loadFile(cssFilePath);
+        if (cssContents){
+            cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
+        }
 
         if (!noWatch && appUtil.getConfig('liveCss')){
             _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
         }
 
-        return postcss().process(fileContents, { from: href, to: appUtil.getConfig('appConfig.cssCompiledFile') });
+
+        return cssContents;
     }
 
     async addCss (href) {
@@ -68,7 +76,7 @@ class StaticFilesHelper extends BaseClass {
             var cssNode = document.createElement('link');
 
             cssNode.onload = () => {
-                appUtil.log('Loaded CSS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
+                // appUtil.log('Loaded CSS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
                 this.cssFileLoadResolves[href](true);
                 this.cssFileLoadResolves[href] = null;
             };
@@ -114,7 +122,7 @@ class StaticFilesHelper extends BaseClass {
             jsNode.setAttribute('src', href);
 
             jsNode.onload = () => {
-                appUtil.log('Loaded JS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
+                // appUtil.log('Loaded JS file \'{1}\'...', 'debug', [href], false, this.forceDebug);
                 this.jsFileLoadResolves[href](true);
                 this.jsFileLoadResolves[href] = null;
             };
@@ -144,16 +152,57 @@ class StaticFilesHelper extends BaseClass {
     }
 
     async getCssFiles () {
-        var cssFiles = appUtil.getConfig('appConfig.initCssFiles');
-        var appCssFiles = appUtil.getConfig('appConfig.cssFiles');
-        var debugCssFiles = appUtil.getConfig('appConfig.debugCssFiles');
-        var appDebugCssFiles = appUtil.getConfig('appConfig.appDebugCssFiles');
+        let cssFiles = appUtil.getConfig('appConfig.initCssFiles') || [];
+        let appCssFiles = appUtil.getConfig('appConfig.cssFiles') || [];
+        let debugCssFiles = appUtil.getConfig('appConfig.debugCssFiles') || [];
+        let appDebugCssFiles = appUtil.getConfig('appConfig.appDebugCssFiles') || [];
 
-        var totalCssFileCount = 0;
-        var cssFileCount = 0;
-        var appCssFileCount = 0;
-        var debugCssFileCount = 0;
-        var appDebugCssFileCount = 0;
+        let themeInitCssFiles = [];
+        let themeCssFiles = [];
+        let themeOverrideCssFiles = [];
+
+        let totalCssFileCount = 0;
+
+        let cssFileCount = 0;
+        let appCssFileCount = 0;
+        let debugCssFileCount = 0;
+        let appDebugCssFileCount = 0;
+
+        let themeInitCssFileCount = 0;
+        let themeCssFileCount = 0;
+        let themeOverrideCssFileCount = 0;
+
+        let themeName = appUtil.getConfig('theme');
+        let themeConfig;
+        if (themeName){
+            themeConfig = await this.getThemeConfig(themeName);
+            if (themeConfig && themeConfig.name){
+                if (themeConfig.initCssFiles && themeConfig.initCssFiles.length){
+                    themeInitCssFiles = _.map(themeConfig.initCssFiles, (file) => {
+                        return path.resolve(path.join(themeConfig.path, file));
+                    });
+                    themeInitCssFileCount += themeConfig.initCssFiles.length;
+                    totalCssFileCount += themeConfig.initCssFiles.length;
+                }
+
+                if (themeConfig.cssFiles && themeConfig.cssFiles.length){
+                    themeCssFiles = _.map(themeConfig.cssFiles, (file) => {
+                        return path.resolve(path.join(themeConfig.path, file));
+                    });
+                    themeCssFileCount += themeConfig.cssFiles.length;
+                    totalCssFileCount += themeConfig.cssFiles.length;
+                }
+
+                if (themeConfig.overrideCssFiles && themeConfig.overrideCssFiles.length){
+                    themeOverrideCssFiles = _.map(themeConfig.overrideCssFiles, (file) => {
+                        return path.resolve(path.join(themeConfig.path, file));
+                    });
+                    themeOverrideCssFileCount += themeConfig.overrideCssFiles.length;
+                    totalCssFileCount += themeConfig.overrideCssFiles.length;
+                }
+            }
+        }
+
 
         if (cssFiles && cssFiles.length){
             cssFileCount = cssFiles.length;
@@ -170,7 +219,7 @@ class StaticFilesHelper extends BaseClass {
             appDebugCssFileCount = appDebugCssFiles.length;
         }
 
-        totalCssFileCount = cssFileCount + appCssFileCount;
+        totalCssFileCount += cssFileCount + appCssFileCount;
 
         if (appState.isDebugWindow){
             totalCssFileCount += debugCssFileCount + appDebugCssFileCount;
@@ -181,68 +230,70 @@ class StaticFilesHelper extends BaseClass {
                 cssFiles,
                 appCssFiles,
                 debugCssFiles,
-                appDebugCssFiles
+                appDebugCssFiles,
+                themeInitCssFiles,
+                themeCssFiles,
+                themeOverrideCssFiles
             },
             counts: {
                 cssFileCount,
                 appCssFileCount,
                 debugCssFileCount,
                 appDebugCssFileCount,
+                themeInitCssFileCount,
+                themeCssFileCount,
+                themeOverrideCssFileCount,
                 totalCssFileCount
             }
         };
+    }
+
+    async getThemeConfig (themeName) {
+        let foundThemeDir = true;
+        let themeConfigFile = 'theme';
+        let themeConfigPath = '';
+        let themeConfig;
+        let themeData;
+        if (themeName){
+            themeData = _.find(appState.availableThemes, {name: themeName});
+            if (themeData && themeData.path){
+                if (!_appWrapper.fileManager.isDir(themeData.path)){
+                    if (!_appWrapper.fileManager.isDir(themeData.path)){
+                        foundThemeDir = false;
+                    }
+                }
+            } else {
+                foundThemeDir = false;
+            }
+        } else {
+            foundThemeDir = false;
+        }
+
+        if (foundThemeDir){
+            themeConfigPath = path.join(themeData.path , themeConfigFile);
+            themeConfig = await appUtil.loadFile(themeConfigPath, true);
+            if (themeConfig && themeConfig.name){
+                themeConfig.path = themeData.path;
+            }
+        }
+        return themeConfig;
     }
 
     async compileCss (noWatch) {
         var compiledCss = '';
         var cssFileData = await this.getCssFiles();
 
-        var loadTheme = true;
-        var themeFiles = {
-            config: false,
-            theme: false,
-            style: false
-        };
-        var themeName = appUtil.getConfig('appConfig.theme');
-        if (themeName){
-            var themePath = path.resolve(path.join('.', '/app/css/theme', themeName));
-            if (!_appWrapper.fileManager.isDir(themePath)){
-                themePath = path.resolve(path.join('.', '/node_modules/nw-skeleton/app-wrapper/css/themes', themeName));
-                if (!_appWrapper.fileManager.isDir(themePath)){
-                    loadTheme = false;
-                }
-            }
-        } else {
-            loadTheme = false;
-        }
-
-        if (loadTheme){
-            var themeConfig = path.join(themePath, 'config.css');
-            if (_appWrapper.fileManager.isFile(themeConfig)){
-                themeFiles.config = themeConfig;
-                cssFileData.counts.totalCssFileCount++;
-            }
-            var themeFile = path.join(themePath, 'theme.css');
-            if (_appWrapper.fileManager.isFile(themeFile)){
-                themeFiles.theme = themeFile;
-                cssFileData.counts.totalCssFileCount++;
-            }
-            var themeStyle = path.join(themePath, 'theme.css');
-            if (_appWrapper.fileManager.isFile(themeStyle)){
-                themeFiles.style = themeStyle;
-                cssFileData.counts.totalCssFileCount++;
-            }
-        }
-
         if (cssFileData.counts.totalCssFileCount){
             appUtil.log('Compiling {1} CSS files', 'group', [cssFileData.counts.totalCssFileCount], false, this.forceDebug);
 
-            if (themeFiles.config){
-                appUtil.log('Compiling {1} theme CSS files', 'group', [1], false, this.forceDebug);
-                let cssResult = await this.loadCss(themeFiles.config, noWatch, true);
-                let cssContents = cssResult.css;
-                compiledCss += cssContents;
-                appUtil.log('Compiling {1} theme CSS files', 'groupend', [1], false, this.forceDebug);
+            if (cssFileData.counts.themeInitCssFileCount){
+                appUtil.log('Compiling {1} theme init CSS files', 'group', [cssFileData.counts.themeInitCssFileCount], false, this.forceDebug);
+                for (let i=0; i<cssFileData.files.themeInitCssFiles.length; i++){
+                    let cssResult = await this.loadCss(cssFileData.files.themeInitCssFiles[i], noWatch, true);
+                    let cssContents = cssResult.css;
+                    compiledCss += cssContents;
+                }
+                appUtil.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount], false, this.forceDebug);
             }
 
             if (cssFileData.counts.cssFileCount){
@@ -255,12 +306,14 @@ class StaticFilesHelper extends BaseClass {
                 appUtil.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount], false, this.forceDebug);
             }
 
-            if (themeFiles.theme){
-                appUtil.log('Compiling {1} theme CSS files', 'group', [1], false, this.forceDebug);
-                let cssResult = await this.loadCss(themeFiles.theme, noWatch, true);
-                let cssContents = cssResult.css;
-                compiledCss += cssContents;
-                appUtil.log('Compiling {1} theme CSS files', 'groupend', [1], false, this.forceDebug);
+            if (cssFileData.counts.themeCssFileCount){
+                appUtil.log('Compiling {1} theme CSS files', 'group', [cssFileData.counts.themeCssFileCount], false, this.forceDebug);
+                for (let i=0; i<cssFileData.files.themeCssFiles.length; i++){
+                    let cssResult = await this.loadCss(cssFileData.files.themeCssFiles[i], noWatch, true);
+                    let cssContents = cssResult.css;
+                    compiledCss += cssContents;
+                }
+                appUtil.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount], false, this.forceDebug);
             }
 
             if (cssFileData.counts.appCssFileCount){
@@ -272,6 +325,7 @@ class StaticFilesHelper extends BaseClass {
                 }
                 appUtil.log('Compiling {1} app CSS files', 'groupend', [cssFileData.counts.appCssFileCount], false, this.forceDebug);
             }
+
             if (appState.isDebugWindow){
                 if (cssFileData.counts.debugCssFileCount){
                     appUtil.log('Compiling {1} debug window wrapper CSS files', 'group', [cssFileData.counts.debugCssFileCount], false, this.forceDebug);
@@ -293,12 +347,14 @@ class StaticFilesHelper extends BaseClass {
                 }
             }
 
-            if (themeFiles.style){
-                appUtil.log('Compiling {1} theme CSS files', 'group', [1], false, this.forceDebug);
-                let cssResult = await this.loadCss(themeFiles.style, noWatch, true);
-                let cssContents = cssResult.css;
-                compiledCss += cssContents;
-                appUtil.log('Compiling {1} theme CSS files', 'groupend', [1], false, this.forceDebug);
+            if (cssFileData.counts.themeOverrideCssFileCount){
+                appUtil.log('Compiling {1} theme override CSS files', 'group', [cssFileData.counts.themeOverrideCssFileCount], false, this.forceDebug);
+                for (let i=0; i<cssFileData.files.themeOverrideCssFiles.length; i++){
+                    let cssResult = await this.loadCss(cssFileData.files.themeOverrideCssFiles[i], noWatch, true);
+                    let cssContents = cssResult.css;
+                    compiledCss += cssContents;
+                }
+                appUtil.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount], false, this.forceDebug);
             }
 
             appUtil.log('Compiling {1} CSS files', 'groupend', [cssFileData.counts.totalCssFileCount], false, this.forceDebug);
@@ -307,22 +363,67 @@ class StaticFilesHelper extends BaseClass {
     }
 
     async loadJsFiles() {
-        var jsFiles = appUtil.getConfig('appConfig.initJsFiles');
-        var appJsFiles = appUtil.getConfig('appConfig.jsFiles');
+        let jsFiles = appUtil.getConfig('appConfig.initJsFiles');
+        let appJsFiles = appUtil.getConfig('appConfig.jsFiles');
+        let themeInitJsFiles = [];
+        let themeJsFiles = [];
 
-        var jsFileCount = 0;
-        var appJsFileCount = 0;
-        var totalJsFileCount = 0;
+        let jsFileCount = 0;
+        let appJsFileCount = 0;
+        let themeInitJsFileCount = 0;
+        let themeJsFileCount = 0;
+        let totalJsFileCount = 0;
+
+        let themeName = appUtil.getConfig('theme');
+        if (themeName){
+            let themeConfig = await this.getThemeConfig(themeName);
+            if (themeConfig && themeConfig.name){
+                if (themeConfig.initJsFiles && themeConfig.initJsFiles.length){
+                    for (let i=0; i<themeConfig.initJsFiles.length; i++){
+                        let jsFile = themeConfig.initJsFiles[i];
+                        let jsFilePath = path.resolve(path.join(themeConfig.path, jsFile));
+                        if (fs.existsSync(jsFilePath)){
+                            let jsHref = '/' + path.relative(path.resolve('.'), jsFilePath);
+                            themeInitJsFiles.push(jsHref);
+                        } else {
+                            appUtil.log('Can\'t find theme JS file \'{1}\'', 'error', [jsFile], false, this.forceDebug);
+                        }
+                    }
+                }
+                if (themeConfig.jsFiles && themeConfig.jsFiles.length){
+                    for (let i=0; i<themeConfig.jsFiles.length; i++){
+                        let jsFile = themeConfig.jsFiles[i];
+                        let jsFilePath = path.resolve(path.join(themeConfig.path, jsFile));
+                        if (fs.existsSync(jsFilePath)){
+                            let jsHref = '/' + path.relative(path.resolve('.'), jsFilePath);
+                            themeJsFiles.push(jsHref);
+                        } else {
+                            appUtil.log('Can\'t find theme JS file \'{1}\'', 'error', [jsFile], false, this.forceDebug);
+                        }
+                    }
+                }
+            }
+        }
 
         if (jsFiles && jsFiles.length){
             jsFileCount = jsFiles.length;
+            totalJsFileCount += jsFiles.length;
         }
 
         if (appJsFiles && appJsFiles.length){
             appJsFileCount = appJsFiles.length;
+            totalJsFileCount += appJsFiles.length;
         }
 
-        totalJsFileCount = jsFileCount + appJsFileCount;
+        if (themeInitJsFiles && themeInitJsFiles.length){
+            themeInitJsFileCount = themeInitJsFiles.length;
+            totalJsFileCount += themeInitJsFiles.length;
+        }
+
+        if (themeJsFiles && themeJsFiles.length){
+            themeJsFileCount = themeJsFiles.length;
+            totalJsFileCount += themeJsFiles.length;
+        }
 
         if (totalJsFileCount){
             appUtil.log('Loading {1} JS files', 'group', [totalJsFileCount], false, this.forceDebug);
@@ -333,6 +434,15 @@ class StaticFilesHelper extends BaseClass {
                 }
                 appUtil.log('Loading {1} wrapper JS files', 'groupend', [jsFileCount], false, this.forceDebug);
             }
+
+            if (themeInitJsFileCount){
+                appUtil.log('Loading {1} theme init JS files', 'group', [themeInitJsFileCount], false, this.forceDebug);
+                for (let i=0; i<themeInitJsFiles.length; i++){
+                    await this.loadJs(themeInitJsFiles[i]);
+                }
+                appUtil.log('Loading {1} theme init JS files', 'groupend', [themeInitJsFileCount], false, this.forceDebug);
+            }
+
             if (appJsFileCount){
                 appUtil.log('Loading {1} app JS files', 'group', [appJsFileCount], false, this.forceDebug);
                 for (let i=0; i<appJsFiles.length; i++){
@@ -340,6 +450,15 @@ class StaticFilesHelper extends BaseClass {
                 }
                 appUtil.log('Loading {1} app JS files', 'groupend', [appJsFileCount], false, this.forceDebug);
             }
+
+            if (themeJsFileCount){
+                appUtil.log('Loading {1} theme JS files', 'group', [themeJsFileCount], false, this.forceDebug);
+                for (let i=0; i<themeJsFiles.length; i++){
+                    await this.loadJs(themeJsFiles[i]);
+                }
+                appUtil.log('Loading {1} theme JS files', 'groupend', [themeJsFileCount], false, this.forceDebug);
+            }
+
             appUtil.log('Loading {1} JS files', 'groupend', [totalJsFileCount], false, this.forceDebug);
         }
     }
@@ -355,6 +474,51 @@ class StaticFilesHelper extends BaseClass {
         }
         await this.generateCss(true);
         await this.refreshCss();
+    }
+
+    async initializeThemes () {
+        appState.availableThemes = [];
+        let appWrapperBaseThemeDir = path.resolve('./node_modules/nw-skeleton/app-wrapper/css/themes');
+        let appThemeBaseDir = path.resolve('./app/css/themes');
+
+        appUtil.log('Initializing themes...', 'group', [], false, this.forceDebug);
+
+        if (_appWrapper.fileManager.isDir(appWrapperBaseThemeDir)){
+            let wrapperThemeDirs = fs.readdirSync(appWrapperBaseThemeDir);
+            if (wrapperThemeDirs && wrapperThemeDirs.length){
+                appUtil.log('Initializing {1} wrapper themes...', 'info', [wrapperThemeDirs.length], false, this.forceDebug);
+                for(let i=0; i<wrapperThemeDirs.length; i++){
+                    await this.registerTheme(wrapperThemeDirs[i], path.join(appWrapperBaseThemeDir, wrapperThemeDirs[i]));
+                }
+            }
+        }
+        if (_appWrapper.fileManager.isDir(appThemeBaseDir)){
+            let appThemeDirs = fs.readdirSync(appThemeBaseDir);
+            if (appThemeDirs && appThemeDirs.length){
+                appUtil.log('Initializing {1} app themes...', 'info', [appThemeDirs.length], false, this.forceDebug);
+                for(let i=0; i<appThemeDirs.length; i++){
+                    await this.registerTheme(appThemeDirs[i], path.join(appThemeBaseDir, appThemeDirs[i]));
+                }
+            }
+        }
+
+        appUtil.log('Initializing themes...', 'groupend', [], false, this.forceDebug);
+    }
+
+    async registerTheme(themeName, themeDir){
+        if (themeName && themeDir){
+            appUtil.log('Registering theme \'{1}\'...', 'info', [themeName], false, this.forceDebug);
+            _.remove(appState.availableThemes, { name: themeName });
+            appState.availableThemes.push({
+                name: themeName,
+                path: themeDir
+            });
+        }
+    }
+
+    async changeTheme () {
+        await this.reloadCss();
+        await _appWrapper.appConfig.saveUserConfig();
     }
 }
 

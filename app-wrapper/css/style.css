@@ -17,6 +17,7 @@ html, body {
 	-webkit-font-smoothing: subpixel-antialiased;
 	min-height:100vh;
 	overflow: hidden;
+	color: var(--app-base-text-color);
 }
 
 body.nw-body {
@@ -44,6 +45,15 @@ textarea::selection,
 input::selection {
     background: var(--selection-background);
     color: var(--selection-color);
+}
+
+input,
+select,
+textarea,
+button {
+	background: var(--input-base-background);
+	color: var(--input-base-color);
+	border: var(--input-base-border);
 }
 
 h1, h2 {

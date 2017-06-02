@@ -89,6 +89,9 @@ exports.appState = {
         availableLanguages: [],
         translations: {}
     },
+
+    availableThemes: [],
+
     appInfo: {
 
     },

@@ -15,40 +15,25 @@
     --link-cursor-visited: var(--link-cursor);
     --link-text-decoration-visited: var(--link-text-decoration);
 
-
     /* app header */
-    --app-header-height: auto;
-
-
     --app-header-background: -webkit-linear-gradient(top, var(--app-header-background-color-top) 0%, var(--app-header-background-color-bottom) 80%);
-
     --app-header-border-color: var(--app-header-border-base-color) var(--app-header-border-base-color) var(--app-header-background-color-top) var(--app-header-border-base-color);
 
     /* app main */
-
     --app-main-border-color: var(--app-main-border-base-color) var(--app-main-border-base-color) var(--app-main-border-base-color) var(--app-main-border-base-color);
-
 
     /* app footer */
     --app-footer-background-color-top: var(--app-header-background-color-bottom);
     --app-footer-background-color-bottom: var(--app-header-background-color-top);
     --app-footer-background: -webkit-linear-gradient(top,  var(--app-footer-background-color-top) 0%, var(--app-footer-background-color-bottom) 100%);
-
     --app-footer-border-base-color: var(--app-header-border-base-color);
     --app-footer-border-color: var(--app-footer-border-base-color) var(--app-header-background-color-top) var(--app-footer-border-base-color) var(--app-footer-border-base-color);
 
     /* progress bar */
-    --app-progress-bar-wrapper-background-color-bottom: var(--app-header-background-color-top);
-    --app-progress-bar-wrapper-background-color-top: var(--app-header-background-color-bottom);
     --app-progress-bar-wrapper-background: -webkit-linear-gradient(top, var(--app-progress-bar-wrapper-background-color-top) 0%, var(--app-progress-bar-wrapper-background-color-bottom) 100%);
-
-
-
     --app-progress-bar-inner-border-radius: var(--app-progress-bar-border-radius);
 
-
-
-
+    /* app debug */
     --app-debug-wrapper-border-color: var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color);
     --app-debug-header-background: -webkit-linear-gradient(top, var(--app-debug-header-background-color-top) 0%, var(--app-debug-header-background-color-bottom) 100%);
     --app-debug-debug-window-header-background: #EEEEEE;

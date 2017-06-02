@@ -64,6 +64,9 @@ exports.config = {
                                 name: 'language-select'
                             },
                             {
+                                name: 'theme-select'
+                            },
+                            {
                                 name: 'live-info'
                             },
                             {
@@ -133,7 +136,6 @@ exports.config = {
         tmpDataDir: './app/var',
         showInitializationStatus: true,
         showInitializationProgress: true,
-        theme: 'basic',
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
@@ -151,9 +153,11 @@ exports.config = {
             '/node_modules/nw-skeleton/app-wrapper/css/components/app-debug.css',
             '/node_modules/nw-skeleton/app-wrapper/css/components/app-loader.css',
             '/node_modules/nw-skeleton/app-wrapper/css/components/app-error.css',
+            '/node_modules/nw-skeleton/app-wrapper/css/components/checkbox-styled.css',
             '/node_modules/nw-skeleton/app-wrapper/css/style.css',
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
         ],
+        overrideCssFiles: [],
 
         initJsFiles: [],
         jsFiles: [
@@ -245,6 +249,10 @@ exports.config = {
                 editable: false,
                 reload: true
             },
+            theme: {
+                editable: true,
+                reload: false
+            },
             currentLanguage: {
                 editable: true,
                 reload: false,
@@ -315,6 +323,9 @@ exports.config = {
     currentLocale: 'sr-rs',
     allowLanguageChange: true,
     autoAddLabels: true,
+
+    theme: 'basic',
+    allowThemeChange: true,
 
     liveCss: false,
 

@@ -43,8 +43,7 @@ class AppWrapper {
             cleanupTimeout: null,
             windowCloseTimeout: null,
             modalContentVisibleTimeout: null,
-            appStatusChangingTimeout: null,
-            liveCss: null
+            appStatusChangingTimeout: null
         };
 
         this.intervals = {
@@ -130,6 +129,7 @@ class AppWrapper {
         App = require(path.join(process.cwd(), appState.config.wrapper.appFile)).App;
 
 
+        await this.helpers.staticFilesHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadCssFiles();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
@@ -349,6 +349,7 @@ class AppWrapper {
 
     async onWindowClose () {
         this.helpers.modalHelper.closeCurrentModal(true);
+        await this.shutdownApp();
         if (!appState.isDebugWindow){
             appState.appError = false;
             this.windowManager.closeWindowForce();
@@ -373,7 +374,7 @@ class AppWrapper {
     async shutdownApp () {
         await this.windowManager.removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
-            this.debugWindow.getAppWrapper.onDebugWindowClose();
+            this.debugWindow.getAppWrapper().onDebugWindowClose();
         }
         appState.mainLoaderTitle = 'Please wait while application shuts down...';
         if (this.appTranslations && this.appTranslations.translate){
@@ -425,8 +426,20 @@ class AppWrapper {
         appUtil.addUserMessage('Debug window closed', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
     }
 
+    setAppStatus (appBusy, appStatus){
+        if (!appStatus){
+            if (appBusy){
+                appStatus = 'busy';
+            } else {
+                appStatus = 'idle';
+            }
+        }
+        appState.appBusy = appBusy;
+        appState.appStatus = appStatus;
+    }
+
     resetAppStatus (){
-        appState.appBusy = false;
+        this.setAppStatus(false);
     }
 
     operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation){
@@ -455,7 +468,7 @@ class AppWrapper {
         }
 
         appState.appStatusChanging = true;
-        appState.appBusy = appBusy;
+        this.setAppStatus(appBusy);
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
         if (useProgress){
@@ -483,7 +496,7 @@ class AppWrapper {
             timeoutDuration = 2000;
         }
 
-        appState.appBusy = appBusy;
+        this.setAppStatus(appBusy, 'success');
 
         if (appState.appOperation.useProgress){
             this.helpers.htmlHelper.clearProgress();
@@ -501,6 +514,7 @@ class AppWrapper {
                 progressText: null,
                 appBusy: null
             };
+            this.setAppStatus(false);
         }, timeoutDuration);
         appState.progressData.animated = true;
     }
