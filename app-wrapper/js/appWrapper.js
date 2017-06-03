@@ -138,6 +138,8 @@ class AppWrapper {
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(appUtil.getConfig('wrapper.helperDirectories')));
 
+        appState.userData = await this.loadUserData();
+
         var globalKeyHandlers = appUtil.getConfig('appConfig.globalKeyHandlers');
         if (globalKeyHandlers && globalKeyHandlers.length){
             for(let j=0; j<globalKeyHandlers.length; j++){
@@ -782,6 +784,40 @@ class AppWrapper {
         } else {
             return false;
         }
+    }
+
+    getUserDataStorageName(){
+        let userDataName = appUtil.getConfig('appInfo.name') + '_userData';
+        userDataName = userDataName.replace(/[^A-Za-z0-9]+/g, '_');
+        return userDataName;
+    }
+
+    async saveUserData (userData) {
+        if (!userData){
+            userData = appState.userData;
+        }
+        appUtil.log('Saving user data', 'info', [], false, this.forceDebug);
+        let userDataName = this.getUserDataStorageName();
+        let saved = await this.getHelper('storage').set(userDataName, userData);
+        if (!saved){
+            appUtil.addUserMessage('Could not save user data!', 'error', [], false,  false, this.forceUserMessages, this.forceDebug);
+        } else {
+            appUtil.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false, this.forceUserMessages, this.forceDebug);
+        }
+        return saved;
+    }
+
+    async loadUserData () {
+        appUtil.log('Loading user data', 'info', [], false, this.forceDebug);
+        let userDataName = this.getUserDataStorageName();
+        var userData = await this.getHelper('storage').get(userDataName);
+        if (userData){
+            appUtil.addUserMessage('Loaded {1} user data variables.', 'info', [_.keys(userData).length], false,  false, this.forceUserMessages, this.forceDebug);
+        } else {
+            appUtil.addUserMessage('Could not load user data.', 'warning', [], false,  false, this.forceUserMessages, this.forceDebug);
+            userData = {};
+        }
+        return userData;
     }
 
     exitApp(){

@@ -50,12 +50,19 @@ class AppConfig extends BaseClass {
         return theConfig;
     }
 
+    getConfigStorageName(){
+        let configName = appUtil.getConfig('appInfo.name') + '_config';
+        configName = configName.replace(/[^A-Za-z0-9]+/g, '_');
+        return configName;
+    }
+
     loadUserConfig () {
-        if (localStorage && localStorage.getItem('config')){
+        let configName = this.getConfigStorageName();
+        if (localStorage && localStorage.getItem(configName)){
             appUtil.log('Loading user config...', 'info', [], false, this.forceDebug);
             var userConfig = {};
             try {
-                userConfig = JSON.parse(localStorage.getItem('config'));
+                userConfig = JSON.parse(localStorage.getItem(configName));
             } catch (e) {
                 appUtil.log('Can\'t parse user config.!', 'warning', [], false, this.forceDebug);
             }
@@ -75,6 +82,7 @@ class AppConfig extends BaseClass {
     }
 
     saveUserConfig () {
+        let configName = this.getConfigStorageName();
         if (localStorage){
             var userConfig = appUtil.difference(this.config, appState.config);
             var userConfigKeys = _.keys(userConfig);
@@ -85,7 +93,7 @@ class AppConfig extends BaseClass {
             appUtil.log('Saving user config...', 'warning', [], false, this.forceDebug);
             try {
                 if (userConfig && _.keys(userConfig).length){
-                    localStorage.setItem('config', JSON.stringify(userConfig));
+                    localStorage.setItem(configName, JSON.stringify(userConfig));
                     appUtil.addUserMessage('Configuration data saved', 'info', [], false,  false, true, this.forceDebug);
                     appState.hasUserConfig = true;
                     if (shouldReload){
@@ -94,8 +102,8 @@ class AppConfig extends BaseClass {
                         this.config = _.cloneDeep(appState.config);
                     }
                 } else {
-                    if (localStorage.getItem('config')){
-                        localStorage.removeItem('config');
+                    if (localStorage.getItem(configName)){
+                        localStorage.removeItem(configName);
                         appState.hasUserConfig = false;
                         if (shouldReload){
                             _appWrapper.windowManager.reloadWindow(null, true);
@@ -113,10 +121,11 @@ class AppConfig extends BaseClass {
     }
 
     async clearUserConfig () {
+        let configName = this.getConfigStorageName();
         if (localStorage){
             appUtil.log('Clearing user config...', 'info', [], false, this.forceDebug);
             try {
-                localStorage.removeItem('config');
+                localStorage.removeItem(configName);
                 appUtil.addUserMessage('Configuration data cleared', 'info', [], false,  false, true, this.forceDebug);
                 appState.hasUserConfig = false;
                 _appWrapper.helpers.modalHelper.closeCurrentModal(true);

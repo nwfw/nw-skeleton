@@ -312,6 +312,14 @@ exports.config = {
             userMessagesToolbarVisible: {
                 editable: true,
                 reload: false
+            },
+            forceDebug: {
+                editable: false,
+                reload: true
+            },
+            forceUserMessages: {
+                editable: false,
+                reload: true
             }
         }
     },

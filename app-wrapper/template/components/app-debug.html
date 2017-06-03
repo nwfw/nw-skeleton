@@ -10,6 +10,7 @@
 				<a class="debug-header-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearDebugMessages"></a>
 				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
 				<a class="debug-header-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow"></a>
+				<a class="debug-header-tool open-debug-config fa fa-cog" v-bind:title="translate('Open debug configuration')" v-on:click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor"></a>
 				<select class="debug-header-tool" name="debugLevels" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeDebugLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
 						<template v-if="levelValue == appState.debugLevel">

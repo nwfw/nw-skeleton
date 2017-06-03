@@ -293,6 +293,72 @@ class DebugHelper extends BaseClass {
         _appWrapper.appConfig.setConfigVar('userMessageLevel', level);
         appState.userMessagesData.selectFocused = false;
     }
+
+    openDebugConfigEditor (e) {
+        appState.modalData.currentModal = _.cloneDeep(appState.debugConfigEditorModal);
+        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Debug config editor');
+        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
+        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        _appWrapper._confirmModalAction = this.saveDebugConfig.bind(this);
+        _appWrapper._cancelModalAction = function(evt){
+            if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
+                evt.preventDefault();
+            }
+            // appState.noHandlingKeys = false;
+            _appWrapper.helpers.modalHelper.modalNotBusy();
+            // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
+            _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+            return _appWrapper.__cancelModalAction();
+        };
+        _appWrapper.helpers.modalHelper.openCurrentModal();
+    }
+
+    async saveDebugConfig (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        var form = e.target;
+        let newConfig = {};
+        _.each(form, (input) => {
+            if (input.getAttribute('type') == 'checkbox'){
+                let path = input.getAttribute('data-path');
+                let name = input.getAttribute('name');
+                var currentConfig = newConfig;
+                var appConfig = _.cloneDeep(appState.config);
+                var dataPath = path;
+                if (dataPath && dataPath.split){
+                    var pathChunks = _.drop(dataPath.split('.'), 1);
+                    var chunkCount = pathChunks.length - 1;
+                    _.each(pathChunks, function(pathChunk, i){
+                        if (i == chunkCount){
+                            currentConfig[pathChunk] = input.checked;
+                        } else {
+                            if (_.isUndefined(currentConfig[pathChunk])){
+                                currentConfig[pathChunk] = {};
+                            }
+                        }
+                        currentConfig = currentConfig[pathChunk];
+                        appConfig = appConfig[pathChunk];
+                    });
+                }
+            }
+        });
+        var oldConfig = _.cloneDeep(appState.config);
+        var difference = appUtil.difference(oldConfig, newConfig);
+
+        console.log(newConfig.forceDebug);
+        console.log(difference);
+
+        if (difference && _.isObject(difference) && _.keys(difference).length){
+            var finalConfig = appUtil.mergeDeep({}, appState.config, difference);
+            appState.config = _.cloneDeep(finalConfig);
+            _appWrapper.appConfig.saveUserConfig();
+            _appWrapper.helpers.modalHelper.closeCurrentModal();
+        } else {
+            _appWrapper.helpers.modalHelper.closeCurrentModal();
+        }
+    }
 }
 
 exports.DebugHelper = DebugHelper;

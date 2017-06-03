@@ -29,6 +29,10 @@
     border-radius: 5px;
     transform: translate(-50%, -50%);
     z-index: 11;
+    max-height: 75vh;
+    max-width: 90vw;
+    min-height: 30vh;
+    min-width: 50vw;
 }
 
 .modal-dialog h2 {
@@ -84,7 +88,8 @@
 }
 
 .modal-dialog .modal-dialog-content {
-
+    overflow: auto;
+    max-height: calc(75vh - 40px);
 }
 
 .modal-dialog-busy-wrapper {

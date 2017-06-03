@@ -1,6 +1,7 @@
 exports.appState = {
     platformData: {},
     appData: {},
+    userData: {},
     config: {},
     windowState: {
         title: '',
@@ -223,6 +224,30 @@ exports.appState = {
         messages: [],
         autoCloseTime: 0,
         modalClassName: 'config-editor-modal',
+        showConfirmButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        confirmDisabled: false,
+        cancelDisabled: false,
+        confirmSelected: true,
+        cancelSelected: false,
+        modalAction: null,
+        animating: false,
+        animateSize: false
+    },
+
+    debugConfigEditorModal: {
+        title: '',
+        body: '',
+        name: 'debug-config-modal',
+        bodyComponent: 'debug-config-editor',
+        defaultBodyComponent: 'debug-config-editor',
+        busyText: 'Please wait...',
+        busy: true,
+        messages: [],
+        autoCloseTime: 0,
+        modalClassName: 'debug-config-editor-modal',
         showConfirmButton: true,
         showCancelButton: true,
         confirmButtonText: 'confirm',

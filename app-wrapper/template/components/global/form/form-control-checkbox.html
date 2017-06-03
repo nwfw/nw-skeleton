@@ -3,6 +3,6 @@
 	<label class="checkbox-label" v-bind:title="control.path">
 		{{ control.name }}
 	</label>
-	<input v-if="control.value" type="checkbox" v-bind:value="control.value" v-bind:name="control.name" checked="checked" v-bind:path="control.path" />
+	<input v-if="control.value" type="checkbox" v-bind:value="control.value" v-bind:name="control.name" checked="checked" v-bind:data-path="control.path" />
 	<input v-else type="checkbox" v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
 </div>
