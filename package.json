@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "nwjs.io skeleton app",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:jazziebgd/nw-skeleton.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
