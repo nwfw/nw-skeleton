@@ -4,6 +4,7 @@ var path = require('path');
 
 var App;
 var appUtil = require('./appUtil').appUtil;
+let BaseClass = require('./base').BaseClass;
 
 var AppTemplates = require('./appTemplates').AppTemplates;
 var AppTranslations = require('./appTranslations').AppTranslations;
@@ -13,12 +14,17 @@ var FileManager = require('./fileManager').FileManager;
 
 var AppConfig = require('./appConfig').AppConfig;
 
-class AppWrapper {
+// var _appWrapper;
+// var appUtil;
+// var appState;
+
+class AppWrapper extends BaseClass {
 
     constructor (initialAppConfig) {
 
-        this.forceDebug = false;
-        this.forceUserMessages = false;
+        super();
+
+        this.needsConfig = false;
 
         this.app = null;
 
@@ -76,6 +82,7 @@ class AppWrapper {
 
     async initialize(){
 
+
         let isDebugWindow = false;
         if (this.initialAppConfig.isDebugWindow){
             isDebugWindow = true;
@@ -83,7 +90,12 @@ class AppWrapper {
         }
 
         this.appConfig = new AppConfig(this.initialAppConfig);
+        await this.appConfig.initialize();
         // appState is available from here;
+
+
+        await super.initialize();
+
 
         if (isDebugWindow){
             appState.isDebugWindow = true;
@@ -96,37 +108,32 @@ class AppWrapper {
 
         appState.config = await this.appConfig.initializeConfig();
 
-        this.forceDebug = appUtil.getConfig('forceDebug.appWrapper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.appWrapper');
-
-        appUtil.forceDebug = appUtil.getConfig('forceDebug.appUtil');
-        appUtil.forceUserMessages = appUtil.getConfig('forceUserMessages.appUtil');
-
         appState.platformData = appUtil.getPlatformData();
 
-        var tmpDataDir = appUtil.getConfig('appConfig.tmpDataDir');
+        var tmpDataDir = this.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
             tmpDataDir = path.resolve(tmpDataDir);
             this.fileManager.createDirRecursive(tmpDataDir);
         }
 
-        if (appUtil.getConfig('debugToFile') && !appUtil.getConfig('debugToFileAppend')){
-            this.fileManager.createDirFileRecursive(appUtil.getConfig('debugMessagesFilename'));
+        if (this.getConfig('debugToFile') && !this.getConfig('debugToFileAppend')){
+            this.fileManager.createDirFileRecursive(this.getConfig('debugMessagesFilename'));
         }
-        if (appUtil.getConfig('userMessagesToFile') && !appUtil.getConfig('userMessagesToFileAppend')){
-            this.fileManager.createDirFileRecursive(appUtil.getConfig('userMessagesFilename'));
+        if (this.getConfig('userMessagesToFile') && !this.getConfig('userMessagesToFileAppend')){
+            this.fileManager.createDirFileRecursive(this.getConfig('userMessagesFilename'));
         }
 
         appState.config = await this.appConfig.loadUserConfig();
 
         this.windowManager = new WindowManager();
+        await this.windowManager.initialize();
         this.windowManager.initializeAppMenu();
 
         this.setDynamicAppStateValues();
 
-        this.helpers = await this.initializeHelpers(appUtil.getConfig('wrapper.systemHelperDirectories'));
+        this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
 
-        App = require(path.join(process.cwd(), appState.config.wrapper.appFile)).App;
+        App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
 
 
         await this.helpers.staticFilesHelper.initializeThemes();
@@ -134,13 +141,14 @@ class AppWrapper {
         await this.helpers.staticFilesHelper.loadJsFiles();
 
         this.appTemplates = new AppTemplates();
+        await this.appTemplates.initialize();
         this.templateContents = await this.appTemplates.initializeTemplates();
 
-        this.helpers = _.merge(this.helpers, await this.initializeHelpers(appUtil.getConfig('wrapper.helperDirectories')));
+        this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
 
-        appState.userData = await this.loadUserData();
+        appState.userData = await this.getHelper('userData').loadUserData();
 
-        var globalKeyHandlers = appUtil.getConfig('appConfig.globalKeyHandlers');
+        var globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
         if (globalKeyHandlers && globalKeyHandlers.length){
             for(let j=0; j<globalKeyHandlers.length; j++){
                 this.getHelper('keyboard').registerGlobalShortcut(globalKeyHandlers[j]);
@@ -155,25 +163,24 @@ class AppWrapper {
 
         this.app = new App();
 
-        if (appUtil.getConfig('devTools')){
+        if (this.getConfig('devTools')){
             this.windowManager.winState.devTools = true;
         }
 
-        this.addBoundMethods();
         this.addEventListeners();
 
         await this.app.initialize();
 
         window.feApp = await this.initializeFeApp();
-        if (appUtil.getConfig('appConfig.showInitializationStatus')){
-            let showInitializationProgress = appUtil.getConfig('appConfig.showInitializationProgress');
+        if (this.getConfig('appConfig.showInitializationStatus')){
+            let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
             this.operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
         }
 
 
         // await this.finalize();
-        if (appUtil.getConfig('appConfig.showInitializationStatus')){
-            if (appUtil.getConfig('appConfig.showInitializationProgress')){
+        if (this.getConfig('appConfig.showInitializationStatus')){
+            if (this.getConfig('appConfig.showInitializationProgress')){
                 this.operationUpdate(100, 100);
             }
             this.operationFinish(this.appTranslations.translate('Application initialized'));
@@ -211,7 +218,7 @@ class AppWrapper {
 
     }
 
-    addBoundMethods () {
+    _addBoundMethods () {
         if (this.boundMethods){
             var keys = _.keys(this.boundMethods);
             for (let i=0; i<keys.length; i++){
@@ -232,6 +239,7 @@ class AppWrapper {
 
     async initializeLanguage () {
         this.appTranslations = new AppTranslations();
+        await this.appTranslations.initialize();
         return await this.appTranslations.initializeLanguage();
     }
 
@@ -252,12 +260,13 @@ class AppWrapper {
     async loadHelpers (helperDirs) {
         var helpers = {};
 
+
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
-            appUtil.log('No wrapper helper dirs defined', 'warning', [], false, this.forceDebug);
-            appUtil.log('You should define this in ./config/config.js file under \'appConfig.templateDirectories.helperDirectories\' variable', 'debug', [], false, this.forceDebug);
+            this.log('No wrapper helper dirs defined', 'warning', [], false);
+            this.log('You should define this in ./config/config.js file under \'appConfig.templateDirectories.helperDirectories\' variable', 'debug', [], false);
             helperDirs = [];
         } else {
-            appUtil.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length], false, this.forceDebug);
+            this.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length], false);
             var currentHelpers;
             for (let i=0; i<helperDirs.length; i++){
                 var helperDir = path.resolve(helperDirs[i]);
@@ -266,7 +275,7 @@ class AppWrapper {
                     helpers = _.merge(helpers, currentHelpers);
                 }
             }
-            appUtil.log('Loading wrapper helpers from {1} directories.', 'groupend', [helperDirs.length], false, this.forceDebug);
+            this.log('Loading wrapper helpers from {1} directories.', 'groupend', [helperDirs.length], false);
         }
 
         return helpers;
@@ -275,7 +284,7 @@ class AppWrapper {
     async initializeFeApp(){
         var appState = appUtil.getAppState();
 
-        appUtil.log('Initializing Vue app...', 'debug', [], false, this.forceDebug);
+        this.log('Initializing Vue app...', 'debug', [], false);
 
         let vm = new Vue({
             el: '.nw-app-wrapper',
@@ -290,11 +299,11 @@ class AppWrapper {
             }
         });
         if (appState.isDebugWindow){
-            appUtil.addUserMessage('Debug window application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
+            this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
         } else {
-            appUtil.addUserMessage('Application initialized', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
+            this.addUserMessage('Application initialized', 'info', [], false,  false);
             if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                appUtil.addUserMessage('Active config file: \'{1}\'', 'info', [appState.activeConfigFile], false, false, this.forceUserMessages, this.forceDebug);
+                this.addUserMessage('Active config file: \'{1}\'', 'info', [appState.activeConfigFile], false, false);
             }
         }
 
@@ -339,10 +348,10 @@ class AppWrapper {
             if (eventHandlerName){
                 return await this.callObjMethod(eventHandlerName, [e, target]);
             } else {
-                appUtil.log('Element {1} doesn\'t have attribute \'{2}\'', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false, this.forceDebug);
+                this.log('Element {1} doesn\'t have attribute \'{2}\'', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false);
             }
         } else {
-            appUtil.log('Can\'t find event target \'{1}\'', 'warning', [e], false, this.forceDebug);
+            this.log('Can\'t find event target \'{1}\'', 'warning', [e], false);
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault();
             }
@@ -351,7 +360,7 @@ class AppWrapper {
 
     async onWindowClose () {
         this.helpers.modalHelper.closeCurrentModal(true);
-        await this.shutdownApp();
+        await this.cleanup();
         if (!appState.isDebugWindow){
             appState.appError = false;
             this.windowManager.closeWindowForce();
@@ -360,20 +369,21 @@ class AppWrapper {
 
     async cleanup(){
         var returnPromise;
-        appUtil.addUserMessage('Performing pre-close cleanup...', 'info', [], false, false, this.forceUserMessages, this.forceDebug);
+        this.addUserMessage('Performing pre-close cleanup...', 'info', [], false, false);
         var resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
         setTimeout(async () => {
             await this.shutdownApp();
-            await appUtil.finalizeLogs();
+            await this.finalizeLogs();
             resolveReference(true);
         }, 200);
         return returnPromise;
     }
 
     async shutdownApp () {
+        this.addUserMessage('Shutting down...', 'info', [], true, true, true, true);
         await this.windowManager.removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
@@ -390,6 +400,7 @@ class AppWrapper {
         this.clearIntervals();
         await this.fileManager.unwatchAllFiles();
         await this.fileManager.unwatchAll();
+        this.addUserMessage('Shutdown complete.', 'info', [], true, true, true, true);
         return true;
     }
 
@@ -407,7 +418,7 @@ class AppWrapper {
             this.helpers.modalHelper.closeCurrentModal(true);
         }
         if (!appState.isDebugWindow){
-            await this.shutdownApp();
+            await this.cleanup();
         }
         this.windowManager.reloadWindow(null, true);
     }
@@ -417,7 +428,7 @@ class AppWrapper {
     }
 
     async onDebugWindowClose (){
-        appUtil.log('Closing standalone debug window', 'info', [], false, this.forceDebug);
+        this.log('Closing standalone debug window', 'info', [], false);
         if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
             this.mainWindow.appState.debugMessages = _.cloneDeep(appState.debugMessages);
             this.mainWindow.appState.allDebugMessages = _.cloneDeep(appState.allDebugMessages);
@@ -425,7 +436,7 @@ class AppWrapper {
             this.mainWindow.appWrapper.debugWindow = null;
         }
         this.windowManager.closeWindowForce();
-        appUtil.addUserMessage('Debug window closed', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
+        this.addUserMessage('Debug window closed', 'info', [], false,  false);
     }
 
     setAppStatus (appBusy, appStatus){
@@ -636,14 +647,14 @@ class AppWrapper {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.appConfig.setConfigVar('userMessagesToolbarVisible', !appState.config.userMessagesToolbarVisible);
+        this.appConfig.setConfigVar('userMessagesToolbarVisible', !this.getConfig('userMessagesToolbarVisible'));
     }
 
     toggleUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.appConfig.setConfigVar('userMessagesExpanded', !appState.config.userMessagesExpanded);
+        this.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
         setTimeout(() => {
             var ul = document.querySelector('.user-message-list');
             ul.scrollTop = ul.scrollHeight;
@@ -659,15 +670,15 @@ class AppWrapper {
     }
 
     setDynamicAppStateValues () {
-        appState.languageData.currentLanguage = appUtil.getConfig('currentLanguage');
-        appState.languageData.currentLocale = appUtil.getConfig('currentLocale');
-        appState.hideDebug = appUtil.getConfig('hideDebug');
-        appState.debug = appUtil.getConfig('debug');
-        appState.debugLevel = appUtil.getConfig('debugLevel');
-        appState.debugLevels = appUtil.getConfig('debugLevels');
-        appState.userMessageLevel = appUtil.getConfig('userMessageLevel');
-        appState.maxUserMessages = appUtil.getConfig('maxUserMessages');
-        appState.autoAddLabels = appUtil.getConfig('autoAddLabels');
+        appState.languageData.currentLanguage = this.getConfig('currentLanguage');
+        appState.languageData.currentLocale = this.getConfig('currentLocale');
+        appState.hideDebug = this.getConfig('hideDebug');
+        appState.debug = this.getConfig('debug');
+        appState.debugLevel = this.getConfig('debugLevel');
+        appState.debugLevels = this.getConfig('debugLevels');
+        appState.userMessageLevel = this.getConfig('userMessageLevel');
+        appState.maxUserMessages = this.getConfig('maxUserMessages');
+        appState.autoAddLabels = this.getConfig('autoAddLabels');
         appState.closeModalResolve = null;
     }
 
@@ -722,7 +733,7 @@ class AppWrapper {
         if (object && method && _.isFunction(method)){
             return method.call(object);
         } else {
-            appUtil.log('Can\t call menu click handler \'{1}\' for menuIndex \'{2}\'!', 'error', [methodIdentifier, menuIndex], false, this.forceDebug);
+            this.log('Can\t call menu click handler \'{1}\' for menuIndex \'{2}\'!', 'error', [methodIdentifier, menuIndex], false);
             return false;
         }
     }
@@ -771,7 +782,7 @@ class AppWrapper {
                     };
                 }
             } else {
-                appUtil.log('Can\'t find object method \'{1}\'', 'warning', [methodString], false, this.forceDebug);
+                this.log('Can\'t find object method \'{1}\'', 'warning', [methodString], false);
             }
         }
         return objMethod;
@@ -786,42 +797,27 @@ class AppWrapper {
         }
     }
 
-    getUserDataStorageName(){
-        let userDataName = appUtil.getConfig('appInfo.name') + '_userData';
-        userDataName = userDataName.replace(/[^A-Za-z0-9]+/g, '_');
-        return userDataName;
-    }
-
-    async saveUserData (userData) {
-        if (!userData){
-            userData = appState.userData;
-        }
-        appUtil.log('Saving user data', 'info', [], false, this.forceDebug);
-        let userDataName = this.getUserDataStorageName();
-        let saved = await this.getHelper('storage').set(userDataName, userData);
-        if (!saved){
-            appUtil.addUserMessage('Could not save user data!', 'error', [], false,  false, this.forceUserMessages, this.forceDebug);
-        } else {
-            appUtil.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false, this.forceUserMessages, this.forceDebug);
-        }
-        return saved;
-    }
-
-    async loadUserData () {
-        appUtil.log('Loading user data', 'info', [], false, this.forceDebug);
-        let userDataName = this.getUserDataStorageName();
-        var userData = await this.getHelper('storage').get(userDataName);
-        if (userData){
-            appUtil.addUserMessage('Loaded {1} user data variables.', 'info', [_.keys(userData).length], false,  false, this.forceUserMessages, this.forceDebug);
-        } else {
-            appUtil.addUserMessage('Could not load user data.', 'warning', [], false,  false, this.forceUserMessages, this.forceDebug);
-            userData = {};
-        }
-        return userData;
-    }
-
     exitApp(){
         this.windowManager.closeWindow();
+    }
+
+    async finalizeLogs(){
+
+        if (this.getConfig('debugToFile')){
+            this.log('Finalizing debug message log...', 'info', [], true);
+            var debugLogContents = '[\n' + await this.fileManager.readFileSync(path.resolve(this.getConfig('debugMessagesFilename'))) + '\n]';
+            await this.fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), debugLogContents, {flag: 'w'});
+            this.log('Finalized debug message log.', 'info', [], true);
+        }
+
+        if (this.getConfig('userMessagesToFile')){
+            this.log('Finalizing user message log...', 'info', [], true);
+            var messageLogContents = '[\n' + await this.fileManager.readFileSync(path.resolve(this.getConfig('userMessagesFilename'))) + '\n]';
+            await this.fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLogContents, {flag: 'w'});
+            this.log('Finalized user message log...', 'info', [], true);
+        }
+
+        return true;
     }
 
 }

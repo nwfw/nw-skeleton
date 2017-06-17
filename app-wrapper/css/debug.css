@@ -16,14 +16,15 @@
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
-	background: var(--app-debug-debug-window-header-background);
-	color: var(--app-debug-debug-window-header-color);
+	color: var(--app-debug-header-text-color);
+    background-color: var(--app-debug-header-background-color);
+    background: var(--app-debug-header-background);
 	position: fixed;
 	width: 100%;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header h2 {
-	color: var(--app-debug-debug-window-header-color);
+	color: var(--app-debug-header-text-color);
 	margin: 0;
 	padding: 5px;
 	font-size: 0.8rem;

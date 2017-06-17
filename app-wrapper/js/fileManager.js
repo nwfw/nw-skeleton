@@ -1,22 +1,32 @@
-var eventEmitter = require('events');
-var path = require('path');
-var fs = require('fs');
-var archiver = require('archiver');
+const _ = require('lodash');
+const path = require('path');
+const fs = require('fs');
+const archiver = require('archiver');
 
-var _ = require('lodash');
+const BaseClass = require('./base').BaseClass;
 
-var appUtil = require('./appUtil').appUtil;
+// let _appWrapper;
+// let appUtil;
+// let appState;
 
-class FileManager extends eventEmitter {
+class FileManager extends BaseClass {
 
     constructor(){
         super();
+
+        // if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
+        //     _appWrapper = window.getAppWrapper();
+        //     appUtil = _appWrapper.getAppUtil();
+        //     appState = appUtil.getAppState();
+        // }
     }
 
     async initialize () {
+        await super.initialize();
+
         this.watchedFiles = [];
         this.watched = {};
-        return true;
+        return this;
     }
 
     async shutdown () {
@@ -78,7 +88,7 @@ class FileManager extends eventEmitter {
                 try {
                     fileHandle = fs.openSync(filePath, 'a', 0x775);
                 } catch (e) {
-                    appUtil.log('Can\'t open file \'{1}\' for testing permissions - {2} ', 'error', [filePath, e], false, this.forceDebug);
+                    this.log('Can\'t open file "{1}" for testing permissions - {2} ', 'error', [filePath, e], false);
                 }
                 if (!fileHandle){
                     dirValid = false;
@@ -87,7 +97,7 @@ class FileManager extends eventEmitter {
                     try {
                         fs.unlinkSync(filePath);
                     } catch (e){
-                        appUtil.log('Can\'t delete temporary file \'{1}\' - {2} ', 'error', [filePath, e], false, this.forceDebug);
+                        this.log('Can\'t delete temporary file "{1}" - {2} ', 'error', [filePath, e], false);
                     }
                 }
             }
@@ -110,7 +120,7 @@ class FileManager extends eventEmitter {
                     fileHandle = fs.openSync(filePath, 'a', 0x775);
                 } catch (e) {
                     fileValid = false;
-                    appUtil.log('Can\'t open file \'{1}\' for testing permissions - {2} ', 'error', [filePath, e], false, this.forceDebug);
+                    this.log('Can\'t open file "{1}" for testing permissions - {2} ', 'error', [filePath, e], false);
                 }
                 if (!fileHandle){
                     fileValid = false;
@@ -128,7 +138,7 @@ class FileManager extends eventEmitter {
                             fileHandle = fs.openSync(filePath, 'a', 0x775);
                         } catch (e) {
                             fileValid = false;
-                            appUtil.log('Can\'t open file \'{1}\' in dir {2} for testing permissions - {3} ', 'error', [path.basename(filePath), dirPath, e], false, this.forceDebug);
+                            this.log('Can\'t open file "{1}" in dir {2} for testing permissions - {3} ', 'error', [path.basename(filePath), dirPath, e], false);
                         }
                         if (!fileHandle){
                             fileValid = false;
@@ -137,7 +147,7 @@ class FileManager extends eventEmitter {
                             try {
                                 fs.unlinkSync(filePath);
                             } catch (e){
-                                appUtil.log('Can\'t delete temporary file \'{1}\' - {2} ', 'error', [filePath, e], false, this.forceDebug);
+                                this.log('Can\'t delete temporary file "{1}" - {2} ', 'error', [filePath, e], false);
                             }
                         }
                     }
@@ -176,7 +186,7 @@ class FileManager extends eventEmitter {
 
         archive.on('error', function(err) {
             resolveReference(false);
-            appUtil.log('Error zipping data: \'{1}\'', 'error', [err], true, false, this.forceDebug);
+            this.log('Error zipping data: "{1}"', 'error', [err], true, false);
         });
 
         archive.pipe(output);
@@ -198,7 +208,7 @@ class FileManager extends eventEmitter {
         var dirPath = '';
         if (fs.existsSync(dirName)){
             if (await this.isFile(dirName)){
-                appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirName], true, false, this.forceDebug);
+                this.log('Can\'t create directory "{1}", already exists and it is a file.', 'error', [dirName], true, false);
                 return false;
             }
         } else {
@@ -208,7 +218,7 @@ class FileManager extends eventEmitter {
                 if (!fs.existsSync(dirPath)){
                     fs.mkdirSync(dirPath, mode);
                 } else if (await this.isFile(dirPath)){
-                    appUtil.log('Can\'t create directory \'{1}\', already exists and it is a file.', 'error', [dirPath], true, false, this.forceDebug);
+                    this.log('Can\'t create directory "{1}", already exists and it is a file.', 'error', [dirPath], true, false);
                     return false;
                 }
             }
@@ -237,7 +247,7 @@ class FileManager extends eventEmitter {
                 fs.writeFileSync(filePath, data, options);
                 return await this.isFile(filePath);
             } catch (ex) {
-                appUtil.log('Can\'t create file \'{1}\' - \'{2}\'.', 'error', [filePath, ex && ex.message ? ex.message : ex], true, false, this.forceDebug);
+                this.log('Can\'t create file "{1}" - "{2}".', 'error', [filePath, ex && ex.message ? ex.message : ex], true, false);
                 return false;
             }
         }
@@ -252,6 +262,17 @@ class FileManager extends eventEmitter {
         }
         return saved;
     }
+
+    async readFileSync(file, options){
+        var data = null;
+        try {
+            data = fs.readFileSync(file, options);
+        } catch (ex) {
+            console.log(ex);
+        }
+        return data;
+    }
+
 
     async watchFile(filePath, options, listener){
         this.watchedFiles.push(filePath);

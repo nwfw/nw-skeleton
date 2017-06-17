@@ -17,9 +17,6 @@ class UtilHelper extends BaseClass {
         _.noop(appState);
         _.noop(appUtil);
 
-        this.forceDebug = appUtil.getConfig('forceDebug.utilHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.utilHelper');
-
         return this;
     }
 

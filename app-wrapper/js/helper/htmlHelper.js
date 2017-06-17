@@ -18,9 +18,6 @@ class HtmlHelper extends eventEmitter {
         this.tweens = {};
         this.tweenIntervals = {};
 
-        this.forceDebug = appUtil.getConfig('forceDebug.htmlHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.htmlHelper');
-
         this.operationStart = null;
         this.lastTimeCalculation = null;
         this.lastTimeValue = 0;
@@ -330,7 +327,7 @@ class HtmlHelper extends eventEmitter {
 
     updateProgress (completed, total, operationText) {
         if (!appState.progressData.inProgress){
-            appUtil.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false, this.forceDebug);
+            this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false);
             return;
         }
         if (!this.operationStart){

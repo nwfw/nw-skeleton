@@ -17,9 +17,6 @@ class ComponentHelper extends BaseClass {
         appUtil = this.getAppUtil();
         // appState = this.getAppState();
 
-        this.forceDebug = appUtil.getConfig('forceDebug.componentHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.componentHelper');
-
         this.allComponents = {};
         this.vueComponents = {};
         this.vueAppComponents = {};
@@ -55,19 +52,19 @@ class ComponentHelper extends BaseClass {
         var vueMixins = [];
         var appVueMixins = [];
 
-        var mixinsDir = appUtil.getConfig('wrapper.mixinRoot');
+        var mixinsDir = this.getConfig('wrapper.mixinRoot');
         if (mixinsDir){
             mixinsDir = path.resolve(mixinsDir);
-            var mixinRegex = appUtil.getConfig('wrapper.mixinExtensionRegex');
+            var mixinRegex = this.getConfig('wrapper.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
                 vueMixins = await this.initMixins(await appUtil.loadFilesFromDir(mixinsDir, mixinRegex, true));
             }
         }
 
-        var appMixinsDir = appUtil.getConfig('appConfig.mixinRoot');
+        var appMixinsDir = this.getConfig('appConfig.mixinRoot');
         if (appMixinsDir){
             appMixinsDir = path.resolve(appMixinsDir);
-            var appMixinRegex = appUtil.getConfig('appConfig.mixinExtensionRegex');
+            var appMixinRegex = this.getConfig('appConfig.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
                 appVueMixins = await this.initMixins(await appUtil.loadFilesFromDir(appMixinsDir, appMixinRegex, true));
             }
@@ -90,19 +87,19 @@ class ComponentHelper extends BaseClass {
         var vueFilters = [];
         var appVueFilters = [];
 
-        var filtersDir = appUtil.getConfig('wrapper.filterRoot');
+        var filtersDir = this.getConfig('wrapper.filterRoot');
         if (filtersDir){
             filtersDir = path.resolve(filtersDir);
-            var filterRegex = appUtil.getConfig('wrapper.filterExtensionRegex');
+            var filterRegex = this.getConfig('wrapper.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
                 vueFilters = await appUtil.loadFilesFromDir(filtersDir, filterRegex, true);
             }
         }
 
-        var appFiltersDir = appUtil.getConfig('appConfig.filterRoot');
+        var appFiltersDir = this.getConfig('appConfig.filterRoot');
         if (appFiltersDir){
             appFiltersDir = path.resolve(appFiltersDir);
-            var appFilterRegex = appUtil.getConfig('appConfig.filterExtensionRegex');
+            var appFilterRegex = this.getConfig('appConfig.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
                 appVueFilters = await appUtil.loadFilesFromDir(appFiltersDir, appFilterRegex, true);
             }
@@ -114,42 +111,49 @@ class ComponentHelper extends BaseClass {
 
     async loadDirComponents(componentDirs){
         var components = {};
-        var componentCodeRegex = appUtil.getConfig('wrapper.componentCodeRegex');
+        var componentCodeRegex = this.getConfig('wrapper.componentCodeRegex');
         for(let i=0; i<componentDirs.length;i++){
             if (fs.existsSync(componentDirs[i])){
-                appUtil.log('Loading components from directory \'{1}\'.', 'debug', [componentDirs[i]], false, this.forceDebug);
+                this.log('Loading components from directory "{1}".', 'debug', [componentDirs[i]], false);
                 var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], componentCodeRegex, true);
                 if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
                     components = _.merge(components, newComponents);
                 }
             } else {
-                appUtil.log('Component directory \'{1}\' does not exist.', 'warning', [componentDirs[i]], false, this.forceDebug);
+                this.log('Component directory "{1}" does not exist.', 'warning', [componentDirs[i]], false);
             }
         }
         return components;
     }
 
     async initComponents (){
+        let totalComponents = 0;
+        this.addUserMessage('Component initialization starting...', 'debug', [], false, false);
+
         await this.loadComponents();
 
-        var componentMapping = appUtil.getConfig('wrapper.componentMapping');
-        var appComponentMapping = appUtil.getConfig('appConfig.appComponentMapping');
+        var componentMapping = this.getConfig('wrapper.componentMapping');
+        var appComponentMapping = this.getConfig('appConfig.appComponentMapping');
 
-        appUtil.log('Preparing wrapper components...', 'group', [], false, this.forceDebug);
+        this.log('Preparing wrapper components...', 'group', [], false);
         this.vueComponents = await this.prepareComponents(this.vueComponents, this.allComponents, componentMapping);
-        appUtil.log('Preparing wrapper components...', 'groupend', [], false, this.forceDebug);
+        totalComponents += _.keys(this.vueComponents).length;
+        this.log('Preparing wrapper components...', 'groupend', [], false);
 
-        appUtil.log('Preparing app components...', 'group', [], false, this.forceDebug);
+        this.log('Preparing app components...', 'group', [], false);
         this.vueAppComponents = await this.prepareComponents(this.vueAppComponents, this.allComponents, appComponentMapping);
-        appUtil.log('Preparing app components...', 'groupend', [], false, this.forceDebug);
+        totalComponents += _.keys(this.vueAppComponents).length;
+        this.log('Preparing app components...', 'groupend', [], false);
 
-        appUtil.log('Preparing modal components...', 'group', [], false, this.forceDebug);
+        this.log('Preparing modal components...', 'group', [], false);
         this.vueModalComponents = await this.prepareComponents(this.vueModalComponents, this.allComponents, {});
-        appUtil.log('Preparing modal components...', 'groupend', [], false, this.forceDebug);
+        totalComponents += _.keys(this.vueModalComponents).length;
+        this.log('Preparing modal components...', 'groupend', [], false);
 
-        appUtil.log('Preparing global components...', 'group', [], false, this.forceDebug);
+        this.log('Preparing global components...', 'group', [], false);
         this.vueGlobalComponents = await this.prepareComponents(this.vueGlobalComponents, this.allComponents, {});
-        appUtil.log('Preparing global components...', 'groupend', [], false, this.forceDebug);
+        totalComponents += _.keys(this.vueGlobalComponents).length;
+        this.log('Preparing global components...', 'groupend', [], false);
 
         this.vueComponents = _.merge(this.vueComponents, this.vueAppComponents);
 
@@ -160,27 +164,29 @@ class ComponentHelper extends BaseClass {
         for(let globalComponentName in this.vueGlobalComponents){
             Vue.component(globalComponentName, this.vueGlobalComponents[globalComponentName]);
         }
+
+        this.addUserMessage('Component initialization finished. {1} components initialized.', 'debug', [totalComponents], false, false);
     }
 
     async loadComponents (){
-        appUtil.log('Loading components...', 'group', [], false, this.forceDebug);
+        this.log('Loading components...', 'group', [], false);
 
-        var globalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.globalComponent'));
-        globalComponents = _.merge(globalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.globalComponent')));
+        var globalComponents = await this.loadDirComponents(this.getConfig('wrapper.componentDirectories.globalComponent'));
+        globalComponents = _.merge(globalComponents, await this.loadDirComponents(this.getConfig('appConfig.componentDirectories.globalComponent')));
 
-        var components = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.component'));
+        var components = await this.loadDirComponents(this.getConfig('wrapper.componentDirectories.component'));
 
-        var modalComponents = await this.loadDirComponents(appUtil.getConfig('wrapper.componentDirectories.modalComponent'));
-        modalComponents = _.merge(modalComponents, await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.modalComponent')));
+        var modalComponents = await this.loadDirComponents(this.getConfig('wrapper.componentDirectories.modalComponent'));
+        modalComponents = _.merge(modalComponents, await this.loadDirComponents(this.getConfig('appConfig.componentDirectories.modalComponent')));
 
-        var appComponents = await this.loadDirComponents(appUtil.getConfig('appConfig.componentDirectories.component'));
+        var appComponents = await this.loadDirComponents(this.getConfig('appConfig.componentDirectories.component'));
 
 
         this.allComponents = _.merge(components, globalComponents, modalComponents, appComponents);
 
-        appUtil.log('Loading components...', 'groupend', [], false, this.forceDebug);
+        this.log('Loading components...', 'groupend', [], false);
 
-        appUtil.log('Initializing components...', 'group', [], false, this.forceDebug);
+        this.log('Initializing components...', 'group', [], false);
 
 
         this.vueGlobalComponents = await this.initComponentGroup(globalComponents);
@@ -188,7 +194,7 @@ class ComponentHelper extends BaseClass {
         this.vueComponents = await this.initComponentGroup(components);
         this.vueAppComponents = await this.initComponentGroup(appComponents);
 
-        appUtil.log('Initializing components...', 'groupend', [], false, this.forceDebug);
+        this.log('Initializing components...', 'groupend', [], false);
     }
 
     async initComponentGroup (componentData){
@@ -202,12 +208,11 @@ class ComponentHelper extends BaseClass {
             components[componentName] = await this.initVueComponent(componentName, componentData[componentName], subComponents);
 
         }
-        appUtil.addUserMessage('Component initialization finished. {1} vue root components initialized.', 'debug', [_.keys(components).length], false, false, this.forceUserMessages, true);
         return components;
     }
 
     async initVueComponent(componentName, componentData, additionalSubComponents){
-        appUtil.log('* Initializing component \'{1}\'...', 'debug', [componentName], false, this.forceDebug);
+        this.log('* Initializing component "{1}"...', 'debug', [componentName], false);
         var component = componentData;
 
         if (component.mixins){
@@ -226,21 +231,21 @@ class ComponentHelper extends BaseClass {
             component.components = _.merge(component.components, additionalSubComponents);
         }
 
-        var initializedMessage = '* Componenent \'{1}\' initialized';
+        var initializedMessage = '* Componenent "{1}" initialized';
         var initializedMessageData = [componentName];
         var subComponentNames = component.components ? _.keys(component.components) : [];
         var subComponentCount = component.components && subComponentNames.length ? subComponentNames.length : 0;
         if (subComponentCount){
             initializedMessage += ' with {2} sub-components ({3}).';
             initializedMessageData.push(subComponentCount);
-            initializedMessageData.push('\'' + subComponentNames.join('\', \'') + '\'.');
+            initializedMessageData.push('"' + subComponentNames.join('", "') + '".');
         } else {
             initializedMessage += '.';
         }
 
         component.filters = this.vueFilters;
 
-        appUtil.log(initializedMessage, 'debug', initializedMessageData, false, this.forceDebug);
+        this.log(initializedMessage, 'debug', initializedMessageData, false);
         return component;
     }
 
@@ -252,18 +257,18 @@ class ComponentHelper extends BaseClass {
         }
 
         if (!(!_.isUndefined(parentComponent) && parentComponent)){
-            appUtil.log('Error preparing child component \'{1}\' - no parent component!', 'error', [childComponentMapping.name], false, this.forceDebug);
+            this.log('Error preparing child component "{1}" - no parent component!', 'error', [childComponentMapping.name], false);
             return;
         }
 
         var parentComponentName = parentComponent.name;
 
         var childMapping = childComponentsMapping.components;
-        var childNames = '\'' + _.map(childMapping, function(item){
+        var childNames = '"' + _.map(childMapping, function(item){
             return item.name;
-        }).join('\', \'') + '\'';
+        }).join('", "') + '"';
 
-        appUtil.log('Mapping {1} children ({2}) for component \'{3}\'...', 'group', [childMapping.length, childNames, parentComponentName], false, this.forceDebug);
+        this.log('Mapping {1} children ({2}) for component "{3}"...', 'group', [childMapping.length, childNames, parentComponentName], false);
 
         for (var i = 0; i<childComponentsMapping.components.length; i++){
             var childComponentMapping = childComponentsMapping.components[i];
@@ -272,31 +277,38 @@ class ComponentHelper extends BaseClass {
             var childComponent;
 
             if (childComponentMapping.components){
-                appUtil.log('Preparing child component \'{1}\' of \'{2}\' with {3} children...', 'debug', [childComponentName, parentComponentName, childComponentMapping.components.length], false, this.forceDebug);
+                this.log('Preparing child component "{1}" of "{2}" with {3} children...', 'debug', [childComponentName, parentComponentName, childComponentMapping.components.length], false);
                 childComponent = await this.mapComponentChildren(allComponents[childComponentName], allComponents, childComponentMapping);
             } else {
                 childComponent = allComponents[childComponentName];
-                appUtil.log('Preparing child component \'{1}\' of \'{2}\' without children...', 'debug', [childComponentName, parentComponentName], false, this.forceDebug);
+                this.log('Preparing child component "{1}" of "{2}" without children...', 'debug', [childComponentName, parentComponentName], false);
             }
 
             parentComponent.components[childComponentName] = childComponent;
-            appUtil.log('Registered sub-component \'{1}\' for parent \'{2}\'.', 'debug', [childComponentName, parentComponentName], false, self.forceDebug);
+            this.log('Registered sub-component "{1}" for parent "{2}".', 'debug', [childComponentName, parentComponentName], false, self.forceDebug);
         }
 
-        appUtil.log('Mapping {1} children ({2}) for component \'{3}\'...', 'groupend', [childMapping.length, childNames, parentComponentName], false, this.forceDebug);
+        this.log('Mapping {1} children ({2}) for component "{3}"...', 'groupend', [childMapping.length, childNames, parentComponentName], false);
         return parentComponent;
     }
 
     async prepareComponents(components, allComponents, componentMapping){
         if (componentMapping && _.isObject(componentMapping) && _.keys(componentMapping).length){
             for (var parentComponentName in componentMapping){
-                if (componentMapping[parentComponentName].components && componentMapping[parentComponentName].components.length){
-                    appUtil.log('Preparing component \'{1}\' with {2} children...', 'debug', [parentComponentName, componentMapping[parentComponentName].components.length], false, this.forceDebug);
-
-                    components[parentComponentName] = await this.mapComponentChildren(components[parentComponentName], allComponents, componentMapping[parentComponentName]);
-
+                let currentComponentMapping = componentMapping[parentComponentName];
+                if (currentComponentMapping){
+                    if (currentComponentMapping.name){
+                        if (currentComponentMapping.components && currentComponentMapping.components.length){
+                            this.log('Preparing component "{1}" with {2} children...', 'debug', [parentComponentName, currentComponentMapping.components.length], false);
+                            components[parentComponentName] = await this.mapComponentChildren(components[parentComponentName], allComponents, currentComponentMapping);
+                        } else {
+                            this.log('Preparing component "{1}" without children...', 'debug', [parentComponentName], false);
+                        }
+                    } else {
+                        this.log('Component "{1}" nas no "name" property!', 'error', [parentComponentName], false);
+                    }
                 } else {
-                    appUtil.log('Preparing component \'{1}\' without children...', 'debug', [parentComponentName], false, this.forceDebug);
+                    this.log('Preparing component "{1}" without children and config...', 'debug', [parentComponentName], false);
                 }
             }
         }

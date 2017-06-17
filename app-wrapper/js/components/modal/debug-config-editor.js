@@ -11,6 +11,7 @@ exports.component = {
             liveCss: appState.config.liveCss,
             hideDebug: appState.config.hideDebug,
             debug: appState.config.debug,
+            alwaysTrace: appState.config.alwaysTrace,
             devTools: appState.config.devTools,
             debugGroupsCollapsed: appState.config.debugGroupsCollapsed
         };

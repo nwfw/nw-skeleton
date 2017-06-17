@@ -320,7 +320,11 @@ exports.config = {
             forceUserMessages: {
                 editable: false,
                 reload: true
-            }
+            },
+            compileCss: {
+                editable: true,
+                reload: false
+            },
         }
     },
 
@@ -335,6 +339,7 @@ exports.config = {
     theme: 'basic',
     allowThemeChange: true,
 
+    compileCss: false,
     liveCss: false,
 
     hideDebug: false,
@@ -343,6 +348,7 @@ exports.config = {
     debugToFileAppend: false,
     debugMessagesFilename: './app/var/log/debug-messages.log',
     devTools: true,
+    alwaysTrace: false,
     debugLevel: 3,
     debugLevels: {
         'debug': 1,
@@ -368,36 +374,42 @@ exports.config = {
     windowHeight: null,
 
     forceDebug: {
-        appWrapper: false,
-        appUtil: false,
-        appConfig: false,
-        appTemplates: false,
-        appTranslations: false,
-        componentHelper: false,
-        keyboardHelper: false,
-        debugHelper: false,
-        htmlHelper: false,
-        modalHelper: false,
-        storageHelper: false,
-        staticFilesHelper: false,
-        utilHelper: false,
-        windowManager: false
+        AppWrapper: true,
+        AppUtil: false,
+        AppConfig: false,
+        AppTemplates: false,
+        AppTranslations: false,
+        ComponentHelper: false,
+        KeyboardHelper: false,
+        DebugHelper: false,
+        HtmlHelper: false,
+        ModalHelper: false,
+        StorageHelper: false,
+        StaticFilesHelper: false,
+        UserMessageHelper: false,
+        UserDataHelper: false,
+        UtilHelper: false,
+        WindowManager: false,
+        FileManager: false
     },
     forceUserMessages: {
-        appWrapper: false,
-        appUtil: false,
-        appConfig: false,
-        appTemplates: false,
-        appTranslations: false,
-        componentHelper: false,
-        keyboardHelper: false,
-        debugHelper: false,
-        htmlHelper: false,
-        modalHelper: false,
-        storageHelper: false,
-        staticFilesHelper: false,
-        utilHelper: false,
-        windowManager: false
+        AppWrapper: false,
+        AppUtil: false,
+        AppConfig: false,
+        AppTemplates: false,
+        AppTranslations: false,
+        ComponentHelper: false,
+        KeyboardHelper: false,
+        DebugHelper: false,
+        HtmlHelper: false,
+        ModalHelper: false,
+        StorageHelper: false,
+        StaticFilesHelper: false,
+        UserMessageHelper: false,
+        UserDataHelper: false,
+        UtilHelper: false,
+        WindowManager: false,
+        FileManager: false
     }
 
 };

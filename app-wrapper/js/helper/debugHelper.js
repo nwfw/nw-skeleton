@@ -18,9 +18,6 @@ class DebugHelper extends BaseClass {
             appState = appUtil.getAppState();
         }
 
-        this.forceDebug = appUtil.getConfig('forceDebug.debugHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.debugHelper');
-
         this.timeouts = {
             processDebugMessagesTimeout: null
         };
@@ -33,13 +30,13 @@ class DebugHelper extends BaseClass {
     }
 
     openDebugWindow (){
-        appUtil.log('Opening standalone debug window', 'info', [], false, this.forceDebug);
+        this.log('Opening standalone debug window', 'info', [], false);
         appState.hasDebugWindow = true;
-        _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(appUtil.getConfig('debugWindowFile'), {
+        _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debugWindowFile'), {
             id: 'debugWindow',
             frame: false
         });
-        appUtil.addUserMessage('Debug window opened', 'info', [], false,  false, this.forceUserMessages, this.forceDebug);
+        this.addUserMessage('Debug window opened', 'info', [], false,  false);
     }
 
     async prepareDebugWindow () {
@@ -61,11 +58,11 @@ class DebugHelper extends BaseClass {
 
     changeDebugLevel(e){
         var level = e.target.value;
-        appUtil.addUserMessage('Changing debug level to \'{1}\'.', 'info', [level], false, false, this.forceUserMessages, this.forceDebug);
+        this.addUserMessage('Changing debug level to \'{1}\'.', 'info', [level], false, false);
         appState.debugLevel = level;
         _appWrapper.appConfig.setConfigVar('debugLevel', level);
         if (appState.isDebugWindow) {
-            appUtil.addUserMessage('Changing debug level in main window to \'{1}\'.', 'info', [level], false, false, this.forceUserMessages, this.forceDebug);
+            this.addUserMessage('Changing debug level in main window to \'{1}\'.', 'info', [level], false, false);
             _appWrapper.mainWindow.appState.debugLevel = level;
         }
 
@@ -82,7 +79,7 @@ class DebugHelper extends BaseClass {
             appState.allDebugMessages = [];
             appState.debugMessages = [];
         }
-        appUtil.addUserMessage('Debug messages cleared', 'info', [], true,  false, true, this.forceDebug);
+        this.addUserMessage('Debug messages cleared', 'info', [], true,  false, true);
     }
 
     // processDebugMessages (el){
@@ -144,7 +141,7 @@ class DebugHelper extends BaseClass {
 
         var overwriteElements = modalElement.querySelectorAll('input[name=overwrite_file]');
         if (overwriteElements && overwriteElements.length){
-            var overwriteElement = _.find(overwriteElements, function(el){
+            var overwriteElement = _.find(overwriteElements, (el) => {
                 return el.checked;
             });
             fileExists = true;
@@ -164,7 +161,7 @@ class DebugHelper extends BaseClass {
                 messages = appState.allDebugMessages;
             }
 
-            var data = _.map(messages, function mapAllDebugMessages(debugMessage){
+            var data = _.map(messages, (debugMessage) => {
                 return debugMessage.fullTimestamp + ' ' + debugMessage.type.toUpperCase() + ': ' + debugMessage.message;
             }).join('\n');
 
@@ -177,21 +174,21 @@ class DebugHelper extends BaseClass {
                 _appWrapper.helpers.modalHelper.modalNotBusy();
             } catch (e) {
                 saved = false;
-                appUtil.log('Problem saving debug log file \'{1}\' - {2}', 'error', [debugFilePath, e], false, this.forceDebug);
+                this.log('Problem saving debug log file \'{1}\' - {2}', 'error', [debugFilePath, e], false);
                 _appWrapper.helpers.modalHelper.modalNotBusy();
             }
             _appWrapper.helpers.modalHelper.closeCurrentModal();
             if (saved){
                 if (appState.isDebugWindow){
-                    appUtil.log('Debug log saved successfully', 'info', [], false, true);
+                    this.log('Debug log saved successfully', 'info', [], false, true);
                 } else {
-                    appUtil.addUserMessage('Debug log saved successfully', 'info', [], true,  false, true, this.forceDebug);
+                    this.addUserMessage('Debug log saved successfully', 'info', [], true,  false, true);
                 }
             } else {
                 if (appState.isDebugWindow){
-                    appUtil.log('Debug log saving failed', 'error', [], false, true);
+                    this.log('Debug log saving failed', 'error', [], false, true);
                 } else {
-                    appUtil.addUserMessage('Debug log saving failed', 'error', [], false,  false, this.forceUserMessages, this.forceDebug);
+                    this.addUserMessage('Debug log saving failed', 'error', [], false,  false);
                 }
             }
         }
@@ -285,7 +282,7 @@ class DebugHelper extends BaseClass {
         }
         appState.userMessageQueue = [];
         appState.userMessages = [];
-        appUtil.addUserMessage('User messages cleared', 'info', [], false, false, true, this.forceDebug);
+        this.addUserMessage('User messages cleared', 'info', [], false, false, true);
     }
     changeUserMessageLevel (e) {
         var level = e.target.value;
@@ -294,14 +291,14 @@ class DebugHelper extends BaseClass {
         appState.userMessagesData.selectFocused = false;
     }
 
-    openDebugConfigEditor (e) {
+    openDebugConfigEditor () {
         appState.modalData.currentModal = _.cloneDeep(appState.debugConfigEditorModal);
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Debug config editor');
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
         appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
         _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveDebugConfig.bind(this);
-        _appWrapper._cancelModalAction = function(evt){
+        _appWrapper._cancelModalAction = (evt) => {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
@@ -323,14 +320,13 @@ class DebugHelper extends BaseClass {
         _.each(form, (input) => {
             if (input.getAttribute('type') == 'checkbox'){
                 let path = input.getAttribute('data-path');
-                let name = input.getAttribute('name');
                 var currentConfig = newConfig;
                 var appConfig = _.cloneDeep(appState.config);
                 var dataPath = path;
                 if (dataPath && dataPath.split){
                     var pathChunks = _.drop(dataPath.split('.'), 1);
                     var chunkCount = pathChunks.length - 1;
-                    _.each(pathChunks, function(pathChunk, i){
+                    _.each(pathChunks, (pathChunk, i) => {
                         if (i == chunkCount){
                             currentConfig[pathChunk] = input.checked;
                         } else {
@@ -358,6 +354,9 @@ class DebugHelper extends BaseClass {
         } else {
             _appWrapper.helpers.modalHelper.closeCurrentModal();
         }
+
+        _appWrapper.helpers.modalHelper.closeCurrentModal();
+
     }
 }
 

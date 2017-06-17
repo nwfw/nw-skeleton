@@ -14,9 +14,6 @@ class ModalHelper extends BaseClass {
         appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = appUtil.getConfig('forceDebug.modalHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.modalHelper');
-
         this.boundMethods = {
             confirmResolve: null
         };
@@ -59,7 +56,7 @@ class ModalHelper extends BaseClass {
             appState.modalData.modalVisible = false;
             this.modalNotBusy();
         } else {
-            appUtil.log('Can\'t close modal because it is busy', 'warning', [], false, this.forceDebug);
+            this.log('Can\'t close modal because it is busy', 'warning', [], false);
         }
     }
 

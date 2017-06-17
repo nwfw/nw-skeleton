@@ -18,9 +18,6 @@ class StorageHelper extends BaseClass {
         _.noop(appState);
         _.noop(appUtil);
 
-        this.forceDebug = appUtil.getConfig('forceDebug.storageHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.storageHelper');
-
         return this;
     }
 
@@ -36,13 +33,17 @@ class StorageHelper extends BaseClass {
     }
 
     async get (name){
-        var returnValue = null;
+        var returnValue;
         if (localStorage && localStorage.getItem && _.isFunction(localStorage.getItem)){
             var savedValue = localStorage.getItem(name);
-            try {
-                returnValue = JSON.parse(savedValue);
-            } catch (ex) {
-                console.error(ex);
+            if (savedValue){
+                try {
+                    returnValue = JSON.parse(savedValue);
+                } catch (ex) {
+                    console.error(ex);
+                }
+            } else {
+                returnValue = savedValue;
             }
         }
         return returnValue;

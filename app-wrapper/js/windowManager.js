@@ -1,25 +1,24 @@
-var _ = require('lodash');
-var eventEmitter = require('events');
+const _ = require('lodash');
+const BaseClass = require('./base').BaseClass;
 
-var _appWrapper;
-var appUtil;
-var appState;
+let _appWrapper;
+let appUtil;
+let appState;
 
-class WindowManager extends eventEmitter {
+class WindowManager extends BaseClass {
 
     constructor(){
         super();
 
-        _appWrapper = window.getAppWrapper();
-        appUtil = _appWrapper.getAppUtil();
-        appState = appUtil.getAppState();
+        if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
+            _appWrapper = window.getAppWrapper();
+            appUtil = _appWrapper.getAppUtil();
+            appState = appUtil.getAppState();
+        }
 
         this.win = nw.Window.get();
         this.window = this.win.window;
         this.document = this.win.window.document;
-
-        this.forceDebug = appUtil.getConfig('forceDebug.windowManager');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.windowManager');
 
         this.screenWidth = null;
         this.screenHeight = null;
@@ -75,13 +74,12 @@ class WindowManager extends eventEmitter {
     }
 
     winStateChanged (data) {
-        appUtil.log('WindowManager: winState changed listener: \'{1}\' to \'{2}\'', 'debug', [data.name, data.value], false, this.forceDebug);
+        this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value], false);
         var appState = appUtil.getAppState();
         appState.windowState[data.name] = data.value;
     }
 
     windowRestored (){
-        var appState = appUtil.getAppState();
         if (this.winState && this.winState.length && this.propagateChange && this.propagateChange.length){
             this.propagateChange.maximized = false;
             this.winState.maximized = false;
@@ -637,7 +635,7 @@ class WindowManager extends eventEmitter {
 
     initializeAppMenu() {
         if (!(!_.isUndefined(this.menu) && this.menu)){
-            var menuData = appUtil.getConfig('appConfig.menuData');
+            var menuData = this.getConfig('appConfig.menuData');
             this.menu = new nw.Menu({type: 'menubar'});
             if (appUtil.isMac()){
                 this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
@@ -647,7 +645,7 @@ class WindowManager extends eventEmitter {
     }
 
     setupAppMenu() {
-        var menuData = appUtil.getConfig('appConfig.menuData');
+        var menuData = this.getConfig('appConfig.menuData');
         this.menuMethodMap = [];
         if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
             for(let i=0; i<menuData.menus.length; i++){

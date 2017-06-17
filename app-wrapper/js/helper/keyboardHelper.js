@@ -2,7 +2,7 @@ var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
+// var appUtil;
 var appState;
 
 
@@ -11,21 +11,18 @@ class KeyboardHelper extends BaseClass {
         super();
 
         _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
+        // appUtil = this.getAppUtil();
         appState = this.getAppState();
 
-        this.forceDebug = appUtil.getConfig('forceDebug.keyboardHelper');
-        this.forceUserMessages = appUtil.getConfig('forceUserMessages.keyboardHelper');
-
         this.keyCodes = {
-            debugKeys: [68,69,66,85,71],
+            debugKeys: [68,69,66,85,71], // d,e,b,u,g
             commandKeyCodes: [224, 17, 91, 93],
             shiftKeyCodes: [16],
             altKeyCodes: [18],
-            reloadKeyCodes: [82],
-            closeKeyCodes: [87],
+            reloadKeyCodes: [82], // 'r'
+            closeKeyCodes: [87], // 'w'
             escKeyCodes: [27],
-            reloadCssKeyCodes: [85]
+            reloadCssKeyCodes: [85] // 'u'
         };
 
         this.keyCodeNames = {
@@ -120,7 +117,7 @@ class KeyboardHelper extends BaseClass {
                     _appWrapper.windowManager.closeWindow();
                     fulfilled = true;
                 } else if (appState && appState.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
-                    _appWrapper.getHelper('staticFiles').reloadCss();
+                    this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
                 } else if ( appState.ctrlPressed && !appState.noHandlingKeys && appState && !appState.hideDebug && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     this.pressedKeys = [];
@@ -143,7 +140,7 @@ class KeyboardHelper extends BaseClass {
                         if (appState.debug){
                             message = 'Debug mode enabled.';
                         }
-                        appUtil.addUserMessage(message, 'info', [], true, false, true, this.forceDebug);
+                        this.addUserMessage(message, 'info', [], true, false, true);
                     }
                 }
             }
