@@ -103,23 +103,6 @@ a:visited {
     z-index: 1;
 }
 
-.form-row {
-	padding: 3px;
-}
-
-.form-row.form-row-has-error {
-	border: 1px solid #FF9999;
-	padding: 2px;
-}
-
-.form-row .form-row-error {
-	display: none;
-	color: #CC0000;
-}
-
-.form-row.form-row-has-error .form-row-error {
-	display: block;
-}
 
 .is-visible {
 	visibility: visible !important;
@@ -185,7 +168,38 @@ a:visited {
 	font-size: 1rem;
 }
 
-.form-control-row label {
-	display: inline-block;
-	width: 150px;
+.form-row {
+	padding: 3px;
+}
+
+.form-row.form-row-has-error {
+	border: 1px solid #FF9999;
+	padding: 2px;
+}
+
+.form-row .form-row-error {
+	display: none;
+	color: #CC0000;
+}
+
+.form-row.form-row-has-error .form-row-error {
+	display: block;
+}
+
+
+.form-control-field {
+	display: flex;
+	justify-content: space-between;
+}
+
+.form-control-field label {
+	flex: 1 1 auto;
+}
+
+.form-control-field .form-control-input {
+	flex: 1 1 auto;
+}
+
+.form-control-checkbox {
+	text-align: right;
 }
