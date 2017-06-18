@@ -6,7 +6,6 @@ var postcss = require('postcss');
 var BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 
@@ -14,9 +13,8 @@ class StaticFilesHelper extends BaseClass {
     constructor() {
         super();
 
-        _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
-        appState = this.getAppState();
+        _appWrapper = window.getAppWrapper();
+        appState = _appWrapper.getAppState();
 
         this.jsFileLoadResolves = {};
         this.cssFileLoadResolves = {};
@@ -42,7 +40,7 @@ class StaticFilesHelper extends BaseClass {
             cssFilePath  = path.resolve(path.join('.' + href));
         }
 
-        cssContents = await appUtil.loadFile(cssFilePath);
+        cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
         if (cssContents){
             cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
         }
@@ -387,7 +385,7 @@ class StaticFilesHelper extends BaseClass {
 
         if (foundThemeDir){
             themeConfigPath = path.join(themeData.path , themeConfigFile);
-            themeConfig = await appUtil.loadFile(themeConfigPath, true);
+            themeConfig = await _appWrapper.fileManager.loadFile(themeConfigPath, true);
             if (themeConfig && themeConfig.name){
                 themeConfig.path = themeData.path;
             }

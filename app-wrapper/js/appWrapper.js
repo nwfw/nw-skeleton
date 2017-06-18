@@ -3,19 +3,19 @@ var path = require('path');
 // var fs = require('fs');
 
 var App;
-var appUtil = require('./appUtil').appUtil;
 let BaseClass = require('./base').BaseClass;
 
-var AppTemplates = require('./appTemplates').AppTemplates;
-var AppTranslations = require('./appTranslations').AppTranslations;
+var AppTemplates = require('./lib/appTemplates').AppTemplates;
+var AppTranslations = require('./lib/appTranslations').AppTranslations;
 
-var WindowManager = require('./windowManager').WindowManager;
-var FileManager = require('./fileManager').FileManager;
+var WindowManager = require('./lib/windowManager').WindowManager;
+var FileManager = require('./lib/fileManager').FileManager;
 
-var AppConfig = require('./appConfig').AppConfig;
+var AppConfig = require('./lib/appConfig').AppConfig;
+
+let appState;
 
 // var _appWrapper;
-// var appUtil;
 // var appState;
 
 class AppWrapper extends BaseClass {
@@ -77,6 +77,8 @@ class AppWrapper extends BaseClass {
 
         this.noop = _.noop;
 
+        appState = this.getAppState();
+
         return this;
     }
 
@@ -93,7 +95,6 @@ class AppWrapper extends BaseClass {
         await this.appConfig.initialize();
         // appState is available from here;
 
-
         await super.initialize();
 
 
@@ -107,8 +108,6 @@ class AppWrapper extends BaseClass {
 
 
         appState.config = await this.appConfig.initializeConfig();
-
-        appState.platformData = appUtil.getPlatformData();
 
         var tmpDataDir = this.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
@@ -127,11 +126,14 @@ class AppWrapper extends BaseClass {
 
         this.windowManager = new WindowManager();
         await this.windowManager.initialize();
-        this.windowManager.initializeAppMenu();
 
         this.setDynamicAppStateValues();
 
         this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
+
+        appState.platformData = this.getHelper('util').getPlatformData();
+
+        this.windowManager.initializeAppMenu();
 
         App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
 
@@ -191,7 +193,7 @@ class AppWrapper extends BaseClass {
 
     async finalize () {
         appState.appLoaded = true;
-        await appUtil.wait(parseInt(parseFloat(this.getHelper('html').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
+        await this.wait(parseInt(parseFloat(this.getHelper('html').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
         var retValue = await this.app.finalize();
         if (retValue){
             window.appState.appInitialized = true;
@@ -270,7 +272,7 @@ class AppWrapper extends BaseClass {
             var currentHelpers;
             for (let i=0; i<helperDirs.length; i++){
                 var helperDir = path.resolve(helperDirs[i]);
-                currentHelpers = await appUtil.loadFilesFromDir(helperDir, '/\.js$/', true);
+                currentHelpers = await this.fileManager.loadFilesFromDir(helperDir, '/\.js$/', true);
                 if (currentHelpers && _.isObject(currentHelpers) && _.keys(currentHelpers).length){
                     helpers = _.merge(helpers, currentHelpers);
                 }
@@ -282,8 +284,6 @@ class AppWrapper extends BaseClass {
     }
 
     async initializeFeApp(){
-        var appState = appUtil.getAppState();
-
         this.log('Initializing Vue app...', 'debug', [], false);
 
         let vm = new Vue({
@@ -313,10 +313,6 @@ class AppWrapper extends BaseClass {
     async reinitializeFeApp(){
         window.getFeApp().$destroy();
         return await this.initializeFeApp();
-    }
-
-    getAppUtil () {
-        return appUtil;
     }
 
     async callViewHandler (e) {
@@ -545,7 +541,6 @@ class AppWrapper extends BaseClass {
             e.preventDefault();
         }
 
-        var appState = appUtil.getAppState();
         appState.modalData.currentModal = _.cloneDeep(appState.closeModal);
 
         appState.modalData.currentModal.bodyComponent = 'modal-body';
@@ -636,7 +631,6 @@ class AppWrapper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var appState = appUtil.getAppState();
         appState.modalData.modalVisible = false;
         if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
             appState.closeModalResolve(true);
@@ -818,6 +812,85 @@ class AppWrapper extends BaseClass {
         }
 
         return true;
+    }
+    getAppState () {
+        var win = nw.Window.get().window;
+        var appStateFile;
+        var appAppState;
+        var initialAppState;
+        if (win && win.appState){
+            return win.appState;
+        } else {
+            initialAppState = require('./appState').appState;
+            appStateFile = path.resolve('./app/js/appState');
+            try {
+                appAppState = require(appStateFile).appState;
+                initialAppState = this.mergeDeep(initialAppState, appAppState);
+            } catch (ex) {
+                console.error(ex);
+            }
+
+            if (win){
+                win.appState = initialAppState;
+            }
+            return initialAppState;
+        }
+    }
+
+    mergeDeep (){
+        var destination = arguments[0];
+        var sources = Array.prototype.slice.call(arguments, 1);
+        var result = _.cloneDeep(destination);
+
+        for (let i=0; i < sources.length; i++){
+            var source = sources[i];
+            var destinationKeys = _.keys(result);
+            var sourceKeys = _.keys(source);
+            var newKeys = _.difference(sourceKeys, destinationKeys);
+            var oldKeys = _.intersection(sourceKeys, destinationKeys);
+
+            for (let j=0; j<newKeys.length; j++){
+                result[newKeys[j]] = _.cloneDeep(source[newKeys[j]]);
+            }
+
+            for (let j=0; j<oldKeys.length; j++){
+                if (_.isArray(source[oldKeys[j]])){
+                    result[oldKeys[j]] = _.concat(result[oldKeys[j]], source[oldKeys[j]]);
+                } else if (_.isObject(source[oldKeys[j]])){
+                    result[oldKeys[j]] = this.mergeDeep(result[oldKeys[j]], source[oldKeys[j]]);
+                } else if (_.isFunction(source[oldKeys[j]])){
+                    console.log('func');
+                } else {
+                    result[oldKeys[j]] = _.cloneDeep(source[oldKeys[j]]);
+                }
+            }
+
+        }
+        return result;
+    }
+
+    async wait(duration){
+        // this.log('Waiting {1} ms', 'debug', [duration], false);
+        var returnPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(true);
+            }, duration);
+        });
+        return returnPromise;
+    }
+
+    async nextTick (){
+        var returnPromise = new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(true);
+            }, 0);
+        });
+        return returnPromise;
+    }
+
+    async onNextTick(callable){
+        await this.nextTick();
+        callable();
     }
 
 }

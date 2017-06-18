@@ -161,7 +161,7 @@ exports.config = {
 
         initJsFiles: [],
         jsFiles: [
-            '/node_modules/nw-skeleton/app-wrapper/js/lib/vue.js'
+            '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.js'
         ],
 
         debugCssFiles: [
@@ -374,8 +374,7 @@ exports.config = {
     windowHeight: null,
 
     forceDebug: {
-        AppWrapper: true,
-        AppUtil: false,
+        AppWrapper: false,
         AppConfig: false,
         AppTemplates: false,
         AppTranslations: false,
@@ -394,7 +393,6 @@ exports.config = {
     },
     forceUserMessages: {
         AppWrapper: false,
-        AppUtil: false,
         AppConfig: false,
         AppTemplates: false,
         AppTranslations: false,

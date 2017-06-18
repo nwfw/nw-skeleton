@@ -3,7 +3,6 @@ const path = require('path');
 const eventEmitter = require('events');
 
 let _appWrapper;
-let appUtil;
 let appState;
 
 class BaseClass extends eventEmitter {
@@ -13,8 +12,7 @@ class BaseClass extends eventEmitter {
 
         if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
             _appWrapper = window.getAppWrapper();
-            appUtil = _appWrapper.getAppUtil();
-            appState = appUtil.getAppState();
+            appState = _appWrapper.getAppState();
         }
 
         this.forceUserMessages = false;
@@ -55,10 +53,6 @@ class BaseClass extends eventEmitter {
 
     getAppWrapper () {
         return _appWrapper;
-    }
-
-    getAppUtil () {
-        return appUtil;
     }
 
     getAppState () {
@@ -114,7 +108,7 @@ class BaseClass extends eventEmitter {
             // doLog = true;
         }
 
-        // if (!dontTranslate && appUtil.varExists('appTranslations.translationsLoaded', _appWrapper) && _appWrapper.appTranslations.translationsLoaded){
+        // if (!dontTranslate && _.get(_appWrapper, 'appTranslations.translationsLoaded') && _appWrapper.appTranslations.translationsLoaded){
             // message = _appWrapper.appTranslations.translate(message);
         // }
 

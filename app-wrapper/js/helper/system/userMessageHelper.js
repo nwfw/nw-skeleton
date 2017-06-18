@@ -2,7 +2,6 @@ var _ = require('lodash');
 var BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 
@@ -12,8 +11,7 @@ class UserMessageHelper extends BaseClass {
 
         if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
             _appWrapper = window.getAppWrapper();
-            appUtil = _appWrapper.getAppUtil();
-            appState = appUtil.getAppState();
+            appState = _appWrapper.getAppState();
         }
 
         return this;

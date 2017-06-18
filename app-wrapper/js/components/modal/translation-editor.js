@@ -1,7 +1,6 @@
 var _ = require('lodash');
 var _appWrapper = window.getAppWrapper();
-var appUtil = _appWrapper.getAppUtil();
-var appState = appUtil.getAppState();
+var appState = _appWrapper.getAppState();
 
 exports.component = {
     name: 'translation-editor',
@@ -145,7 +144,7 @@ exports.component = {
         }
     },
     mounted: function() {
-        var appState = appUtil.getAppState();
+        var appState = _appWrapper.getAppState();
         appState.modalData.currentModal.busy = false;
         appState.modalData.modalContentVisible = true;
         var tabLinks = this.$el.querySelectorAll('.tab-link');

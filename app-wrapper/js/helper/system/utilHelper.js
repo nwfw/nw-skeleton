@@ -1,21 +1,20 @@
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const _ = require('lodash');
+const os = require('os');
+
+const BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 class UtilHelper extends BaseClass {
     constructor() {
         super();
 
-        _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
-        appState = this.getAppState();
+        _appWrapper = window.getAppWrapper();
+        appState = _appWrapper.getAppState();
 
         _.noop(_appWrapper);
         _.noop(appState);
-        _.noop(appUtil);
 
         return this;
     }
@@ -23,6 +22,18 @@ class UtilHelper extends BaseClass {
     getRandom (min, max){
         var random = Math.floor(Math.random() * (max - min + 1)) + min;
         return random;
+    }
+
+    getRandomString (size) {
+        if (!size){
+            size = 4;
+        }
+        var randomString = '';
+        do {
+            randomString += Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        } while (randomString.length < size);
+
+        return randomString.substr(0, size);
     }
 
     toJson (value, minified){
@@ -77,7 +88,7 @@ class UtilHelper extends BaseClass {
         clipboard.set(text, 'text');
     }
 
-    pasteFromClipboard (text) {
+    pasteFromClipboard () {
         var clipboard = nw.Clipboard.get();
         return clipboard.get();
     }
@@ -147,9 +158,102 @@ class UtilHelper extends BaseClass {
             }
         }
         return configVar;
-    };
+    }
 
+    getPlatformData (){
+        var name = os.platform();
+        var platform = {
+            isLinux: false,
+            isMac: false,
+            isWindows: false,
+            isWindows8: false,
+            version: os.release()
+        };
 
+        if(name === 'darwin'){
+            platform.name = 'mac';
+            platform.isMac = true;
+        } else if(name === 'linux'){
+            platform.name = 'linux';
+            platform.isLinux = true;
+        } else {
+            platform.name = 'windows';
+            platform.isWindows = true;
+        }
+
+        platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+
+        return platform;
+    }
+
+    isMac (){
+        return this.getPlatformData().isMac;
+    }
+
+    isWindows (){
+        return this.getPlatformData().isWindows;
+    }
+
+    isLinux (){
+        return this.getPlatformData().isLinux;
+    }
+
+    difference (original, modified) {
+        var ret = {};
+        var diff;
+        for (var name in modified) {
+            if (name in original) {
+                if (_.isObject(modified[name]) && !_.isArray(modified[name])) {
+                    diff = this.difference(original[name], modified[name]);
+                    if (!_.isEmpty(diff)) {
+                        ret[name] = diff;
+                    }
+                } else if (_.isArray(modified[name])) {
+                    diff = this.difference(original[name], modified[name]);
+                    if (!_.isEmpty(diff)) {
+                        ret[name] = diff;
+                    }
+                } else if (!_.isEqualWith(original[name], modified[name], function(originalValue, modifiedValue){ return originalValue == modifiedValue; })) {
+                    ret[name] = modified[name];
+                }
+            } else {
+                ret[name] = modified[name];
+            }
+        }
+        return ret;
+    }
+
+    mergeDeep (){
+        var destination = arguments[0];
+        var sources = Array.prototype.slice.call(arguments, 1);
+        var result = _.cloneDeep(destination);
+
+        for (let i=0; i < sources.length; i++){
+            var source = sources[i];
+            var destinationKeys = _.keys(result);
+            var sourceKeys = _.keys(source);
+            var newKeys = _.difference(sourceKeys, destinationKeys);
+            var oldKeys = _.intersection(sourceKeys, destinationKeys);
+
+            for (let j=0; j<newKeys.length; j++){
+                result[newKeys[j]] = _.cloneDeep(source[newKeys[j]]);
+            }
+
+            for (let j=0; j<oldKeys.length; j++){
+                if (_.isArray(source[oldKeys[j]])){
+                    result[oldKeys[j]] = _.concat(result[oldKeys[j]], source[oldKeys[j]]);
+                } else if (_.isObject(source[oldKeys[j]])){
+                    result[oldKeys[j]] = this.mergeDeep(result[oldKeys[j]], source[oldKeys[j]]);
+                } else if (_.isFunction(source[oldKeys[j]])){
+                    console.log('func');
+                } else {
+                    result[oldKeys[j]] = _.cloneDeep(source[oldKeys[j]]);
+                }
+            }
+
+        }
+        return result;
+    }
 }
 
 exports.UtilHelper = UtilHelper;

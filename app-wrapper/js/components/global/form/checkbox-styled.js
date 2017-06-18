@@ -1,8 +1,6 @@
 var _ = require('lodash');
 
 var _appWrapper = window.getAppWrapper();
-// var appUtil = _appWrapper.getAppUtil();
-// var appState = appUtil.getAppState();
 
 exports.component = {
     name: 'checkbox-styled',

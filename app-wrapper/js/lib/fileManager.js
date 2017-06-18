@@ -3,22 +3,12 @@ const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
 
-const BaseClass = require('./base').BaseClass;
-
-// let _appWrapper;
-// let appUtil;
-// let appState;
+const BaseClass = require('../base').BaseClass;
 
 class FileManager extends BaseClass {
 
     constructor(){
         super();
-
-        // if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
-        //     _appWrapper = window.getAppWrapper();
-        //     appUtil = _appWrapper.getAppUtil();
-        //     appState = appUtil.getAppState();
-        // }
     }
 
     async initialize () {
@@ -314,6 +304,125 @@ class FileManager extends BaseClass {
             delete this.watched[name];
         }
         this.watched = [];
+    }
+
+    async loadFilesFromDir (directory, extensionMatch, requireFiles) {
+        var filesData = {};
+        var extRegex;
+
+        if (!extensionMatch){
+            extRegex = /.*/;
+        } else if (_.isString(extensionMatch)){
+            extensionMatch = extensionMatch.replace(/^\//, '').replace(/\/$/, '').replace(/[^\\]$/, '').replace(/[^\\]\./, '');
+            extRegex = new RegExp(extensionMatch);
+        } else {
+            extRegex = extensionMatch;
+            extensionMatch = (extensionMatch + '').replace(/^\//, '').replace(/\/$/, '');
+        }
+
+        // directory = path.resolve(directory);
+
+        if (fs.existsSync(directory)){
+            var stats = fs.statSync(directory);
+            if (stats.isDirectory()){
+                // this.log('Loading files from \'{1}\'...', 'debug', [directory], false);
+                var files = fs.readdirSync(directory);
+
+                var eligibleFiles = _.filter(files, (file) => {
+                    var fileStats = fs.statSync(path.join(directory, file));
+                    if (fileStats.isFile()){
+                        return true;
+                    } else {
+                        // this.log('Omitting file \'{1}\' - file is a directory.', 'debug', [file], false);
+                    }
+                });
+
+                eligibleFiles = _.filter(eligibleFiles, (file) => {
+                    if (file.match(extRegex)){
+                        return true;
+                    } else {
+                        // this.log('Omitting file \'{1}\', extension invalid.', 'debug', [file], false);
+                    }
+                });
+
+                eligibleFiles = _.map(eligibleFiles, (file) => {
+                    return path.join(directory, file);
+                });
+
+
+                var filesToLoad = _.filter(eligibleFiles, (file) => {
+                    var fileStat = fs.statSync(file);
+                    if (fileStat.isFile()){
+                        return true;
+                    } else {
+                        // this.log('Omitting file \'{1}\', not a file.', 'warning', [path.basename(file)], false);
+                    }
+                });
+
+                if (filesToLoad && filesToLoad.length){
+                    // this.log('Found {1} eligible files of {2} total files in \'{3}\'...', 'debug', [filesToLoad.length, files.length, directory], false);
+
+                    for (var i =0 ; i < filesToLoad.length; i++){
+                        var fullPath = filesToLoad[i];
+                        var fileName = path.basename(fullPath);
+                        var fileIdentifier = fileName;
+                        if (extensionMatch){
+                            fileIdentifier = fileIdentifier.replace(new RegExp(extensionMatch), '');
+                        }
+                        filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles);
+                    }
+                } else {
+                    // this.log('No eligible files found in \'{1}\'...', 'debug', [directory], false);
+                }
+            } else {
+                // this.log('Directory \'{1}\' is not a directory!', 'error', [directory], false);
+                filesData = false;
+            }
+        } else {
+            // this.log('Directory \'{1}\' does not exist!', 'error', [directory], false);
+            filesData = false;
+        }
+        return filesData;
+    }
+
+    async loadFile (filePath, requireFile){
+        var fileData = null;
+        // var fileName = path.basename(filePath);
+        // var directory = path.dirname(filePath);
+
+        // this.log('* Loading file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false);
+        if (!requireFile){
+            if (fs.existsSync(filePath)){
+                let fStats = fs.statSync(filePath);
+                if (fStats.isFile()){
+                    fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
+                } else {
+                    // this.log('Can\'t load file (not a file) \'{1}\' from \'{2}\'.', 'error', [fileName, directory], false);
+                }
+            } else {
+                // this.log('Can\'t load file (doesn\'t exist) \'{1}\' from \'{2}\'.', 'error', [fileName, directory], false);
+            }
+        } else {
+            fileData = require(path.resolve(filePath));
+            if (fileData.exported){
+                fileData = require(filePath).exported;
+            } else {
+                var fileKeys = _.keys(fileData);
+                if (fileKeys && fileKeys.length && fileKeys[0] && fileData[fileKeys[0]]){
+                    // this.log('* While requiring file \'{1}\' from \'{2}\', \'exported\' key was not found, using \'{3}\' instead.', 'debug', [fileName, directory, fileKeys[0]], false);
+                    fileData = fileData[fileKeys[0]];
+                } else {
+                    fileData = null;
+                    // this.log('* Problem Loading file \'{1}\' from \'{2}\', in order to require file, it has to export value \'exported\'!', 'error', [fileName, directory], false);
+                }
+            }
+        }
+        if (fileData){
+            // this.log('* Successfully loaded file \'{1}\' from \'{2}\'...', 'debug', [fileName, directory], false);
+        } else {
+            // this.log('* Failed loading file \'{1}\' from \'{2}\'...', 'error', [fileName, directory], false);
+        }
+        return fileData;
     }
 }
 

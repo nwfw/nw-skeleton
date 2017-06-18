@@ -1,10 +1,9 @@
 var _ = require('lodash');
 
 var _appWrapper = window.getAppWrapper();
-var appUtil = _appWrapper.getAppUtil();
-var appState = appUtil.getAppState();
+var appState = _appWrapper.getAppState();
 
-var inspectorJson = require('../../lib/inspector-json');
+var inspectorJson = require('../../lib/ext/inspector-json');
 var inspector;
 var dragging = false;
 var mouseXOffset = null;

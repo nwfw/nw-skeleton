@@ -2,7 +2,6 @@ var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-// var appUtil;
 var appState;
 
 
@@ -11,7 +10,6 @@ class KeyboardHelper extends BaseClass {
         super();
 
         _appWrapper = this.getAppWrapper();
-        // appUtil = this.getAppUtil();
         appState = this.getAppState();
 
         this.keyCodes = {
@@ -119,7 +117,7 @@ class KeyboardHelper extends BaseClass {
                 } else if (appState && appState.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
-                } else if ( appState.ctrlPressed && !appState.noHandlingKeys && appState && !appState.hideDebug && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
+                } else if ( appState.ctrlPressed && !appState.noHandlingKeys && appState && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     this.pressedKeys = [];
                     _appWrapper.windowManager.reloadWindow();
                     fulfilled = true;
@@ -140,7 +138,7 @@ class KeyboardHelper extends BaseClass {
                         if (appState.debug){
                             message = 'Debug mode enabled.';
                         }
-                        this.addUserMessage(message, 'info', [], true, false, true);
+                        this.addUserMessage(message, 'info', [], false);
                     }
                 }
             }

@@ -2,7 +2,6 @@ var eventEmitter = require('events');
 var _ = require('lodash');
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 
@@ -12,8 +11,7 @@ class HtmlHelper extends eventEmitter {
         super();
 
         _appWrapper = window.getAppWrapper();
-        appUtil = _appWrapper.getAppUtil();
-        appState = appUtil.getAppState();
+        appState = _appWrapper.getAppState();
 
         this.tweens = {};
         this.tweenIntervals = {};
@@ -24,9 +22,6 @@ class HtmlHelper extends eventEmitter {
         this.timeCalculationDelay = 1;
         this.minPercentComplete = 0.3;
 
-        _appWrapper = window.getAppWrapper();
-        appUtil = _appWrapper.getAppUtil();
-        appState = appUtil.getAppState();
     }
 
     async initialize () {
@@ -554,6 +549,23 @@ class HtmlHelper extends eventEmitter {
             }
         }
         return val;
+    }
+
+    getAbsolutePosition (element){
+        var offsetLeft = element.offsetLeft;
+        var offsetTop = element.offsetTop;
+        var parent = element.parentNode;
+
+        if (parent.tagName.toLowerCase() !== 'body'){
+            var parentOffset = this.getAbsolutePosition(parent);
+            offsetLeft += parentOffset.offsetLeft;
+            offsetTop += parentOffset.offsetTop;
+        }
+
+        return {
+            offsetLeft: offsetLeft,
+            offsetTop: offsetTop
+        };
     }
 }
 

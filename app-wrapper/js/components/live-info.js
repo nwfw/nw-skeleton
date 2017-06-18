@@ -1,13 +1,12 @@
 var _appWrapper = window.getAppWrapper();
-var appUtil = _appWrapper.getAppUtil();
-var appState = appUtil.getAppState();
+var appState = _appWrapper.getAppState();
 
 exports.component = {
     name: 'live-info',
     template: _appWrapper.appTemplates.getTemplateContents('live-info'),
     computed: {
         appStatusClassObject: function () {
-            var appState = appUtil.getAppState();
+            var appState = _appWrapper.getAppState();
             return {
                 'fa-spin fa-refresh': appState.appStatus == 'busy',
                 'fa-spin fa-cog': appState.appStatus == 'working',
@@ -17,7 +16,7 @@ exports.component = {
             };
         },
         appStatusWrapperClassObject: function () {
-            var appState = appUtil.getAppState();
+            var appState = _appWrapper.getAppState();
             return {
                 '': appState.appStatus == 'idle',
                 'busy': appState.appStatus == 'busy',

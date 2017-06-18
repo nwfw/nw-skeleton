@@ -4,7 +4,6 @@ var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 
@@ -14,8 +13,7 @@ class DebugHelper extends BaseClass {
 
         if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
             _appWrapper = window.getAppWrapper();
-            appUtil = _appWrapper.getAppUtil();
-            appState = appUtil.getAppState();
+            appState = _appWrapper.getAppState();
         }
 
         this.timeouts = {
@@ -341,13 +339,10 @@ class DebugHelper extends BaseClass {
             }
         });
         var oldConfig = _.cloneDeep(appState.config);
-        var difference = appUtil.difference(oldConfig, newConfig);
-
-        console.log(newConfig.forceDebug);
-        console.log(difference);
+        var difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
 
         if (difference && _.isObject(difference) && _.keys(difference).length){
-            var finalConfig = appUtil.mergeDeep({}, appState.config, difference);
+            var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             appState.config = _.cloneDeep(finalConfig);
             _appWrapper.appConfig.saveUserConfig();
             _appWrapper.helpers.modalHelper.closeCurrentModal();

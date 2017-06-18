@@ -2,11 +2,10 @@ var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
 
-var BaseClass = require('./base').BaseClass;
+var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
-var appState;
+// var appState;
 
 
 class AppTemplates extends BaseClass {
@@ -15,8 +14,7 @@ class AppTemplates extends BaseClass {
         super();
 
         _appWrapper = window.getAppWrapper();
-        appUtil = _appWrapper.getAppUtil();
-        appState = appUtil.getAppState();
+        // appState = _appWrapper.getAppState();
 
     }
 

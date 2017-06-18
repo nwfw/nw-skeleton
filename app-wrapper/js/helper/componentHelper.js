@@ -4,8 +4,6 @@ var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
-// var appState;
 
 var BaseComponent;
 
@@ -14,8 +12,6 @@ class ComponentHelper extends BaseClass {
         super();
 
         _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
-        // appState = this.getAppState();
 
         this.allComponents = {};
         this.vueComponents = {};
@@ -57,7 +53,7 @@ class ComponentHelper extends BaseClass {
             mixinsDir = path.resolve(mixinsDir);
             var mixinRegex = this.getConfig('wrapper.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
-                vueMixins = await this.initMixins(await appUtil.loadFilesFromDir(mixinsDir, mixinRegex, true));
+                vueMixins = await this.initMixins(await _appWrapper.fileManager.loadFilesFromDir(mixinsDir, mixinRegex, true));
             }
         }
 
@@ -66,7 +62,7 @@ class ComponentHelper extends BaseClass {
             appMixinsDir = path.resolve(appMixinsDir);
             var appMixinRegex = this.getConfig('appConfig.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
-                appVueMixins = await this.initMixins(await appUtil.loadFilesFromDir(appMixinsDir, appMixinRegex, true));
+                appVueMixins = await this.initMixins(await _appWrapper.fileManager.loadFilesFromDir(appMixinsDir, appMixinRegex, true));
             }
 
             vueMixins = _.merge(vueMixins, appVueMixins);
@@ -92,7 +88,7 @@ class ComponentHelper extends BaseClass {
             filtersDir = path.resolve(filtersDir);
             var filterRegex = this.getConfig('wrapper.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
-                vueFilters = await appUtil.loadFilesFromDir(filtersDir, filterRegex, true);
+                vueFilters = await _appWrapper.fileManager.loadFilesFromDir(filtersDir, filterRegex, true);
             }
         }
 
@@ -101,7 +97,7 @@ class ComponentHelper extends BaseClass {
             appFiltersDir = path.resolve(appFiltersDir);
             var appFilterRegex = this.getConfig('appConfig.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
-                appVueFilters = await appUtil.loadFilesFromDir(appFiltersDir, appFilterRegex, true);
+                appVueFilters = await _appWrapper.fileManager.loadFilesFromDir(appFiltersDir, appFilterRegex, true);
             }
 
             vueFilters = _.merge(vueFilters, appVueFilters);
@@ -115,7 +111,7 @@ class ComponentHelper extends BaseClass {
         for(let i=0; i<componentDirs.length;i++){
             if (fs.existsSync(componentDirs[i])){
                 this.log('Loading components from directory "{1}".', 'debug', [componentDirs[i]], false);
-                var newComponents = await appUtil.loadFilesFromDir(componentDirs[i], componentCodeRegex, true);
+                var newComponents = await _appWrapper.fileManager.loadFilesFromDir(componentDirs[i], componentCodeRegex, true);
                 if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
                     components = _.merge(components, newComponents);
                 }

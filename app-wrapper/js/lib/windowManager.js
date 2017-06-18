@@ -1,20 +1,16 @@
 const _ = require('lodash');
-const BaseClass = require('./base').BaseClass;
+const BaseClass = require('../base').BaseClass;
 
 let _appWrapper;
-let appUtil;
-let appState;
+var appState;
 
 class WindowManager extends BaseClass {
 
     constructor(){
         super();
 
-        if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
-            _appWrapper = window.getAppWrapper();
-            appUtil = _appWrapper.getAppUtil();
-            appState = appUtil.getAppState();
-        }
+        _appWrapper = window.getAppWrapper();
+        appState = _appWrapper.getAppState();
 
         this.win = nw.Window.get();
         this.window = this.win.window;
@@ -75,7 +71,6 @@ class WindowManager extends BaseClass {
 
     winStateChanged (data) {
         this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value], false);
-        var appState = appUtil.getAppState();
         appState.windowState[data.name] = data.value;
     }
 
@@ -96,7 +91,6 @@ class WindowManager extends BaseClass {
 
     initWindow () {
         nw.Screen.Init();
-        var appState = appUtil.getAppState();
         this.screenWidth = nw.Screen.screens[0].bounds.width;
         this.screenHeight = nw.Screen.screens[0].bounds.height;
         var appW = parseInt(this.screenWidth * 0.50, 10);
@@ -297,7 +291,6 @@ class WindowManager extends BaseClass {
                         this.emit('winStateChange', { name: 'devTools', value: value});
                     }
                     if (this.propagateChange.devTools){
-                        var appState = appUtil.getAppState();
                         if (!value){
                             this.win.closeDevTools();
                             appState.devToolsOpened = false;
@@ -590,7 +583,6 @@ class WindowManager extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var appState = appUtil.getAppState();
         appState.movingWindow = true;
         this.window.addEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.addEventListener('mouseup', this.boundMethods.moveWindowMouseup);
@@ -600,7 +592,6 @@ class WindowManager extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var appState = appUtil.getAppState();
         appState.movingWindow = false;
         this.window.removeEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.removeEventListener('mouseup', this.boundMethods.moveWindowMouseup);
@@ -609,7 +600,7 @@ class WindowManager extends BaseClass {
     dragWindow (e) {
         var link = this.window.document.querySelector('.window-control-move');
         /* link offset position to body */
-        var offsetPosition = appUtil.getAbsolutePosition(link);
+        var offsetPosition = _appWrapper.getHelper('html').getAbsolutePosition(link);
         /* azimuths are half of link widths/heights */
         var widthAzimuth = -parseInt(link.parentNode.offsetWidth/2, 10);
         var heightAzimuth = -parseInt(link.parentNode.offsetHeight/2, 10);
@@ -637,7 +628,7 @@ class WindowManager extends BaseClass {
         if (!(!_.isUndefined(this.menu) && this.menu)){
             var menuData = this.getConfig('appConfig.menuData');
             this.menu = new nw.Menu({type: 'menubar'});
-            if (appUtil.isMac()){
+            if (_appWrapper.getHelper('util').isMac()){
                 this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
             }
         }
@@ -671,7 +662,7 @@ class WindowManager extends BaseClass {
             }
             if (menuItemData.menuItem.shortcut.modifiers){
                 if (menuItemData.menuItem.shortcut.modifiers.ctrl){
-                    if (appUtil.isMac()){
+                    if (_appWrapper.getHelper('util').isMac()){
                         modifiers.push('cmd');
                     } else {
                         modifiers.push('ctrl');

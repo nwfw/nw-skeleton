@@ -1,8 +1,7 @@
 var _ = require('lodash');
-var BaseClass = require('./base').BaseClass;
+var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 class AppConfig extends BaseClass {
@@ -11,8 +10,7 @@ class AppConfig extends BaseClass {
 
         if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
             _appWrapper = window.getAppWrapper();
-            appUtil = _appWrapper.getAppUtil();
-            appState = appUtil.getAppState();
+            appState = _appWrapper.getAppState();
         }
 
         this.initialAppConfig = initialAppConfig;
@@ -35,9 +33,9 @@ class AppConfig extends BaseClass {
 
     async initializeConfig () {
 
-        this.appStateConfig = require('../../config/appWrapperConfig').config;
+        this.appStateConfig = require('../../../config/appWrapperConfig').config;
 
-        var theConfig = appUtil.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
+        var theConfig = _appWrapper.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
         _.each(theConfig.configData.vars, function(value, key){
             if (!value.editable){
                 theConfig.configData.uneditableConfig.push(key);
@@ -85,7 +83,7 @@ class AppConfig extends BaseClass {
     saveUserConfig () {
         let configName = this.getConfigStorageName();
         if (localStorage){
-            var userConfig = appUtil.difference(this.baseConfig, appState.config);
+            var userConfig = _appWrapper.getHelper('util').difference(this.baseConfig, appState.config);
             var userConfigKeys = _.keys(userConfig);
             var noReloadConfig = this.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
@@ -284,10 +282,10 @@ class AppConfig extends BaseClass {
             }
         });
         var oldConfig = _.cloneDeep(appState.config);
-        var difference = appUtil.difference(oldConfig, newConfig);
+        var difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
 
         if (difference && _.isObject(difference) && _.keys(difference).length){
-            var finalConfig = appUtil.mergeDeep({}, appState.config, difference);
+            var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             appState.config = _.cloneDeep(finalConfig);
             this.saveUserConfig();
             _appWrapper.helpers.modalHelper.closeCurrentModal();

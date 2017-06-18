@@ -1,19 +1,17 @@
 var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
-var BaseClass = require('./base').BaseClass;
+var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
-var appUtil;
 var appState;
 
 class AppTranslations extends BaseClass {
     constructor() {
         super();
 
-        _appWrapper = this.getAppWrapper();
-        appUtil = this.getAppUtil();
-        appState = this.getAppState();
+        _appWrapper = window.getAppWrapper();
+        appState = _appWrapper.getAppState();
 
         this.addingLabels = {};
         this.translationsLoaded = false;
@@ -282,7 +280,7 @@ class AppTranslations extends BaseClass {
         }
         this.log('Auto-adding label "{1}"...', 'debug', [label], false);
         var self = this;
-        var languageData = appUtil.getAppState().languageData;
+        var languageData = appState.languageData;
 
         var translationData = appState.languageData;
 
