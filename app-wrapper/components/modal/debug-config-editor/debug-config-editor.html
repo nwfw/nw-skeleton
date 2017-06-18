@@ -1,20 +1,22 @@
 <div class="debug-config-editor">
-    <fieldset>
-        <legend>Debug vars</legend>
-        <template v-for="configVar in debugConfig">
-            <form-control v-bind:control="configVar"></form-control>
-        </template>
-    </fieldset>
-    <fieldset>
-        <legend>Force debug</legend>
-        <template v-for="configVar in forceDebug">
-            <form-control v-bind:control="configVar"></form-control>
-        </template>
-    </fieldset>
-    <fieldset>
-        <legend>Force user messages</legend>
-        <template v-for="configVar in forceUserMessages">
-            <form-control v-bind:control="configVar"></form-control>
-        </template>
-    </fieldset>
+    <div class="debug-config-editor-inner">
+        <fieldset>
+            <legend>Debug vars</legend>
+            <template v-for="configVar in debugConfig">
+                <form-control v-bind:control="configVar"></form-control>
+            </template>
+        </fieldset>
+        <fieldset>
+            <legend>Force debug</legend>
+            <template v-for="configVar in forceDebug">
+                <form-control v-bind:control="configVar"></form-control>
+            </template>
+        </fieldset>
+        <fieldset>
+            <legend>Force user messages</legend>
+            <template v-for="configVar in forceUserMessages">
+                <form-control v-bind:control="configVar"></form-control>
+            </template>
+        </fieldset>
+    </div>
 </div>

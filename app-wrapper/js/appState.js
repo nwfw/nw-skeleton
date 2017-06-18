@@ -201,7 +201,7 @@ exports.appState = {
         busy: true,
         messages: [],
         autoCloseTime: 0,
-        modalClassName: '',
+        modalClassName: 'translation-editor-modal',
         showConfirmButton: true,
         showCancelButton: true,
         confirmButtonText: 'confirm',

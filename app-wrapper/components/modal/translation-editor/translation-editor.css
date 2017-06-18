@@ -1,3 +1,26 @@
+.translation-editor-modal {
+
+}
+
+.translation-editor-modal .modal-dialog-content {
+	display: flex;
+}
+
+.translation-editor-modal .modal-dialog-content-wrapper {
+	display: flex;
+	flex-flow: column;
+}
+
+.translation-editor-modal form {
+	display: flex;
+	flex-flow: column;
+}
+
+.translation-editor-modal .modal-dialog-body {
+	display: flex;
+	flex-flow: column;
+}
+
 .translation-editor {
 	max-height: 75vh;
 	display: flex;
@@ -23,10 +46,12 @@
 .translation-editor .tab-item {
 	overflow: auto;
 	background: var(--modal-dialog-background);
+	flex: 1 1 auto;
 }
 
 .translation-editor fieldset {
 	border: none;
+
 }
 
 .translation-editor legend {
