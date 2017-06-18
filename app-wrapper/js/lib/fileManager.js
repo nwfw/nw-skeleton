@@ -35,6 +35,9 @@ class FileManager extends BaseClass {
     }
 
     async isFile(file){
+        if (!file){
+            return false;
+        }
         var filePath = path.resolve(file);
         var isFile = true;
         var exists = this.fileExists(filePath);

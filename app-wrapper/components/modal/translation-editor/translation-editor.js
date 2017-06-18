@@ -109,7 +109,6 @@ exports.component = {
             var langCode = target.getAttribute('data-code');
             var tabItem = this.$el.querySelector('.tab-item[data-code=' + langCode + ']');
             var untranslatedRows = tabItem.querySelectorAll('.lang-form-row-not-translated');
-            console.log(untranslatedRows);
             for (let i=0; i<untranslatedRows.length; i++){
                 let formRow = untranslatedRows[i];
                 var textarea = formRow.querySelector('textarea');
@@ -129,9 +128,6 @@ exports.component = {
             }
 
             var formRow = target.parentNode;
-
-            console.log(target);
-            console.log(formRow);
 
             var label = formRow.getAttribute('data-label');
             var allRows = this.$el.querySelectorAll('.lang-form-row');

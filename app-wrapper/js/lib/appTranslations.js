@@ -117,6 +117,8 @@ class AppTranslations extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        let autoAdd = appState.autoAddLabels;
+        appState.autoAddLabels = false;
         var modalElement = window.document.querySelector('.modal-dialog-wrapper');
         var allSaved = true;
         var savedLangs = [];
@@ -169,6 +171,7 @@ class AppTranslations extends BaseClass {
                 this.addUserMessage('* Can\'t save {1} translations for {2} languages ("{3}") in translation files.', 'error', [translationsCount, savedLangs.length, savedLangs.join(', ')], false, false);
             }
         }
+        appState.autoAddLabels = autoAdd;
         appState.noHandlingKeys = false;
         clearTimeout(this.timeouts.translationModalInitTimeout);
         _appWrapper.helpers.modalHelper.closeCurrentModal(true);
@@ -305,12 +308,7 @@ class AppTranslations extends BaseClass {
                 locale: currentLocale,
                 translations: currentTranslations
             };
-
-            this.log('- Auto-adding label "{1}" for language "{2}"...', 'debug', [label, currentName], false);
-            var newTranslationDataString = 'exports.data = ' + JSON.stringify(newTranslationData, ' ', 4) + ';';
-            newTranslationDataString = newTranslationDataString.replace(/'/g, '___|||___');
-            newTranslationDataString = newTranslationDataString.replace(/"/g, '\'');
-            newTranslationDataString = newTranslationDataString.replace(/___\|\|\|___/g, '\\\'');
+            var newTranslationDataString = this.getTranslationDataString(newTranslationData);
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, currentName], false);
         }
@@ -335,11 +333,12 @@ class AppTranslations extends BaseClass {
             translationData.translations[label] = value;
             this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, language.name], false);
         }
-        var newTranslationDataString = 'exports.data = ' + JSON.stringify(translationData, ' ', 4) + ';';
+        var newTranslationDataString = this.getTranslationDataString(translationData);
         var saved = false;
         try {
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             saved = true;
+            appState.languageData.translations[language.code] = translationData.translations;
         } catch (e) {
             this.log(e, 'error', [], true);
         }
@@ -373,7 +372,7 @@ class AppTranslations extends BaseClass {
 
     doChangeLanguage (selectedLanguageName, selectedLanguage, selectedLocale, skipOtherWindow) {
         if (selectedLanguage){
-            this.addUserMessage('Changing language to "{1}".', 'info', [selectedLanguageName], false, false);
+            this.addUserMessage('Changing language to "{1}".', 'info', [selectedLanguageName], false, false, true);
 
             appState.languageData.currentLanguage = selectedLanguage;
             appState.languageData.currentLocale = selectedLocale;
@@ -395,6 +394,23 @@ class AppTranslations extends BaseClass {
             this.addUserMessage('Could not change language!', 'error', [], false, false);
             return false;
         }
+    }
+
+    getTranslationDataString (translationData) {
+        let tab = '    ';
+        var newTranslationDataString = 'exports.data = {\n';
+        newTranslationDataString += tab + '\'name\': \'' + translationData.name + '\',\n';
+        newTranslationDataString += tab + '\'code\': \'' + translationData.code + '\',\n';
+        newTranslationDataString += tab + '\'locale\': \'' + translationData.locale + '\',\n';
+        newTranslationDataString += tab + '\'translations\': {\n';
+        for (let label in translationData.translations){
+            newTranslationDataString += tab + tab + '\'' + label.replace(/'/g, '\\\'') + '\': \'' + translationData.translations[label].replace(/'/g, '\\\'') + '\',\n';
+        }
+        newTranslationDataString = newTranslationDataString.replace(/,\n$/, '\n');
+        newTranslationDataString += tab + '}\n';
+        newTranslationDataString += '}';
+        return newTranslationDataString;
+
     }
 }
 exports.AppTranslations = AppTranslations;

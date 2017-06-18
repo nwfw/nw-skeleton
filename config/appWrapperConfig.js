@@ -379,7 +379,7 @@ exports.config = {
         AppWrapper: false,
         AppConfig: false,
         AppTemplates: false,
-        AppTranslations: false,
+        AppTranslations: true,
         ComponentHelper: false,
         KeyboardHelper: false,
         DebugHelper: false,

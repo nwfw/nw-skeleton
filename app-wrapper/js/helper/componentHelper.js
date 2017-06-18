@@ -146,11 +146,12 @@ class ComponentHelper extends BaseClass {
             this.vueComponents = _.merge(this.vueComponents, await this.processComponents(wrapperDir, wrapperMapping, overrideDirs));
         }
 
-        let appDirs = this.getConfig('appConfig.componentDirectories.component');
+        let appDirs = this.getConfig('wrapper.componentDirectories.component');
+        overrideDirs = this.getConfig('appConfig.componentDirectories.component');
         let appMapping = this.getConfig('appConfig.componentMapping');
         for(let i=0; i<appDirs.length; i++){
             let appDir = path.resolve(appDirs[i]);
-            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(appDir, appMapping));
+            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(appDir, appMapping, overrideDirs));
         }
 
         let modalDirs = this.getConfig('wrapper.componentDirectories.modalComponent');
