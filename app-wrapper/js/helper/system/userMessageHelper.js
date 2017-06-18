@@ -23,14 +23,21 @@ class UserMessageHelper extends BaseClass {
 
     processUserMessageQueue (){
         var messageCount = appState.userMessageQueue.length;
+        let intervalDuration = 1;
+
         clearInterval(appState.intervals.userMessageQueue);
         if (messageCount && !appState.userMessagesData.selectFocused){
-            appState.intervals.userMessageQueue = setInterval(this.unQueueUserMessage.bind(this), 1);
+            appState.intervals.userMessageQueue = setInterval(this.unQueueUserMessage.bind(this), intervalDuration);
         }
     }
 
     unQueueUserMessage (){
         if (appState && appState.userMessageQueue && appState.userMessageQueue.length){
+            if (appState.userMessageQueue.length > 10){
+                appState.animateMessages = false;
+            } else {
+                appState.animateMessages = true;
+            }
             var userMessage = appState.userMessageQueue.shift();
             if (userMessage){
                 appState.userMessages.push(userMessage);

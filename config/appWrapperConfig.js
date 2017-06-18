@@ -286,10 +286,10 @@ exports.config = {
                 control: 'select',
                 controlData: {
                     items: {
-                        0: 'debug',
-                        1: 'info',
-                        2: 'warning',
-                        3: 'error'
+                        1: 'debug',
+                        2: 'info',
+                        3: 'warning',
+                        4: 'error'
                     }
                 }
             },
@@ -300,10 +300,10 @@ exports.config = {
                 control: 'select',
                 controlData: {
                     items: {
-                        0: 'debug',
-                        1: 'info',
-                        2: 'warning',
-                        3: 'error'
+                        1: 'debug',
+                        2: 'info',
+                        3: 'warning',
+                        4: 'error'
                     }
                 }
             },

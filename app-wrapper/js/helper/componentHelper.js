@@ -336,7 +336,12 @@ class ComponentHelper extends BaseClass {
             } else {
                 component.mixins = [BaseComponent];
             }
-            component.filters = this.vueFilters;
+
+            if (component.filters){
+                component.filters = _.union(component.filters, this.vueFilters);
+            } else {
+                component.filters = this.vueFilters;
+            }
         }
         if (type == 'group'){
             this.log(message, 'groupend', data);

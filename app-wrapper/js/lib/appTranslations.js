@@ -308,6 +308,9 @@ class AppTranslations extends BaseClass {
 
             this.log('- Auto-adding label "{1}" for language "{2}"...', 'debug', [label, currentName], false);
             var newTranslationDataString = 'exports.data = ' + JSON.stringify(newTranslationData, ' ', 4) + ';';
+            newTranslationDataString = newTranslationDataString.replace(/'/g, '___|||___');
+            newTranslationDataString = newTranslationDataString.replace(/"/g, '\'');
+            newTranslationDataString = newTranslationDataString.replace(/___\|\|\|___/g, '\\\'');
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, currentName], false);
         }

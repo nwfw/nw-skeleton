@@ -6,7 +6,7 @@
 /*! normalize.css v3.0.0 | MIT License | git.io/normalize */
 html {
 	-webkit-text-size-adjust:100%;
-	-webkit-font-smoothing: subpixel-antialiased;
+	-webkit-font-smoothing: var(--font-smoothing);
 }
 
 html, body {

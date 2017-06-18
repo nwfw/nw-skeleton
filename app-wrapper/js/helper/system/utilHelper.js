@@ -222,38 +222,6 @@ class UtilHelper extends BaseClass {
         }
         return ret;
     }
-
-    mergeDeep (){
-        var destination = arguments[0];
-        var sources = Array.prototype.slice.call(arguments, 1);
-        var result = _.cloneDeep(destination);
-
-        for (let i=0; i < sources.length; i++){
-            var source = sources[i];
-            var destinationKeys = _.keys(result);
-            var sourceKeys = _.keys(source);
-            var newKeys = _.difference(sourceKeys, destinationKeys);
-            var oldKeys = _.intersection(sourceKeys, destinationKeys);
-
-            for (let j=0; j<newKeys.length; j++){
-                result[newKeys[j]] = _.cloneDeep(source[newKeys[j]]);
-            }
-
-            for (let j=0; j<oldKeys.length; j++){
-                if (_.isArray(source[oldKeys[j]])){
-                    result[oldKeys[j]] = _.concat(result[oldKeys[j]], source[oldKeys[j]]);
-                } else if (_.isObject(source[oldKeys[j]])){
-                    result[oldKeys[j]] = this.mergeDeep(result[oldKeys[j]], source[oldKeys[j]]);
-                } else if (_.isFunction(source[oldKeys[j]])){
-                    console.log('func');
-                } else {
-                    result[oldKeys[j]] = _.cloneDeep(source[oldKeys[j]]);
-                }
-            }
-
-        }
-        return result;
-    }
 }
 
 exports.UtilHelper = UtilHelper;

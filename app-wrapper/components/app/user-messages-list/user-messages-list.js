@@ -9,10 +9,7 @@ exports.component = {
     },
     updated: function () {
         let ul = this.$el.querySelector('ul');
-        clearTimeout(appState.timeouts.userMessageScroll);
-        appState.timeouts.userMessageScroll = setTimeout( () => {
-            _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
-        }, 100);
+        _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
     },
     data: function () {
         return appState.userMessagesData;

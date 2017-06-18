@@ -1,6 +1,7 @@
 :root {
 
     --app-base-text-color: #CCCCCC;
+    --font-smoothing: subpixel-antialiased;
 
     --input-base-background: #333333;
     --input-base-color: #999999;
@@ -123,11 +124,11 @@
     --app-user-messages-message-info-color: #006600;
     --app-user-messages-message-info-highlight-background: #66FF66;
 
-    --app-user-messages-message-warning-highlight-color: #660000;
-    --app-user-messages-message-warning-highlight-background: #FFCCCC;
+    --app-user-messages-message-warning-highlight-color: #666600;
+    --app-user-messages-message-warning-highlight-background: #FFCC00;
 
-    --app-user-messages-message-error-highlight-color: #666600;
-    --app-user-messages-message-error-highlight-background: #FFCC00;
+    --app-user-messages-message-error-highlight-color: #660000;
+    --app-user-messages-message-error-highlight-background: #FFCCCC;
 
 
     /* message type definitions */
@@ -178,17 +179,17 @@
     --window-control-link-color: #999999;
     --window-control-link-color-hovered: #CCCCCC;
 
-    --window-control-link-text-stroke-width: 1px;
+    --window-control-link-text-stroke-width: 0px;
     --window-control-link-text-stroke-color: #333333;
-    --window-control-link-text-shadow: 0 0 1px #FFFFFF;
+    --window-control-link-text-shadow: 0 0 0px #FFFFFF;
 
-    --window-control-link-text-stroke-width-hovered: 1px;
+    --window-control-link-text-stroke-width-hovered: 0px;
     --window-control-link-text-stroke-color-hovered: #666666;
-    --window-control-link-text-shadow-hovered: 0 0 2px #FFFFFF;
+    --window-control-link-text-shadow-hovered: 0 0 0px #FFFFFF;
 
-    --window-control-link-text-stroke-width-active: 1px;
+    --window-control-link-text-stroke-width-active: 0px;
     --window-control-link-text-stroke-color-active: #CCCCCC;
-    --window-control-link-text-shadow-active: 0 0 2px #FFFFFF;
+    --window-control-link-text-shadow-active: 0 0 0px #FFFFFF;
 
     /* live info */
 

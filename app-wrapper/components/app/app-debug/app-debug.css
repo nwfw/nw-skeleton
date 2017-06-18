@@ -50,11 +50,14 @@
     display: inline-block;
 }
 
+.app-debug-wrapper .app-debug-header .debug-header-tool {
+    margin-left: 5px;
+}
+
 .app-debug-wrapper .app-debug-header a {
     color: var(--app-debug-header-tool-link-color);
     text-shadow: var(--app-debug-header-tool-text-shadow);
     display: inline-block;
-    margin-left: 5px;
 }
 
 .app-debug-wrapper .app-debug-header a:hover {

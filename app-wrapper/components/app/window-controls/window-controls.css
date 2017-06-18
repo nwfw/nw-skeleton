@@ -1,0 +1,69 @@
+.window-controls-wrapper {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    flex: 1 1 auto;
+}
+.window-control-hidden {
+    visibility: hidden;
+}
+
+.window-controls-wrapper .window-controls {
+    display: flex;
+    position: relative;
+}
+
+.window-controls-wrapper .window-controls.main-window-controls {
+    padding-left: 30px;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper {
+    display: flex;
+    flex: 0 0 auto;
+    display: inline-block;
+    position: relative;
+    overflow: auto;
+    margin-right: 5px;
+    font-size: 1rem;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control {
+    color: var(--window-control-link-color);
+    text-decoration: none;
+    cursor: default;
+    -webkit-text-stroke-width: var(--window-control-link-text-stroke-width);
+    -webkit-text-stroke-color: var(--window-control-link-text-stroke-color);
+    text-shadow: var(--window-control-link-text-shadow);
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa:before {
+    display: block;
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control:hover {
+    color: var(--window-control-link-color-hovered);
+    text-decoration: none;
+    -webkit-text-stroke-width: var(--window-control-link-text-stroke-width-hovered);
+    -webkit-text-stroke-color: var(--window-control-link-text-stroke-color-hovered);
+    text-shadow: var(--window-control-link-text-shadow-hovered);
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control:active {
+    color: var(--window-control-link-color-active);
+    text-decoration: none;
+    -webkit-text-stroke-width: var(--window-control-link-text-stroke-width-active);
+    -webkit-text-stroke-color: var(--window-control-link-text-stroke-color-active);
+    text-shadow: var(--window-control-link-text-shadow-active);
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.devtools-open,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving,
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
+    color: var(--window-control-link-color-hovered);
+}
+
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
+    -webkit-text-stroke-color: var(--window-control-link-text-stroke-color-hovered);
+}

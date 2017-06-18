@@ -82,6 +82,7 @@ exports.appState = {
     userMessageLevel: 0,
     maxUserMessages: 30,
     userMessagesToFileStarted: false,
+    animateMessages: true,
 
     autoAddLabels: false,
     languageData: {
