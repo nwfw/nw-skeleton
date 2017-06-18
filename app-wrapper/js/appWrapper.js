@@ -5,7 +5,7 @@ var path = require('path');
 var App;
 let BaseClass = require('./base').BaseClass;
 
-var AppTemplates = require('./lib/appTemplates').AppTemplates;
+// var AppTemplates = require('./lib/appTemplates').AppTemplates;
 var AppTranslations = require('./lib/appTranslations').AppTranslations;
 
 var WindowManager = require('./lib/windowManager').WindowManager;
@@ -139,14 +139,15 @@ class AppWrapper extends BaseClass {
 
 
         await this.helpers.staticFilesHelper.initializeThemes();
-        await this.helpers.staticFilesHelper.loadCssFiles();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
-        this.appTemplates = new AppTemplates();
-        await this.appTemplates.initialize();
-        this.templateContents = await this.appTemplates.initializeTemplates();
+        // this.appTemplates = new AppTemplates();
+        // await this.appTemplates.initialize();
+        // this.templateContents = await this.appTemplates.initializeTemplates();
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
+
+        await this.helpers.staticFilesHelper.loadCssFiles();
 
         appState.userData = await this.getHelper('userData').loadUserData();
 

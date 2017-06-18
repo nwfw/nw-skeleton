@@ -424,6 +424,32 @@ class FileManager extends BaseClass {
         }
         return fileData;
     }
+
+    async loadFileFromDirs (fileName, dirs, requireFile){
+        let currentFile = await this.getFirstFileFromDirs(fileName, dirs);
+        if (await this.isFile(currentFile)){
+            let fileData = await this.loadFile(currentFile, requireFile);
+            if (fileData){
+                return fileData;
+            }
+        }
+        return false;
+    }
+
+    async readDir(path){
+        let files = fs.readdirSync(path);
+        return files;
+    }
+
+    async getFirstFileFromDirs(fileName, dirs){
+        for(let i=0; i<dirs.length; i++){
+            let currentFile = path.join(dirs[i], fileName);
+            if (await this.isFile(currentFile)){
+                return currentFile;
+            }
+        }
+        return null;
+    }
 }
 
 exports.FileManager = FileManager;

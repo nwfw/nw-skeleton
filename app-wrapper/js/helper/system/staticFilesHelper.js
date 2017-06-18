@@ -36,16 +36,22 @@ class StaticFilesHelper extends BaseClass {
         let cssContents = '';
         let compiledCssPath = this.getConfig('appConfig.cssCompiledFile');
 
-        if (!resolvePath){
-            cssFilePath  = path.resolve(path.join('.' + href));
+        let processDir = process.cwd();
+        let processDirRegex = new RegExp('^' + processDir);
+
+        if (!href.match(processDirRegex)){
+            if (!resolvePath){
+                cssFilePath  = path.resolve(path.join('.' + href));
+            }
         }
+
 
         cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
         if (cssContents){
             cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
         }
 
-        if (!noWatch && this.getConfig('liveCss')){
+        if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
             _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
         }
 
@@ -68,7 +74,7 @@ class StaticFilesHelper extends BaseClass {
             hrefPath = path.join(processDir, href);
         }
 
-        if (!noWatch && this.getConfig('liveCss')){
+        if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
             _appWrapper.fileManager.watch(hrefPath, {}, this.boundMethods.cssFileChanged);
         }
 
@@ -255,6 +261,13 @@ class StaticFilesHelper extends BaseClass {
         let appCssFiles = this.getConfig('appConfig.cssFiles') || [];
         let debugCssFiles = this.getConfig('appConfig.debugCssFiles') || [];
         let appDebugCssFiles = this.getConfig('appConfig.appDebugCssFiles') || [];
+
+        cssFiles = _.uniq(_.compact(cssFiles));
+        appCssFiles = _.uniq(_.compact(appCssFiles));
+        debugCssFiles = _.uniq(_.compact(debugCssFiles));
+        appDebugCssFiles = _.uniq(_.compact(appDebugCssFiles));
+
+
 
         let themeInitCssFiles = [];
         let themeCssFiles = [];

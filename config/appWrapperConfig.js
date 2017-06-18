@@ -9,17 +9,18 @@ exports.config = {
                 './node_modules/nw-skeleton/app-wrapper/template/components/global/'
             ],
             componentTemplate: [
-                './node_modules/nw-skeleton/app-wrapper/template/components/',
-                './node_modules/nw-skeleton/app-wrapper/template/components/modal/',
-                './node_modules/nw-skeleton/app-wrapper/template/components/global/form/'
+                './node_modules/nw-skeleton/app-wrapper/components/',
+                './node_modules/nw-skeleton/app-wrapper/components/modal/',
+                './node_modules/nw-skeleton/app-wrapper/components/global/',
+                './node_modules/nw-skeleton/app-wrapper/components/form/'
             ]
         },
 
         componentCodeRegex: /\.js$/,
         componentDirectories: {
-            component: ['./node_modules/nw-skeleton/app-wrapper/js/components/'],
-            globalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/global/', './node_modules/nw-skeleton/app-wrapper/js/components/global/form'],
-            modalComponent: ['./node_modules/nw-skeleton/app-wrapper/js/components/modal/']
+            component: ['./node_modules/nw-skeleton/app-wrapper/components/app/'],
+            globalComponent: ['./node_modules/nw-skeleton/app-wrapper/components/global/', './node_modules/nw-skeleton/app-wrapper/components/form'],
+            modalComponent: ['./node_modules/nw-skeleton/app-wrapper/components/modal/']
         },
 
         systemHelperDirectories: ['./node_modules/nw-skeleton/app-wrapper/js/helper/system/'],
@@ -37,93 +38,103 @@ exports.config = {
         componentMapping: {
             'app-window' : {
                 name: 'app-window',
-                components: [
-                    {
+                components: {
+                    'app-loader': {
                         name: 'app-loader',
-                        components: [
-                            {
+                        componentCssFiles: ['app-loader.css'],
+                        components: {
+                            'app-loader-spinner': {
                                 name: 'app-loader-spinner'
                             },
-                            {
+                            'user-messages': {
                                 name: 'user-messages',
-                                components: [
-                                    {
+                                components: {
+                                    'user-messages-controls': {
                                         name: 'user-messages-controls'
                                     },
-                                    {
+                                    'user-messages-list': {
                                         name: 'user-messages-list'
                                     }
-                                ]
+                                }
                             }
-                        ]
+                        }
                     },
-                    {
+                    'app-header': {
                         name: 'app-header',
-                        components: [
-                            {
+                        components: {
+                            'language-select': {
                                 name: 'language-select'
                             },
-                            {
+                            'theme-select': {
                                 name: 'theme-select'
                             },
-                            {
+                            'live-info': {
                                 name: 'live-info'
                             },
-                            {
+                            'window-controls': {
                                 name: 'window-controls'
                             },
-                            {
+                            'progress-bar': {
+                                componentCssFiles: ['progress-bar.css'],
                                 name: 'progress-bar'
                             },
-                        ]
+                        }
                     },
-                    {
+                    'app-main': {
                         name: 'app-main',
-                        components: [
-                            {
-                                name: 'app-error'
+                        components: {
+                            'app-error': {
+                                name: 'app-error',
+                                componentCssFiles: ['app-error.css'],
                             },
-                            {
+                            'app-loader': {
                                 name: 'app-loader',
-                                components: [
-                                    {
+                                componentCssFiles: ['app-loader.css'],
+                                components: {
+                                    'app-loader-spinner': {
+                                        name: 'app-loader-spinner'
+                                    },
+                                    'user-messages': {
                                         name: 'user-messages',
-                                        components: [
-                                            {
+                                        components: {
+                                            'user-messages-controls': {
                                                 name: 'user-messages-controls'
                                             },
-                                            {
+                                            'user-messages-list': {
                                                 name: 'user-messages-list'
                                             }
-                                        ]
+                                        }
                                     }
-                                ]
+                                }
                             },
-                            {
+                            'app-debug': {
+                                componentCssFiles: ['app-debug.css'],
                                 name: 'app-debug'
                             }
-                        ]
+                        }
                     },
-                    {
+                    'app-debug': {
+                        componentCssFiles: ['app-debug.css'],
                         name: 'app-debug'
                     },
-                    {
+                    'app-footer': {
                         name: 'app-footer',
-                        components: [
-                            {
+                        components: {
+                            'user-messages': {
                                 name: 'user-messages',
-                                components: [
-                                    {
+                                componentCssFiles: ['user-messages.css'],
+                                components: {
+                                    'user-messages-controls': {
                                         name: 'user-messages-controls'
                                     },
-                                    {
+                                    'user-messages-list': {
                                         name: 'user-messages-list'
                                     }
-                                ]
+                                }
                             }
-                        ]
+                        }
                     }
-                ]
+                }
             }
         },
     },
@@ -145,15 +156,6 @@ exports.config = {
             '/node_modules/nw-skeleton/app-wrapper/css/header.css',
             '/node_modules/nw-skeleton/app-wrapper/css/footer.css',
             '/node_modules/nw-skeleton/app-wrapper/css/modals.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/user-messages.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/progress-bar.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/translation-editor.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/inspector-json.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/config-editor.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/app-debug.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/app-loader.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/app-error.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/components/checkbox-styled.css',
             '/node_modules/nw-skeleton/app-wrapper/css/style.css',
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
         ],
