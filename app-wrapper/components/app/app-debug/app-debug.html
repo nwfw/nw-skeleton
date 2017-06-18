@@ -26,7 +26,7 @@
 			</div>
 			<div class="app-debug-body">
 				<ul>
-					<li class="message" v-for="debugMessage in debugMessages" v-bind:class="debugMessage.type">
+					<li class="message" v-for="debugMessage in appState.debugMessages" v-bind:class="debugMessage.type">
 						<span class="message-timestamp">
 							{{ debugMessage.timestamp }}
 						</span>
