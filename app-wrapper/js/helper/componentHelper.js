@@ -289,7 +289,7 @@ class ComponentHelper extends BaseClass {
             return false;
         }
 
-        component.template = await _appWrapper.fileManager.loadFileFromDirs(componentName + '.html', loadDirs);
+        await this.loadComponentTemplate(component, loadDirs);
         component.components = {};
 
         if (additionalSubComponents && _.keys(additionalSubComponents).length){
@@ -348,6 +348,16 @@ class ComponentHelper extends BaseClass {
             this.log(message, 'groupend', data);
         }
         // this.log('Component "{1}" initialized.', 'info', data);
+        return component;
+    }
+
+    async loadComponentTemplate (component, loadDirs) {
+        let templateContents = await _appWrapper.fileManager.loadFileFromDirs(component.name + '.html', loadDirs);
+        if (templateContents){
+            component.template = templateContents;
+        } else {
+            this.log('Problem loading template for component "{1}".', 'error', [component.name], false);
+        }
         return component;
     }
 

@@ -396,6 +396,7 @@ exports.config = {
         UserDataHelper: false,
         AppOperationHelper: false,
         UtilHelper: false,
+        FormatHelper: false,
         WindowManager: false,
         FileManager: false
     },
@@ -415,6 +416,7 @@ exports.config = {
         UserDataHelper: false,
         AppOperationHelper: false,
         UtilHelper: false,
+        FormatHelper: false,
         WindowManager: false,
         FileManager: false
     }

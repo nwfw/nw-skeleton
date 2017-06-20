@@ -143,7 +143,7 @@ class AppOperationHelper extends BaseClass {
         appState.progressData.detailText = completed + ' / ' + total;
         var formattedDuration = _appWrapper.appTranslations.translate('calculating');
         if (percentComplete >= this.minPercentComplete){
-            formattedDuration = _appWrapper.getHelper('html').formatDuration(remainingTime);
+            formattedDuration = _appWrapper.getHelper('format').formatDuration(remainingTime);
         }
         appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
         appState.progressData.styleObject = {

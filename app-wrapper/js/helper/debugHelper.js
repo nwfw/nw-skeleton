@@ -27,6 +27,11 @@ class DebugHelper extends BaseClass {
         return await super.initialize();
     }
 
+    async finalize () {
+        return true;
+    }
+
+
     openDebugWindow (){
         this.log('Opening standalone debug window', 'info', [], false);
         appState.hasDebugWindow = true;
@@ -97,6 +102,7 @@ class DebugHelper extends BaseClass {
     }
 
     async showSaveDebugModal () {
+        let modalHelper = _appWrapper.getHelper('modal');
         appState.modalData.currentModal = _.cloneDeep(appState.saveDebugModal);
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Saving debug log to file');
         appState.modalData.currentModal.bodyComponent = 'save-debug';
@@ -106,13 +112,13 @@ class DebugHelper extends BaseClass {
         appState.modalData.currentModal.confirmDisabled = true;
         appState.modalData.currentModal.saveDebugFileError = false;
         appState.modalData.currentModal.messages = [];
-        _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        appState.modalData.currentModal.defaultFilename = 'debug-' + _appWrapper.helpers.htmlHelper.formatDateNormalize(new Date(), false, true) + '.txt';
+        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        appState.modalData.currentModal.defaultFilename = 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt';
         _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
         _appWrapper.closeModalPromise = new Promise((resolve) => {
             appState.closeModalResolve = resolve;
         });
-        _appWrapper.helpers.modalHelper.openCurrentModal();
+        modalHelper.openCurrentModal();
         return _appWrapper.closeModalPromise;
     }
 
@@ -120,6 +126,7 @@ class DebugHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        let modalHelper = _appWrapper.getHelper('modal');
         appState.modalData.currentModal.saveDebugFileError = false;
         appState.modalData.currentModal.messages = [];
 
@@ -147,7 +154,7 @@ class DebugHelper extends BaseClass {
         }
 
         if (debugFilePath){
-            _appWrapper.helpers.modalHelper.modalBusy();
+            modalHelper.modalBusy();
             var saved = true;
             var writeMode = 'w';
             if (fileExists && overwriteAction == 'append'){
@@ -169,13 +176,13 @@ class DebugHelper extends BaseClass {
                     mode: 0o775,
                     flag: writeMode
                 });
-                _appWrapper.helpers.modalHelper.modalNotBusy();
+                modalHelper.modalNotBusy();
             } catch (e) {
                 saved = false;
                 this.log('Problem saving debug log file "{1}" - {2}', 'error', [debugFilePath, e], false);
-                _appWrapper.helpers.modalHelper.modalNotBusy();
+                modalHelper.modalNotBusy();
             }
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
+            modalHelper.closeCurrentModal();
             if (saved){
                 if (appState.isDebugWindow){
                     this.log('Debug log saved successfully', 'info', [], false, true);
@@ -194,7 +201,7 @@ class DebugHelper extends BaseClass {
 
     saveDebugFileClick (e){
         var el = e.target;
-        el.setAttribute('nwsaveas', 'debug-' + _appWrapper.helpers.htmlHelper.formatDateNormalize(new Date(), false, true) + '.txt');
+        el.setAttribute('nwsaveas', 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt');
     }
 
     saveDebugFileChange (e) {
@@ -290,29 +297,31 @@ class DebugHelper extends BaseClass {
     }
 
     openDebugConfigEditor () {
+        let modalHelper = _appWrapper.getHelper('modal');
         appState.modalData.currentModal = _.cloneDeep(appState.debugConfigEditorModal);
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Debug config editor');
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
         appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveDebugConfig.bind(this);
         _appWrapper._cancelModalAction = (evt) => {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
             // appState.noHandlingKeys = false;
-            _appWrapper.helpers.modalHelper.modalNotBusy();
+            modalHelper.modalNotBusy();
             // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             return _appWrapper.__cancelModalAction();
         };
-        _appWrapper.helpers.modalHelper.openCurrentModal();
+        modalHelper.openCurrentModal();
     }
 
     async saveDebugConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        let modalHelper = _appWrapper.getHelper('modal');
         var form = e.target;
         let newConfig = {};
         _.each(form, (input) => {
@@ -344,12 +353,12 @@ class DebugHelper extends BaseClass {
         if (difference && _.isObject(difference) && _.keys(difference).length){
             var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             await _appWrapper.appConfig.setConfig(finalConfig);
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
+            modalHelper.closeCurrentModal();
         } else {
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
+            modalHelper.closeCurrentModal();
         }
 
-        _appWrapper.helpers.modalHelper.closeCurrentModal();
+        modalHelper.closeCurrentModal();
 
     }
 }

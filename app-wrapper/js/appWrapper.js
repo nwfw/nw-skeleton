@@ -171,7 +171,6 @@ class AppWrapper extends BaseClass {
         await this.initializeFeApp();
         if (this.getConfig('appConfig.showInitializationStatus')){
             let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
-            console.log(this.getHelper('appOperation'));
             this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
         }
 
