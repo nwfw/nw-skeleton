@@ -165,10 +165,10 @@ class AppTranslations extends BaseClass {
         }
         await this.loadTranslations();
         if (allSaved){
-            this.addUserMessage('* Saved {1} translations for {2} languages ("{3}") in translation files.', 'info', [translationsCount, savedLangs.length, savedLangs.join(', ')], false, false, true);
+            this.addUserMessage('* Saved {1} translations for {2} languages ("{3}") in translation files.', 'info', [translationsCount, savedLangs.length, savedLangs.join('", "')], false, false, true);
         } else {
             if (translationsCount && savedLangs.length){
-                this.addUserMessage('* Can\'t save {1} translations for {2} languages ("{3}") in translation files.', 'error', [translationsCount, savedLangs.length, savedLangs.join(', ')], false, false);
+                this.addUserMessage('* Can\'t save {1} translations for {2} languages ("{3}") in translation files.', 'error', [translationsCount, savedLangs.length, savedLangs.join('", "')], false, false);
             }
         }
         appState.autoAddLabels = autoAdd;

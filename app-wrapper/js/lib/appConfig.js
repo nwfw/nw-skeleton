@@ -17,6 +17,7 @@ class AppConfig extends BaseClass {
         this.baseConfig = {};
         this.appStateConfig = {};
         this.config = {};
+        this.userConfig = {};
         this.previousConfig = {};
         this.watchConfig = true;
 
@@ -72,34 +73,39 @@ class AppConfig extends BaseClass {
             } else {
                 appState.hasUserConfig = false;
             }
+            this.userConfig = _.cloneDeep(userConfig);
             userConfig = _.merge({}, appState.config, userConfig);
-            // this.config = _.cloneDeep(userConfig);
             this.previousConfig = _.cloneDeep(userConfig);
             return userConfig;
         } else {
             this.log('No user config found.', 'info', [], false);
             this.config = _.cloneDeep(appState.config);
             this.previousConfig = _.cloneDeep(appState.config);
+            this.userConfig = {};
             return appState.config;
         }
     }
 
-    saveUserConfig () {
+    async saveUserConfig () {
         let configName = this.getConfigStorageName();
         if (localStorage){
             var userConfig = _appWrapper.getHelper('util').difference(this.baseConfig, appState.config);
             var userConfigKeys = _.keys(userConfig);
+            var userConfigKeysDiff = _.difference(userConfigKeys, _.keys(this.userConfig));
+            userConfigKeysDiff = _.union(userConfigKeysDiff, _.difference(_.keys(this.userConfig), userConfigKeys));
+            userConfigKeysDiff = _.uniq(userConfigKeysDiff);
             var noReloadConfig = this.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
             var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
 
 
             try {
-                if (userConfig && userConfigKeys.length){
-                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeys.join(', ')], false);
+                if (userConfig && userConfigKeysDiff.length){
+                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')], false);
                     localStorage.setItem(configName, JSON.stringify(userConfig));
                     this.addUserMessage('Configuration data saved', 'info', [], false);
                     appState.hasUserConfig = true;
+                    this.userConfig = _.cloneDeep(userConfig);
                     if (shouldReload){
                         _appWrapper.windowManager.reloadWindow(null, true);
                     } else {
@@ -109,6 +115,7 @@ class AppConfig extends BaseClass {
                     if (localStorage.getItem(configName)){
                         localStorage.removeItem(configName);
                         appState.hasUserConfig = false;
+                        this.userConfig = {};
                         if (shouldReload){
                             _appWrapper.windowManager.reloadWindow(null, true);
                         } else {
@@ -132,6 +139,7 @@ class AppConfig extends BaseClass {
                 localStorage.removeItem(configName);
                 this.addUserMessage('Configuration data cleared', 'info', [], false,  false, true);
                 appState.hasUserConfig = false;
+                this.userConfig = {};
                 _appWrapper.helpers.modalHelper.closeCurrentModal(true);
                 appState.appShuttingDown = true;
                 appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
@@ -162,26 +170,25 @@ class AppConfig extends BaseClass {
         return !_.isUndefined(appState.config[name]);
     }
 
-    setConfigVar(name, value, noSave){
+    async setConfigVar(name, value, noSave){
+        this.watchConfig = false;
         appState.config[name] = value;
         if (!noSave){
-            this.saveUserConfig();
+            await this.saveUserConfig();
         }
+        this.watchConfig = true;
     }
 
-    setConfig(data, noSave){
+    async setConfig(data, noSave){
         if (data && _.isObject(data)){
+            this.watchConfig = false;
             appState.config = _.merge(appState.config, data);
             if (!noSave){
-                this.saveUserConfig();
+                await this.saveUserConfig();
             }
+            this.watchConfig = true;
         }
     }
-
-
-
-
-
 
     async openConfigEditorHandler (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -292,7 +299,7 @@ class AppConfig extends BaseClass {
         if (difference && _.isObject(difference) && _.keys(difference).length){
             var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             appState.config = _.cloneDeep(finalConfig);
-            this.saveUserConfig();
+            await this.saveUserConfig();
             _appWrapper.helpers.modalHelper.closeCurrentModal();
         } else {
             _appWrapper.helpers.modalHelper.closeCurrentModal();

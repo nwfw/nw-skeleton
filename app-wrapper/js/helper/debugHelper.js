@@ -343,8 +343,7 @@ class DebugHelper extends BaseClass {
 
         if (difference && _.isObject(difference) && _.keys(difference).length){
             var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
-            appState.config = _.cloneDeep(finalConfig);
-            _appWrapper.appConfig.saveUserConfig();
+            await _appWrapper.appConfig.setConfig(finalConfig);
             _appWrapper.helpers.modalHelper.closeCurrentModal();
         } else {
             _appWrapper.helpers.modalHelper.closeCurrentModal();

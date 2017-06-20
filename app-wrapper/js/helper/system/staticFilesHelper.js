@@ -693,7 +693,6 @@ class StaticFilesHelper extends BaseClass {
 
     async changeTheme () {
         await this.reloadCss();
-        await _appWrapper.appConfig.saveUserConfig();
     }
 }
 
