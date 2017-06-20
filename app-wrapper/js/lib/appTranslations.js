@@ -408,7 +408,7 @@ class AppTranslations extends BaseClass {
         }
         newTranslationDataString = newTranslationDataString.replace(/,\n$/, '\n');
         newTranslationDataString += tab + '}\n';
-        newTranslationDataString += '}';
+        newTranslationDataString += '};';
         return newTranslationDataString;
 
     }

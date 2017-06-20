@@ -261,7 +261,7 @@ class AppWrapper extends BaseClass {
 
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
             this.log('No wrapper helper dirs defined', 'warning', [], false);
-            this.log('You should define this in ./config/config.js file under \'appConfig.templateDirectories.helperDirectories\' variable', 'debug', [], false);
+            this.log('You should define this in ./config/config.js file under "appConfig.templateDirectories.helperDirectories" variable', 'debug', [], false);
             helperDirs = [];
         } else {
             this.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length], false);
@@ -299,7 +299,7 @@ class AppWrapper extends BaseClass {
         } else {
             this.addUserMessage('Application initialized', 'info', [], false,  false, true);
             if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                this.addUserMessage('Active config file: \'{1}\'', 'info', [appState.activeConfigFile], false, false);
+                this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
             }
         }
 
@@ -340,10 +340,10 @@ class AppWrapper extends BaseClass {
             if (eventHandlerName){
                 return await this.callObjMethod(eventHandlerName, [e, target]);
             } else {
-                this.log('Element {1} doesn\'t have attribute \'{2}\'', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false);
+                this.log('Element {1} doesn\'t have attribute "{2}"', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false);
             }
         } else {
-            this.log('Can\'t find event target \'{1}\'', 'warning', [e], false);
+            this.log('Can\'t find event target "{1}"', 'warning', [e], false);
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault();
             }
@@ -727,7 +727,7 @@ class AppWrapper extends BaseClass {
         if (object && method && _.isFunction(method)){
             return method.call(object);
         } else {
-            this.log('Can\t call menu click handler \'{1}\' for menuIndex \'{2}\'!', 'error', [methodIdentifier, menuIndex], false);
+            this.log('Can\t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex], false);
             return false;
         }
     }
@@ -776,7 +776,7 @@ class AppWrapper extends BaseClass {
                     };
                 }
             } else {
-                this.log('Can\'t find object method \'{1}\'', 'warning', [methodString], false);
+                this.log('Can\'t find object method "{1}"', 'warning', [methodString], false);
             }
         }
         return objMethod;

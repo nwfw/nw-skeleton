@@ -56,11 +56,11 @@ class DebugHelper extends BaseClass {
 
     changeDebugLevel(e){
         var level = e.target.value;
-        this.addUserMessage('Changing debug level to \'{1}\'.', 'info', [level], false, false);
+        this.addUserMessage('Changing debug level to "{1}".', 'info', [level], false, false);
         appState.debugLevel = level;
         _appWrapper.appConfig.setConfigVar('debugLevel', level);
         if (appState.isDebugWindow) {
-            this.addUserMessage('Changing debug level in main window to \'{1}\'.', 'info', [level], false, false);
+            this.addUserMessage('Changing debug level in main window to "{1}".', 'info', [level], false, false);
             _appWrapper.mainWindow.appState.debugLevel = level;
         }
 
@@ -172,7 +172,7 @@ class DebugHelper extends BaseClass {
                 _appWrapper.helpers.modalHelper.modalNotBusy();
             } catch (e) {
                 saved = false;
-                this.log('Problem saving debug log file \'{1}\' - {2}', 'error', [debugFilePath, e], false);
+                this.log('Problem saving debug log file "{1}" - {2}', 'error', [debugFilePath, e], false);
                 _appWrapper.helpers.modalHelper.modalNotBusy();
             }
             _appWrapper.helpers.modalHelper.closeCurrentModal();
