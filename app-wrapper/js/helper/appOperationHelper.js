@@ -16,7 +16,22 @@ class AppOperationHelper extends BaseClass {
             appStatusChangingTimeout: null
         };
 
+        this.operationStartTime = null;
+        this.lastTimeCalculation = null;
+        this.lastTimeValue = 0;
+        this.timeCalculationDelay = 1;
+        this.minPercentComplete = 0.3;
+
         return this;
+    }
+
+    async initialize () {
+        await super.initialize();
+        return this;
+    }
+
+    async finalize () {
+        return true;
     }
 
 
@@ -50,7 +65,7 @@ class AppOperationHelper extends BaseClass {
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
         if (useProgress){
-            _appWrapper.getHelper('html').startProgress(100, appState.appOperation.progressText);
+            this.startProgress(100, appState.appOperation.progressText);
         }
     }
 
@@ -59,7 +74,7 @@ class AppOperationHelper extends BaseClass {
             progressText = appState.appOperation.progressText;
         }
         if (appState.appOperation.useProgress){
-            _appWrapper.getHelper('html').updateProgress(completed, total, progressText);
+            this.updateProgress(completed, total, progressText);
         }
     }
 
@@ -77,7 +92,7 @@ class AppOperationHelper extends BaseClass {
         _appWrapper.setAppStatus(appBusy, 'success');
 
         if (appState.appOperation.useProgress){
-            _appWrapper.getHelper('html').clearProgress();
+            this.clearProgress();
         }
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
@@ -103,6 +118,58 @@ class AppOperationHelper extends BaseClass {
         }
         appState.appOperation.cancelling = true;
         appState.appOperation.operationText = 'Cancelling...';
+    }
+
+
+    startProgress (total, operationText) {
+        appState.progressData.inProgress = true;
+        this.updateProgress(0, total, operationText);
+    }
+
+    updateProgress (completed, total, operationText) {
+        if (!appState.progressData.inProgress){
+            this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false);
+            return;
+        }
+        if (!this.operationStartTime){
+            this.operationStartTime = (+ new Date()) / 1000;
+        }
+        var percentComplete = (completed / total) * 100;
+        var remainingTime = this.calculateTime(percentComplete);
+        percentComplete = parseInt(percentComplete);
+        if (operationText){
+            appState.progressData.operationText = operationText;
+        }
+        appState.progressData.detailText = completed + ' / ' + total;
+        var formattedDuration = _appWrapper.appTranslations.translate('calculating');
+        if (percentComplete >= this.minPercentComplete){
+            formattedDuration = _appWrapper.getHelper('html').formatDuration(remainingTime);
+        }
+        appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
+        appState.progressData.styleObject = {
+            width: percentComplete + '%'
+        };
+    }
+
+    clearProgress () {
+        appState.progressData.inProgress = false;
+        this.operationStartTime = null;
+    }
+
+    calculateTime(percent){
+        var currentTime = (+ new Date()) / 1000;
+        var remainingTime = null;
+        if (percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
+            var remaining = 100 - percent;
+            this.lastTimeCalculation = currentTime;
+            var elapsedTime = currentTime - this.operationStartTime;
+            var timePerPercent = elapsedTime / percent;
+            remainingTime = remaining * timePerPercent;
+            this.lastTimeValue = remainingTime;
+        } else {
+            remainingTime = this.lastTimeValue;
+        }
+        return remainingTime;
     }
 }
 

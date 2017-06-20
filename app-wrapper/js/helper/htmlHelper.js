@@ -1,27 +1,15 @@
-var eventEmitter = require('events');
-var _ = require('lodash');
+const eventEmitter = require('events');
+const _ = require('lodash');
 
 var _appWrapper;
 var appState;
-
 
 class HtmlHelper extends eventEmitter {
 
     constructor(){
         super();
-
         _appWrapper = window.getAppWrapper();
         appState = _appWrapper.getAppState();
-
-        this.tweens = {};
-        this.tweenIntervals = {};
-
-        this.operationStart = null;
-        this.lastTimeCalculation = null;
-        this.lastTimeValue = 0;
-        this.timeCalculationDelay = 1;
-        this.minPercentComplete = 0.3;
-
     }
 
     async initialize () {
@@ -315,36 +303,6 @@ class HtmlHelper extends eventEmitter {
         }
     }
 
-    startProgress (total, operationText) {
-        appState.progressData.inProgress = true;
-        this.updateProgress(0, total, operationText);
-    }
-
-    updateProgress (completed, total, operationText) {
-        if (!appState.progressData.inProgress){
-            this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false);
-            return;
-        }
-        if (!this.operationStart){
-            this.operationStart = (+ new Date()) / 1000;
-        }
-        var percentComplete = (completed / total) * 100;
-        var remainingTime = this.calculateTime(percentComplete);
-        percentComplete = parseInt(percentComplete);
-        if (operationText){
-            appState.progressData.operationText = operationText;
-        }
-        appState.progressData.detailText = completed + ' / ' + total;
-        var formattedDuration = _appWrapper.appTranslations.translate('calculating');
-        if (percentComplete >= this.minPercentComplete){
-            formattedDuration = this.formatDuration(remainingTime);
-        }
-        appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
-        appState.progressData.styleObject = {
-            width: percentComplete + '%'
-        };
-    }
-
     formatDuration (time) {
         if (isNaN(time)){
             time = 0;
@@ -471,27 +429,6 @@ class HtmlHelper extends eventEmitter {
 
         return formattedDate;
 
-    }
-
-    clearProgress () {
-        appState.progressData.inProgress = false;
-        this.operationStart = null;
-    }
-
-    calculateTime(percent){
-        var currentTime = (+ new Date()) / 1000;
-        var remainingTime = null;
-        if (percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
-            var remaining = 100 - percent;
-            this.lastTimeCalculation = currentTime;
-            var elapsedTime = currentTime - this.operationStart;
-            var timePerPercent = elapsedTime / percent;
-            remainingTime = remaining * timePerPercent;
-            this.lastTimeValue = remainingTime;
-        } else {
-            remainingTime = this.lastTimeValue;
-        }
-        return remainingTime;
     }
 
     formatCurrency (value){
