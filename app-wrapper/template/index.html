@@ -9,15 +9,33 @@
             <modal-dialog ref="modalDialog"></modal-dialog>
         </div>
         <script type="text/javascript">
-            var initialConfig = require('../config/config').config;
-            var nws = require('nw-skeleton');
+            var initialConfigData;
+            var initialConfig;
+            var nws;
             var appWrapper;
-
             async function _nwsInit(){
-                appWrapper = new nws.AppWrapper(initialConfig);
-                await appWrapper.initialize();
+                let fs = require('fs');
+                let path = require('path');
+                let configFilePath = path.resolve('./config/config.js');
+                let configFileExists = fs.existsSync(configFilePath);
+                if (configFileExists){
+                    initialConfigData = require(configFilePath);
+                    initialConfig = initialConfigData.config;
+                    nws = require('nw-skeleton');
+                    appWrapper = new nws.AppWrapper(initialConfig);
+                    await appWrapper.initialize();
+                } else {
+                    document.querySelector('body').setAttribute('style', 'background-color: #FFFFFF; color:#CC0000; text-align: center;');
+                    let html = '<h1>Problem loading config "' + configFilePath + '"</h1>';
+                    html += '<a onclick="window.close()" style="color:#0000FF; border: 1px solid #333333; display: inline-block; padding: 3px 5px; cursor:pointer; margin: 0 auto;" href="#">Close</a>';
+                    document.querySelector('.nw-app-wrapper').innerHTML = html;
+                    return;
+                }
             }
-            _nwsInit();
+
+            window.onload = async function(){
+                await _nwsInit();
+            };
         </script>
     </body>
 </html>

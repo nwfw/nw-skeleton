@@ -2,20 +2,6 @@ exports.config = {
     wrapper : {
         appFile: '../../app/js/app',
 
-        templateExtensionRegex: /\.html$/,
-        templateDirectories: {
-            template: [
-                './node_modules/nw-skeleton/app-wrapper/template/',
-                './node_modules/nw-skeleton/app-wrapper/template/components/global/'
-            ],
-            componentTemplate: [
-                './node_modules/nw-skeleton/app-wrapper/components/',
-                './node_modules/nw-skeleton/app-wrapper/components/modal/',
-                './node_modules/nw-skeleton/app-wrapper/components/global/',
-                './node_modules/nw-skeleton/app-wrapper/components/form/'
-            ]
-        },
-
         componentCodeRegex: /\.js$/,
         componentDirectories: {
             component: ['./node_modules/nw-skeleton/app-wrapper/components/app/'],
@@ -173,23 +159,6 @@ exports.config = {
         debugJsFiles: [],
 
         mixinRoot: './app/js/mixin/',
-
-        appTemplateExtensionRegex: /\.html$/,
-        templateDirectories: {
-            template: [
-                './app/template/',
-                './app/template/components/global/'
-            ],
-            componentTemplate: [
-                './app/template/components/',
-                './app/template/components/modal/',
-            ]
-        },
-
-        appComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/',
-        appGlobalComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/global/',
-        appModalComponentCodeRoot: './node_modules/nw-skeleton/app/js/components/modal/',
-        appComponentCodeRegex: /\.js$/,
 
         menuData: {}
     },
