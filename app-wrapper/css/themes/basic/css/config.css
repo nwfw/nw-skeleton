@@ -30,7 +30,7 @@
     --link-base-color-active: #9999FF;
     --link-base-color-visited: #3333CC;
 
-    --app-header-height: 52px;
+    --app-header-height: auto;
     --app-header-background-color-top: #EEEEEE;
     --app-header-background-color-bottom: #CCCCCC;
     --app-header-text-color: #333333;
@@ -47,9 +47,11 @@
 
 
     --app-footer-text-color: #CCCCCC;
+    --app-footer-height: auto;
 
     --app-progress-bar-wrapper-border-color: #999999;
     --app-progress-bar-wrapper-box-shadow: 0 0 20px #999999;
+    --app-progress-bar-wrapper-clip-offset: 25px;
     --app-progress-bar-wrapper-border-radius: 0 0 4px 4px;
     --app-progress-bar-font-size: 0.7rem;
 
@@ -199,6 +201,7 @@
     --app-live-info-background-color-top: var(--app-header-background-color-top);
     --app-live-info-background-color-bottom: var(--app-header-background-color-bottom);
     --app-live-info-background: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-clip-offset: 25px;
 
     --app-live-info-border: 1px solid #999999;
     --app-live-info-border-radius: 4px;
@@ -215,7 +218,7 @@
     --app-live-info-background-error: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
     --app-live-info-border-error: 1px solid #660000;
 
-    --app-live-info-box-shadow-working: 0 0 20px #FFCC33;
+    --app-live-info-box-shadow-working: 0 0 0px #FFCC33;
     --app-live-info-background-working: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
     --app-live-info-border-working: 1px solid #AA8800;
 

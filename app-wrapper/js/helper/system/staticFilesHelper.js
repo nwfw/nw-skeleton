@@ -682,12 +682,16 @@ class StaticFilesHelper extends BaseClass {
 
     async registerTheme(themeName, themeDir){
         if (themeName && themeDir){
-            this.log('Registering theme "{1}"...', 'debug', [themeName], true);
             _.remove(appState.availableThemes, { name: themeName });
-            appState.availableThemes.push({
-                name: themeName,
-                path: themeDir
-            });
+            if (await _appWrapper.fileManager.isFile(path.join(themeDir, 'css', 'config.css' ))){
+                this.log('Registering theme "{1}"...', 'debug', [themeName], true);
+                appState.availableThemes.push({
+                    name: themeName,
+                    path: themeDir
+                });
+            } else {
+                this.log('Problem registering theme "{1}" - no config.css file!', 'error', [themeName], true);
+            }
         }
     }
 

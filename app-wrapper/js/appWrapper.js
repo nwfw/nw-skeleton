@@ -47,7 +47,7 @@ class AppWrapper extends BaseClass {
             cleanupTimeout: null,
             windowCloseTimeout: null,
             modalContentVisibleTimeout: null,
-            appStatusChangingTimeout: null
+            // appStatusChangingTimeout: null
         };
 
         this.intervals = {
@@ -171,15 +171,15 @@ class AppWrapper extends BaseClass {
         await this.initializeFeApp();
         if (this.getConfig('appConfig.showInitializationStatus')){
             let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
-            this.operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
+            this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
         }
 
         // await this.finalize();
         if (this.getConfig('appConfig.showInitializationStatus')){
             if (this.getConfig('appConfig.showInitializationProgress')){
-                this.operationUpdate(100, 100);
+                this.getHelper('appOperation').operationUpdate(100, 100);
             }
-            this.operationFinish(this.appTranslations.translate('Application initialized'));
+            this.getHelper('appOperation').operationFinish(this.appTranslations.translate('Application initialized'));
         }
 
         return this;
@@ -451,91 +451,6 @@ class AppWrapper extends BaseClass {
         this.setAppStatus(false);
     }
 
-    operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation){
-        if (!operationText){
-            operationText = '';
-        }
-        if (!cancelable){
-            cancelable = false;
-        }
-        if (preventAnimation){
-            appState.progressData.animated = false;
-        } else {
-            appState.progressData.animated = true;
-        }
-
-        appState.appOperation = {
-            operationText,
-            useProgress,
-            progressText,
-            appBusy,
-            cancelable
-        };
-
-        if (_.isUndefined(appBusy)){
-            appBusy = true;
-        }
-
-        appState.appStatusChanging = true;
-        this.setAppStatus(appBusy);
-
-        clearTimeout(this.timeouts.appStatusChangingTimeout);
-        if (useProgress){
-            this.helpers.htmlHelper.startProgress(100, appState.appOperation.progressText);
-        }
-    }
-
-    operationUpdate(completed, total, progressText){
-        if (!progressText){
-            progressText = appState.appOperation.progressText;
-        }
-        if (appState.appOperation.useProgress){
-            this.helpers.htmlHelper.updateProgress(completed, total, progressText);
-        }
-    }
-
-    operationFinish(operationText, timeoutDuration){
-        if (operationText){
-            appState.appOperation.operationText = operationText;
-        }
-
-        let appBusy = appState.appOperation.appBusy ? false : appState.appBusy;
-
-        if (!timeoutDuration){
-            timeoutDuration = 2000;
-        }
-
-        this.setAppStatus(appBusy, 'success');
-
-        if (appState.appOperation.useProgress){
-            this.helpers.htmlHelper.clearProgress();
-        }
-
-        clearTimeout(this.timeouts.appStatusChangingTimeout);
-
-        this.timeouts.appStatusChangingTimeout = setTimeout(() => {
-            appState.appStatusChanging = false;
-            appState.appOperation = {
-                cancelable: null,
-                cancelling: null,
-                operationText: null,
-                useProgress: null,
-                progressText: null,
-                appBusy: null
-            };
-            this.setAppStatus(false);
-        }, timeoutDuration);
-        appState.progressData.animated = true;
-    }
-
-    operationCancel (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        appState.appOperation.cancelling = true;
-        appState.appOperation.operationText = 'Cancelling...';
-    }
-
     async showModalCloseConfirm (e){
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -635,32 +550,6 @@ class AppWrapper extends BaseClass {
         if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
             appState.closeModalResolve(true);
         }
-    }
-
-    showUserMessageSettings (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        this.appConfig.setConfigVar('userMessagesToolbarVisible', !this.getConfig('userMessagesToolbarVisible'));
-    }
-
-    toggleUserMessages (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        this.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
-        setTimeout(() => {
-            var ul = document.querySelector('.user-message-list');
-            ul.scrollTop = ul.scrollHeight;
-        }, 50);
-    }
-
-    userMessageLevelSelectFocus () {
-        appState.userMessagesData.selectFocused = true;
-    }
-
-    userMessageLevelSelectBlur () {
-        appState.userMessagesData.selectFocused = false;
     }
 
     setDynamicAppStateValues () {

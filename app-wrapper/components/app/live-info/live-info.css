@@ -3,6 +3,7 @@
     background: var(--app-live-info-background);
     border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
     position: absolute;
+
     bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
@@ -12,11 +13,11 @@
     height: 31px;
     padding: 6px 0;
     min-height: 0;
-    z-index: 5;
-    overflow: hidden;
+    display: block;
     transition-property: height, box-shadow, border, border-bottom, color !important;
     transition-timing-function: ease-out !important;
     transition-duration: var(--short-animation-duration) !important;
+    clip-path: polygon(calc(0% - var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) 100%, calc(0% - var(--app-live-info-clip-offset)) 100%);
 }
 
 .header-bottom.has-progress-bar .live-info {

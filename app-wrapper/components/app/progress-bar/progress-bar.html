@@ -1,5 +1,5 @@
-<transition name="height">
-	<div v-if="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
+<transition name="size-height-long">
+	<div v-show="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
 		<div class="progress-operation">
 			<div class="progress-detail-text" v-bind:title="progressData.operationText">
 			{{ progressData.operationText }}
@@ -16,7 +16,7 @@
 				{{ progressData.percentComplete }}
 			</div>
 		</div>
-		<a v-on:click="callViewHandler" data-click-handler="operationCancel" v-if="appState.appOperation.cancelable" class="progress-cancel">
+		<a v-on:click="callViewHandler" data-click-handler="helpers.appOperationHelper.operationCancel" v-if="appState.appOperation.cancelable" class="progress-cancel">
 			<span class="fa fa-ban" data-event-target="parent"></span>
 		</a>
 	</div>

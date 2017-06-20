@@ -394,6 +394,7 @@ exports.config = {
         StaticFilesHelper: false,
         UserMessageHelper: false,
         UserDataHelper: false,
+        AppOperationHelper: false,
         UtilHelper: false,
         WindowManager: false,
         FileManager: false
@@ -412,6 +413,7 @@ exports.config = {
         StaticFilesHelper: false,
         UserMessageHelper: false,
         UserDataHelper: false,
+        AppOperationHelper: false,
         UtilHelper: false,
         WindowManager: false,
         FileManager: false

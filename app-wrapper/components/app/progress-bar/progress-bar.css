@@ -20,7 +20,6 @@
     left: 50%;
     transform: translateX(-50%);
     border-top: none;
-    z-index: 4;
     width: 240px;
     height: 50px;
     min-height: 0;
@@ -29,10 +28,12 @@
 
 .has-progress-bar .progress-bar-wrapper {
 	box-shadow: var(--app-progress-bar-wrapper-box-shadow);
+    clip-path: polygon(calc(0% - var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)), calc(0% - var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)));
+
 }
 
 .progress-bar-wrapper.progress-bar-wrapper-active {
-	top: calc(var(--app-header-height));
+    margin-top: 10px;
 }
 
 .progress-bar-wrapper .progress-operation {

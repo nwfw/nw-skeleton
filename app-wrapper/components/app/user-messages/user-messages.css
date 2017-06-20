@@ -28,15 +28,17 @@
 	width: inherit;
 	text-align: center;
 	overflow: hidden;
-	display: none;
+	display: inline-block;
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
+	visibility: hidden;
 }
 
-.user-messages-toolbar-visible .user-messages .user-messages-toolbar {
-	display: inline-block;
+.user-messages.user-messages-toolbar-visible .user-messages-toolbar {
+	visibility: visible;
 }
+
 
 .user-messages .user-messages-toolbar h2 {
 	margin: 0;
@@ -73,6 +75,7 @@
 	clear: both;
 	position: relative;
 	width: 100%;
+	overflow: auto;
 }
 
 .user-messages .user-messages-settings .user-messages-settings-title {
@@ -147,6 +150,7 @@
 	border-left: 1px solid;
 	margin-left: 5px;
 	padding-left: 5px;
+	text-align: left;
 	transition: border-color linear var(--short-animation-duration),
 				padding-left linear var(--short-animation-duration);
 }

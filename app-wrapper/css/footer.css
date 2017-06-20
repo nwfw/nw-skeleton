@@ -8,25 +8,23 @@ footer {
     background: var(--app-footer-background);
     transition-property: flex-basis;
     transition-duration: 0.3s;
+    justify-content: center;
+    /*align-items: center;*/
 }
 
-footer.user-messages-toolbar-visible {
-    flex: 0 0 95px;
-}
-
-footer.user-messages-expanded {
-    flex: 0 0 150px;
-}
-
-footer.user-messages-toolbar-visible.user-messages-expanded {
-    flex: 0 0 180px;
-}
-
-.footer-info {
-    flex: 1 1 30px;
+footer .footer-info {
+    flex: 1 1 auto;
     margin: 0;
-    padding: 0;
+    padding: 10px 0 0 0;
     bottom: 0px;
     text-align: center;
     width: 100%;
+}
+
+footer.has-user-messages .footer-info {
+    padding-top: 0px;
+}
+
+footer .user-messages {
+    flex: 1 1 auto;
 }

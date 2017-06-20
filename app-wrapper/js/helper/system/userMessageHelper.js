@@ -59,6 +59,32 @@ class UserMessageHelper extends BaseClass {
             clearInterval(appState.intervals.userMessageQueue);
         }
     }
+
+    showUserMessageSettings (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        _appWrapper.appConfig.setConfigVar('userMessagesToolbarVisible', !this.getConfig('userMessagesToolbarVisible'));
+    }
+
+    toggleUserMessages (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        _appWrapper.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
+        setTimeout(() => {
+            var ul = document.querySelector('.user-message-list');
+            ul.scrollTop = ul.scrollHeight;
+        }, 50);
+    }
+
+    userMessageLevelSelectFocus () {
+        appState.userMessagesData.selectFocused = true;
+    }
+
+    userMessageLevelSelectBlur () {
+        appState.userMessagesData.selectFocused = false;
+    }
 }
 
 exports.UserMessageHelper = UserMessageHelper;

@@ -26,7 +26,8 @@ header {
 .main {
     position: relative;
     display: flex;
-    flex: 1 1 0px;
+    flex: 50 1 0px;
+    overflow: auto;
 }
 
 .app-loader {
@@ -75,6 +76,6 @@ header {
 
 footer {
     display: flex;
-    flex-flow: column;
-    flex: 0 0 70px;
+    flex-flow: column nowrap;
+    flex: 1 1 var(--app-footer-height);
 }

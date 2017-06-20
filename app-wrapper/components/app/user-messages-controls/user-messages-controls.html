@@ -3,17 +3,17 @@
 		<h4 class="user-messages-settings-title" v-html="translate('User messages') + ' (' + appState.userMessages.length + ')'"></h4>
 		<div class="user-messages-settings-tools">
 			<a class="user-messages-settings-tool clear-user-messages fa fa-ban" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }" v-bind:title="translate('Clear user messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages"></a>
-			<a href="#" class="user-messages-settings-tool user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="showUserMessageSettings" v-bind:title="translate('User messages settings')">
+			<a href="#" class="user-messages-settings-tool user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="helpers.userMessageHelper.showUserMessageSettings" v-bind:title="translate('User messages settings')">
 				<span class="fa fa-cog"></span>
 			</a>
-			<a class="user-messages-settings-tool expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" v-on:click="callViewHandler" data-click-handler="toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
+			<a class="user-messages-settings-tool expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" v-on:click="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
 		</div>
 	</div>
 	<div class="user-messages-toolbar">
 		<div class="user-messages-tools">
 			<div class="user-message-control user-message-level-picker">
 				<label v-html="translate('User message level')"></label>
-				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
+				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="helpers.userMessageHelper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="helpers.userMessageHelper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
 					<template v-for="(levelValue, levelName) in appState.debugLevels">
 						<template v-if="levelValue == appState.userMessageLevel">
 							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>

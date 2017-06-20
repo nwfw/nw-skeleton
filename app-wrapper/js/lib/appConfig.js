@@ -101,9 +101,9 @@ class AppConfig extends BaseClass {
 
             try {
                 if (userConfig && userConfigKeysDiff.length){
-                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')], false);
+                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')], true);
                     localStorage.setItem(configName, JSON.stringify(userConfig));
-                    this.addUserMessage('Configuration data saved', 'info', [], false);
+                    this.addUserMessage('Configuration data saved', 'info', [], true);
                     appState.hasUserConfig = true;
                     this.userConfig = _.cloneDeep(userConfig);
                     if (shouldReload){
