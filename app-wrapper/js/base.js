@@ -243,6 +243,8 @@ class BaseClass extends eventEmitter {
         }
 
         userMessage = {
+            count: 1,
+            timestamps: [timestamp],
             timestamp: timestamp,
             message: message,
             iconClass: iconClass,

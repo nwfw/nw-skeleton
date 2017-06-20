@@ -311,6 +311,10 @@ exports.config = {
                 editable: true,
                 reload: false
             },
+            userMessagesTimestamp: {
+                editable: true,
+                reload: false
+            },
             userMessagesToolbarVisible: {
                 editable: true,
                 reload: false
@@ -367,6 +371,7 @@ exports.config = {
     userMessagesToFileAppend: false,
     userMessagesFilename: './app/var/log/user-messages.log',
     userMessagesExpanded: false,
+    userMessagesTimestamp: true,
     userMessagesToolbarVisible: false,
 
     windowCloseTimeoutDuration: 15000,

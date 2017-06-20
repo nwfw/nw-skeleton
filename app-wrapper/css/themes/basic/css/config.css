@@ -112,6 +112,7 @@
     --app-user-messages-clear-messages-link-color-hovered: #FF6666;
 
     --app-user-messages-list-border: 1px solid #666666;
+    --app-user-messages-list-background: #EEEEEE;
 
     --app-user-messages-message-border-even: 1px solid #666666;
     --app-user-messages-message-border-odd: var(--app-user-messages-message-border-even);

@@ -320,14 +320,14 @@ class ComponentHelper extends BaseClass {
             if (componentMapping.componentCssFiles){
                 for(let i=0; i<componentMapping.componentCssFiles.length; i++){
                     let cssFile = path.join(componentBaseDir , componentName, componentMapping.componentCssFiles[i]);
-                    appState.config.appConfig.cssFiles.push(cssFile);
+                    appState.componentCssFiles.push(cssFile);
                 }
             } else {
                 let cssFileName = componentName + '.css';
                 let cssFile = await _appWrapper.fileManager.getFirstFileFromDirs(cssFileName, loadDirs);
                 if (cssFile){
                     if (await _appWrapper.fileManager.isFile(cssFile)){
-                        appState.config.appConfig.cssFiles.push(cssFile);
+                        appState.componentCssFiles.push(cssFile);
                     }
                 }
             }

@@ -3,6 +3,7 @@ exports.appState = {
     appData: {},
     userData: {},
     config: {},
+    componentCssFiles: [],
     windowState: {
         title: '',
         position: '',

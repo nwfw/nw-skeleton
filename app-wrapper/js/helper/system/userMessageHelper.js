@@ -38,9 +38,22 @@ class UserMessageHelper extends BaseClass {
             } else {
                 appState.animateMessages = true;
             }
-            var userMessage = appState.userMessageQueue.shift();
+            let userMessage = appState.userMessageQueue.shift();
+            let addMessage = true;
             if (userMessage){
-                appState.userMessages.push(userMessage);
+                let lastMessage;
+                if (appState.userMessages && appState.userMessages.length){
+                    lastMessage = appState.userMessages[appState.userMessages.length-1];
+                }
+                if (lastMessage && lastMessage.message == userMessage.message && lastMessage.type == userMessage.type){
+                    lastMessage.count++;
+                    lastMessage.timestamps.push(userMessage.timestamp);
+                    lastMessage.timestamp = userMessage.timestamp;
+                    addMessage = false;
+                }
+                if (addMessage){
+                    appState.userMessages.push(userMessage);
+                }
             }
         } else {
             clearInterval(appState.intervals.userMessageQueue);

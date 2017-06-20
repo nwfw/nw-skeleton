@@ -168,12 +168,11 @@ class AppWrapper extends BaseClass {
 
         await this.app.initialize();
 
-        window.feApp = await this.initializeFeApp();
+        await this.initializeFeApp();
         if (this.getConfig('appConfig.showInitializationStatus')){
             let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
             this.operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
         }
-
 
         // await this.finalize();
         if (this.getConfig('appConfig.showInitializationStatus')){
@@ -195,6 +194,8 @@ class AppWrapper extends BaseClass {
             window.appState.appReady = true;
         }
         this.windowManager.setupAppMenu();
+        window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
+
         return retValue;
     }
 
@@ -281,7 +282,7 @@ class AppWrapper extends BaseClass {
     async initializeFeApp(){
         this.log('Initializing Vue app...', 'debug', [], false);
 
-        let vm = new Vue({
+        window.feApp = new Vue({
             el: '.nw-app-wrapper',
             template: window.indexTemplate,
             data: appState,
@@ -302,7 +303,7 @@ class AppWrapper extends BaseClass {
             }
         }
 
-        return vm;
+        return window.feApp;
     }
 
     async reinitializeFeApp(){
@@ -368,6 +369,9 @@ class AppWrapper extends BaseClass {
         setTimeout(async () => {
             await this.shutdownApp();
             await this.finalizeLogs();
+            if (window && window.feApp && window.feApp.$destroy && _.isFunction(window.feApp.$destroy)){
+                window.feApp.$destroy();
+            }
             resolveReference(true);
         }, 200);
         return returnPromise;
@@ -792,21 +796,30 @@ class AppWrapper extends BaseClass {
     }
 
     async finalizeLogs(){
+        await this.finalizeUserMessageLog();
+        await this.finalizeDebugMessageLog();
+        return true;
+    }
 
+    async finalizeUserMessageLog(){
         if (this.getConfig('debugToFile')){
+            let debugLogFile = path.resolve(this.getConfig('debugMessagesFilename'));
             this.log('Finalizing debug message log...', 'info', [], true);
-            var debugLogContents = '[\n' + await this.fileManager.readFileSync(path.resolve(this.getConfig('debugMessagesFilename'))) + '\n]';
-            await this.fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), debugLogContents, {flag: 'w'});
+            let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]';
+            await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
             this.log('Finalized debug message log.', 'info', [], true);
         }
+        return true;
+    }
 
+    async finalizeDebugMessageLog(){
         if (this.getConfig('userMessagesToFile')){
+            let messageLogFile = path.resolve(this.getConfig('userMessagesFilename'));
             this.log('Finalizing user message log...', 'info', [], true);
-            var messageLogContents = '[\n' + await this.fileManager.readFileSync(path.resolve(this.getConfig('userMessagesFilename'))) + '\n]';
-            await this.fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLogContents, {flag: 'w'});
+            let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]';
+            await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
             this.log('Finalized user message log...', 'info', [], true);
         }
-
         return true;
     }
     getAppState () {

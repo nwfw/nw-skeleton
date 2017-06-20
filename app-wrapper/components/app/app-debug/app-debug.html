@@ -2,7 +2,7 @@
 		<div class="app-debug">
 			<div class="app-debug-header">
 				<template v-if="!appState.hideDebug">
-					<h2 v-html="translate('Debug') + ' (' + debugMessages.length + ') ' + translate('messages')"></h2>
+					<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
 				</template>
 				<template v-else>
 					<h2 v-html="translate('Debug')"></h2>

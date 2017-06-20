@@ -222,6 +222,73 @@ class UtilHelper extends BaseClass {
         }
         return ret;
     }
+
+    getVarParent(varPath, context){
+        if (!context){
+            context = global;
+        }
+        let varChunks = varPath.split('.');
+        let currentVar = false;
+        if (varChunks && varChunks.length){
+            currentVar = context[varChunks[0]];
+        }
+        if (!_.isUndefined(currentVar) && currentVar){
+            for (let i=1; i<varChunks.length-1;i++){
+                if (!_.isUndefined(currentVar[varChunks[i]])){
+                    currentVar = currentVar[varChunks[i]];
+                } else {
+                    currentVar = false;
+                }
+            }
+        }
+        return currentVar;
+    }
+
+    getVar(varPath, context){
+        if (!context){
+            context = global;
+        }
+        let varChunks = varPath.split('.');
+        let currentVar = false;
+        if (varChunks && varChunks.length){
+            currentVar = context[varChunks[0]];
+        }
+        if (!_.isUndefined(currentVar) && currentVar){
+            for (let i=1; i<varChunks.length;i++){
+                if (!_.isUndefined(currentVar[varChunks[i]])){
+                    currentVar = currentVar[varChunks[i]];
+                } else {
+                    currentVar = false;
+                }
+            }
+        }
+        return currentVar;
+    }
+
+    setVar(varPath, value, context){
+        if (!context){
+            context = global;
+        }
+        let varChunks = varPath.split('.');
+        let currentVar;
+        let found = false;
+        if (varChunks && varChunks.length){
+            currentVar = context[varChunks[0]];
+        }
+        if (!_.isUndefined(currentVar) && currentVar){
+            for (let i=1; i<varChunks.length-1;i++){
+                if (!_.isUndefined(currentVar[varChunks[i]])){
+                    found = true;
+                    currentVar = currentVar[varChunks[i]];
+                }
+            }
+            if (found){
+                currentVar[varChunks[varChunks.length-1]] = value;
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 exports.UtilHelper = UtilHelper;

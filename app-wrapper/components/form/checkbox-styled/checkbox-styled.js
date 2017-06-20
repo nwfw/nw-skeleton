@@ -1,50 +1,44 @@
-var _ = require('lodash');
-
-var _appWrapper = window.getAppWrapper();
+var utilHelper = window.getAppWrapper().getHelper('util');
 
 exports.component = {
     name: 'checkbox-styled',
     template: '',
-    props: ['class','change','checked','name','side', 'table', 'model'],
-    isChecked: false,
-    state: false,
+    props: ['class', 'change', 'name', 'data', 'modelProperty'],
     cbModel: false,
+    modelParent: null,
+    watchOn: false,
+    noWatchChange: false,
     data: function () {
         return {
-            inputChecked: this.isChecked || this.cbModel,
-            state: this.state || this.cbModel,
-            cbModel: this.cbModel || this.isChecked
+            cbModel: this.cbModel
         };
     },
     created: function() {
-        this.isChecked = this.checked || this.model;
-        this.state = this.checked || this.model;
-        this.cbModel = this.model || this.checked;
+        this.cbModel = utilHelper.getVar(this.modelProperty);
+    },
+    mounted: function(){
+        if (!this.watchOn && window && window.feApp && window.feApp.$watch){
+            this.watchOn = window.feApp.$watch(this.modelProperty, this.modelPropertyChanged.bind(this));
+        }
+    },
+    beforeUnmount: function(){
+        if (this.watchOn){
+            this.watchOn();
+            this.watchOn = false;
+        }
+    },
+    beforeDestroy: function(){
+        if (this.watchOn){
+            this.watchOn();
+            this.watchOn = false;
+        }
     },
     methods: {
         handleChange: function(){
-            let input = this.$el.querySelector('.hidden-checkbox');
-            if (input){
-                let event = new Event('change1');
-                this.isChecked = input.checked;
-                this.state = this.isChecked;
-                this.cbModel = this.isChecked;
-                input.dispatchEvent(event);
-                if (this.change && _.isFunction(this.change)){
-                    this.change(event);
-                }
-            }
+            utilHelper.setVar(this.modelProperty, this.cbModel);
         },
-        setChecked: function(checked){
-            this.isChecked = checked;
-            this.state = checked;
-            this.cbModel = checked;
+        modelPropertyChanged: function(){
+            this.cbModel = utilHelper.getVar(this.modelProperty);
         }
-    },
-    computed: {
-        checkboxChecked: function(){
-            return this.isChecked || this.cbModel;
-        }
-    },
-    components: []
+    }
 };

@@ -1,9 +1,4 @@
-<span class="checkbox-styled" :state="state" :cbModel="cbModel">
-<template v-if="inputChecked">
-     <input checked="checked" v-model="cbModel" :data-side="side" :data-table="table" :name="name" class="hidden-checkbox" type="checkbox" v-bind:name="name" @change="handleChange" />
- </template>
- <template v-else>
-     <input v-model="cbModel" :data-side="side" :data-table="table" :name="name" class="hidden-checkbox" type="checkbox" v-bind:name="name" @change="handleChange" />
- </template>
- <span :data-name="name" :data-side="side" :data-table="table" class="styled-checkbox-placeholder fa" v-bind:class="{'fa-square-o' : !isChecked, 'fa-check-square-o': isChecked}"></span>
+<span class="checkbox-styled">
+    <input v-model="cbModel" :data-data="data" :name="name" class="hidden-checkbox" type="checkbox" @change="handleChange" />
+    <span :data-name="name" :data-data="data" class="styled-checkbox-placeholder fa" v-bind:class="{'fa-square-o' : !cbModel, 'fa-check-square-o': cbModel}"></span>
 </span>

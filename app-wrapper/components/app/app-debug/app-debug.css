@@ -86,6 +86,22 @@
     overflow: auto;
 }
 
+.app-debug .message .message-timestamp {
+    display: inline-block;
+    margin-right: 4px;
+    font-size: 0.8rem;
+    font-family: Inconsolata, monospace;
+}
+
+.app-debug .message .message-body:before {
+    border-left: 1px solid;
+    content: '';
+    font-size: 0.6rem;
+    position: relative;
+    top: -1px;
+    margin-right: 6px;
+}
+
 .app-debug .message {
     color: var(--app-user-messages-message-text-color);
 }

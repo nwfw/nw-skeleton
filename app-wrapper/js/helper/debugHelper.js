@@ -280,7 +280,7 @@ class DebugHelper extends BaseClass {
         }
         appState.userMessageQueue = [];
         appState.userMessages = [];
-        this.addUserMessage('User messages cleared', 'info', [], false, false, true);
+        this.log('User messages cleared', 'info', [], false);
     }
     changeUserMessageLevel (e) {
         var level = e.target.value;

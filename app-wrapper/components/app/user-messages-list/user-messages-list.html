@@ -1,16 +1,21 @@
-<div class="user-messages-contents">
+<div class="user-messages-contents" :class="{'no-timestamps': !appState.config.userMessagesTimestamp}">
 	<template v-if="appState.animateMessages">
 		<transition-group name="highlight" tag="ul" class="user-message-list">
 			<li class="message" v-bind:key="userMessage" v-for="userMessage in appState.userMessages" v-bind:class="userMessage.type">
 				<template v-if="userMessage.type != 'delimiter'">
-					<span v-bind:class="userMessage.iconClass">
-					</span>
-					<span class="message-timestamp">
-						{{ userMessage.timestamp }}
-					</span>
-					<span class="message-body">
+					<div v-bind:class="userMessage.iconClass">
+					</div>
+					<transition name="size-width-short">
+						<div v-if="appState.config.userMessagesTimestamp" class="message-timestamp" :title="userMessage.timestamps.join('\n')">
+							{{ userMessage.timestamp }}
+						</div>
+					</transition>
+					<div class="message-body">
 						{{ userMessage.message }}
-					</span>
+					</div>
+					<div v-if="userMessage.count > 1" class="message-count" :title="userMessage.count">
+						{{ userMessage.count }}
+					</div>
 				</template>
 				<template v-else>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 463.69 44.12" class="message-delimiter message-delimiter-new" preserveAspectRatio="none" shape-rendering="crispEdges">
@@ -36,14 +41,19 @@
 		<ul class="user-message-list">
 			<li class="message" v-bind:key="userMessage" v-for="userMessage in appState.userMessages" v-bind:class="userMessage.type">
 				<template v-if="userMessage.type != 'delimiter'">
-					<span v-bind:class="userMessage.iconClass">
-					</span>
-					<span class="message-timestamp">
-						{{ userMessage.timestamp }}
-					</span>
-					<span class="message-body">
+					<div v-bind:class="userMessage.iconClass">
+					</div>
+					<transition name="size-short">
+						<div v-if="appState.config.userMessagesTimestamp" class="message-timestamp" :title="userMessage.timestamps.join('\n')">
+							{{ userMessage.timestamp }}
+						</div>
+					</transition>
+					<div class="message-body">
 						{{ userMessage.message }}
-					</span>
+					</div>
+					<div v-if="userMessage.count > 1" class="message-count" :title="userMessage.count">
+						{{ userMessage.count }}
+					</div>
 				</template>
 				<template v-else>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 463.69 44.12" class="message-delimiter message-delimiter-new" preserveAspectRatio="none" shape-rendering="crispEdges">

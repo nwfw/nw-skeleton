@@ -17,6 +17,8 @@ class AppConfig extends BaseClass {
         this.baseConfig = {};
         this.appStateConfig = {};
         this.config = {};
+        this.previousConfig = {};
+        this.watchConfig = true;
 
         this.needsConfig = false;
 
@@ -72,10 +74,12 @@ class AppConfig extends BaseClass {
             }
             userConfig = _.merge({}, appState.config, userConfig);
             // this.config = _.cloneDeep(userConfig);
+            this.previousConfig = _.cloneDeep(userConfig);
             return userConfig;
         } else {
             this.log('No user config found.', 'info', [], false);
             this.config = _.cloneDeep(appState.config);
+            this.previousConfig = _.cloneDeep(appState.config);
             return appState.config;
         }
     }
@@ -89,11 +93,12 @@ class AppConfig extends BaseClass {
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
             var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
 
-            this.log('Saving user config...', 'info', [], false);
+
             try {
-                if (userConfig && _.keys(userConfig).length){
+                if (userConfig && userConfigKeys.length){
+                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeys.join(', ')], false);
                     localStorage.setItem(configName, JSON.stringify(userConfig));
-                    this.addUserMessage('Configuration data saved', 'info', [], false,  false);
+                    this.addUserMessage('Configuration data saved', 'info', [], false);
                     appState.hasUserConfig = true;
                     if (shouldReload){
                         _appWrapper.windowManager.reloadWindow(null, true);
@@ -292,6 +297,20 @@ class AppConfig extends BaseClass {
         } else {
             _appWrapper.helpers.modalHelper.closeCurrentModal();
         }
+    }
+
+    async configChanged (oldValue, newValue){
+        if (this.watchConfig){
+            let utilHelper = _appWrapper.getHelper('util');
+            let difference = utilHelper.difference(this.previousConfig, newValue);
+            let diffKeys = Object.keys(difference);
+            if (diffKeys && diffKeys.length){
+                this.log('Config vars changed: "{1}"', 'info', [diffKeys.join(', ')], false);
+                await this.saveUserConfig();
+            }
+        }
+        this.previousConfig = _.cloneDeep(appState.config);
+
     }
 
 }

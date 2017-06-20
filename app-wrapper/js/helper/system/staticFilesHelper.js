@@ -262,6 +262,8 @@ class StaticFilesHelper extends BaseClass {
         let debugCssFiles = this.getConfig('appConfig.debugCssFiles') || [];
         let appDebugCssFiles = this.getConfig('appConfig.appDebugCssFiles') || [];
 
+        appCssFiles = _.union(appCssFiles, appState.componentCssFiles);
+
         cssFiles = _.uniq(_.compact(cssFiles));
         appCssFiles = _.uniq(_.compact(appCssFiles));
         debugCssFiles = _.uniq(_.compact(debugCssFiles));
