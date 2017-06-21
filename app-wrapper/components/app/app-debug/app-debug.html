@@ -27,11 +27,14 @@
 			<div class="app-debug-body">
 				<ul>
 					<li class="message" v-for="debugMessage in appState.debugMessages" v-bind:class="debugMessage.type">
-						<span class="message-timestamp">
+						<span class="message-timestamp" :title="debugMessage.timestamps.join('\n')">
 							{{ debugMessage.timestamp }}
 						</span>
 						<span class="message-body">
 							{{ debugMessage.message }}
+						</span>
+						<span v-if="debugMessage.count > 1" class="message-count" :title="debugMessage.count">
+							{{ debugMessage.count }}
 						</span>
 					</li>
 				</ul>

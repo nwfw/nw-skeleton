@@ -71,11 +71,12 @@ class UserMessageHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        let htmlHelper = _appWrapper.getHelper('html');
         _appWrapper.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
         setTimeout(() => {
             var ul = document.querySelector('.user-message-list');
-            ul.scrollTop = ul.scrollHeight;
-        }, 50);
+            htmlHelper.scrollElementTo(ul, ul.scrollHeight + 1000, 0);
+        }, 500);
     }
 
     userMessageLevelSelectFocus () {

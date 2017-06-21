@@ -85,15 +85,6 @@ class DebugHelper extends BaseClass {
         this.addUserMessage('Debug messages cleared', 'info', [], true,  false, true);
     }
 
-    // processDebugMessages (el){
-    //     clearTimeout(this.timeouts.processDebugMessagesTimeout);
-    //     this.timeouts.processDebugMessagesTimeout = setTimeout(() => {
-    //         var ul = el.querySelector('ul');
-    //         ul.scrollTop = ul.scrollHeight + 100;
-    //         clearTimeout(this.timeouts.processDebugMessagesTimeout);
-    //     }, 100);
-    // }
-
     async saveDebug (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();

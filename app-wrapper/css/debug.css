@@ -8,7 +8,7 @@
 }
 
 .debug-window .debug-enabled.debug-visible .app-debug-wrapper {
-    flex: 1;
+    flex: 50 1 auto;
 }
 
 .debug-window .debug-toggle .status {

@@ -6,7 +6,7 @@
     transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
     border-radius: 0;
     list-style: none;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper {
@@ -87,20 +87,40 @@
 }
 
 .app-debug .message .message-timestamp {
-    display: inline-block;
-    margin-right: 4px;
-    font-size: 0.8rem;
+    padding-top:0.07rem;
+    padding-left: 5px;
     font-family: Inconsolata, monospace;
+    max-width: 3.6rem;
+    min-width: 3.6rem;
+    flex: 1 1 3.6rem;
 }
 
-.app-debug .message .message-body:before {
+.app-debug .message .message-body {
+    flex: 1 1 auto;
     border-left: 1px solid;
-    content: '';
-    font-size: 0.6rem;
-    margin-right: 6px;
+    margin-left: 2px;
+    padding-left: 5px;
+    text-align: left;
+}
+
+.app-debug .message .message-count {
+    flex: 0 1 1rem;
+    max-height: 1rem;
+    font-size: 0.7rem;
+    border: 1px solid;
+    padding: 0px 1px;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 4px;
 }
 
 .app-debug .message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2px;
+    padding: 1px 0;
     color: var(--app-user-messages-message-text-color);
 }
 
@@ -124,12 +144,39 @@
     font-weight: bold;
 }
 
+.app-debug .info .message-count {
+    background: var(--app-user-messages-message-info-text-color);
+}
+
+.app-debug .warning .message-count {
+    background: var(--app-user-messages-message-warning-text-color);
+}
+
+.app-debug .error .message-count {
+    background: var(--app-user-messages-message-error-text-color);
+}
+
+.app-debug .debug .message-count {
+    background: var(--app-user-messages-message-debug-text-color);
+}
+
+
 .app-debug .message:nth-child(2n) {
     background: var(--app-debug-message-even-background);
+    border-top: var(--app-debug-message-border-even);
 }
 
 .app-debug .message:nth-child(2n+1) {
     background: var(--app-debug-message-odd-background);
+    border-top: var(--app-debug-message-border-odd);
+}
+
+.app-debug .message:nth-child(2n) .message-count {
+    color: var(--app-debug-message-even-background);
+}
+
+.app-debug .message:nth-child(2n+1) .message-count {
+    color: var(--app-debug-message-odd-background);
 }
 
 .app-body.has-debug-window .app-debug-wrapper {

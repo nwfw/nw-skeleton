@@ -172,8 +172,6 @@
 	color: var(--app-user-messages-list-background);
 }
 
-
-
 .user-messages-contents .user-message-list li.message:nth-child(2n) {
 	border-top: var(--app-user-messages-message-border-even);
 }

@@ -139,7 +139,7 @@ class StaticFilesHelper extends BaseClass {
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
         _.each(links, (link) => {
             if (link.type && link.type == 'text/css'){
-                this.log('Reloading CSS file "{1}"', 'debug', [link.href.replace(/^[^\/]+\/\/[^\/]+/, '')], true);
+                this.log('Reloading CSS file "{1}"', 'info', [link.href.replace(/^[^\/]+\/\/[^\/]+/, '').replace(/\?.*$/, '')], true);
                 link.href = link.href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
             }
         });

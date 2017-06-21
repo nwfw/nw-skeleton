@@ -270,11 +270,11 @@ class ComponentHelper extends BaseClass {
         let type = 'info';
         if (parentName){
             if (childCount){
-                message = 'Initializing child component "{1}" of {2} with {3} children.';
+                message = 'Initializing child component "{1}" of "{2}"" with {3} children.';
                 type = 'group';
                 data = [componentName, parentName, childCount];
             } else {
-                message = 'Initializing child component "{1}" of {2}.';
+                message = 'Initializing child component "{1}" of "{2}".';
                 type = 'info';
                 data = [componentName, parentName];
             }
@@ -287,6 +287,7 @@ class ComponentHelper extends BaseClass {
             type = 'info';
             data = [componentName];
         }
+
         this.log(message, type, data);
 
         let loadDirs = _.union(componentOverrideDirs, [path.join(componentBaseDir, componentName)]);

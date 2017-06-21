@@ -106,6 +106,9 @@
     --app-debug-message-even-background: #FFFFFF;
     --app-debug-message-odd-background: #DDDDDD;
 
+    --app-debug-message-border-even: 1px solid #333333;
+    --app-debug-message-border-odd: var(--app-user-messages-message-border-even);
+
     /* user messages */
     --app-user-messages-tool-link-color: #333333;
     --app-user-messages-tool-link-color-hovered: #666666;

@@ -83,6 +83,7 @@ class BaseClass extends eventEmitter {
 
 
     async log(message, type, data, force){
+
         if (!data){
             data = [];
         }
@@ -116,7 +117,9 @@ class BaseClass extends eventEmitter {
 
         var timestamp = new Date().toISOString().slice(11, 19);
         var debugMessage = {
+            count: 1,
             timestamp: timestamp,
+            timestamps: [timestamp],
             message: message,
             type: type
         };
@@ -167,15 +170,30 @@ class BaseClass extends eventEmitter {
             }
         }
         if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
-            appState.debugMessages.push(debugMessage);
+            let lastMessage = _.last(appState.debugMessages);
+            if (lastMessage && lastMessage.message == debugMessage.message && lastMessage.type == debugMessage.type){
+                lastMessage.count++;
+                lastMessage.timestamps.push(debugMessage.timestamp);
+            } else {
+                appState.debugMessages.push(debugMessage);
+            }
         }
     }
 
     async getMessageFileLine(message){
-        if (message.timestamp){
-            message.timestamp = new Date().toISOString();
+        let msg = _.cloneDeep(message);
+        if (!msg.timestamp){
+            msg.timestamp = new Date().toISOString();
         }
-        return JSON.stringify(message);
+        if (msg.count == 1){
+            delete msg.count;
+            delete msg.timestamps;
+        }
+        delete msg.iconClass;
+        delete msg.force;
+        delete msg.active;
+        delete msg.typeLevel;
+        return JSON.stringify(msg);
     }
 
     async getDebugMessageFileLine (message){
@@ -186,8 +204,19 @@ class BaseClass extends eventEmitter {
         } else {
             appState.debugToFileStarted = true;
         }
-
-        line += await this.getMessageFileLine(message);
+        let msg = _.cloneDeep(message);
+        if (!msg.timestamp){
+            msg.timestamp = new Date().toISOString();
+        }
+        if (msg.count == 1){
+            delete msg.count;
+            delete msg.timestamps;
+        }
+        delete msg.iconClass;
+        delete msg.force;
+        delete msg.active;
+        delete msg.typeLevel;
+        line += await this.getMessageFileLine(msg);
         return line;
     }
 
