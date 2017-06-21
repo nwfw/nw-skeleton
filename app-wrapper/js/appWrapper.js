@@ -305,10 +305,10 @@ class AppWrapper extends BaseClass {
         if (appState.isDebugWindow){
             this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
         } else {
-            this.addUserMessage('Application initialized', 'info', [], false,  false, true);
             if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
                 this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
             }
+            this.addUserMessage('Application initialized', 'info', [], false, false, true);
         }
 
         return window.feApp;
@@ -386,7 +386,8 @@ class AppWrapper extends BaseClass {
     }
 
     async shutdownApp () {
-        this.addUserMessage('Shutting down...', 'info', [], true, false, true, true);
+        this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
+        this.log('Shutting down...', 'group', []);
         await this.windowManager.removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
@@ -404,6 +405,7 @@ class AppWrapper extends BaseClass {
         await this.fileManager.unwatchAllFiles();
         await this.fileManager.unwatchAll();
         this.addUserMessage('Shutdown complete.', 'info', [], true, false, true, true);
+        this.log('Shutting down...', 'groupend', []);
         await this.wait(appState.config.longPauseDuration);
         return true;
     }

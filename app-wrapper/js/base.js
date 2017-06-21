@@ -18,7 +18,6 @@ class BaseClass extends eventEmitter {
         this.forceUserMessages = false;
         this.forceDebug = false;
         this.boundMethods = {};
-
         this.needsConfig = true;
 
         return this;
@@ -104,9 +103,9 @@ class BaseClass extends eventEmitter {
             }
         }
 
-        if (type == 'group' || type == 'groupend'){
-            // doLog = true;
-        }
+        // if (debugLevel > 2 && (type == 'group' || type == 'groupend' || type == 'groupcollapsed')){
+        //     doLog = true;
+        // }
 
         if (message && message.match && message.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             message = message.replace(/{(\d+)}/g, function replaceMessageData(match, number) {
@@ -123,40 +122,7 @@ class BaseClass extends eventEmitter {
         };
 
         if (doLog){
-            if (type == 'group'){
-                if (this.getConfig('debugGroupsCollapsed')){
-                    console.groupCollapsed(message);
-                } else {
-                    console.group(message);
-                }
-            } else if (type == 'groupcollapsed'){
-                console.groupCollapsed(message);
-            } else if (type == 'groupend'){
-                console.groupEnd(message);
-            } else if (type == 'error'){
-                console.error(message);
-            } else if (type == 'warning'){
-                console.warn(message);
-            } else {
-                console.log(message);
-            }
-
-            if (type == 'error' || this.getConfig('alwaysTrace')){
-                console.trace();
-            }
-
-            var maxDebugMessages = this.getStateVar('maxDebugMessages', 30);
-            var messageCount = this.getStateVar('debugMessages.length', 0);
-
-            if (messageCount > maxDebugMessages){
-                var startIndex = messageCount - (maxDebugMessages + 1);
-                if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
-                    appState.debugMessages = appState.debugMessages.slice(startIndex);
-                }
-            }
-            if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
-                appState.debugMessages.push(debugMessage);
-            }
+            this._doLog(debugMessage);
         }
         if (debugMessage && debugMessage.message && this.getConfig('debugToFile')){
             var messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
@@ -165,6 +131,43 @@ class BaseClass extends eventEmitter {
 
         if (appState && appState.allDebugMessages && _.isArray(appState.allDebugMessages)){
             appState.allDebugMessages.push(debugMessage);
+        }
+    }
+
+    _doLog (debugMessage){
+        if (debugMessage.type == 'group'){
+            if (this.getConfig('debugGroupsCollapsed')){
+                console.groupCollapsed(debugMessage.message);
+            } else {
+                console.group(debugMessage.message);
+            }
+        } else if (debugMessage.type == 'groupcollapsed'){
+            console.groupCollapsed(debugMessage.message);
+        } else if (debugMessage.type == 'groupend'){
+            console.groupEnd(debugMessage.message);
+        } else if (debugMessage.type == 'error'){
+            console.error(debugMessage.message);
+        } else if (debugMessage.type == 'warning'){
+            console.warn(debugMessage.message);
+        } else {
+            console.log(debugMessage.message);
+        }
+
+        if (debugMessage.type == 'error' || this.getConfig('alwaysTrace')){
+            console.trace();
+        }
+
+        var maxDebugMessages = this.getStateVar('maxDebugMessages', 30);
+        var messageCount = this.getStateVar('debugMessages.length', 0);
+
+        if (messageCount > maxDebugMessages){
+            var startIndex = messageCount - (maxDebugMessages + 1);
+            if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
+                appState.debugMessages = appState.debugMessages.slice(startIndex);
+            }
+        }
+        if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
+            appState.debugMessages.push(debugMessage);
         }
     }
 
