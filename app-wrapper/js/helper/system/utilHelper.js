@@ -183,19 +183,22 @@ class UtilHelper extends BaseClass {
 
         platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
 
-        return platform;
+        return {
+            platform: platform,
+            versions: process.versions
+        };
     }
 
     isMac (){
-        return this.getPlatformData().isMac;
+        return this.getPlatformData().platform.isMac;
     }
 
     isWindows (){
-        return this.getPlatformData().isWindows;
+        return this.getPlatformData().platform.isWindows;
     }
 
     isLinux (){
-        return this.getPlatformData().isLinux;
+        return this.getPlatformData().platform.isLinux;
     }
 
     difference (original, modified) {

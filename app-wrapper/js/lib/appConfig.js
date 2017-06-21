@@ -96,6 +96,7 @@ class AppConfig extends BaseClass {
                 appState.hasUserConfig = false;
             }
             this.userConfig = _.cloneDeep(userConfig);
+            appState.userConfig = _.cloneDeep(userConfig);
             userConfig = _.merge({}, appState.config, userConfig);
             this.previousConfig = _.cloneDeep(userConfig);
             this.log('Loading user config...', 'groupend', []);
@@ -105,6 +106,7 @@ class AppConfig extends BaseClass {
             this.config = _.cloneDeep(appState.config);
             this.previousConfig = _.cloneDeep(appState.config);
             this.userConfig = {};
+            appState.userConfig = {};
             this.log('Loading user config...', 'groupend', []);
             return appState.config;
         }
@@ -130,6 +132,7 @@ class AppConfig extends BaseClass {
                     this.addUserMessage('Configuration data saved', 'info', [], true);
                     appState.hasUserConfig = true;
                     this.userConfig = _.cloneDeep(userConfig);
+                    appState.userConfig = _.cloneDeep(userConfig);
                     if (shouldReload){
                         _appWrapper.windowManager.reloadWindow(null, true);
                     } else {
@@ -140,6 +143,7 @@ class AppConfig extends BaseClass {
                         localStorage.removeItem(configName);
                         appState.hasUserConfig = false;
                         this.userConfig = {};
+                        appState.userConfig = {};
                         if (shouldReload){
                             _appWrapper.windowManager.reloadWindow(null, true);
                         } else {
@@ -164,6 +168,7 @@ class AppConfig extends BaseClass {
                 this.addUserMessage('Configuration data cleared', 'info', [], false,  false, true);
                 appState.hasUserConfig = false;
                 this.userConfig = {};
+                appState.userConfig = {};
                 _appWrapper.helpers.modalHelper.closeCurrentModal(true);
                 appState.appShuttingDown = true;
                 appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');

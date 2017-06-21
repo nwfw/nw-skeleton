@@ -149,6 +149,8 @@ class AppWrapper extends BaseClass {
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
 
+        appState.config.appInfo.initializationTime = this.getHelper('format').formatDate(new Date());
+
         await this.helpers.staticFilesHelper.loadCssFiles();
 
         appState.userData = await this.getHelper('userData').loadUserData();

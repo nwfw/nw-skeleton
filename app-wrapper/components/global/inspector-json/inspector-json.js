@@ -11,7 +11,7 @@ var mouseXOffset = null;
 exports.component = {
     name: 'inspector-json',
     template: '',
-    props: ['jsonData', 'collapsed'],
+    props: ['jsonData', 'collapsed', 'allowDrag'],
     data: function () {
         return appState;
     },
@@ -31,7 +31,6 @@ exports.component = {
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault();
             }
-            console.log('stopDrag');
             dragging = false;
         },
         drag(e){
