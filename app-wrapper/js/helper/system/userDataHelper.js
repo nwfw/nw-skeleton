@@ -32,7 +32,7 @@ class UserDataHelper extends BaseClass {
         if (!userData){
             userData = appState.userData;
         }
-        this.log('Saving user data', 'info', [], false);
+        this.log('Saving user data', 'info', []);
         let userDataName = this.getUserDataStorageName();
         let saved = await this.getHelper('storage').set(userDataName, userData);
         if (!saved){
@@ -44,17 +44,21 @@ class UserDataHelper extends BaseClass {
     }
 
     async loadUserData () {
-        this.log('Loading user data', 'info', [], true);
+        this.log('Loading user data', 'group', []);
         let userDataName = this.getUserDataStorageName();
         let userData = await this.getHelper('storage').get(userDataName);
         if (userData){
-            this.addUserMessage('Loaded {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
+            this.log('Loaded {1} user data variables.', 'info', [_.keys(userData).length]);
+            this.log('User data variables: "{1}".', 'debug', [_.keys(userData).join('", "')]);
         } else {
             if (userData !== null) {
-                this.addUserMessage('Could not load user data.', 'warning', [], false,  false);
+                this.log('Could not load user data.', 'warning', []);
+            } else {
+                this.log('No user data found.', 'info', []);
             }
             userData = {};
         }
+        this.log('Loading user data', 'groupend', []);
         return userData;
     }
 

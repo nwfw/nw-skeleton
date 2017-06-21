@@ -37,7 +37,9 @@ class StorageHelper extends BaseClass {
                 try {
                     returnValue = JSON.parse(savedValue);
                 } catch (ex) {
-                    console.error(ex);
+                    this.log('Problem loading "{1}" from storage: "{2}"!', 'error', [name, ex.message]);
+                    this.log('Loaded value: "{1}"!', 'debug', [savedValue]);
+                    returnValue = false;
                 }
             } else {
                 returnValue = savedValue;

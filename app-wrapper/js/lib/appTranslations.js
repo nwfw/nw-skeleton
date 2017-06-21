@@ -26,7 +26,7 @@ class AppTranslations extends BaseClass {
         return await super.initialize();
     }
     async initializeLanguage(){
-        this.log('Initializing languages...', 'debug', [], true);
+        this.log('Initializing languages...', 'group', []);
         this.translationData = await this.loadTranslations();
 
         var availableLanguageCodes = _.map(appState.languageData.availableLanguages, (item) => {
@@ -34,17 +34,18 @@ class AppTranslations extends BaseClass {
         });
 
         if (!(appState.languageData.availableLanguages && appState.languageData.availableLanguages.length)){
-            this.log('No available languages found!', 'error', [], false);
+            this.log('No available languages found!', 'error', []);
         } else if (!availableLanguageCodes.indexOf(appState.languageData.currentLanguage) == -1){
-            this.log('Language "{1}" invalid!', 'error', [appState.languageData.currentLanguage], false);
+            this.log('Language "{1}" invalid!', 'error', [appState.languageData.currentLanguage]);
         } else {
             if (!appState.languageData.translations){
-                this.log('No translations found!', 'error', [], false);
+                this.log('No translations found!', 'error', []);
             } else if (!appState.languageData.translations[appState.languageData.currentLanguage]){
-                this.log('No translations found for language "{1}"!', 'error', [appState.languageData.currentLanguage], false);
+                this.log('No translations found for language "{1}"!', 'error', [appState.languageData.currentLanguage]);
             }
         }
-        this.log('{1} languages initialized.', 'debug', [appState.languageData.availableLanguages.length], false);
+        this.log('{1} languages initialized.', 'debug', [appState.languageData.availableLanguages.length]);
+        this.log('Initializing languages...', 'groupend', []);
         return this.translationData;
     }
 
@@ -195,7 +196,7 @@ class AppTranslations extends BaseClass {
                     if (fileStat.isFile()){
                         if (filePath.match(translationExtensionRegex)){
                             var languageName = filePath.replace(translationExtensionRegex, '');
-                            this.log('Loading translations from "{1}"...', 'debug', [translationFilePath], false);
+                            this.log('Loading translations from "{1}"...', 'debug', [translationFilePath]);
                             var translationData = null;
                             if (asString){
                                 translationData = fs.readFileSync(translationFilePath, {encoding: 'utf8'}).toString();
@@ -206,19 +207,19 @@ class AppTranslations extends BaseClass {
                             }
 
                             if (translations[languageName] && (translations[languageName].length || _.keys(translations[languageName]).length)){
-                                this.log('Loaded translations from "{1}"...', 'debug', [translationFilePath], false);
+                                this.log('Loaded translations from "{1}"...', 'debug', [translationFilePath]);
                                 if (!translationData.locale){
-                                    this.log('Language "{1}" has no locale set!', 'warning', [languageName], false);
+                                    this.log('Language "{1}" has no locale set!', 'warning', [languageName]);
                                 }
                                 availableLanguages.push({name: translationData.name, code: translationData.code, locale: translationData.locale});
                             } else {
-                                this.log('Invalid or incomplete translations in "{1}"', 'error', [translationFilePath], false);
+                                this.log('Invalid or incomplete translations in "{1}"', 'error', [translationFilePath]);
                             }
                         } else {
-                            this.log('Omitting translations from "{1}", extension invalid.', 'warning', [translationFilePath], false);
+                            this.log('Omitting translations from "{1}", extension invalid.', 'warning', [translationFilePath]);
                         }
                     } else {
-                        this.log('Omitting translation file "{1}", file is a directory.', 'debug', [translationFilePath], false);
+                        this.log('Omitting translation file "{1}", file is a directory.', 'debug', [translationFilePath]);
 
                     }
                 });
@@ -230,11 +231,11 @@ class AppTranslations extends BaseClass {
                 return returnObj;
 
             } else {
-                this.log('Translation dir "{1}" is not a directory!', 'error', [translationsPath], false);
+                this.log('Translation dir "{1}" is not a directory!', 'error', [translationsPath]);
                 return false;
             }
         } else {
-            this.log('Translation dir "{1}" does not exist!', 'error', [translationsPath], false);
+            this.log('Translation dir "{1}" does not exist!', 'error', [translationsPath]);
             return false;
         }
     }
@@ -249,12 +250,12 @@ class AppTranslations extends BaseClass {
             if (languageData.translations[currentLanguage] && (languageData.translations[currentLanguage][label])){
                 translation = languageData.translations[currentLanguage][label];
                 if (languageData.translations[currentLanguage][label].match(/^--.*--$/)){
-                    // this.log('Label "{1}" for language "{2}" is not translated!', 'warning', [label, currentLanguage], true);
+                    // this.log('Label "{1}" for language "{2}" is not translated!', 'warning', [label, currentLanguage]);
 
                     translation = label;
                 }
             } else {
-                this.log('No translation found for label "{1}" using language "{2}".', 'warning', [label, currentLanguage], false);
+                this.log('No translation found for label "{1}" using language "{2}".', 'warning', [label, currentLanguage]);
                 translation = '__' + label + '__';
                 if (appState.autoAddLabels){
                     this.addLabel(label);
@@ -262,7 +263,7 @@ class AppTranslations extends BaseClass {
                 }
             }
         } catch(e) {
-            this.log('Problem translating label "{1}" for language "{2}" - "{3}".', 'error', [label, currentLanguage, e], false);
+            this.log('Problem translating label "{1}" for language "{2}" - "{3}".', 'error', [label, currentLanguage, e]);
         }
         return translation;
     }
@@ -281,7 +282,7 @@ class AppTranslations extends BaseClass {
         } else {
             this.addingLabels[label] = true;
         }
-        this.log('Auto-adding label "{1}"...', 'debug', [label], false);
+        this.log('Auto-adding label "{1}"...', 'debug', [label]);
         var self = this;
         var languageData = appState.languageData;
 
@@ -310,9 +311,9 @@ class AppTranslations extends BaseClass {
             };
             var newTranslationDataString = this.getTranslationDataString(newTranslationData);
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
-            this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, currentName], false);
+            this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, currentName]);
         }
-        this.log('Auto-added label "{1}" for all languages.', 'debug', [label], false);
+        this.log('Auto-added label "{1}" for all languages.', 'debug', [label]);
         this.addingLabels[label] = false;
     }
 
@@ -331,7 +332,7 @@ class AppTranslations extends BaseClass {
                 value = '--' + label + '--';
             }
             translationData.translations[label] = value;
-            this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, language.name], false);
+            this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, language.name]);
         }
         var newTranslationDataString = this.getTranslationDataString(translationData);
         var saved = false;
@@ -340,14 +341,14 @@ class AppTranslations extends BaseClass {
             saved = true;
             appState.languageData.translations[language.code] = translationData.translations;
         } catch (e) {
-            this.log(e, 'error', [], true);
+            this.log(e, 'error', []);
         }
 
         if (saved){
-            this.log('- Saved "{1}" translations for language "{2}"in translation file "{3}".', 'debug', [labels.length, language.name, translationFilePath], false);
+            this.log('- Saved "{1}" translations for language "{2}"in translation file "{3}".', 'debug', [labels.length, language.name, translationFilePath]);
         } else {
             if (labels.length){
-                this.log('- Can\'t save "{1}" translations for language "{2}"in translation file "{3}".', 'error', [labels.length, language.name, translationFilePath], false);
+                this.log('- Can\'t save "{1}" translations for language "{2}"in translation file "{3}".', 'error', [labels.length, language.name, translationFilePath]);
             }
         }
 

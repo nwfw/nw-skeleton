@@ -70,7 +70,7 @@ class WindowManager extends BaseClass {
     }
 
     winStateChanged (data) {
-        this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value], false);
+        this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value]);
         appState.windowState[data.name] = data.value;
     }
 

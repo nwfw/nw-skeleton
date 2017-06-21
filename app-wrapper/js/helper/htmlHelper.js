@@ -225,7 +225,6 @@ class HtmlHelper extends BaseClass {
         if (element){
             if (!element.clientHeight && !element.clientWidth){
                 var defaultDisplay = this.getElementDefaultDisplay(element);
-                console.log(defaultDisplay);
                 this.setElementStyles(element, {display: defaultDisplay}, true);
             } else {
                 this.hide(element);

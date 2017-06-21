@@ -83,7 +83,7 @@ class BaseClass extends eventEmitter {
     }
 
 
-    async log(message, type, data, dontTranslate, force){
+    async log(message, type, data, force){
         if (!data){
             data = [];
         }
@@ -107,10 +107,6 @@ class BaseClass extends eventEmitter {
         if (type == 'group' || type == 'groupend'){
             // doLog = true;
         }
-
-        // if (!dontTranslate && _.get(_appWrapper, 'appTranslations.translationsLoaded') && _appWrapper.appTranslations.translationsLoaded){
-            // message = _appWrapper.appTranslations.translate(message);
-        // }
 
         if (message && message.match && message.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             message = message.replace(/{(\d+)}/g, function replaceMessageData(match, number) {
@@ -227,7 +223,7 @@ class BaseClass extends eventEmitter {
         }
 
         if (message && (typeLevel > 2 || passToDebug || force)){
-            this.log(message, type, data, true, true);
+            this.log(message, type, data, true);
         }
 
         if (message && !dontTranslate && window && window.getAppWrapper() && window.getAppWrapper().appTranslations && window.getAppWrapper().appTranslations.translate){

@@ -54,7 +54,7 @@ class ModalHelper extends BaseClass {
             appState.modalData.modalVisible = false;
             this.modalNotBusy();
         } else {
-            this.log('Can\'t close modal because it is busy', 'warning', [], false);
+            this.log('Can\'t close modal because it is busy', 'warning', []);
         }
     }
 

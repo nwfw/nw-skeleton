@@ -33,7 +33,7 @@ class DebugHelper extends BaseClass {
 
 
     openDebugWindow (){
-        this.log('Opening standalone debug window', 'info', [], false);
+        this.log('Opening standalone debug window', 'info', []);
         appState.hasDebugWindow = true;
         _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debugWindowFile'), {
             id: 'debugWindow',
@@ -179,19 +179,19 @@ class DebugHelper extends BaseClass {
                 modalHelper.modalNotBusy();
             } catch (e) {
                 saved = false;
-                this.log('Problem saving debug log file "{1}" - {2}', 'error', [debugFilePath, e], false);
+                this.log('Problem saving debug log file "{1}" - {2}', 'error', [debugFilePath, e]);
                 modalHelper.modalNotBusy();
             }
             modalHelper.closeCurrentModal();
             if (saved){
                 if (appState.isDebugWindow){
-                    this.log('Debug log saved successfully', 'info', [], false, true);
+                    this.log('Debug log saved successfully', 'info', [], true);
                 } else {
                     this.addUserMessage('Debug log saved successfully', 'info', [], true,  false, true);
                 }
             } else {
                 if (appState.isDebugWindow){
-                    this.log('Debug log saving failed', 'error', [], false, true);
+                    this.log('Debug log saving failed', 'error', [], true);
                 } else {
                     this.addUserMessage('Debug log saving failed', 'error', [], false,  false);
                 }
@@ -287,7 +287,7 @@ class DebugHelper extends BaseClass {
         }
         appState.userMessageQueue = [];
         appState.userMessages = [];
-        this.log('User messages cleared', 'info', [], false);
+        this.log('User messages cleared', 'info', []);
     }
     changeUserMessageLevel (e) {
         var level = e.target.value;

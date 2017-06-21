@@ -112,13 +112,13 @@ class ComponentHelper extends BaseClass {
         var componentCodeRegex = this.getConfig('wrapper.componentCodeRegex');
         for(let i=0; i<componentDirs.length;i++){
             if (fs.existsSync(componentDirs[i])){
-                this.log('Loading components from directory "{1}".', 'debug', [componentDirs[i]], false);
+                this.log('Loading components from directory "{1}".', 'debug', [componentDirs[i]]);
                 var newComponents = await _appWrapper.fileManager.loadFilesFromDir(componentDirs[i], componentCodeRegex, true);
                 if (newComponents && _.isObject(newComponents) && _.keys(newComponents).length){
                     components = _.merge(components, newComponents);
                 }
             } else {
-                this.log('Component directory "{1}" does not exist.', 'warning', [componentDirs[i]], false);
+                this.log('Component directory "{1}" does not exist.', 'warning', [componentDirs[i]]);
             }
         }
         return components;
@@ -139,11 +139,12 @@ class ComponentHelper extends BaseClass {
             overrideDirs = [];
         }
 
+        this.log('Initializing components...', 'group', []);
 
         let wrapperMapping = this.getConfig('wrapper.componentMapping');
         for(let i=0; i<wrapperDirs.length; i++){
             let wrapperDir = path.resolve(wrapperDirs[i]);
-            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(wrapperDir, wrapperMapping, overrideDirs));
+            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(wrapperDir, wrapperMapping, overrideDirs, 'wrapper'));
         }
 
         let appDirs = this.getConfig('wrapper.componentDirectories.component');
@@ -151,7 +152,7 @@ class ComponentHelper extends BaseClass {
         let appMapping = this.getConfig('appConfig.componentMapping');
         for(let i=0; i<appDirs.length; i++){
             let appDir = path.resolve(appDirs[i]);
-            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(appDir, appMapping, overrideDirs));
+            this.vueComponents = _.merge(this.vueComponents, await this.processComponents(appDir, appMapping, overrideDirs, 'app'));
         }
 
         let modalDirs = this.getConfig('wrapper.componentDirectories.modalComponent');
@@ -165,7 +166,7 @@ class ComponentHelper extends BaseClass {
                     modalMapping[files[j]] = {name: files[j]};
                 }
             }
-            this.vueModalComponents = _.merge(this.vueModalComponents, await this.processComponents(modalDir, modalMapping));
+            this.vueModalComponents = _.merge(this.vueModalComponents, await this.processComponents(modalDir, modalMapping, null, 'wrapper modal'));
         }
 
 
@@ -180,7 +181,7 @@ class ComponentHelper extends BaseClass {
                     modalMapping[files[j]] = {name: files[j]};
                 }
             }
-            this.vueModalComponents = _.merge(this.vueModalComponents, await this.processComponents(modalDir, modalMapping));
+            this.vueModalComponents = _.merge(this.vueModalComponents, await this.processComponents(modalDir, modalMapping, null, 'app modal'));
         }
 
 
@@ -196,7 +197,7 @@ class ComponentHelper extends BaseClass {
                     globalMapping[files[j]] = {name: files[j]};
                 }
             }
-            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping));
+            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping, null, 'wrapper global'));
         }
 
         globalDirs = this.getConfig('appConfig.componentDirectories.globalComponent');
@@ -210,7 +211,7 @@ class ComponentHelper extends BaseClass {
                     globalMapping[files[j]] = {name: files[j]};
                 }
             }
-            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping));
+            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping, 'app global'));
         }
 
         this.allComponents = _.merge(this.vueComponents, this.vueGlobalComponents, this.vueModalComponents);
@@ -219,16 +220,21 @@ class ComponentHelper extends BaseClass {
             Vue.component(globalComponentName, this.vueGlobalComponents[globalComponentName]);
         }
 
+        this.log('Initializing components...', 'groupend', []);
+
     }
 
-    async processComponents(componentBaseDir, componentMapping, overrideDirs){
+    async processComponents(componentBaseDir, componentMapping, overrideDirs, type){
 
         let componentNames = _.keys(componentMapping);
         let componentCount = componentNames.length;
         let additionalSubComponents;
-        this.log('Initializing {1} components...', 'group', [componentCount]);
         let components = {};
+        if (!type){
+            type = '';
+        }
         if (componentCount){
+            this.log('Initializing {1} {2} components...', 'group', [componentCount, type]);
             for (let i=0; i<componentNames.length;i++){
                 let currentName = componentNames[i];
                 if (currentName == 'modal-dialog'){
@@ -281,7 +287,7 @@ class ComponentHelper extends BaseClass {
             type = 'info';
             data = [componentName];
         }
-        // this.log(message, type, data, true);
+        this.log(message, type, data);
 
         let loadDirs = _.union(componentOverrideDirs, [path.join(componentBaseDir, componentName)]);
         let component = await _appWrapper.fileManager.loadFileFromDirs(componentName + '.js', loadDirs, true);
@@ -356,7 +362,7 @@ class ComponentHelper extends BaseClass {
         if (templateContents){
             component.template = templateContents;
         } else {
-            this.log('Problem loading template for component "{1}".', 'error', [component.name], false);
+            this.log('Problem loading template for component "{1}".', 'error', [component.name]);
         }
         return component;
     }

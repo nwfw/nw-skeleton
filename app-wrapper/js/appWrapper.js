@@ -36,6 +36,14 @@ class AppWrapper extends BaseClass {
         this.fileManager = null;
         this.appConfig = null;
 
+        if (initialAppConfig && initialAppConfig.forceDebug && !_.isUndefined(initialAppConfig.forceDebug.AppWrapper)){
+            this.forceDebug = initialAppConfig.forceDebug.AppWrapper;
+        }
+
+        if (initialAppConfig && initialAppConfig.forceUserMessages && !_.isUndefined(initialAppConfig.forceUserMessages.AppWrapper)){
+            this.forceUserMessages = initialAppConfig.forceUserMessages.AppWrapper;
+        }
+
         this.boundMethods = {
             cleanup: null,
             saveUserConfig: null,
@@ -95,7 +103,7 @@ class AppWrapper extends BaseClass {
 
         await super.initialize();
 
-
+        this.log('Initializing application.', 'group', []);
         if (isDebugWindow){
             appState.isDebugWindow = true;
             isDebugWindow = null;
@@ -195,7 +203,7 @@ class AppWrapper extends BaseClass {
         }
         this.windowManager.setupAppMenu();
         window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
-
+        this.log('Initializing application.', 'groupend', []);
         return retValue;
     }
 
@@ -260,11 +268,11 @@ class AppWrapper extends BaseClass {
 
 
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
-            this.log('No wrapper helper dirs defined', 'warning', [], false);
-            this.log('You should define this in ./config/config.js file under "appConfig.templateDirectories.helperDirectories" variable', 'debug', [], false);
+            this.log('No wrapper helper dirs defined', 'warning', []);
+            this.log('You should define this in ./config/config.js file under "appConfig.templateDirectories.helperDirectories" variable', 'debug', []);
             helperDirs = [];
         } else {
-            this.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length], false);
+            this.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length]);
             var currentHelpers;
             for (let i=0; i<helperDirs.length; i++){
                 var helperDir = path.resolve(helperDirs[i]);
@@ -273,14 +281,14 @@ class AppWrapper extends BaseClass {
                     helpers = _.merge(helpers, currentHelpers);
                 }
             }
-            this.log('Loading wrapper helpers from {1} directories.', 'groupend', [helperDirs.length], false);
+            this.log('Loading wrapper helpers from {1} directories.', 'groupend', [helperDirs.length]);
         }
 
         return helpers;
     }
 
     async initializeFeApp(){
-        this.log('Initializing Vue app...', 'debug', [], false);
+        this.log('Initializing Vue app...', 'debug', []);
 
         window.feApp = new Vue({
             el: '.nw-app-wrapper',
@@ -340,10 +348,10 @@ class AppWrapper extends BaseClass {
             if (eventHandlerName){
                 return await this.callObjMethod(eventHandlerName, [e, target]);
             } else {
-                this.log('Element {1} doesn\'t have attribute "{2}"', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName], false);
+                this.log('Element {1} doesn\'t have attribute "{2}"', 'warning', [target.tagName + '.' + target.className.split(' ').join(','), dataHandlerAttrName]);
             }
         } else {
-            this.log('Can\'t find event target "{1}"', 'warning', [e], false);
+            this.log('Can\'t find event target "{1}"', 'warning', [e]);
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault();
             }
@@ -424,7 +432,7 @@ class AppWrapper extends BaseClass {
     }
 
     async onDebugWindowClose (){
-        this.log('Closing standalone debug window', 'info', [], false);
+        this.log('Closing standalone debug window', 'info', []);
         if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
             this.mainWindow.appState.debugMessages = _.cloneDeep(appState.debugMessages);
             this.mainWindow.appState.allDebugMessages = _.cloneDeep(appState.allDebugMessages);
@@ -616,7 +624,7 @@ class AppWrapper extends BaseClass {
         if (object && method && _.isFunction(method)){
             return method.call(object);
         } else {
-            this.log('Can\t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex], false);
+            this.log('Can\t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex]);
             return false;
         }
     }
@@ -665,7 +673,7 @@ class AppWrapper extends BaseClass {
                     };
                 }
             } else {
-                this.log('Can\'t find object method "{1}"', 'warning', [methodString], false);
+                this.log('Can\'t find object method "{1}"', 'warning', [methodString]);
             }
         }
         return objMethod;
@@ -693,10 +701,10 @@ class AppWrapper extends BaseClass {
     async finalizeUserMessageLog(){
         if (this.getConfig('debugToFile')){
             let debugLogFile = path.resolve(this.getConfig('debugMessagesFilename'));
-            this.log('Finalizing debug message log...', 'info', [], true);
+            this.log('Finalizing debug message log...', 'info', []);
             let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]';
             await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
-            this.log('Finalized debug message log.', 'info', [], true);
+            this.log('Finalized debug message log.', 'info', []);
         }
         return true;
     }
@@ -704,10 +712,10 @@ class AppWrapper extends BaseClass {
     async finalizeDebugMessageLog(){
         if (this.getConfig('userMessagesToFile')){
             let messageLogFile = path.resolve(this.getConfig('userMessagesFilename'));
-            this.log('Finalizing user message log...', 'info', [], true);
+            this.log('Finalizing user message log...', 'info', []);
             let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]';
             await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
-            this.log('Finalized user message log...', 'info', [], true);
+            this.log('Finalized user message log...', 'info', []);
         }
         return true;
     }
@@ -768,7 +776,7 @@ class AppWrapper extends BaseClass {
     }
 
     async wait(duration){
-        // this.log('Waiting {1} ms', 'debug', [duration], false);
+        // this.log('Waiting {1} ms', 'debug', [duration]);
         var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);

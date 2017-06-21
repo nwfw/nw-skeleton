@@ -128,7 +128,7 @@ class AppOperationHelper extends BaseClass {
 
     updateProgress (completed, total, operationText) {
         if (!appState.progressData.inProgress){
-            this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', [], false);
+            this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', []);
             return;
         }
         if (!this.operationStartTime){

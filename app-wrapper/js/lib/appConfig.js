@@ -13,6 +13,9 @@ class AppConfig extends BaseClass {
             appState = _appWrapper.getAppState();
         }
 
+        this.forceDebug = true;
+        this.forceUserMessages = true;
+
         this.initialAppConfig = initialAppConfig;
         this.baseConfig = {};
         this.appStateConfig = {};
@@ -26,11 +29,11 @@ class AppConfig extends BaseClass {
         return this;
     }
 
-    initialize () {
-        return super.initialize();
+    async initialize () {
+        await super.initialize();
     }
 
-    async loadConfig () {
+    async _loadConfig () {
         return this.initialAppConfig;
     }
 
@@ -49,6 +52,22 @@ class AppConfig extends BaseClass {
         });
         this.config = _.cloneDeep(theConfig);
         this.baseConfig = _.cloneDeep(theConfig);
+        let className = this.constructor.name;
+        if (this.config.forceDebug){
+            if (_.isUndefined(this.config.forceDebug[className])){
+                console.error('Class "' + className + '" has no forceDebug config set!');
+            } else {
+                this.forceDebug = _.get(this.config.forceDebug, className);
+            }
+        }
+
+        if (this.config.forceUserMessages){
+            if (_.isUndefined(this.config.forceUserMessages[className])){
+                console.error('Class "' + className + '" has no forceUserMessages config set!');
+            } else {
+                this.forceUserMessages = _.get(this.config.forceUserMessages, className);
+            }
+        }
         return theConfig;
     }
 
@@ -60,28 +79,33 @@ class AppConfig extends BaseClass {
 
     loadUserConfig () {
         let configName = this.getConfigStorageName();
+        this.log('Loading user config...', 'group', []);
         if (localStorage && localStorage.getItem(configName)){
-            this.log('Loading user config...', 'info', [], false);
             var userConfig = {};
             try {
                 userConfig = JSON.parse(localStorage.getItem(configName));
             } catch (e) {
-                this.log('Can\'t parse user config.!', 'warning', [], false);
+                this.log('Can\'t parse user config.!', 'warning', []);
             }
             if (userConfig && _.keys(userConfig).length){
+                this.log('Loaded {1} user config keys.', 'info', [_.keys(userConfig).length]);
+                this.log('User config keys: "{1}".', 'debug', [_.keys(userConfig).join('", "')]);
                 appState.hasUserConfig = true;
             } else {
+                this.log('User config empty.', 'info', []);
                 appState.hasUserConfig = false;
             }
             this.userConfig = _.cloneDeep(userConfig);
             userConfig = _.merge({}, appState.config, userConfig);
             this.previousConfig = _.cloneDeep(userConfig);
+            this.log('Loading user config...', 'groupend', []);
             return userConfig;
         } else {
-            this.log('No user config found.', 'info', [], false);
+            this.log('No user config found.', 'info', []);
             this.config = _.cloneDeep(appState.config);
             this.previousConfig = _.cloneDeep(appState.config);
             this.userConfig = {};
+            this.log('Loading user config...', 'groupend', []);
             return appState.config;
         }
     }
@@ -101,7 +125,7 @@ class AppConfig extends BaseClass {
 
             try {
                 if (userConfig && userConfigKeysDiff.length){
-                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')], true);
+                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')]);
                     localStorage.setItem(configName, JSON.stringify(userConfig));
                     this.addUserMessage('Configuration data saved', 'info', [], true);
                     appState.hasUserConfig = true;
@@ -127,14 +151,14 @@ class AppConfig extends BaseClass {
                 this.addUserMessage('Configuration data could not be saved - "{1}"', 'error', [e], false,  false);
             }
         } else {
-            this.log('Can\'t save user config.', 'warning', [], false);
+            this.log('Can\'t save user config.', 'warning', []);
         }
     }
 
     async clearUserConfig () {
         let configName = this.getConfigStorageName();
         if (localStorage){
-            this.log('Clearing user config...', 'info', [], false);
+            this.log('Clearing user config...', 'info', []);
             try {
                 localStorage.removeItem(configName);
                 this.addUserMessage('Configuration data cleared', 'info', [], false,  false, true);
@@ -150,7 +174,7 @@ class AppConfig extends BaseClass {
                 this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);
             }
         } else {
-            this.log('Can\'t clear user config.', 'warning', [], false);
+            this.log('Can\'t clear user config.', 'warning', []);
         }
     }
 
@@ -312,7 +336,7 @@ class AppConfig extends BaseClass {
             let difference = utilHelper.difference(this.previousConfig, newValue);
             let diffKeys = Object.keys(difference);
             if (diffKeys && diffKeys.length){
-                this.log('Config vars changed: "{1}"', 'info', [diffKeys.join(', ')], false);
+                this.log('Config vars changed: "{1}"', 'info', [diffKeys.join(', ')]);
                 await this.saveUserConfig();
             }
         }
