@@ -1,9 +1,9 @@
 <transition name="size-height-long">
-	<div class="live-info" v-show="appState.appStatusChanging" v-bind:class="appStatusWrapperClassObject">
+	<div class="live-info" v-show="appState.status.appStatusChanging" v-bind:class="appStatusWrapperClassObject">
         <div class="live-info-inner">
            <span class="live-info-item app-status" v-bind:class="appStatusWrapperClassObject">
               <span class="app-operation-text" v-html="appState.appOperation.operationText"></span>
-              <span class="status fa app-status" v-bind:title="appState.appStatus" v-bind:class="appStatusClassObject"></span>
+              <span class="status fa app-status" v-bind:title="appState.status.appStatus" v-bind:class="appStatusClassObject"></span>
           </span>
       </div>
   </div>

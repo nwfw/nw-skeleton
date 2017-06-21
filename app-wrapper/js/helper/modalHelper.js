@@ -44,7 +44,11 @@ class ModalHelper extends BaseClass {
     }
 
     closeCurrentModal (force){
+        let fadeModal = appState.modalData.fadeModal;
         if (!appState.modalData.currentModal.busy || force) {
+            if (force){
+                appState.modalData.fadeModal = 'none';
+            }
             _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
@@ -53,6 +57,7 @@ class ModalHelper extends BaseClass {
             appState.modalData.currentModal.autoCloseTime = null;
             appState.modalData.modalVisible = false;
             this.modalNotBusy();
+            appState.modalData.fadeModal = fadeModal;
         } else {
             this.log('Can\'t close modal because it is busy', 'warning', []);
         }
@@ -62,6 +67,7 @@ class ModalHelper extends BaseClass {
         appState.modalData.modalVisible = true;
         clearTimeout(this.timeouts.autoClose);
         clearInterval(this.intervals.autoClose);
+        let fadeModal = appState.modalData.fadeModal;
         if (!showContentImmediately){
             setTimeout(() => {
                 if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){
@@ -70,10 +76,12 @@ class ModalHelper extends BaseClass {
                 this.modalNotBusy();
             }, 300);
         } else {
+            appState.modalData.fadeModal = 'none';
             if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){
                 appState.modalData.currentModal.bodyComponent = appState.modalData.currentModal.defaultBodyComponent;
             }
             this.modalNotBusy();
+            appState.modalData.fadeModal = fadeModal;
         }
         if (appState.modalData.currentModal.autoCloseTime) {
             this.timeouts.autoClose = setTimeout(() => {
@@ -92,11 +100,11 @@ class ModalHelper extends BaseClass {
                 }
                 appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
             }, 1000);
-
         }
     }
 
     async openSimpleModal(title, text, options) {
+        this.closeCurrentModal(true);
         appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
         if (options && _.isObject(options)){
             appState.modalData.currentModal = _.merge(appState.modalData.currentModal, options);
@@ -120,7 +128,7 @@ class ModalHelper extends BaseClass {
         this.closeCurrentModal();
     }
 
-    async confirm (title, text, confirmButtonText, cancelButtonText) {
+    async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
         appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
 
         if (!text){
@@ -147,7 +155,11 @@ class ModalHelper extends BaseClass {
         appState.modalData.currentModal.confirmSelected = false;
 
         this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.boundMethods.confirmResolve;
+        if (confirmAction){
+            _appWrapper._confirmModalAction = confirmAction;
+        } else {
+            _appWrapper._confirmModalAction = this.boundMethods.confirmResolve;
+        }
         _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
             appState.closeModalResolve = resolve;
             appState.closeModalReject = reject;

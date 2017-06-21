@@ -32,39 +32,45 @@ exports.appState = {
         userMessageQueue: null,
         scrollTo: {}
     },
-    appLoaded: false,
-    appReady: false,
-    appInitialized: false,
-    appShuttingDown: false,
-    appBusy: true,
-    appStatus: 'idle',
-    appStatusChanging: false,
-    feAppInitialized: false,
+    status: {
+        appLoaded: false,
+        appReady: false,
+        appInitialized: false,
+        appShuttingDown: false,
+        appBusy: true,
+        appStatus: 'idle',
+        appStatusChanging: false,
+        feAppInitialized: false, // ?
+        windowMaximized: false, // ?
+        devToolsOpened: false,
+        movingWindow: false,
+        ctrlPressed: false,
+        shiftPressed: false,
+        altPressed: false,
+        noHandlingKeys: false,
+    },
+    appError: {
+        error: false,
+        title: '',
+        text: '',
+        component: '',
+        userMessages: true,
+
+    },
     mainLoaderTitle: '',
-    appError: false,
-    appErrorTitle: '',
-    appErrorText: '',
-    appErrorComponent: '',
-    appErrorUserMessages: true,
-    windowMaximized: false,
-    devToolsOpened: false,
-    movingWindow: false,
-    ctrlPressed: false,
-    shiftPressed: false,
-    altPressed: false,
-    noHandlingKeys: false,
     preventReload: false,
     preventClose: false,
 
     appOperation: {
         cancelable: false,
         cancelling: false,
+        cancelled: false,
         operationText: null,
         useProgress: null,
         progressText: null,
-        appBusy: null
+        appBusy: null,
+        operationActive: false
     },
-    cancelAppOperation: false,
 
     hasUserConfig: false,
 
@@ -87,6 +93,7 @@ exports.appState = {
     animateMessages: true,
 
     autoAddLabels: false,
+
     languageData: {
         currentLanguage: null,
         currentLocale: null,
@@ -103,6 +110,7 @@ exports.appState = {
         animated: true,
         inProgress: false,
         percentComplete: 0,
+        percentNumber: 0,
         operationText: '',
         detailText: '',
         progressBarClass: '',
@@ -146,6 +154,7 @@ exports.appState = {
     modalData: {
         modalVisible: false,
         modalContentVisible: false,
+        fadeModal: 'fade-slow',
         currentModal: {
             title: '',
             body: '',

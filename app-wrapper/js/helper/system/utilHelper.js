@@ -16,6 +16,10 @@ class UtilHelper extends BaseClass {
         _.noop(_appWrapper);
         _.noop(appState);
 
+        this.boundMethods = {
+            prevent: null
+        };
+
         return this;
     }
 
@@ -291,6 +295,10 @@ class UtilHelper extends BaseClass {
             }
         }
         return false;
+    }
+
+    prevent (e){
+        e.preventDefault();
     }
 }
 

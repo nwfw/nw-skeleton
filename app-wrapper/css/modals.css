@@ -95,20 +95,35 @@
 .modal-dialog-busy-wrapper {
     text-align: center;
     font-size: 2rem;
-    width: 200px;
-    height: 50px;
+    flex: 1 0 auto;
+    flex-flow: column;
     color: var(--modal-dialog-busy-text-color);
 }
 .modal-dialog-wrapper .modal-dialog-busy-text {
-    width: 100%;
+    flex: 0 0 auto;
     text-align: center;
     font-size: 1rem;
     color: var(--modal-dialog-busy-text-color);
 }
-.modal-dialog-wrapper .modal-dialog-busy-indicator {
+
+.modal-dialog-wrapper-busy .modal-dialog {
+    display: flex;
+    flex-flow: column;
+}
+
+.modal-dialog-wrapper-busy .modal-dialog .modal-dialog-content {
+    display: flex;
+    flex-flow: row;
+    flex: 1 0 auto;
+    justify-content: space-between;
+
 }
 
 .modal-dialog-wrapper-busy .modal-dialog-busy-indicator {
+    display: flex;
+    flex-flow: column;
+    flex: 1 0 auto;
+    align-self: center;
 }
 
 .modal-dialog .modal-dialog-buttons {

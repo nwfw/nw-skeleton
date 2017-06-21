@@ -24,15 +24,21 @@ class FormatHelper extends BaseClass {
         return true;
     }
 
-    formatDuration (time) {
+    formatDuration (time, secondFractions) {
         if (isNaN(time)){
             time = 0;
         }
-        var sec_num = parseInt(time, 10);
+        var sec_num;
+        if (!secondFractions){
+            sec_num = parseInt(time, 10);
+        } else {
+            sec_num = time;
+        }
         var days   = Math.floor(sec_num / 86400);
         var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
         var minutes = Math.floor((sec_num - (hours * 3600) - (days * 86400)) / 60);
-        var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
+        var seconds = Math.floor(sec_num - (days * 86400) - (hours * 3600) - (minutes * 60));
+        var milliseconds = (sec_num - (days * 86400) - (hours * 3600) - (minutes * 60) - seconds) * 1000;
 
         if (!time){
             // var num = parseInt(Math.random() * 100 / 33, 10);
@@ -65,7 +71,7 @@ class FormatHelper extends BaseClass {
             seconds = '0' + seconds;
         }
 
-        var formattedTime;
+        var formattedTime = '';
         if (hasDays){
             formattedTime = days + ' ' + _appWrapper.appTranslations.translate('days') + ' ' + hours + ':' + minutes + ':' + seconds;
         } else if (hasHours){
@@ -73,6 +79,22 @@ class FormatHelper extends BaseClass {
         } else {
             formattedTime = minutes + ':' + seconds;
         }
+
+
+        if ((milliseconds + '').match(/\./)){
+            milliseconds = parseInt((milliseconds + '').replace(/[^\.]+/, ''), 10);
+        }
+
+
+        if (secondFractions && milliseconds){
+            if ((milliseconds+'').length < 3){
+                for (let i=0; i<(3 - (milliseconds+'').length); i++){
+                    milliseconds = '0' + milliseconds;
+                }
+            }
+            formattedTime += '.' + milliseconds;
+        }
+
 
         return formattedTime;
     }

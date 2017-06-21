@@ -7,11 +7,11 @@
 				</a>
 			</span>
 			<span class="window-control-wrapper">
-				<a class="window-control window-control-devtools " v-bind:class="{'devtools-open': appState.devToolsOpened}" v-on:click="callViewHandler" data-click-handler="windowManager.toggleDevTools" v-bind:title="translate('Toggle dev tools')">
+				<a class="window-control window-control-devtools " v-bind:class="{'devtools-open': appState.status.devToolsOpened}" v-on:click="callViewHandler" data-click-handler="windowManager.toggleDevTools" v-bind:title="translate('Toggle dev tools')">
 					<span data-event-target="parent" class="fa fa-wrench"></span>
 				</a>
 			</span>
-			<span v-if="!appState.appBusy && !appState.isDebugWindow" class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventReload}" >
+			<span v-if="!appState.status.appBusy && !appState.isDebugWindow" class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventReload}" >
 				<a class="window-control window-control-reload " v-on:click="callViewHandler" data-click-handler="windowManager.reloadWindow" v-bind:title="translate('Reload window')">
 					<span data-event-target="parent" class="fa fa-refresh"></span>
 				</a>
@@ -35,7 +35,7 @@
 			</a>
 		</span>
 		<span class="window-control-wrapper">
-			<a class="window-control window-control-move" v-bind:class="{'window-control-moving': appState.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="moveWindowMouseup" v-bind:title="translate('Move window')">
+			<a class="window-control window-control-move" v-bind:class="{'window-control-moving': appState.status.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="moveWindowMouseup" v-bind:title="translate('Move window')">
 				<span data-event-target="parent" class="fa fa-arrows"></span>
 			</a>
 		</span>

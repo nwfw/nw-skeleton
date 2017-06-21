@@ -75,7 +75,7 @@ class KeyboardHelper extends BaseClass {
     handleAppKeyDown(e){
         var fulfilled = false;
         var keyCode = e.keyCode;
-        if (appState.noHandlingKeys){
+        if (appState.status.noHandlingKeys){
             e.stopImmediatePropagation();
             return false;
         }
@@ -83,27 +83,27 @@ class KeyboardHelper extends BaseClass {
             e.stopImmediatePropagation();
             this.pressedKeys = [];
             if (e.type == 'keydown') {
-                appState.ctrlPressed = true;
+                appState.status.ctrlPressed = true;
             } else if (e.type == 'keyup'){
-                appState.ctrlPressed = false;
+                appState.status.ctrlPressed = false;
             }
             fulfilled = true;
         } else if (_.includes(this.keyCodes.shiftKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
             if (e.type == 'keydown') {
-                appState.shiftPressed = true;
+                appState.status.shiftPressed = true;
             } else if (e.type == 'keyup'){
-                appState.shiftPressed = false;
+                appState.status.shiftPressed = false;
             }
             fulfilled = true;
         } else if (_.includes(this.keyCodes.altKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
             if (e.type == 'keydown') {
-                appState.altPressed = true;
+                appState.status.altPressed = true;
             } else if (e.type == 'keyup'){
-                appState.altPressed = false;
+                appState.status.altPressed = false;
             }
             fulfilled = true;
         } else {
@@ -111,13 +111,13 @@ class KeyboardHelper extends BaseClass {
                 if (appState && appState.modalData.currentModal && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
                     _appWrapper.helpers.modalHelper.closeCurrentModal();
                     fulfilled = true;
-                } else if (!appState.noHandlingKeys && appState && appState.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
+                } else if (!appState.status.noHandlingKeys && appState && appState.status.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
                     _appWrapper.windowManager.closeWindow();
                     fulfilled = true;
-                } else if (appState && appState.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
+                } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
-                } else if ( appState.ctrlPressed && !appState.noHandlingKeys && appState && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
+                } else if ( appState.status.ctrlPressed && !appState.status.noHandlingKeys && appState && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     this.pressedKeys = [];
                     _appWrapper.windowManager.reloadWindow();
                     fulfilled = true;
@@ -172,13 +172,13 @@ class KeyboardHelper extends BaseClass {
                     if (handler){
                         var handlerFound = true;
                         if (handler.modifiers) {
-                            if (handler.modifiers.ctrl && !appState.ctrlPressed){
+                            if (handler.modifiers.ctrl && !appState.status.ctrlPressed){
                                 handlerFound = false;
                             }
-                            if (handler.modifiers.shift && !appState.shiftPressed){
+                            if (handler.modifiers.shift && !appState.status.shiftPressed){
                                 handlerFound = false;
                             }
-                            if (handler.modifiers.alt && !appState.altPressed){
+                            if (handler.modifiers.alt && !appState.status.altPressed){
                                 handlerFound = false;
                             }
                         }

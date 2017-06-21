@@ -397,21 +397,21 @@
     height: 0px !important;
     max-height: 0px !important;
     min-height: 0px !important;
-    overflow: hidden !important;
+    /*overflow: hidden !important;*/
 }
 
 .size-height-short-enter-to,
 .size-height-long-enter-to,
 .size-height-enter-to {
     flex-grow: 1 !important;
-    overflow: hidden !important;
+    /*overflow: hidden !important;*/
 }
 
 .size-height-short-leave,
 .size-height-long-leave,
 .size-height-leave {
     flex-shrink: 1 !important;
-    overflow: hidden !important;
+    /*overflow: hidden !important;*/
 }
 
 .size-height-short-leave-to,
@@ -419,9 +419,10 @@
 .size-height-leave-to {
     flex-shrink: 1 !important;
     height: 0 !important;
-    max-height: 0 !important;
-    min-height: 0 !important;
+    /*max-height: 0 !important;*/
+    /*min-height: 0 !important;*/
     flex-basis: 0 !important;
+    overflow: hidden !important;
 }
 
 .size-height-enter-active,
@@ -436,7 +437,7 @@
                 max-height,
                 min-height,
                 flex-basis !important;
-    transition-timing-function: linear !important;
+    transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
 
@@ -447,6 +448,7 @@
 
 .size-height-long-enter-active,
 .size-height-long-leave-active {
+    clip-path: none !important;
     transition-duration: var(--long-animation-duration) !important;
 }
 

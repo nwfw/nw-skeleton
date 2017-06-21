@@ -293,10 +293,10 @@ class WindowManager extends BaseClass {
                     if (this.propagateChange.devTools){
                         if (!value){
                             this.win.closeDevTools();
-                            appState.devToolsOpened = false;
+                            appState.status.devToolsOpened = false;
                         } else {
                             this.win.showDevTools();
-                            appState.devToolsOpened = true;
+                            appState.status.devToolsOpened = true;
                         }
                     }
                 }
@@ -538,7 +538,7 @@ class WindowManager extends BaseClass {
                 }
             }
             appState.mainLoaderTitle = message;
-            appState.appShuttingDown = true;
+            appState.status.appShuttingDown = true;
             this.win.reload();
         }
     }
@@ -583,7 +583,7 @@ class WindowManager extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        appState.movingWindow = true;
+        appState.status.movingWindow = true;
         this.window.addEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.addEventListener('mouseup', this.boundMethods.moveWindowMouseup);
     }
@@ -592,7 +592,7 @@ class WindowManager extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        appState.movingWindow = false;
+        appState.status.movingWindow = false;
         this.window.removeEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.removeEventListener('mouseup', this.boundMethods.moveWindowMouseup);
     }

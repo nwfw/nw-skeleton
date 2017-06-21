@@ -48,7 +48,9 @@ class AppWrapper extends BaseClass {
             cleanup: null,
             saveUserConfig: null,
             onWindowClose: null,
-            onDebugWindowClose: null
+            onDebugWindowClose: null,
+            cancelAndClose: null,
+            cancelAndReload: null,
         };
 
         this.timeouts = {
@@ -143,13 +145,12 @@ class AppWrapper extends BaseClass {
 
         App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
 
-
         await this.helpers.staticFilesHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
 
-        appState.config.appInfo.initializationTime = this.getHelper('format').formatDate(new Date());
+        appState.config.appInfo.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
 
         await this.helpers.staticFilesHelper.loadCssFiles();
 
@@ -196,12 +197,12 @@ class AppWrapper extends BaseClass {
     }
 
     async finalize () {
-        appState.appLoaded = true;
+        appState.status.appLoaded = true;
         await this.wait(parseInt(parseFloat(this.getHelper('html').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
         var retValue = await this.app.finalize();
         if (retValue){
-            window.appState.appInitialized = true;
-            window.appState.appReady = true;
+            appState.status.appInitialized = true;
+            appState.status.appReady = true;
         }
         this.windowManager.setupAppMenu();
         window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
@@ -291,6 +292,7 @@ class AppWrapper extends BaseClass {
 
     async initializeFeApp(){
         this.log('Initializing Vue app...', 'debug', []);
+        let utilHelper = this.getHelper('util');
 
         window.feApp = new Vue({
             el: '.nw-app-wrapper',
@@ -301,6 +303,9 @@ class AppWrapper extends BaseClass {
             components: this.helpers.componentHelper.vueComponents,
             translations: appState.translations,
             mounted: async () => {
+                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug')){
+                    document.body.addEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
+                }
                 return await this.finalize();
             }
         });
@@ -361,15 +366,75 @@ class AppWrapper extends BaseClass {
     }
 
     async onWindowClose () {
-        this.helpers.modalHelper.closeCurrentModal(true);
-        await this.cleanup();
-        if (!appState.isDebugWindow){
-            appState.appError = false;
-            this.windowManager.closeWindowForce();
+        let modalHelper = this.getHelper('modal');
+        modalHelper.closeCurrentModal(true);
+        let confirmed = true;
+        if (appState.appOperation.operationActive){
+            if (appState.appOperation.cancelable){
+                confirmed = await modalHelper.confirm('Are you sure?', 'There is an operation currently in progress, are you sure you want to exit?', 'Yes', 'No', this.boundMethods.cancelAndClose);
+                return;
+            } else {
+                confirmed = false;
+                await modalHelper.openSimpleModal('Operation in progress', 'You can\'t quit until current operation completes.', { showConfirmButton: false, cancelButtonText: 'Ok'});
+            }
+        }
+        if (confirmed){
+            await this.cleanup();
+            if (!appState.isDebugWindow){
+                appState.appError.error = false;
+                this.windowManager.closeWindowForce();
+            }
+            // }
+        } else {
+            return;
+        }
+    }
+    async cancelAndClose (result) {
+        let modalHelper = this.getHelper('modal');
+        let success = result;
+        if (success){
+            modalHelper.modalBusy(this.appTranslations.translate('Please wait while operation is cancelled...'));
+            success = await this.getHelper('appOperation').operationCancel();
+            modalHelper.closeCurrentModal(true);
+            if (success){
+                await this.cleanup();
+                if (!appState.isDebugWindow){
+                    appState.appError.error = false;
+                    this.windowManager.closeWindowForce();
+                    return;
+                }
+            }
+        }
+        if (!success){
+            modalHelper.closeCurrentModal(true);
+            modalHelper.openSimpleModal(this.appTranslations.translate('Problem cancelling operation'), this.appTranslations.translate('You could try to cancel it yourself or kill the program if it is unresponsive.'), { showCancelButton: false, confirmButtonText: 'Ok', autoCloseTime: 5000});
+        }
+    }
+
+    async cancelAndReload (result) {
+        let modalHelper = this.getHelper('modal');
+        let success = result;
+        if (success){
+            modalHelper.modalBusy(this.appTranslations.translate('Please wait while operation is cancelled...'));
+            success = await this.getHelper('appOperation').operationCancel();
+            modalHelper.closeCurrentModal(true);
+            if (success){
+                await this.cleanup();
+                if (!appState.isDebugWindow){
+                    appState.appError.error = false;
+                    this.windowManager.reloadWindow(null, true);
+                    return;
+                }
+            }
+        }
+        if (!success){
+            modalHelper.closeCurrentModal(true);
+            modalHelper.openSimpleModal(this.appTranslations.translate('Problem cancelling operation'), this.appTranslations.translate('You could try to cancel it yourself or kill the program if it is unresponsive.'), { showCancelButton: false, confirmButtonText: 'Ok', autoCloseTime: 5000});
         }
     }
 
     async cleanup(){
+        let utilHelper = this.getHelper('util');
         var returnPromise;
         this.addUserMessage('Performing pre-close cleanup...', 'info', [], false, false);
         var resolveReference;
@@ -377,6 +442,9 @@ class AppWrapper extends BaseClass {
             resolveReference = resolve;
         });
         setTimeout(async () => {
+            if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug')){
+                document.body.removeEventListener('contextmenu', utilHelper.boundMethods.prevent);
+            }
             await this.shutdownApp();
             await this.finalizeLogs();
             if (window && window.feApp && window.feApp.$destroy && _.isFunction(window.feApp.$destroy)){
@@ -398,7 +466,7 @@ class AppWrapper extends BaseClass {
         if (this.appTranslations && this.appTranslations.translate){
             appState.mainLoaderTitle = this.appTranslations.translate(appState.mainLoaderTitle);
         }
-        appState.appShuttingDown = true;
+        appState.status.appShuttingDown = true;
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();
         }
@@ -422,13 +490,35 @@ class AppWrapper extends BaseClass {
     }
 
     async beforeUnload () {
-        if (this.helpers && this.helpers.modalHelper){
-            this.helpers.modalHelper.closeCurrentModal(true);
+        // if (this.helpers && this.helpers.modalHelper){
+        //     this.helpers.modalHelper.closeCurrentModal(true);
+        // }
+        // if (!appState.isDebugWindow){
+        //     await this.cleanup();
+        // }
+        // this.windowManager.reloadWindow(null, true);
+        let modalHelper = this.getHelper('modal');
+        modalHelper.closeCurrentModal(true);
+        let confirmed = true;
+        if (appState.appOperation.operationActive){
+            if (appState.appOperation.cancelable){
+                confirmed = await modalHelper.confirm('Are you sure?', 'There is an operation currently in progress, are you sure you want to exit?', 'Yes', 'No', this.boundMethods.cancelAndReload);
+                return;
+            } else {
+                confirmed = false;
+                await modalHelper.openSimpleModal('Operation in progress', 'You can\'t quit until current operation completes.', { showConfirmButton: false, cancelButtonText: 'Ok'});
+            }
         }
-        if (!appState.isDebugWindow){
+        if (confirmed){
             await this.cleanup();
+            if (!appState.isDebugWindow){
+                appState.appError.error = false;
+                this.windowManager.reloadWindow(null, true);
+            }
+            // }
+        } else {
+            return;
         }
-        this.windowManager.reloadWindow(null, true);
     }
 
     async onDebugWindowUnload (){
@@ -455,8 +545,8 @@ class AppWrapper extends BaseClass {
                 appStatus = 'idle';
             }
         }
-        appState.appBusy = appBusy;
-        appState.appStatus = appStatus;
+        appState.status.appBusy = appBusy;
+        appState.status.appStatus = appStatus;
     }
 
     resetAppStatus (){

@@ -13,14 +13,21 @@ class AppOperationHelper extends BaseClass {
         appState = _appWrapper.getAppState();
 
         this.timeouts = {
-            appStatusChangingTimeout: null
+            appStatusChangingTimeout: null,
+            cancellingTimeout: null
+        };
+
+        this.intervals = {
+            cancellingCheck: null
         };
 
         this.operationStartTime = null;
         this.lastTimeCalculation = null;
         this.lastTimeValue = 0;
-        this.timeCalculationDelay = 1;
+        this.timeCalculationDelay = 0.5;
         this.minPercentComplete = 0.3;
+
+        this.lastCalculationPercent = 0;
 
         return this;
     }
@@ -48,19 +55,26 @@ class AppOperationHelper extends BaseClass {
             appState.progressData.animated = true;
         }
 
+        let operationActive = true;
+        let cancelling = false;
+        let cancelled = false;
+
         appState.appOperation = {
             operationText,
             useProgress,
             progressText,
             appBusy,
-            cancelable
+            cancelable,
+            cancelling,
+            cancelled,
+            operationActive
         };
 
         if (_.isUndefined(appBusy)){
             appBusy = true;
         }
 
-        appState.appStatusChanging = true;
+        appState.status.appStatusChanging = true;
         _appWrapper.setAppStatus(appBusy);
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
@@ -83,13 +97,13 @@ class AppOperationHelper extends BaseClass {
             appState.appOperation.operationText = operationText;
         }
 
-        let appBusy = appState.appOperation.appBusy ? false : appState.appBusy;
+        // let appBusy = appState.appOperation.appBusy ? false : appState.status.appBusy;
 
         if (!timeoutDuration){
             timeoutDuration = 2000;
         }
 
-        _appWrapper.setAppStatus(appBusy, 'success');
+        // _appWrapper.setAppStatus(appBusy, 'success');
 
         if (appState.appOperation.useProgress){
             this.clearProgress();
@@ -98,26 +112,49 @@ class AppOperationHelper extends BaseClass {
         clearTimeout(this.timeouts.appStatusChangingTimeout);
 
         this.timeouts.appStatusChangingTimeout = setTimeout(() => {
-            appState.appStatusChanging = false;
+            appState.status.appStatusChanging = false;
             appState.appOperation = {
                 cancelable: null,
                 cancelling: null,
+                cancelled: false,
                 operationText: null,
                 useProgress: null,
                 progressText: null,
-                appBusy: null
+                appBusy: null,
+                operationActive: false,
             };
             _appWrapper.setAppStatus(false);
         }, timeoutDuration);
         appState.progressData.animated = true;
     }
 
-    operationCancel (e) {
+    async operationCancel (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        appState.appOperation.cancelling = true;
-        appState.appOperation.operationText = 'Cancelling...';
+        if (appState.appOperation.cancelable){
+            appState.appOperation.cancelling = true;
+            appState.appOperation.operationText = 'Cancelling...';
+        }
+        var returnPromise;
+        var resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+        this.intervals.cancellingCheck = setInterval( () => {
+            let cancelled = this.isOperationCancelled();
+            if (cancelled){
+                clearInterval(this.intervals.cancellingCheck);
+                appState.appOperation.cancelled = true;
+                resolveReference(cancelled);
+            }
+        }, 100);
+        this.timeouts.cancellingTimeout = setTimeout( () => {
+            clearInterval(this.intervals.cancellingCheck);
+            clearTimeout(this.timeouts.cancellingTimeout);
+            resolveReference(false);
+        }, this.getConfig('cancelOperationTimeout'));
+        return returnPromise;
     }
 
 
@@ -134,7 +171,13 @@ class AppOperationHelper extends BaseClass {
         if (!this.operationStartTime){
             this.operationStartTime = (+ new Date()) / 1000;
         }
-        var percentComplete = (completed / total) * 100;
+        if (completed > total){
+            completed = total;
+        }
+        if (completed < 0){
+            completed = 0;
+        }
+        var percentComplete = Math.ceil((completed / total) * 100);
         var remainingTime = this.calculateTime(percentComplete);
         percentComplete = parseInt(percentComplete);
         if (operationText){
@@ -146,6 +189,7 @@ class AppOperationHelper extends BaseClass {
             formattedDuration = _appWrapper.getHelper('format').formatDuration(remainingTime);
         }
         appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
+        appState.progressData.percentNumber = percentComplete;
         appState.progressData.styleObject = {
             width: percentComplete + '%'
         };
@@ -170,6 +214,32 @@ class AppOperationHelper extends BaseClass {
             remainingTime = this.lastTimeValue;
         }
         return remainingTime;
+    }
+
+    calculateTimeNew(percent){
+        var currentTime = (+ new Date()) / 1000;
+        var remainingTime = null;
+        var change = percent - this.lastCalculationPercent;
+        if (change > 0 && percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
+            let remaining = 100 - percent;
+            var elapsedSinceLastCalculation = currentTime - this.lastTimeCalculation;
+            let timePerPercent = elapsedSinceLastCalculation / change;
+            remainingTime = remaining * timePerPercent;
+            this.lastTimeCalculation = currentTime;
+            this.lastTimeValue = remainingTime;
+        } else {
+            remainingTime = this.lastTimeValue;
+        }
+        this.lastCalculationPercent = percent;
+        return remainingTime;
+    }
+
+    canOperationContinue () {
+        return appState.appOperation.operationActive && !appState.appOperation.cancelled && !appState.appOperation.cancelling;
+    }
+
+    isOperationCancelled () {
+        return !appState.appOperation.operationActive || appState.appOperation.cancelled;
     }
 }
 

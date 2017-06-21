@@ -1,4 +1,4 @@
-<footer v-bind:class="{'has-user-messages': !appState.appShuttingDown && !appState.appError}">
-	<user-messages v-if="!appState.appShuttingDown && !appState.appError"></user-messages>
+<footer v-bind:class="{'has-user-messages': !appState.status.appShuttingDown && !appState.appError.error}">
+	<user-messages v-if="!appState.status.appShuttingDown && !appState.appError.error"></user-messages>
 	<div class="footer-info" v-html="translate('_footer_info_')"></div>
 </footer>

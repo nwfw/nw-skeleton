@@ -129,6 +129,8 @@ exports.config = {
     mediumPauseDuration: 250,
     longPauseDuration: 1000,
 
+    cancelOperationTimeout: 30000,
+
     appConfig: {
         tmpDataDir: './app/var',
         showInitializationStatus: true,
@@ -159,6 +161,8 @@ exports.config = {
         debugJsFiles: [],
 
         mixinRoot: './app/js/mixin/',
+
+        disableRightClick: true,
 
         menuData: {}
     },

@@ -22,8 +22,6 @@
     border-top: none;
     width: 240px;
     height: 50px;
-    min-height: 0;
-    overflow: hidden;
 }
 
 .has-progress-bar .progress-bar-wrapper {

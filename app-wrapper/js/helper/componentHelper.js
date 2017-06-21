@@ -221,7 +221,6 @@ class ComponentHelper extends BaseClass {
         }
 
         this.log('Initializing components...', 'groupend', []);
-
     }
 
     async processComponents(componentBaseDir, componentMapping, overrideDirs, type){

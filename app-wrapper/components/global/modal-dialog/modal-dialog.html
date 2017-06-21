@@ -1,9 +1,9 @@
 <div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy }]">
-	<transition name="fade-slow">
+	<transition v-bind:name="fadeModal">
 		<div v-show="modalVisible" class="modal-dialog-background" v-on:click="callViewHandler" data-click-handler="cancelModalAction">
 		</div>
 	</transition>
-	<transition name="fade-slow">
+	<transition v-bind:name="fadeModal">
 		<div v-show="modalVisible" class="modal-dialog">
 			<a class="modal-dialog-close fa fa-times" v-on:click="callViewHandler" data-click-handler="cancelModalAction"></a>
 			<div class="modal-dialog-content">

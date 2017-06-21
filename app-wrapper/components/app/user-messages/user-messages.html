@@ -1,4 +1,4 @@
-<div class="user-messages" v-if="!appState.isDebugWindow" v-bind:class="{ 'user-messages-expanded': !appState.appShuttingDown && !appState.appError && appState.config.userMessagesExpanded, 'user-messages-toolbar-visible': !appState.appShuttingDown && !appState.appError && appState.config.userMessagesToolbarVisible }">
+<div class="user-messages" v-if="!appState.isDebugWindow" v-bind:class="{ 'user-messages-expanded': !appState.status.appShuttingDown && !appState.appError.error && appState.config.userMessagesExpanded, 'user-messages-toolbar-visible': !appState.status.appShuttingDown && !appState.appError.error && appState.config.userMessagesToolbarVisible }">
 	<user-messages-controls></user-messages-controls>
 	<user-messages-list></user-messages-list>
 </div>

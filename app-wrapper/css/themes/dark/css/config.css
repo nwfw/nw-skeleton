@@ -350,7 +350,7 @@
     --modal-dialog-close-text-shadow-hovered: 0 0 2px #000;
 
     --modal-dialog-error-text-color: #990000;
-    --modal-dialog-busy-text-color: #666666;
+    --modal-dialog-busy-text-color: #CCCCCC;
 
     --modal-dialog-button-background: #666666;
     --modal-dialog-button-border: 1px solid #999999;
