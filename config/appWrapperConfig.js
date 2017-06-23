@@ -164,6 +164,7 @@ exports.config = {
 
         disableRightClick: true,
 
+        hasAppMenu: false,
         menuData: {}
     },
 

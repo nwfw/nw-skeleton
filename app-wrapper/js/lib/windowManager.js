@@ -625,28 +625,34 @@ class WindowManager extends BaseClass {
     }
 
     initializeAppMenu() {
+        let utilHelper = _appWrapper.getHelper('util');
         if (!(!_.isUndefined(this.menu) && this.menu)){
-            var menuData = this.getConfig('appConfig.menuData');
-            this.menu = new nw.Menu({type: 'menubar'});
-            if (_appWrapper.getHelper('util').isMac()){
-                this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+            let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
+            if (hasAppMenu || utilHelper.isMac()){
+                var menuData = this.getConfig('appConfig.menuData');
+                if (menuData.mainItemName && menuData.options){
+                    this.menu = new nw.Menu({type: 'menubar'});
+                    if (utilHelper.isMac()){
+                        this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                    }
+                }
             }
         }
-
     }
 
     setupAppMenu() {
-        var menuData = this.getConfig('appConfig.menuData');
-        this.menuMethodMap = [];
-        if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
-            for(let i=0; i<menuData.menus.length; i++){
-                var menuMethodData = this.initializeAppMenuItemData(menuData.menus[i], i);
-                this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
-                this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
+        let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
+        if (hasAppMenu){
+            let menuData = this.getConfig('appConfig.menuData');
+            this.menuMethodMap = [];
+            if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
+                for(let i=0; i<menuData.menus.length; i++){
+                    let menuMethodData = this.initializeAppMenuItemData(menuData.menus[i], i);
+                    this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
+                    this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
+                }
+                nw.Window.get().menu = this.menu;
             }
-
-            nw.Window.get().menu = this.menu;
-
         }
     }
 
@@ -690,33 +696,55 @@ class WindowManager extends BaseClass {
         return menuItem;
     }
 
-    initializeAppMenuItemData (menuItemData, menuIndex) {
+    async initializeAppMenuItemData (menuItemData, menuIndex) {
         var menuData = [];
         if (menuItemData.menuItem.type != 'separator'){
+            let menuMethod;
+            if (menuItemData.menuItem && menuItemData.menuItem.method) {
+                menuMethod = await _appWrapper.getObjMethod(menuItemData.menuItem.method, [], _appWrapper, true);
+            }
+            if (!menuMethod){
+                this.log('Can not find method "{1}" for menu item with label "{2}"!', 'error', [menuItemData.menuItem.method, menuItemData.menuItem.label]);
+            }
+
+            menuData.push({
+                menuIndex: menuIndex,
+                label: menuItemData.menuItem.label,
+                shortcut: menuItemData.menuItem.shortcut,
+                method: menuItemData.menuItem.method
+            });
             if (menuItemData.children && menuItemData.children.length){
                 for(let i=0; i<menuItemData.children.length; i++){
                     menuData = _.union(menuData, this.initializeAppMenuItemData(menuItemData.children[i], menuIndex + '_' + i));
                 }
-            } else {
-                menuData.push({
-                    menuIndex: menuIndex,
-                    label: menuItemData.menuItem.label,
-                    shortcut: menuItemData.menuItem.shortcut,
-                    method: menuItemData.menuItem.method
-
-                });
             }
+        } else {
+            menuData.push({
+                menuIndex: menuIndex,
+                label: '__separator__',
+                shortcut: null,
+                method: 'noop'
+            });
         }
         return menuData;
     }
 
     getMenuItemMethodName (menuItemIndex){
-        return _.find(this.menuMethodMap, {menuIndex: menuItemIndex}).method;
+        let method;
+        let menuMethod = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
+        if (menuMethod && menuMethod.method) {
+            method = menuMethod.method;
+        } else {
+            this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex]);
+        }
+        return method;
     }
 
     removeAppMenu (){
-        for(let i=1; i<this.menu.items.length;i++){
-            this.menu.removeAt(i);
+        if (this.menu && this.menu.items){
+            for(let i=1; i<this.menu.items.length;i++){
+                this.menu.removeAt(i);
+            }
         }
     }
 }

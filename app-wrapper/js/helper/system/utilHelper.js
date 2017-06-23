@@ -300,6 +300,10 @@ class UtilHelper extends BaseClass {
     prevent (e){
         e.preventDefault();
     }
+
+    quoteRegex (string) {
+        return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
+    }
 }
 
 exports.UtilHelper = UtilHelper;

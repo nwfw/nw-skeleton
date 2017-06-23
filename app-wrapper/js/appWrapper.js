@@ -279,7 +279,7 @@ class AppWrapper extends BaseClass {
             var currentHelpers;
             for (let i=0; i<helperDirs.length; i++){
                 var helperDir = path.resolve(helperDirs[i]);
-                currentHelpers = await this.fileManager.loadFilesFromDir(helperDir, '/\.js$/', true);
+                currentHelpers = await this.fileManager.loadFilesFromDir(helperDir, /\.js$/, true);
                 if (currentHelpers && _.isObject(currentHelpers) && _.keys(currentHelpers).length){
                     helpers = _.merge(helpers, currentHelpers);
                 }
@@ -703,8 +703,8 @@ class AppWrapper extends BaseClass {
         var objectIdentifier;
         var method;
         var object = this;
-        if (methodIdentifier.match(/\./)){
-            objectIdentifier = methodIdentifier.replace(/\.[^\.]+$/, '');
+        if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
+            objectIdentifier = methodIdentifier.replace(/\.[^.]+$/, '');
         }
 
         if (methodIdentifier){
@@ -718,12 +718,12 @@ class AppWrapper extends BaseClass {
         if (object && method && _.isFunction(method)){
             return method.call(object);
         } else {
-            this.log('Can\t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex]);
+            this.log('Can\'t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex]);
             return false;
         }
     }
 
-    async getObjMethod(methodString, methodArgs, context){
+    async getObjMethod(methodString, methodArgs, context, silent){
         var methodChunks = methodString.split('.');
         var targetMethod;
         var methodPath = '';
@@ -767,7 +767,9 @@ class AppWrapper extends BaseClass {
                     };
                 }
             } else {
-                this.log('Can\'t find object method "{1}"', 'warning', [methodString]);
+                if (!silent){
+                    this.log('Can\'t find object method "{1}"', 'warning', [methodString]);
+                }
             }
         }
         return objMethod;
@@ -783,7 +785,7 @@ class AppWrapper extends BaseClass {
     }
 
     exitApp(){
-        this.windowManager.closeWindow();
+        // this.windowManager.closeWindow();
     }
 
     async finalizeLogs(){

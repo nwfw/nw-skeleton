@@ -30,41 +30,43 @@ class StaticFilesHelper extends BaseClass {
         return await super.initialize();
     }
 
-    async loadCss (href, noWatch, resolvePath) {
+    async loadCss (href, noWatch) {
+        let utilHelper = _appWrapper.getHelper('util');
 
         let cssFilePath = href;
         let cssContents = '';
         let compiledCssPath = this.getConfig('appConfig.cssCompiledFile');
 
         let processDir = process.cwd();
-        let processDirRegex = new RegExp('^' + processDir);
+        let processDirRegex = new RegExp('^' + utilHelper.quoteRegex(processDir));
 
         if (!href.match(processDirRegex)){
-            if (!resolvePath){
-                cssFilePath  = path.resolve(path.join('.' + href));
+            cssFilePath  = path.resolve(path.join('.' + href));
+        }
+
+        if (await _appWrapper.fileManager.isFile(cssFilePath)){
+            cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
+            if (cssContents){
+                cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
             }
+
+            if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
+                _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
+            }
+        } else {
+            this.log('Problem loading CSS file "{1}" - file does not exist', 'error', [cssFilePath]);
         }
-
-
-        cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
-        if (cssContents){
-            cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
-        }
-
-        if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
-            _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
-        }
-
 
         return cssContents;
     }
 
     async addCss (href, noWatch, silent) {
+        let utilHelper = _appWrapper.getHelper('util');
 
         let parentEl = document.getElementsByTagName('head')[0];
 
         let processDir = process.cwd();
-        let processDirRegex = new RegExp('^' + processDir);
+        let processDirRegex = new RegExp('^' + utilHelper.quoteRegex(processDir));
 
         let hrefPath = href;
 
@@ -139,7 +141,7 @@ class StaticFilesHelper extends BaseClass {
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
         _.each(links, (link) => {
             if (link.type && link.type == 'text/css'){
-                this.log('Reloading CSS file "{1}"', 'info', [link.href.replace(/^[^\/]+\/\/[^\/]+/, '').replace(/\?.*$/, '')], true);
+                this.log('Reloading CSS file "{1}"', 'info', [link.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')], true);
                 link.href = link.href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
             }
         });
@@ -424,9 +426,11 @@ class StaticFilesHelper extends BaseClass {
                     this.log('Compiling {1} theme init CSS files', 'group', [cssFileData.counts.themeInitCssFileCount]);
                 }
                 for (let i=0; i<cssFileData.files.themeInitCssFiles.length; i++){
-                    let cssResult = await this.loadCss(cssFileData.files.themeInitCssFiles[i], noWatch, true);
-                    let cssContents = cssResult.css;
-                    compiledCss += cssContents;
+                    let cssResult = await this.loadCss(cssFileData.files.themeInitCssFiles[i], noWatch);
+                    if (cssResult && cssResult.css){
+                        let cssContents = cssResult.css;
+                        compiledCss += cssContents;
+                    }
                 }
                 if (!silent){
                     this.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount]);
@@ -439,8 +443,10 @@ class StaticFilesHelper extends BaseClass {
                 }
                 for (let i=0; i<cssFileData.files.cssFiles.length; i++){
                     let cssResult = await this.loadCss(cssFileData.files.cssFiles[i], noWatch);
-                    let cssContents = cssResult.css;
-                    compiledCss += cssContents;
+                    if (cssResult && cssResult.css){
+                        let cssContents = cssResult.css;
+                        compiledCss += cssContents;
+                    }
                 }
                 if (!silent){
                     this.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount]);
@@ -452,9 +458,11 @@ class StaticFilesHelper extends BaseClass {
                     this.log('Compiling {1} theme CSS files', 'group', [cssFileData.counts.themeCssFileCount]);
                 }
                 for (let i=0; i<cssFileData.files.themeCssFiles.length; i++){
-                    let cssResult = await this.loadCss(cssFileData.files.themeCssFiles[i], noWatch, true);
-                    let cssContents = cssResult.css;
-                    compiledCss += cssContents;
+                    let cssResult = await this.loadCss(cssFileData.files.themeCssFiles[i], noWatch);
+                    if (cssResult && cssResult.css){
+                        let cssContents = cssResult.css;
+                        compiledCss += cssContents;
+                    }
                 }
                 if (!silent){
                     this.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount]);
@@ -467,8 +475,10 @@ class StaticFilesHelper extends BaseClass {
                 }
                 for (let i=0; i<cssFileData.files.appCssFiles.length; i++){
                     let cssResult = await this.loadCss(cssFileData.files.appCssFiles[i], noWatch);
-                    let cssContents = cssResult.css;
-                    compiledCss += cssContents;
+                    if (cssResult && cssResult.css){
+                        let cssContents = cssResult.css;
+                        compiledCss += cssContents;
+                    }
                 }
                 if (!silent){
                     this.log('Compiling {1} app CSS files', 'groupend', [cssFileData.counts.appCssFileCount]);
@@ -482,8 +492,10 @@ class StaticFilesHelper extends BaseClass {
                     }
                     for (let i=0; i<cssFileData.files.debugCssFiles.length; i++){
                         let cssResult = await this.loadCss(cssFileData.files.debugCssFiles[i], noWatch);
-                        let cssContents = cssResult.css;
-                        compiledCss += cssContents;
+                        if (cssResult && cssResult.css){
+                            let cssContents = cssResult.css;
+                            compiledCss += cssContents;
+                        }
                     }
                     if (!silent){
                         this.log('Compiling {1} debug window wrapper CSS files', 'groupend', [cssFileData.counts.debugCssFileCount]);
@@ -495,8 +507,10 @@ class StaticFilesHelper extends BaseClass {
                     }
                     for (let i=0; i<cssFileData.files.appDebugCssFiles.length; i++){
                         let cssResult = await this.loadCss(cssFileData.files.appDebugCssFiles[i], noWatch);
-                        let cssContents = cssResult.css;
-                        compiledCss += cssContents;
+                        if (cssResult && cssResult.css){
+                            let cssContents = cssResult.css;
+                            compiledCss += cssContents;
+                        }
                     }
                     if (!silent){
                         this.log('Compiling {1} debug window app CSS files', 'groupend', [cssFileData.counts.appDebugCssFileCount]);
@@ -509,9 +523,11 @@ class StaticFilesHelper extends BaseClass {
                     this.log('Compiling {1} theme override CSS files', 'group', [cssFileData.counts.themeOverrideCssFileCount]);
                 }
                 for (let i=0; i<cssFileData.files.themeOverrideCssFiles.length; i++){
-                    let cssResult = await this.loadCss(cssFileData.files.themeOverrideCssFiles[i], noWatch, true);
-                    let cssContents = cssResult.css;
-                    compiledCss += cssContents;
+                    let cssResult = await this.loadCss(cssFileData.files.themeOverrideCssFiles[i], noWatch);
+                    if (cssResult && cssResult.css){
+                        let cssContents = cssResult.css;
+                        compiledCss += cssContents;
+                    }
                 }
                 if (!silent){
                     this.log('Compiling {1} wrapper CSS files', 'groupend', [cssFileData.counts.cssFileCount]);

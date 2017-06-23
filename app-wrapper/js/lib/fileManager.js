@@ -440,7 +440,10 @@ class FileManager extends BaseClass {
     }
 
     async readDir(path){
-        let files = fs.readdirSync(path);
+        let files = [];
+        if (await this.isDir(path)){
+            files = fs.readdirSync(path);
+        }
         return files;
     }
 
