@@ -651,8 +651,10 @@ class WindowManager extends BaseClass {
                     this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
                     this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
                 }
-                nw.Window.get().menu = this.menu;
             }
+            nw.Window.get().menu = this.menu;
+        } else if (_appWrapper.getHelper('util').isMac()){
+            nw.Window.get().menu = this.menu;
         }
     }
 
