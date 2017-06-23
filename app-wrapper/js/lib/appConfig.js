@@ -116,10 +116,18 @@ class AppConfig extends BaseClass {
         let configName = this.getConfigStorageName();
         if (localStorage){
             var userConfig = _appWrapper.getHelper('util').difference(this.baseConfig, appState.config);
+
+            let ignoreUserConfig = this.getConfig('configData.ignoreUserConfig');
+            if (ignoreUserConfig && ignoreUserConfig.length){
+                userConfig = _.omit(userConfig, ignoreUserConfig);
+            }
+
             var userConfigKeys = _.keys(userConfig);
+
             var userConfigKeysDiff = _.difference(userConfigKeys, _.keys(this.userConfig));
             userConfigKeysDiff = _.union(userConfigKeysDiff, _.difference(_.keys(this.userConfig), userConfigKeys));
             userConfigKeysDiff = _.uniq(userConfigKeysDiff);
+
             var noReloadConfig = this.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
             var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
@@ -301,10 +309,6 @@ class AppConfig extends BaseClass {
                     if (i == chunkCount){
                         if (input.getAttribute('type') == 'checkbox'){
                             currentConfig[pathChunk] = input.checked;
-                            // console.log(input);
-                            // console.log(input.getAttribute('name'));
-                            // console.log(currentConfig[pathChunk]);
-                            // console.log(appConfig[pathChunk]);
                         } else {
                             currentConfig[pathChunk] = input.value;
                         }

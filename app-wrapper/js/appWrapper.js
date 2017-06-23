@@ -11,11 +11,6 @@ var FileManager = require('./lib/fileManager').FileManager;
 
 var AppConfig = require('./lib/appConfig').AppConfig;
 
-let appState;
-
-// var _appWrapper;
-// var appState;
-
 class AppWrapper extends BaseClass {
 
     constructor (initialAppConfig) {
@@ -57,7 +52,6 @@ class AppWrapper extends BaseClass {
             cleanupTimeout: null,
             windowCloseTimeout: null,
             modalContentVisibleTimeout: null,
-            // appStatusChangingTimeout: null
         };
 
         this.intervals = {
@@ -141,6 +135,8 @@ class AppWrapper extends BaseClass {
 
         appState.platformData = this.getHelper('util').getPlatformData();
 
+        appState.appDir = await this.getAppDir();
+
         this.windowManager.initializeAppMenu();
 
         App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
@@ -150,7 +146,7 @@ class AppWrapper extends BaseClass {
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
 
-        appState.config.appInfo.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
+        appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
 
         await this.helpers.staticFilesHelper.loadCssFiles();
 
@@ -384,7 +380,6 @@ class AppWrapper extends BaseClass {
                 appState.appError.error = false;
                 this.windowManager.closeWindowForce();
             }
-            // }
         } else {
             return;
         }
@@ -490,13 +485,6 @@ class AppWrapper extends BaseClass {
     }
 
     async beforeUnload () {
-        // if (this.helpers && this.helpers.modalHelper){
-        //     this.helpers.modalHelper.closeCurrentModal(true);
-        // }
-        // if (!appState.isDebugWindow){
-        //     await this.cleanup();
-        // }
-        // this.windowManager.reloadWindow(null, true);
         let modalHelper = this.getHelper('modal');
         modalHelper.closeCurrentModal(true);
         let confirmed = true;
@@ -515,7 +503,6 @@ class AppWrapper extends BaseClass {
                 appState.appError.error = false;
                 this.windowManager.reloadWindow(null, true);
             }
-            // }
         } else {
             return;
         }
@@ -872,7 +859,7 @@ class AppWrapper extends BaseClass {
     }
 
     async wait(duration){
-        // this.log('Waiting {1} ms', 'debug', [duration]);
+        this.log('Waiting {1} ms', 'debug', [duration]);
         var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
@@ -893,6 +880,29 @@ class AppWrapper extends BaseClass {
     async onNextTick(callable){
         await this.nextTick();
         callable();
+    }
+
+    async getAppDir(){
+        let utilHelper = this.getHelper('util');
+        let appDir;
+        let processPath = path.dirname(process.execPath);
+        let workingDir = path.resolve('./');
+
+        if (utilHelper.isWindows()){
+            if (process.execPath.match(/nw\.exe/)){
+                appDir = path.join(workingDir, 'app');
+            } else {
+                appDir = processPath;
+            }
+        } else if (utilHelper.isMac()){
+            if (process.execPath.match(/nwjs\sHelper$/)){
+                appDir = path.join(workingDir, 'app');
+            } else {
+                appDir = processPath;
+            }
+        }
+
+        return appDir;
     }
 
 }
