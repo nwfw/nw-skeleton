@@ -315,7 +315,7 @@ class AppWrapper extends BaseClass {
             if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
                 this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
             }
-            this.addUserMessage('Application initialized', 'info', [], false, false, true);
+            this.addUserMessage('Application initialized', 'info', [], false, false);
         }
 
         return window.feApp;

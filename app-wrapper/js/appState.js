@@ -69,7 +69,8 @@ exports.appState = {
         useProgress: null,
         progressText: null,
         appBusy: null,
-        operationActive: false
+        operationActive: false,
+        operationId: null
     },
 
     hasUserConfig: false,

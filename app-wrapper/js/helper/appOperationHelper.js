@@ -43,6 +43,10 @@ class AppOperationHelper extends BaseClass {
 
 
     operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation){
+        if (appState.appOperation.operationActive){
+            this.log('Can\'t start another operation, one is already in progress', 'warning', []);
+            return;
+        }
         if (!operationText){
             operationText = '';
         }
@@ -58,6 +62,8 @@ class AppOperationHelper extends BaseClass {
         let operationActive = true;
         let cancelling = false;
         let cancelled = false;
+        let utilHelper = _appWrapper.getHelper('util');
+        let operationId = utilHelper.getRandomString(10);
 
         appState.appOperation = {
             operationText,
@@ -67,7 +73,8 @@ class AppOperationHelper extends BaseClass {
             cancelable,
             cancelling,
             cancelled,
-            operationActive
+            operationActive,
+            operationId,
         };
 
         if (_.isUndefined(appBusy)){
@@ -81,6 +88,7 @@ class AppOperationHelper extends BaseClass {
         if (useProgress){
             this.startProgress(100, appState.appOperation.progressText);
         }
+        return operationId;
     }
 
     operationUpdate(completed, total, progressText){
@@ -103,26 +111,20 @@ class AppOperationHelper extends BaseClass {
             timeoutDuration = 2000;
         }
 
+        appState.progressData.inProgress = false;
+        appState.appOperation.operationActive = false;
+
         // _appWrapper.setAppStatus(appBusy, 'success');
 
-        if (appState.appOperation.useProgress){
-            this.clearProgress();
-        }
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
 
         this.timeouts.appStatusChangingTimeout = setTimeout(() => {
             appState.status.appStatusChanging = false;
-            appState.appOperation = {
-                cancelable: null,
-                cancelling: null,
-                cancelled: false,
-                operationText: null,
-                useProgress: null,
-                progressText: null,
-                appBusy: null,
-                operationActive: false,
-            };
+            if (appState.appOperation.useProgress){
+                this.clearProgress();
+            }
+            this.resetOperationData();
             _appWrapper.setAppStatus(false);
         }, timeoutDuration);
         appState.progressData.animated = true;
@@ -132,10 +134,11 @@ class AppOperationHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        if (appState.appOperation.cancelable){
-            appState.appOperation.cancelling = true;
-            appState.appOperation.operationText = 'Cancelling...';
+        if (!appState.appOperation.cancelable){
+            return;
         }
+        appState.appOperation.cancelling = true;
+        appState.appOperation.operationText = _appWrapper.appTranslations.translate('Cancelling...');
         var returnPromise;
         var resolveReference;
         returnPromise = new Promise((resolve) => {
@@ -145,6 +148,7 @@ class AppOperationHelper extends BaseClass {
             let cancelled = this.isOperationCancelled();
             if (cancelled){
                 clearInterval(this.intervals.cancellingCheck);
+                appState.appOperation.cancelling = false;
                 appState.appOperation.cancelled = true;
                 resolveReference(cancelled);
             }
@@ -196,8 +200,22 @@ class AppOperationHelper extends BaseClass {
     }
 
     clearProgress () {
-        appState.progressData.inProgress = false;
+        appState.progressData = {
+            animated: true,
+            inProgress: false,
+            percentComplete: 0,
+            percentNumber: 0,
+            operationText: '',
+            detailText: '',
+            progressBarClass: '',
+            styleObject: {
+                width: '0%'
+            }
+        };
         this.operationStartTime = null;
+        this.lastTimeCalculation = null;
+        this.lastTimeValue = 0;
+        this.lastCalculationPercent = 0;
     }
 
     calculateTime(percent){
@@ -240,6 +258,20 @@ class AppOperationHelper extends BaseClass {
 
     isOperationCancelled () {
         return !appState.appOperation.operationActive || appState.appOperation.cancelled;
+    }
+
+    resetOperationData () {
+        appState.appOperation = {
+            operationText: '',
+            useProgress: false,
+            progressText: '',
+            appBusy: false,
+            cancelable: false,
+            cancelling: false,
+            cancelled: false,
+            operationActive: false,
+            operationId: '',
+        };
     }
 }
 
