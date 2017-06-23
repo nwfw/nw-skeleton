@@ -785,7 +785,7 @@ class AppWrapper extends BaseClass {
     }
 
     exitApp(){
-        // this.windowManager.closeWindow();
+        this.windowManager.closeWindow();
     }
 
     async finalizeLogs(){

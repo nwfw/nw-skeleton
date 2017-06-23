@@ -641,8 +641,12 @@ class WindowManager extends BaseClass {
     }
 
     setupAppMenu() {
+        let utilHelper = _appWrapper.getHelper('util');
         let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
         if (hasAppMenu){
+            if (!utilHelper.isMac() && !appState.windowState.frame){
+                this.log('You should not be using frameless window with app menus.', 'warning', []);
+            }
             let menuData = this.getConfig('appConfig.menuData');
             this.menuMethodMap = [];
             if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
@@ -653,7 +657,7 @@ class WindowManager extends BaseClass {
                 }
             }
             nw.Window.get().menu = this.menu;
-        } else if (_appWrapper.getHelper('util').isMac()){
+        } else if (utilHelper.isMac()){
             nw.Window.get().menu = this.menu;
         }
     }
