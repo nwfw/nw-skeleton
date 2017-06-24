@@ -4,6 +4,7 @@
     right: 5px;
     display: flex;
     flex: 1 1 auto;
+    -webkit-app-region: no-drag;
 }
 .window-control-hidden {
     visibility: hidden;

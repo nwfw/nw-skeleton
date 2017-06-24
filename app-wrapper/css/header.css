@@ -11,6 +11,7 @@ header {
     border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
     border-style: var(--app-main-border-style);
     border-color: var(--app-header-border-color);
+    -webkit-app-region: drag;
 }
 
 .header-top {
@@ -18,8 +19,8 @@ header {
 }
 
 .header-bottom {
-    flex: 1 1 10px;
-    overflow: hidden;
+    flex: 1 1 20px;
+    /*overflow: hidden;*/
 }
 
 .header-app-title {
@@ -34,17 +35,16 @@ header {
 }
 
 .header-toolbar {
-	position: absolute;
-	top: 70px;
-	right: 4px;
+    display: inline-block;
 	text-align: right;
+    float: right;
+    padding: 0 10px 0 0;
+    -webkit-app-region: no-drag;
 }
 
 
 .app-language-wrapper,
 .app-theme-wrapper {
-	float: right;
-	margin-right: 5px;
-    position: relative;
-    top: -40px;
+    display: inline-block;
+    margin-left: 5px;
 }
