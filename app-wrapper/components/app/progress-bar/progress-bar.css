@@ -26,7 +26,7 @@
 
 .has-progress-bar .progress-bar-wrapper {
 	box-shadow: var(--app-progress-bar-wrapper-box-shadow);
-    clip-path: polygon(calc(0% - var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)), calc(0% - var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)));
+    /*clip-path: polygon(calc(0% - var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)), calc(0% - var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)));*/
 
 }
 

@@ -17,7 +17,7 @@
     transition-property: height, box-shadow, border, border-bottom, color !important;
     transition-timing-function: ease-out !important;
     transition-duration: var(--short-animation-duration) !important;
-    clip-path: polygon(calc(0% - var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) 100%, calc(0% - var(--app-live-info-clip-offset)) 100%);
+    /*clip-path: polygon(calc(0% - var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) calc(0% - var(--app-live-info-clip-offset)), calc(100% + var(--app-live-info-clip-offset)) 100%, calc(0% - var(--app-live-info-clip-offset)) 100%);*/
 }
 
 .header-bottom.has-progress-bar .live-info {
