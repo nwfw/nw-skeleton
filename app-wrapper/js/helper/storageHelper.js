@@ -18,6 +18,10 @@ class StorageHelper extends BaseClass {
         return this;
     }
 
+    async initialize () {
+        return await super.initialize();
+    }
+
     async set (name, value){
         var returnValue = null;
         var savedValue;

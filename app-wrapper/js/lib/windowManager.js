@@ -19,10 +19,6 @@ class WindowManager extends BaseClass {
         this.screenWidth = null;
         this.screenHeight = null;
 
-        this.menu = null;
-        this.menuMethodMap = [];
-        this.menuShortcutMap = [];
-
         this.boundMethods = {
             minimizeWindow: this.minimizeWindow.bind(this),
             toggleMaximize: this.toggleMaximize.bind(this),
@@ -624,134 +620,8 @@ class WindowManager extends BaseClass {
         return window._newWindow;
     }
 
-    initializeAppMenu() {
-        let utilHelper = _appWrapper.getHelper('util');
-        if (!(!_.isUndefined(this.menu) && this.menu)){
-            let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
-            if (hasAppMenu || utilHelper.isMac()){
-                var menuData = this.getConfig('appConfig.menuData');
-                if (menuData.mainItemName && menuData.options){
-                    this.menu = new nw.Menu({type: 'menubar'});
-                    if (utilHelper.isMac()){
-                        this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
-                    }
-                }
-            }
-        }
-    }
-
-    setupAppMenu() {
-        let utilHelper = _appWrapper.getHelper('util');
-        let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
-        if (hasAppMenu){
-            if (!utilHelper.isMac() && !appState.windowState.frame){
-                this.log('You should not be using frameless window with app menus.', 'warning', []);
-            }
-            let menuData = this.getConfig('appConfig.menuData');
-            this.menuMethodMap = [];
-            if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
-                for(let i=0; i<menuData.menus.length; i++){
-                    let menuMethodData = this.initializeAppMenuItemData(menuData.menus[i], i);
-                    this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);
-                    this.menu.append(this.initializeAppMenuItem(menuData.menus[i], i));
-                }
-            }
-            nw.Window.get().menu = this.menu;
-        } else if (utilHelper.isMac()){
-            nw.Window.get().menu = this.menu;
-        }
-    }
-
-    initializeAppMenuItem (menuItemData, menuIndex) {
-        var menuItem;
-        var menuItemObj = _.extend(menuItemData.menuItem, {
-            click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)
-        });
-        if (menuItemData.menuItem.shortcut){
-            var modifiers = [];
-            if (menuItemData.menuItem.shortcut.key){
-                menuItemObj.key = menuItemData.menuItem.shortcut.key;
-            }
-            if (menuItemData.menuItem.shortcut.modifiers){
-                if (menuItemData.menuItem.shortcut.modifiers.ctrl){
-                    if (_appWrapper.getHelper('util').isMac()){
-                        modifiers.push('cmd');
-                    } else {
-                        modifiers.push('ctrl');
-                    }
-                }
-                if (menuItemData.menuItem.shortcut.modifiers.alt){
-                    modifiers.push('alt');
-                }
-                if (menuItemData.menuItem.shortcut.modifiers.shift){
-                    modifiers.push('shift');
-                }
-            }
-            menuItemObj.modifiers = modifiers.join('+');
-        }
-        if (menuItemData.children && menuItemData.children.length){
-            let submenu = new nw.Menu();
-            for(let i=0; i<menuItemData.children.length; i++){
-                submenu.append(this.initializeAppMenuItem(menuItemData.children[i], menuIndex + '_' + i));
-            }
-
-            menuItem = new nw.MenuItem(_.extend(menuItemObj, {submenu: submenu, click: _appWrapper.handleMenuClick.bind(_appWrapper, menuIndex)}));
-        } else {
-            menuItem = new nw.MenuItem(_.extend(menuItemObj));
-        }
-        return menuItem;
-    }
-
-    async initializeAppMenuItemData (menuItemData, menuIndex) {
-        var menuData = [];
-        if (menuItemData.menuItem.type != 'separator'){
-            let menuMethod;
-            if (menuItemData.menuItem && menuItemData.menuItem.method) {
-                menuMethod = await _appWrapper.getObjMethod(menuItemData.menuItem.method, [], _appWrapper, true);
-            }
-            if (!menuMethod){
-                this.log('Can not find method "{1}" for menu item with label "{2}"!', 'error', [menuItemData.menuItem.method, menuItemData.menuItem.label]);
-            }
-
-            menuData.push({
-                menuIndex: menuIndex,
-                label: menuItemData.menuItem.label,
-                shortcut: menuItemData.menuItem.shortcut,
-                method: menuItemData.menuItem.method
-            });
-            if (menuItemData.children && menuItemData.children.length){
-                for(let i=0; i<menuItemData.children.length; i++){
-                    menuData = _.union(menuData, this.initializeAppMenuItemData(menuItemData.children[i], menuIndex + '_' + i));
-                }
-            }
-        } else {
-            menuData.push({
-                menuIndex: menuIndex,
-                label: '__separator__',
-                shortcut: null,
-                method: 'noop'
-            });
-        }
-        return menuData;
-    }
-
-    getMenuItemMethodName (menuItemIndex){
-        let method;
-        let menuMethod = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
-        if (menuMethod && menuMethod.method) {
-            method = menuMethod.method;
-        } else {
-            this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex]);
-        }
-        return method;
-    }
-
-    removeAppMenu (){
-        if (this.menu && this.menu.items){
-            for(let i=1; i<this.menu.items.length;i++){
-                this.menu.removeAt(i);
-            }
-        }
+    setMenu (menu) {
+        nw.Window.get().menu = menu;
     }
 }
 

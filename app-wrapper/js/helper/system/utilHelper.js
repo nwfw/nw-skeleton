@@ -23,6 +23,10 @@ class UtilHelper extends BaseClass {
         return this;
     }
 
+    async initialize () {
+        return await super.initialize();
+    }
+
     getRandom (min, max){
         var random = Math.floor(Math.random() * (max - min + 1)) + min;
         return random;
@@ -303,6 +307,10 @@ class UtilHelper extends BaseClass {
 
     quoteRegex (string) {
         return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
+    }
+
+    noop () {
+        return '';
     }
 }
 

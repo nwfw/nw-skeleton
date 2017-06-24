@@ -137,7 +137,7 @@ class AppWrapper extends BaseClass {
 
         appState.appDir = await this.getAppDir();
 
-        this.windowManager.initializeAppMenu();
+        this.getHelper('menu').initializeAppMenu();
 
         App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
 
@@ -200,7 +200,7 @@ class AppWrapper extends BaseClass {
             appState.status.appInitialized = true;
             appState.status.appReady = true;
         }
-        this.windowManager.setupAppMenu();
+        this.getHelper('menu').setupAppMenu();
         window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
         this.log('Initializing application.', 'groupend', []);
         return retValue;
@@ -453,7 +453,7 @@ class AppWrapper extends BaseClass {
     async shutdownApp () {
         this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
         this.log('Shutting down...', 'group', []);
-        await this.windowManager.removeAppMenu();
+        await this.getHelper('menu').removeAppMenu();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
         }
@@ -683,31 +683,6 @@ class AppWrapper extends BaseClass {
             }
         }
         return helper;
-    }
-
-    handleMenuClick (menuIndex) {
-        var methodIdentifier = this.windowManager.getMenuItemMethodName(menuIndex);
-        var objectIdentifier;
-        var method;
-        var object = this;
-        if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
-            objectIdentifier = methodIdentifier.replace(/\.[^.]+$/, '');
-        }
-
-        if (methodIdentifier){
-            method = _.get(this, methodIdentifier);
-        }
-
-        if (objectIdentifier){
-            object = _.get(this, objectIdentifier);
-        }
-
-        if (object && method && _.isFunction(method)){
-            return method.call(object);
-        } else {
-            this.log('Can\'t call menu click handler "{1}" for menuIndex "{2}"!', 'error', [methodIdentifier, menuIndex]);
-            return false;
-        }
     }
 
     async getObjMethod(methodString, methodArgs, context, silent){
