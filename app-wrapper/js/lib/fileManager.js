@@ -447,6 +447,26 @@ class FileManager extends BaseClass {
         return files;
     }
 
+    async readDirRecursive(dirPath, extensionRegex){
+        let files = [];
+        let rootFiles = await this.readDir(dirPath);
+        for (let i=0; i < rootFiles.length; i++){
+            let filePath = path.join(dirPath, rootFiles[i]);
+            if (await this.isDir(filePath)){
+                files = _.union(files, await this.readDirRecursive(filePath, extensionRegex));
+            } else {
+                if (extensionRegex) {
+                    if (filePath.match(extensionRegex)){
+                        files.push(filePath);
+                    }
+                } else {
+                    files.push(filePath);
+                }
+            }
+        }
+        return files;
+    }
+
     async getFirstFileFromDirs(fileName, dirs){
         for(let i=0; i<dirs.length; i++){
             let currentFile = path.join(dirs[i], fileName);

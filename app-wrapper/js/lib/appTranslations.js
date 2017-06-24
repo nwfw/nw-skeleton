@@ -414,5 +414,52 @@ class AppTranslations extends BaseClass {
         return newTranslationDataString;
 
     }
+
+    async autoTrimTranslations () {
+        let scannedTranslations = await this.scanAppTranslations();
+
+        let excessTranslations = _.difference(Object.keys(appState.languageData.translations[appState.languageData.currentLanguage]), scannedTranslations);
+        let beforeCount = 0;
+        let afterCount = 0;
+        for (let i=0; i<appState.languageData.availableLanguages.length; i++){
+            beforeCount = Object.keys(appState.languageData.translations[appState.languageData.availableLanguages[i].code]).length;
+            let translations = _.omit(_.cloneDeep(appState.languageData.translations[appState.languageData.availableLanguages[i].code]), excessTranslations);
+            afterCount = Object.keys(translations).length;
+            await this.addLabels(appState.languageData.availableLanguages[i], translations);
+        }
+        let countDiff = beforeCount - afterCount;
+        if (countDiff){
+            this.addUserMessage('Trimmed {1} excess translations.', 'info', [countDiff], false, false, true);
+        } else {
+            this.addUserMessage('No excess translations found.', 'info', [], false, false, true);
+        }
+    }
+
+    async scanAppTranslations() {
+        let appDir = appState.appDir;
+        let wrapperDir = path.resolve(path.join(appDir, '../node_modules/nw-skeleton/app-wrapper'));
+        let files = await _appWrapper.fileManager.readDirRecursive(appDir, /\.(js|html)$/);
+        let labels = [];
+        let translateRegex = new RegExp('trans' + 'late\\(\'([^\']+)\'\\)', 'g');
+        let userMessageRegex = new RegExp('addUserMessage\\(\'([^\']+)\'(,|\\))', 'g');
+        files = _.union(files, await _appWrapper.fileManager.readDirRecursive(wrapperDir, /\.(js|html)$/));
+
+        for (let i=0; i<files.length; i++){
+            let fileContents = await _appWrapper.fileManager.readFileSync(files[i], {encoding: 'utf8'});
+            if (fileContents){
+                let fileTranslations = fileContents.match(translateRegex);
+                fileTranslations = _.union(fileTranslations, fileContents.match(userMessageRegex));
+                if (fileTranslations && fileTranslations.length){
+                    fileTranslations = _.map(fileTranslations, (translation) => {
+                        // return translation.replace(/^translate\('/, '').replace(/'\)$/, '');
+                        return translation.replace(/^(translate|addUserMessage)\('/, '').replace(/',?\)?$/, '');
+
+                    });
+                    labels = _.union(labels, fileTranslations);
+                }
+            }
+        }
+        return labels;
+    }
 }
 exports.AppTranslations = AppTranslations;

@@ -457,10 +457,7 @@ class AppWrapper extends BaseClass {
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
         }
-        appState.mainLoaderTitle = 'Please wait while application shuts down...';
-        if (this.appTranslations && this.appTranslations.translate){
-            appState.mainLoaderTitle = this.appTranslations.translate(appState.mainLoaderTitle);
-        }
+        appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
         appState.status.appShuttingDown = true;
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();

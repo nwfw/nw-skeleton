@@ -528,10 +528,7 @@ class WindowManager extends BaseClass {
             this.win.window.getAppWrapper().beforeUnload();
         } else {
             if (!message){
-                message = 'Please wait while application restarts...';
-                if (_appWrapper && _appWrapper.appTranslations && _appWrapper.appTranslations.translate){
-                    message = _appWrapper.appTranslations.translate(message);
-                }
+                message = _appWrapper.appTranslations.translate('Please wait while application restarts...');
             }
             appState.mainLoaderTitle = message;
             appState.status.appShuttingDown = true;

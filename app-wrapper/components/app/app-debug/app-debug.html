@@ -21,8 +21,9 @@
 						</template>
 					</template>
 				</select>
-				<a class="debug-header-tool open-translation-editor fa fa-globe" v-on:click="callViewHandler" data-click-handler="appTranslations.openTranslationEditor"></a>
-				<a class="debug-header-tool toggle-debug-link fa fa-check-square-o" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-bind:class="{'fa-square-o' : appState.hideDebug}"></a>
+				<a :title="translate('Open translation editor')" class="debug-header-tool open-translation-editor fa fa-globe" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor"></a>
+				<a :title="translate('Auto trim translations')" class="debug-header-tool auto-trim-translations fa fa-scissors" @click.prevent="callViewHandler" data-click-handler="appTranslations.autoTrimTranslations"></a>
+				<a :title="translate('Toggle debug visible')" class="debug-header-tool toggle-debug-link fa fa-check-square-o" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-bind:class="{'fa-square-o' : appState.hideDebug}"></a>
 			</div>
 			<div class="app-debug-body">
 				<ul>
