@@ -1,36 +1,38 @@
 <div class="user-message-controls">
-	<div class="user-messages-settings">
-		<h4 class="user-messages-settings-title" v-html="translate('User messages') + ' (' + appState.userMessages.length + ')'"></h4>
-		<div class="user-messages-settings-tools">
-			<a class="user-messages-settings-tool clear-user-messages fa fa-ban" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }" v-bind:title="translate('Clear user messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages"></a>
-			<a href="#" class="user-messages-settings-tool user-messages-settings-link" v-on:click="callViewHandler" data-click-handler="helpers.userMessageHelper.showUserMessageSettings" v-bind:title="translate('User messages settings')">
-				<span class="fa fa-cog"></span>
-			</a>
-			<a class="user-messages-settings-tool expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" v-on:click="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" v-bind:title="translate('Expand user message list')"></a>
+	<div class="user-message-controls-item user-messages-config">
+		<a v-if="0" href="#" class="user-message-control-link user-messages-settings-link" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.showUserMessageSettings">
+			<span class="fa fa-cog" :title="translate('User messages settings')"></span>
+		</a>
+		<a class="user-message-control-link clear-user-messages" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }"  @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages">
+			<span class="fa fa-ban" :title="translate('Clear user messages')"></span>
+		</a>
+	</div>
+	<div class="user-message-controls-item user-messages-toolbar">
+		<div class="user-message-control user-message-level-picker">
+			<label v-html="translate('Message level')"></label>
+			<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="helpers.userMessageHelper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="helpers.userMessageHelper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
+				<template v-for="(levelValue, levelName) in appState.debugLevels">
+					<template v-if="levelValue == appState.userMessageLevel">
+						<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
+					</template>
+					<template v-else>
+						<option v-bind:value="levelValue">{{ levelName }}</option>
+					</template>
+				</template>
+			</select>
+		</div>
+		<div class="user-message-control">
+			<label>
+				{{ translate('Display timestamps') }}
+				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.messageTimestamp'" v-bind:name="'displayTimestamps'"></checkbox-styled>
+			</label>
 		</div>
 	</div>
-	<div class="user-messages-toolbar">
-		<div class="user-messages-tools">
-			<div class="user-message-control user-message-level-picker">
-				<label v-html="translate('User message level')"></label>
-				<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="helpers.userMessageHelper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="helpers.userMessageHelper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
-					<template v-for="(levelValue, levelName) in appState.debugLevels">
-						<template v-if="levelValue == appState.userMessageLevel">
-							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
-						</template>
-						<template v-else>
-							<option v-bind:value="levelValue">{{ levelName }}</option>
-						</template>
-					</template>
-				</select>
-			</div>
-			<div class="user-message-control">
-				<label>
-					{{ translate('Display timestamps') }}
-					<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.userMessagesTimestamp'" v-bind:name="'displayTimestamps'"></checkbox-styled>
-					<!-- <input v-model="appState.config.userMessagesTimestamp" type="checkbox" name="displayTimestamps"></input> -->
-				</label>
-			</div>
-		</div>
+	<div class="user-message-controls-item user-messages-settings">
+		<a v-if="stacksCount > 0" href="#" class="user-message-control-link user-messages-toggle-stacks" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessageStacks">
+			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
+			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
+		</a>
+		<a class="user-message-control-link expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" :title="translate('Expand user message list')"></a>
 	</div>
 </div>

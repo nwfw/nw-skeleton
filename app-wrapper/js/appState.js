@@ -155,6 +155,7 @@ exports.appState = {
     modalData: {
         modalVisible: false,
         modalContentVisible: false,
+        modalElement: null,
         fadeModal: 'fade-slow',
         currentModal: {
             title: '',
@@ -211,6 +212,8 @@ exports.appState = {
         defaultBodyComponent: 'translation-editor',
         busyText: 'Please wait...',
         busy: true,
+        hasSearch: false,
+        searchResults: null,
         messages: [],
         autoCloseTime: 0,
         modalClassName: 'translation-editor-modal',

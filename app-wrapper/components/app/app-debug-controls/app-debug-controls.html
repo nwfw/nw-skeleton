@@ -1,0 +1,35 @@
+<div class="app-debug-controls">
+	<div class="app-debug-controls-item app-debug-config">
+		<a class="app-debug-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.clearDebugMessages"></a>
+		<a class="app-debug-tool save-debug-output fa fa-floppy-o" v-if="debugMessageCount > 0" v-bind:title="translate('Save log to file')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
+		<a class="app-debug-tool open-debug-config fa fa-cog" v-bind:title="translate('Open debug configuration')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor"></a>
+	</div>
+	<div class="app-debug-controls-item app-debug-settings">
+		<div class="app-debug-control">
+			<label v-html="translate('Message level')"></label>
+			<select name="debugLevels" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeDebugLevel">
+				<template v-for="(levelValue, levelName) in config.debugLevels">
+					<template v-if="levelValue == config.debugLevel">
+						<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
+					</template>
+					<template v-else>
+						<option v-bind:value="levelValue">{{ levelName }}</option>
+					</template>
+				</template>
+			</select>
+		</div>
+		<div class="app-debug-control">
+			<label>
+				{{ translate('Display timestamps') }}
+				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.messageTimestamp'" v-bind:name="'displayTimestamps'"></checkbox-styled>
+			</label>
+		</div>
+	</div>
+	<div class="app-debug-controls-item app-debug-toolbar">
+		<a v-if="stacksCount > 0" href="#" class="app-debug-tool app-debug-toggle-stacks" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebugMessageStacks">
+			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
+			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
+		</a>
+		<a class="app-debug-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow"></a>
+	</div>
+</div>

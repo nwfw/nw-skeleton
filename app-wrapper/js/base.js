@@ -90,12 +90,23 @@ class BaseClass extends eventEmitter {
         if (!type){
             type = 'info';
         }
+        if (type == 'delimiter'){
+            return;
+        }
+
         if (_.isUndefined(force)){
             force = this.forceDebug;
         }
         var debugLevel = this.getStateVar('debugLevel', 0);
         var debugLevels = this.getStateVar('debugLevels');
         var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
+        var iconClass = 'fa fa-info-circle';
+
+        if (type == 'warning'){
+            iconClass = 'fa fa-exclamation-circle';
+        } else if (type == 'error'){
+            iconClass = 'fa fa-exclamation-triangle';
+        }
 
         var doLog = force || false;
         if (!doLog && this.getStateVar('debug')){
@@ -115,13 +126,21 @@ class BaseClass extends eventEmitter {
             });
         }
 
+        let stack = this._getStack();
+
         var timestamp = new Date().toISOString().slice(11, 19);
         var debugMessage = {
             count: 1,
-            timestamp: timestamp,
             timestamps: [timestamp],
+            timestamp: timestamp,
             message: message,
-            type: type
+            iconClass: iconClass,
+            type: type,
+            force: force,
+            active: debugLevel >= typeLevel,
+            typeLevel: typeLevel,
+            stack: stack,
+            stackVisible: false
         };
 
         if (doLog){
@@ -270,6 +289,8 @@ class BaseClass extends eventEmitter {
             });
         }
 
+        let stack = this._getStack();
+
         userMessage = {
             count: 1,
             timestamps: [timestamp],
@@ -279,7 +300,9 @@ class BaseClass extends eventEmitter {
             type: type,
             force: force,
             active: userMessageLevel >= typeLevel,
-            typeLevel: typeLevel
+            typeLevel: typeLevel,
+            stack: stack,
+            stackVisible: false
         };
 
         if (!message){
@@ -364,6 +387,61 @@ class BaseClass extends eventEmitter {
             value = _.get(appState.u, path);
         }
         return value;
+    }
+
+    _getStack () {
+        let stackArray;
+        try {
+            throw new Error();
+        } catch (e) {
+            let stackMessages = _.filter(e.stack.split('\n'), (msg) => {
+                return msg.match(/^\s+at\s/);
+            });
+            // stackMessages = _.drop(_.dropRight(stackMessages));
+            stackMessages = _.drop(stackMessages);
+
+            stackArray = _.map(stackMessages, (msg) => {
+                let stackData = _.drop(_.trim(msg).split(' '));
+                let returnValue = {
+                    function: null,
+                    file: null,
+                    line: null,
+                    column: null
+                };
+                if (stackData && _.isArray(stackData)){
+                    if (stackData[0]){
+                        returnValue.function = stackData[0];
+                    }
+                    if (stackData[1]){
+                        stackData[1] = stackData[1].replace(/^\(/, '').replace(/\)$/, '');
+                        if (stackData[1].match(/chrome-extension:\/\//)){
+                            stackData[1] = stackData[1].replace(/^[^:]+:\/\/[^/]+\//, appState.appRootDir);
+                        }
+                        let callerData = stackData[1].split(':');
+                        if (callerData && _.isArray(callerData) && callerData.length){
+
+                            let fileName = callerData[0];
+                            if (appState && appState.appRootDir){
+                                fileName = path.relative(appState.appRootDir, fileName);
+                            }
+                            returnValue.file = fileName;
+
+                            if (callerData[1]){
+                                returnValue.line = parseInt(callerData[1], 10);
+                            }
+                            if (callerData[2]){
+                                returnValue.column = parseInt(callerData[2], 10);
+                            }
+                        }
+                    }
+                }
+                return returnValue;
+            });
+        }
+        stackArray = _.filter(stackArray, (item) => {
+            return item.function ? true : false;
+        });
+        return stackArray;
     }
 }
 exports.BaseClass = BaseClass;

@@ -134,11 +134,11 @@ class KeyboardHelper extends BaseClass {
                         appState.debug = !appState.debug;
                         fulfilled = true;
                         _appWrapper.appConfig.setConfigVar('debug', appState.debug);
-                        var message = 'Debug mode disabled.';
                         if (appState.debug){
-                            message = 'Debug mode enabled.';
+                            this.addUserMessage('Debug mode enabled.', 'info', [], false);
+                        } else {
+                            this.addUserMessage('Debug mode disabled.', 'info', [], false);
                         }
-                        this.addUserMessage(message, 'info', [], false);
                     }
                 }
             }

@@ -11,6 +11,14 @@
 	flex-flow: column;
 }
 
+.translation-editor-modal .modal-title {
+
+}
+
+.translation-editor-modal .translation-editor-top-tool {
+	font-size: 0.8rem;
+}
+
 .translation-editor-modal form {
 	display: flex;
 	flex-flow: column;
@@ -19,6 +27,7 @@
 .translation-editor-modal .modal-dialog-body {
 	display: flex;
 	flex-flow: column;
+	margin-top: 0;
 }
 
 .translation-editor {
@@ -51,7 +60,15 @@
 
 .translation-editor fieldset {
 	border: none;
+	/*display: block;*/
+	/*position: absolute;*/
+}
 
+.translation-editor-modal fieldset .no-results {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.5rem;
 }
 
 .translation-editor legend {
@@ -96,18 +113,23 @@
 	text-align: center;
 }
 
-.translation-editor .translation-editor-tools .translation-editor-copy-all,
+.translation-editor .translation-editor-tools a,
 .translation-editor .translation-editor-copy-all-tab {
 	font-size: 0.8rem;
 	float: right;
+	margin: 4px;
 	text-decoration: none;
+}
+
+.translation-editor .translation-editor-tools a.translation-editor-clear-search {
+	float: none;
 }
 
 .translation-editor .translation-editor-copy-all-tab {
 	margin-top: 7px;
 }
 
-.translation-editor .translation-editor-tools .translation-editor-copy-all:hover,
+.translation-editor .translation-editor-tools a:hover,
 .translation-editor .translation-editor-copy-all-tab:hover {
 	font-weight: bold;
 }

@@ -13,6 +13,12 @@ exports.component = {
     computed: {
         appState: function(){
             return appState;
+        },
+        stacksState: function() {
+            return _appWrapper.getHelper('userMessage').getUserMessageStacksState();
+        },
+        stacksCount: function() {
+            return _appWrapper.getHelper('userMessage').getUserMessageStacksCount();
         }
     }
 };

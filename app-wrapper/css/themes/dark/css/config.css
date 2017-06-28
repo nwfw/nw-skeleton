@@ -108,7 +108,21 @@
     --app-debug-message-border-even: 1px solid #666666;
     --app-debug-message-border-odd: var(--app-user-messages-message-border-even);
 
+    /* message lists */
+    --app-message-list-stack-table-heading-color: #333333;
+    --app-message-list-stack-table-heading-background: #999999;
+
+    --app-message-list-stack-table-cell-color: #999999;
+    --app-message-list-stack-table-cell-background: none;
+
     /* user messages */
+
+    --app-user-messages-header-background-color-top: #666666;
+    --app-user-messages-header-background-color-bottom: #444444;
+    --app-user-messages-header-text-color: #FFFFFF;
+    --app-user-messages-header-title-color: #FFFFFF;
+
+
     --app-user-messages-tool-link-color: #CCCCCC;
     --app-user-messages-tool-link-color-hovered: #EEEEEE;
 

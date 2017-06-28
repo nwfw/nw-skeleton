@@ -1,14 +1,14 @@
 <transition name="fade">
-    <div v-show="status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': status.movingWindow, 'debug-enabled': debug, 'debug-visible': debug && !hideDebug, 'has-debug-window': !isDebugWindow && hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': status.appLoaded }]">
+    <div v-show="status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': status.movingWindow, 'debug-enabled': config.debug, 'debug-visible': config.debug && !config.hideDebug, 'has-debug-window': !isDebugWindow && hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': status.appLoaded }]">
         <div class="app-content">
             <template v-if="status.appInitialized">
                 <app-header ref="appHeader"></app-header>
                 <template v-if="!isDebug">
                     <app-main ref="appMain"></app-main>
-                    <app-debug v-if="!appState.status.appShuttingDown" ref="appDebug"></app-debug>
+                    <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
                 </template>
                 <template v-else>
-                    <app-debug v-if="!appState.status.appShuttingDown" ref="appDebug"></app-debug>
+                    <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
                 </template>
                 <app-footer ref="appFooter"></app-footer>
             </template>

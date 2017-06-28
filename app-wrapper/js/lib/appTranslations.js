@@ -87,16 +87,17 @@ class AppTranslations extends BaseClass {
             e.preventDefault();
         }
 
-        appState.status.noHandlingKeys = true;
+        // appState.status.noHandlingKeys = true;
 
         appState.modalData.currentModal = _.cloneDeep(appState.translationModal);
-        appState.modalData.currentModal.hasSearch = false;
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Translation editor');
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        appState.modalData.currentModal.translationData = this.getTranslationEditorData();
+        let cm = appState.modalData.currentModal;
+        cm.hasSearch = false;
+        cm.title = _appWrapper.appTranslations.translate('Translation editor');
+        cm.confirmButtonText = _appWrapper.appTranslations.translate('Save');
+        cm.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        cm.translationData = this.getTranslationEditorData();
         _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
-        appState.modalData.currentModal.translations = {
+        cm.translations = {
             'not translated': this.translate('not translated'),
             'Copy label to translation': this.translate('Copy label to translation')
         };
@@ -105,7 +106,7 @@ class AppTranslations extends BaseClass {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
-            appState.status.noHandlingKeys = false;
+            // appState.status.noHandlingKeys = false;
             _appWrapper.helpers.modalHelper.modalNotBusy();
             clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
@@ -173,7 +174,7 @@ class AppTranslations extends BaseClass {
             }
         }
         appState.autoAddLabels = autoAdd;
-        appState.status.noHandlingKeys = false;
+        // appState.status.noHandlingKeys = false;
         clearTimeout(this.timeouts.translationModalInitTimeout);
         _appWrapper.helpers.modalHelper.modalNotBusy();
         _appWrapper.helpers.modalHelper.closeCurrentModal();
@@ -415,9 +416,21 @@ class AppTranslations extends BaseClass {
 
     }
 
+    async getExcessLabels () {
+        let scannedTranslations = await this.scanAppTranslations();
+        let excessLabels = _.difference(Object.keys(appState.languageData.translations[appState.languageData.currentLanguage]), scannedTranslations);
+        let labelDiffs = [];
+        for (let i=0; i<appState.languageData.availableLanguages.length; i++){
+            let translations = _.omit(_.cloneDeep(appState.languageData.translations[appState.languageData.availableLanguages[i].code]), excessLabels);
+            let translationLabels = Object.keys(translations);
+            labelDiffs = _.union(labelDiffs, _.difference(excessLabels, translationLabels));
+        }
+        labelDiffs = _.uniq(labelDiffs);
+        return labelDiffs;
+    }
+
     async autoTrimTranslations () {
         let scannedTranslations = await this.scanAppTranslations();
-
         let excessTranslations = _.difference(Object.keys(appState.languageData.translations[appState.languageData.currentLanguage]), scannedTranslations);
         let beforeCount = 0;
         let afterCount = 0;

@@ -46,6 +46,7 @@ class DebugHelper extends BaseClass {
         _appWrapper.debugWindow.appState = _.cloneDeep(appState);
         _appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
         _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
+        _appWrapper.debugWindow.appState.hasDebugWindow = false;
         _appWrapper.debugWindow.appState.config = appState.config;
 
         // _appWrapper.debugWindow.appState.isDebugWindow = true;
@@ -55,18 +56,18 @@ class DebugHelper extends BaseClass {
     }
 
     toggleDebug () {
-        appState.hideDebug = !appState.hideDebug;
-        _appWrapper.appConfig.setConfigVar('hideDebug', appState.hideDebug);
+        // appState.config.hideDebug = !appState.config.hideDebug;
+        _appWrapper.appConfig.setConfigVar('hideDebug', !appState.config.hideDebug);
     }
 
     changeDebugLevel(e){
         var level = e.target.value;
         this.addUserMessage('Changing debug level to "{1}".', 'info', [level], false, false);
-        appState.debugLevel = level;
+        // appState.debugLevel = level;
         _appWrapper.appConfig.setConfigVar('debugLevel', level);
         if (appState.isDebugWindow) {
             this.addUserMessage('Changing debug level in main window to "{1}".', 'info', [level], false, false);
-            _appWrapper.mainWindow.appState.debugLevel = level;
+            _appWrapper.mainWindow.appState.config.debugLevel = level;
         }
 
     }
@@ -82,7 +83,7 @@ class DebugHelper extends BaseClass {
             appState.allDebugMessages = [];
             appState.debugMessages = [];
         }
-        this.addUserMessage('Debug messages cleared', 'info', [], true,  false, true);
+        this.addUserMessage('Debug messages cleared', 'debug', []);
     }
 
     async saveDebug (e) {
@@ -351,6 +352,38 @@ class DebugHelper extends BaseClass {
 
         modalHelper.closeCurrentModal();
 
+    }
+
+    getDebugMessageStacksCount () {
+        let stackCount = 0;
+        for(let i=0; i<appState.debugMessages.length; i++){
+            if (appState.debugMessages[i].stack && appState.debugMessages[i].stack.length){
+                stackCount++;
+            }
+        }
+        return stackCount;
+    }
+
+    getDebugMessageStacksState () {
+        let stacksCount = this.getDebugMessageStacksCount();
+        let stacksOpen = 0;
+        for(let i=0; i<appState.debugMessages.length; i++){
+            if (appState.debugMessages[i].stack && appState.debugMessages[i].stack.length){
+                if (appState.debugMessages[i].stackVisible){
+                    stacksOpen++;
+                }
+            }
+        }
+        return stacksOpen >= stacksCount;
+    }
+
+    toggleDebugMessageStacks () {
+        let currentState = !this.getDebugMessageStacksState();
+        for(let i=0; i<appState.debugMessages.length; i++){
+            if (appState.debugMessages[i].stack && appState.debugMessages[i].stack.length){
+                appState.debugMessages[i].stackVisible = currentState;
+            }
+        }
     }
 }
 

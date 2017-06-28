@@ -1,0 +1,74 @@
+<div class="message" v-bind:class="message.type" >
+	<div class="message-line">
+		<div class="message-line-data">
+			<template v-if="message.type != 'delimiter'">
+				<div v-bind:class="message.iconClass">
+				</div>
+				<transition name="size-width-short">
+					<div v-if="config.messageTimestamp" class="message-timestamp" :title="message.timestamps.join('\n')">
+						{{ message.timestamp }}
+					</div>
+				</transition>
+				<div class="message-body">
+					{{ message.message }}
+				</div>
+				<div class="message-stack-toggle" :class="{'not-visible': !(message.stack && message.stack.length)}">
+					<a href="#" class="message-stack-toggle-link" @click.prevent="toggleStackVisible" :class="{'message-stack-toggle-link-active': message.stackVisible}">
+						<span :title="translate('Hide call stack')" v-if="message.stackVisible" class="fa fa-close"></span>
+						<span :title="translate('Show call stack')" v-else class="fa fa-list"></span>
+					</a>
+				</div>
+				<div :class="{'not-visible': message.count <= 1}" class="message-count" :title="message.count">
+					{{ message.count }}
+				</div>
+			</template>
+			<template v-else>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 463.69 44.12" class="message-delimiter message-delimiter-new" preserveAspectRatio="none" shape-rendering="crispEdges">
+					<defs>
+						<linearGradient id="delimiterGradient" x1="0" x2="0" y1="0" y2="1">
+							<stop class="delimiter-gradient-stop-0" offset="0%"></stop>
+							<stop class="delimiter-gradient-stop-10" offset="10%"></stop>
+							<stop class="delimiter-gradient-stop-30" offset="30%"></stop>
+							<stop class="delimiter-gradient-stop-70" offset="70%"></stop>
+							<stop class="delimiter-gradient-stop-90" offset="90%"></stop>
+							<stop class="delimiter-gradient-stop-100" offset="100%"></stop>
+						</linearGradient>
+					</defs>
+					<polygon class="message-delimiter-polygon message-delimiter-polygon-left" points="225.07 17.14 0.01 22.06 225.07 26.98 223.84 22.06 225.07 17.14">
+					</polygon>
+					<polygon class="message-delimiter-polygon message-delimiter-polygon-center" points="236.84 22.06 231.84 2.06 226.84 22.06 231.84 42.06 236.84 22.06">
+					</polygon>
+					<polygon class="message-delimiter-polygon message-delimiter-polygon-right" points="238.62 26.98 463.68 22.06 238.62 17.14 239.84 22.06 238.62 26.98">
+					</polygon>
+				</svg>
+			</template>
+		</div>
+		<transition name="size-height-short"  v-on:before-enter="beforeEnter" v-on:after-enter="afterEnter" v-on:before-leave="beforeLeave" v-on:after-leave="afterLeave" v-on:enter-cancelled="afterEnter" v-on:leave-cancelled="afterLeave">
+			<div class="message-stack-info" v-if="message.stack && message.stack.length && message.stackVisible">
+				<div class="message-stack-info-data">
+					<table align="center" class="message-stack-info-table" width="95%" border="1" cellpadding="0" cellspacing="0">
+						<tr>
+							<th colspan="5" v-html="translate('Call stack')" class="message-stack-info-cell message-stack-info-heading-cell message-stack-info-heading-title-cell"></th>
+						</tr>
+						<tr class="message-stack-info-table-heading">
+							<th class="message-stack-info-cell message-stack-info-heading-cell" align="center">#</th>
+							<th class="message-stack-info-cell message-stack-info-heading-cell" align="center" v-html="translate('Function')"></th>
+							<th class="message-stack-info-cell message-stack-info-heading-cell" align="center" v-html="translate('File')"></th>
+							<th class="message-stack-info-cell message-stack-info-heading-cell" align="center" v-html="translate('Line')"></th>
+							<th class="message-stack-info-cell message-stack-info-heading-cell" align="center" v-html="translate('Column')"></th>
+						</tr>
+						<template v-for="(stackItem, i) in message.stack">
+							<tr class="message-stack-info-table-item">
+								<td class="message-stack-info-cell message-stack-info-heading-cell" align="center" v-text="(i+1)"></td>
+								<td class="message-stack-info-cell" v-text="defAll(stackItem.function, 'N/A')"></td>
+								<td class="message-stack-info-cell" v-text="defAll(stackItem.file, 'N/A')"></td>
+								<td class="message-stack-info-cell" v-text="defAll(stackItem.line, 'N/A')"></td>
+								<td class="message-stack-info-cell" v-text="defAll(stackItem.column, 'N/A')"></td>
+							</tr>
+						</template>
+					</table>
+				</div>
+			</div>
+		</transition>
+	</div>
+</div>

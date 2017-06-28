@@ -52,9 +52,9 @@ header {
 }
 
 .debug-enabled .app-debug-wrapper {
-    flex: 0 0 26px;
-    max-height: unset;
-    overflow: hidden;
+    flex: 0 0 0;
+    /*max-height: unset;*/
+    /*overflow: hidden;*/
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper {
@@ -62,10 +62,11 @@ header {
 }
 
 .debug-enabled .app-debug-wrapper .app-debug {
-    position: absolute;
-    right: 0;
-    width: 85px;
-    height: 100%;
+    /*position: absolute;*/
+    /*right: 0;*/
+    /*width: 85px;*/
+    /*height: 100%;*/
+    width: 100vw;
 }
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug {
     width: 100vw;

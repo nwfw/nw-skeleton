@@ -22,7 +22,9 @@
 						<h2 class="modal-dialog-title" v-html="getTitle()"></h2>
 						<div v-if="currentModal.messages.length > 0" class="modal-dialog-messages">
 							<transition-group name="fade" tag="div">
-								<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.message" v-bind:class="'modal-dialog-' + modalMessage.type"> {{ modalMessage.message }} </div>
+								<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.message" v-bind:class="'modal-dialog-' + modalMessage.type">
+									{{ modalMessage.message }}
+								</div>
 							</transition-group>
 						</div>
 						<form name="modalDialogForm" v-on:submit.stop.prevent="callViewHandler" data-submit-handler="confirmModalAction">

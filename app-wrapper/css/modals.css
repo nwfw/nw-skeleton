@@ -77,14 +77,26 @@
 
 .modal-dialog .modal-dialog-messages {
     padding: 4px 10px;
+    max-height: 30px;
+    overflow: hidden;
+    position: relative;
+    top: -8px;
 }
+
 
 .modal-dialog .modal-dialog-messages .modal-dialog-message {
     text-align: center;
 }
 
+.modal-dialog .modal-dialog-messages .modal-dialog-info {
+    color: var(--app-user-messages-message-info-text-color);
+}
+.modal-dialog .modal-dialog-messages .modal-dialog-warning {
+    color: var(--app-user-messages-message-warning-text-color);
+}
+
 .modal-dialog .modal-dialog-messages .modal-dialog-error {
-    color: var(--modal-dialog-error-text-color);
+    color: var(--app-user-messages-message-error-text-color);
 }
 
 .modal-dialog .modal-dialog-content {

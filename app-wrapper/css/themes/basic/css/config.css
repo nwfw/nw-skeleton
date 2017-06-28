@@ -46,7 +46,7 @@
     --app-main-bg-color: #FFFFFF;
 
 
-    --app-footer-text-color: #CCCCCC;
+    --app-footer-text-color: #333333;
     --app-footer-height: auto;
 
     --app-progress-bar-wrapper-border-color: #999999;
@@ -109,9 +109,21 @@
     --app-debug-message-border-even: 1px solid #333333;
     --app-debug-message-border-odd: var(--app-user-messages-message-border-even);
 
+    /* message lists */
+    --app-message-list-stack-table-heading-color: #F0F0F0;
+    --app-message-list-stack-table-heading-background: #999999;
+
+    --app-message-list-stack-table-cell-color: #333333;
+    --app-message-list-stack-table-cell-background: none;
+
     /* user messages */
+    --app-user-messages-header-background-color-top: #999999;
+    --app-user-messages-header-background-color-bottom: #CCCCCC;
+    --app-user-messages-header-text-color: #333333;
+    --app-user-messages-header-title-color: #333333;
+
     --app-user-messages-tool-link-color: #333333;
-    --app-user-messages-tool-link-color-hovered: #666666;
+    --app-user-messages-tool-link-color-hovered: #000000;
 
     --app-user-messages-clear-messages-link-color: #FF3333;
     --app-user-messages-clear-messages-link-color-hovered: #FF6666;

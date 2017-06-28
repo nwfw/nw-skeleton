@@ -1,4 +1,7 @@
 <div class="user-messages" v-if="!appState.isDebugWindow" v-bind:class="{ 'user-messages-expanded': !appState.status.appShuttingDown && !appState.appError.error && appState.config.userMessagesExpanded, 'user-messages-toolbar-visible': !appState.status.appShuttingDown && !appState.appError.error && appState.config.userMessagesToolbarVisible }">
-	<user-messages-controls></user-messages-controls>
-	<user-messages-list></user-messages-list>
+    <div class="user-messages-header">
+        <h2 v-html="translate('User messages') + ' (' + appState.userMessages.length + ') ' + translate('messages')"></h2>
+        <user-messages-controls ref="userMessagesControls"></user-messages-controls>
+    </div>
+	<message-list v-bind:messages="appState.userMessages" v-bind:config="appState.config" ref="messageList"></message-list>
 </div>

@@ -56,6 +56,7 @@ class ModalHelper extends BaseClass {
             }
             appState.modalData.currentModal.autoCloseTime = null;
             appState.modalData.modalVisible = false;
+            appState.modalData.modalElement = null;
             this.modalNotBusy();
             appState.modalData.fadeModal = fadeModal;
         } else {
@@ -65,6 +66,7 @@ class ModalHelper extends BaseClass {
 
     openCurrentModal (showContentImmediately) {
         appState.modalData.modalVisible = true;
+        appState.modalData.modalElement = document.querySelector('.modal-dialog');
         clearTimeout(this.timeouts.autoClose);
         clearInterval(this.intervals.autoClose);
         let fadeModal = appState.modalData.fadeModal;

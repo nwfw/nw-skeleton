@@ -6,7 +6,9 @@ exports.component = {
     name: 'translation-editor',
     template: '',
     data: function () {
-        return appState.modalData;
+        return {
+            currentModal: appState.modalData.currentModal
+        };
     },
     computed: {
         appState: function(){
@@ -14,9 +16,9 @@ exports.component = {
         },
         allTranslated: function(){
             var allTranslated = true;
-            for (let languageKey in this.currentModal.translationData){
-                if (this.currentModal.translationData[languageKey].notTranslated){
-                    if (_.keys(this.currentModal.translationData[languageKey].notTranslated).length){
+            for (let languageKey in appState.modalData.currentModal.translationData){
+                if (appState.modalData.currentModal.translationData[languageKey].notTranslated){
+                    if (_.keys(appState.modalData.currentModal.translationData[languageKey].notTranslated).length){
                         allTranslated = false;
                     }
                 }
@@ -33,13 +35,17 @@ exports.component = {
                 e.preventDefault;
             }
             this.$el.querySelector('.translation-editor-search-field').value = '';
+            _appWrapper.getHelper('html').unsetFixedSize(this.$el.querySelector('.tab-item.active'));
             this.performSearch();
 
         },
-        performSearch: function(){
+        performSearch: function(e){
+            if (e.keyCode == 27){
+                this.$el.querySelector('.translation-editor-search-field').value = '';
+            }
             var value = this.$el.querySelector('.translation-editor-search-field').value;
             if (value && value.length >= 2){
-                this.currentModal.hasSearch = true;
+                _appWrapper.getHelper('html').setFixedSize(this.$el.querySelector('.tab-item.active'));
                 var valueRegex = new RegExp(value, 'i');
                 let rows = this.$el.querySelectorAll('.lang-form-row');
                 for(let i=0; i<rows.length; i++){
@@ -51,13 +57,21 @@ exports.component = {
                         _appWrapper.helpers.htmlHelper.addClass(rows[i], 'lang-form-row-hidden');
                     }
                 }
+                appState.modalData.currentModal.searchResults = this.$el.querySelectorAll('.lang-form-row:not(.lang-form-row-hidden)').length;
             } else {
-                this.currentModal.hasSearch = false;
+                _appWrapper.getHelper('html').unsetFixedSize(this.$el.querySelector('.tab-item.active'));
                 let rows = this.$el.querySelectorAll('.lang-form-row-hidden');
                 for (let i=0; i<rows.length; i++){
                     _appWrapper.helpers.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
                 }
             }
+            if (value && value.length){
+                appState.modalData.currentModal.hasSearch = true;
+            } else {
+                appState.modalData.currentModal.hasSearch = false;
+                appState.modalData.currentModal.searchResults = null;
+            }
+            this.$forceUpdate();
         },
         setTab: function(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -137,6 +151,29 @@ exports.component = {
                     allRows[i].parentNode.removeChild(allRows[i]);
                 }
             }
+        },
+        trimTranslations: async function () {
+            let labelDiffs = await _appWrapper.appTranslations.getExcessLabels();
+            let count = 0;
+            for (let index in labelDiffs){
+                let selector = 'textarea[name="' + labelDiffs[index].replace(/"/g, '\\"') + '"]';
+                let tas = this.$el.querySelectorAll(selector);
+
+                if (tas && tas.length){
+                    count++;
+                    for (let j=0; j<tas.length;j++){
+                        let parentDiv = tas[j].parentNode;
+                        let clickEvent = new CustomEvent('click', {});
+                        parentDiv.querySelector('.remove-translation').dispatchEvent(clickEvent);
+                    }
+                }
+            }
+            if (count){
+                await _appWrapper.appTranslations.addUserMessage('Trimmed {1} excess translations.', 'info', [count], false, false, true);
+            } else {
+                await _appWrapper.appTranslations.addUserMessage('No excess translations found.', 'info', [], false, false, true);
+            }
+            appState.modalData.currentModal.messages = [_.cloneDeep(appState.allUserMessages[appState.allUserMessages.length-1])];
         }
     },
     mounted: function() {

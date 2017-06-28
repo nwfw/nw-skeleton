@@ -3,43 +3,25 @@
     background: var(--app-debug-wrapper-background-color);
     border-style: var(--app-main-border-style);
     border-color: var(--app-debug-wrapper-border-color);
-    transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
     border-radius: 0;
     list-style: none;
     font-size: 0.8rem;
 }
 
-.debug-enabled.debug-visible .app-debug-wrapper {
-    transition: flex-basis ease-in-out var(--long-animation-duration) var(--short-animation-duration);
-}
-
 .app-debug-wrapper .app-debug {
-    overflow: hidden;
-}
-
-.debug-enabled .app-debug-wrapper .app-debug {
-    transition: width ease-in-out var(--short-animation-duration) var(--long-animation-duration);
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug {
-    transition: width ease-in-out var(--long-animation-duration) var(--short-animation-duration);
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+    background: var(--app-user-messages-list-background);
 }
 
 .app-debug-wrapper .app-debug-header {
     color: var(--app-debug-header-text-color);
     background-color: var(--app-debug-header-background-color);
     background: var(--app-debug-header-background);
-    opacity: 0.6;
-    float: right;
-}
-
-.debug-enabled .app-debug-wrapper .app-debug-header {
-    width: 100%;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header {
-    opacity: 1;
-    position: fixed;
+    flex: 0 0 28px;
+    display: flex;
+    flex-flow: row;
 }
 
 .app-debug-wrapper .app-debug-header h2 {
@@ -47,142 +29,68 @@
     margin: 0;
     padding: 5px;
     font-size: 0.8rem;
+    flex: 0 1 auto;
+}
+
+.app-debug-wrapper .app-debug-header .app-debug-controls {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.app-debug-wrapper .app-debug-header .app-debug-controls .app-debug-controls-item {
+    padding-top: 5px;
+    flex: 1 1 auto;
+}
+
+.app-debug-wrapper .app-debug-header .app-debug-controls .app-debug-settings {
+    text-align: center;
+
+}
+
+.app-debug-wrapper .app-debug-header .app-debug-controls .app-debug-settings .app-debug-control {
     display: inline-block;
+    margin-right: 5px;
 }
 
-.app-debug-wrapper .app-debug-header .debug-header-tool {
-    margin-left: 5px;
+
+.app-debug-wrapper .app-debug-header .app-debug-controls .app-debug-toolbar {
+    text-align: right;
+    padding-right: 10px;
 }
 
-.app-debug-wrapper .app-debug-header a {
+.app-debug-wrapper .app-debug-header .app-debug-tool {
+    margin-right: 5px;
     color: var(--app-debug-header-tool-link-color);
     text-shadow: var(--app-debug-header-tool-text-shadow);
     display: inline-block;
 }
 
-.app-debug-wrapper .app-debug-header a:hover {
+.app-debug-wrapper .app-debug-header .app-debug-tool:hover {
     color: var(--app-debug-header-tool-link-color-hovered);
     text-shadow: var(--app-debug-header-tool-text-shadow-hovered);
     text-decoration: none;
 }
 
-.debug-enabled .app-debug-wrapper .app-debug-header .debug-header-tool{
-    display: none;
+.app-debug-wrapper .app-debug-header a.clear-debug-messages {
+    color: var(--app-user-messages-clear-messages-link-color);
+    margin-right: 10px;
 }
 
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .debug-header-tool{
-    display:inline-block;
+.app-debug-wrapper .app-debug-header a.clear-debug-messages:hover {
+    text-decoration: none;
+    color: var(--app-user-messages-clear-messages-link-color-hovered);
 }
 
-.debug-enabled .app-debug-wrapper .app-debug-header .toggle-debug-link{
-    display: inline-block;
-}
 
-.app-debug-body ul {
-    margin: 0;
-    padding: 30px 5px 5px 5px;
-    list-style: none;
-    max-height: 95px;
-    overflow: auto;
-}
-
-.app-debug .message .message-timestamp {
-    padding-top:0.07rem;
-    padding-left: 5px;
-    font-family: Inconsolata, monospace;
-    max-width: 3.6rem;
-    min-width: 3.6rem;
-    flex: 1 1 3.6rem;
-}
-
-.app-debug .message .message-body {
+.app-debug-wrapper .app-debug-body {
     flex: 1 1 auto;
-    border-left: 1px solid;
-    margin-left: 2px;
-    padding-left: 5px;
-    text-align: left;
-}
-
-.app-debug .message .message-count {
-    flex: 0 1 1rem;
-    max-height: 1rem;
-    font-size: 0.7rem;
-    border: 1px solid;
-    padding: 0px 1px;
-    border-radius: 50%;
-    text-align: center;
-    font-weight: bold;
-    margin-right: 4px;
-}
-
-.app-debug .message {
+    overflow: hidden;
+    padding-top: 5px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2px;
-    padding: 1px 0;
-    color: var(--app-user-messages-message-text-color);
+    flex-flow: column;
 }
 
-.app-debug .info {
-    color: var(--app-user-messages-message-info-text-color);
-}
-
-.app-debug .warning {
-    color: var(--app-user-messages-message-warning-text-color);
-}
-
-.app-debug .error {
-    color: var(--app-user-messages-message-error-text-color);
-}
-
-.app-debug .debug {
-    color: var(--app-user-messages-message-debug-text-color);
-}
-
-.app-debug .important {
-    font-weight: bold;
-}
-
-.app-debug .info .message-count {
-    background: var(--app-user-messages-message-info-text-color);
-}
-
-.app-debug .warning .message-count {
-    background: var(--app-user-messages-message-warning-text-color);
-}
-
-.app-debug .error .message-count {
-    background: var(--app-user-messages-message-error-text-color);
-}
-
-.app-debug .debug .message-count {
-    background: var(--app-user-messages-message-debug-text-color);
-}
-
-
-.app-debug .message:nth-child(2n) {
-    background: var(--app-debug-message-even-background);
-    border-top: var(--app-debug-message-border-even);
-}
-
-.app-debug .message:nth-child(2n+1) {
-    background: var(--app-debug-message-odd-background);
-    border-top: var(--app-debug-message-border-odd);
-}
-
-.app-debug .message:nth-child(2n) .message-count {
-    color: var(--app-debug-message-even-background);
-}
-
-.app-debug .message:nth-child(2n+1) .message-count {
-    color: var(--app-debug-message-odd-background);
-}
-
-.app-body.has-debug-window .app-debug-wrapper {
-    display: none;
-}
-
-.app-body.has-debug-window .debug-toggle {
-    display: none;
+.app-debug-wrapper .app-debug-body .message-list {
+    max-height: 95px;
 }

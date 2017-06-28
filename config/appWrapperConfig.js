@@ -38,8 +38,13 @@ exports.config = {
                                     'user-messages-controls': {
                                         name: 'user-messages-controls'
                                     },
-                                    'user-messages-list': {
-                                        name: 'user-messages-list'
+                                    'message-list': {
+                                        name: 'message-list',
+                                        components: {
+                                            'message-line': {
+                                                name: 'message-line'
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -86,8 +91,13 @@ exports.config = {
                                             'user-messages-controls': {
                                                 name: 'user-messages-controls'
                                             },
-                                            'user-messages-list': {
-                                                name: 'user-messages-list'
+                                            'message-list': {
+                                                name: 'message-list',
+                                                components: {
+                                                    'message-line': {
+                                                        name: 'message-line'
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -95,13 +105,39 @@ exports.config = {
                             },
                             'app-debug': {
                                 componentCssFiles: ['app-debug.css'],
-                                name: 'app-debug'
+                                name: 'app-debug',
+                                components: {
+                                    'app-debug-controls': {
+                                        name: 'app-debug-controls'
+                                    },
+                                    'message-list': {
+                                        name: 'message-list',
+                                        components: {
+                                            'message-line': {
+                                                name: 'message-line'
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     },
                     'app-debug': {
                         componentCssFiles: ['app-debug.css'],
-                        name: 'app-debug'
+                        name: 'app-debug',
+                        components: {
+                            'app-debug-controls': {
+                                name: 'app-debug-controls'
+                            },
+                            'message-list': {
+                                name: 'message-list',
+                                components: {
+                                    'message-line': {
+                                        name: 'message-line'
+                                    }
+                                }
+                            }
+                        }
                     },
                     'app-footer': {
                         name: 'app-footer',
@@ -113,8 +149,13 @@ exports.config = {
                                     'user-messages-controls': {
                                         name: 'user-messages-controls'
                                     },
-                                    'user-messages-list': {
-                                        name: 'user-messages-list'
+                                    'message-list': {
+                                        name: 'message-list',
+                                        components: {
+                                            'message-line': {
+                                                name: 'message-line'
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -286,7 +327,7 @@ exports.config = {
                 editable: true,
                 reload: false
             },
-            userMessagesTimestamp: {
+            messageTimestamp: {
                 editable: true,
                 reload: false
             },
@@ -320,8 +361,8 @@ exports.config = {
     theme: 'basic',
     allowThemeChange: true,
 
-    compileCss: false,
     liveCss: false,
+    compileCss: false,
 
     hideDebug: false,
     debug: true,
@@ -346,7 +387,7 @@ exports.config = {
     userMessagesToFileAppend: false,
     userMessagesFilename: './app/var/log/user-messages.log',
     userMessagesExpanded: false,
-    userMessagesTimestamp: true,
+    messageTimestamp: true,
     userMessagesToolbarVisible: false,
 
     windowCloseTimeoutDuration: 15000,

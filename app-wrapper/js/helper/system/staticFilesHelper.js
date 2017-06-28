@@ -23,6 +23,10 @@ class StaticFilesHelper extends BaseClass {
             cssFileChanged: null
         };
 
+        this.timeouts = {
+            removeOldCssTags: null
+        };
+
         return this;
     }
 
@@ -139,13 +143,43 @@ class StaticFilesHelper extends BaseClass {
 
     refreshLinkTags(links){
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
-        _.each(links, (link) => {
-            if (link.type && link.type == 'text/css'){
-                this.log('Reloading CSS file "{1}"', 'info', [link.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')], true);
-                link.href = link.href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
+        let headEl = document.querySelector('head');
+        let linkCount = links.length;
+        let loadedLinks = 0;
+        let newLinks = [];
+        for (let i=0; i<links.length; i++) {
+            if (links[i].type && links[i].type == 'text/css'){
+                this.log('Reloading CSS file "{1}"', 'info', [links[i].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
+                let newHref = links[i].href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
+                newLinks[i] = document.createElement('link');
+
+                newLinks[i].onload = (e) => {
+                    let newLink = e.target;
+                    loadedLinks++;
+                    this.log('Reloaded CSS file "{1}"', 'info', [newLink.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
+                    if (loadedLinks >= linkCount){
+                        clearTimeout(this.timeouts.removeOldCssTags);
+                        this.timeouts.removeOldCssTags = setTimeout( () => {
+                            clearTimeout(this.timeouts.removeOldCssTags);
+                            this.log('Removing {1} old CSS tags', 'group', [linkCount]);
+                            for (let j=0; j<links.length;j++){
+                                this.log('Removing old CSS file "{1}" tag', 'info', [links[j].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
+                                headEl.removeChild(links[j]);
+                            }
+                            this.log('Removing {1} old CSS tags', 'groupend', [linkCount]);
+                            this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
+                        }, 100);
+                    }
+                };
+
+                newLinks[i].setAttribute('rel', 'stylesheet');
+                newLinks[i].setAttribute('type', 'text/css');
+                newLinks[i].setAttribute('href', newHref);
+                headEl.appendChild(newLinks[i]);
+
             }
-        });
-        this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
+        }
+
     }
 
 

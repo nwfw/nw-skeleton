@@ -71,12 +71,7 @@ class UserMessageHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        let htmlHelper = _appWrapper.getHelper('html');
         _appWrapper.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
-        setTimeout(() => {
-            var ul = document.querySelector('.user-message-list');
-            htmlHelper.scrollElementTo(ul, ul.scrollHeight + 1000, 0);
-        }, 500);
     }
 
     userMessageLevelSelectFocus () {
@@ -85,6 +80,38 @@ class UserMessageHelper extends BaseClass {
 
     userMessageLevelSelectBlur () {
         appState.userMessagesData.selectFocused = false;
+    }
+
+    getUserMessageStacksCount () {
+        let stackCount = 0;
+        for(let i=0; i<appState.userMessages.length; i++){
+            if (appState.userMessages[i].stack && appState.userMessages[i].stack.length){
+                stackCount++;
+            }
+        }
+        return stackCount;
+    }
+
+    getUserMessageStacksState () {
+        let stacksCount = this.getUserMessageStacksCount();
+        let stacksOpen = 0;
+        for(let i=0; i<appState.userMessages.length; i++){
+            if (appState.userMessages[i].stack && appState.userMessages[i].stack.length){
+                if (appState.userMessages[i].stackVisible){
+                    stacksOpen++;
+                }
+            }
+        }
+        return stacksOpen >= stacksCount;
+    }
+
+    toggleUserMessageStacks () {
+        let currentState = !this.getUserMessageStacksState();
+        for(let i=0; i<appState.userMessages.length; i++){
+            if (appState.userMessages[i].stack && appState.userMessages[i].stack.length){
+                appState.userMessages[i].stackVisible = currentState;
+            }
+        }
     }
 }
 

@@ -1,44 +1,11 @@
 	<div class="app-debug-wrapper">
-		<div class="app-debug">
+		<div class="app-debug" v-if="!appState.config.hideDebug">
 			<div class="app-debug-header">
-				<template v-if="!appState.hideDebug">
-					<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
-				</template>
-				<template v-else>
-					<h2 v-html="translate('Debug')"></h2>
-				</template>
-				<a class="debug-header-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.clearDebugMessages"></a>
-				<a class="debug-header-tool save-debug-output fa fa-floppy-o" v-if="debugMessages.length > 0" v-bind:title="translate('Save log to file')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
-				<a class="debug-header-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow"></a>
-				<a class="debug-header-tool open-debug-config fa fa-cog" v-bind:title="translate('Open debug configuration')" v-on:click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor"></a>
-				<select class="debug-header-tool" name="debugLevels" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeDebugLevel">
-					<template v-for="(levelValue, levelName) in appState.debugLevels">
-						<template v-if="levelValue == appState.debugLevel">
-							<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
-						</template>
-						<template v-else>
-							<option v-bind:value="levelValue">{{ levelName }}</option>
-						</template>
-					</template>
-				</select>
-				<a :title="translate('Open translation editor')" class="debug-header-tool open-translation-editor fa fa-globe" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor"></a>
-				<a :title="translate('Auto trim translations')" class="debug-header-tool auto-trim-translations fa fa-scissors" @click.prevent="callViewHandler" data-click-handler="appTranslations.autoTrimTranslations"></a>
-				<a :title="translate('Toggle debug visible')" class="debug-header-tool toggle-debug-link fa fa-check-square-o" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-bind:class="{'fa-square-o' : appState.hideDebug}"></a>
+				<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
+				<app-debug-controls v-bind:debugMessageCount="debugMessageCount" ref="appDebugControls"></app-debug-controls>
 			</div>
 			<div class="app-debug-body">
-				<ul>
-					<li class="message" v-for="debugMessage in appState.debugMessages" v-bind:class="debugMessage.type">
-						<span class="message-timestamp" :title="debugMessage.timestamps.join('\n')">
-							{{ debugMessage.timestamp }}
-						</span>
-						<span class="message-body">
-							{{ debugMessage.message }}
-						</span>
-						<span v-if="debugMessage.count > 1" class="message-count" :title="debugMessage.count">
-							{{ debugMessage.count }}
-						</span>
-					</li>
-				</ul>
+				<message-list v-bind:messages="appState.debugMessages" v-bind:config="appState.config" ref="messageList"></message-list>
 			</div>
 		</div>
 	</div>

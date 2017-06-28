@@ -3,12 +3,13 @@
 	visibility: hidden;
 }
 
-.debug-window .debug-toggle {
-	display: block;
+.debug-window .debug-enabled.debug-visible .app-debug-wrapper {
+    flex: 1 1 auto;
+    max-height: unset;
 }
 
-.debug-window .debug-enabled.debug-visible .app-debug-wrapper {
-    flex: 50 1 auto;
+.debug-window .debug-enabled.debug-visible .app-debug-wrapper .message-list {
+    max-height: unset;
 }
 
 .debug-window .debug-toggle .status {
@@ -19,7 +20,6 @@
 	color: var(--app-debug-header-text-color);
     background-color: var(--app-debug-header-background-color);
     background: var(--app-debug-header-background);
-	position: fixed;
 	width: 100%;
 }
 
@@ -43,23 +43,18 @@
 
 }
 .debug-window .debug-enabled.debug-visible .app-debug .app-debug-body {
-	flex: 1;
+	flex: 1 1 auto;
 	display: flex;
 	flex-flow: column;
 }
 
-.debug-window .debug-enabled.debug-visible .app-debug .app-debug-body ul {
-	max-height: unset;
-	padding-top: 5px;
-	overflow: auto;
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header a {
-	color: var(--app-debug-debug-window-header-link-color);
-}
-
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-config,
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-window,
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-translation-editor,
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .toggle-debug-link {
 	display: none;
+}
+
+.debug-window footer {
+	flex: 0 1 auto;
 }

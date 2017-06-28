@@ -29,6 +29,26 @@ var MixinWrapperMethods  = {
             }
             return value;
         },
+        // this one returns default for all falsy values
+        defAll: function(){
+            var value;
+            if (arguments && arguments.length){
+                value = arguments[0];
+            }
+            var defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
+            if (!(!_.isUndefined(value) && value)){
+                for(let i=0; i<defaultTexts.length;i++){
+                    value = defaultTexts[i];
+                    if (!_.isUndefined(value)){
+                        break;
+                    }
+                }
+            }
+            if (_.isUndefined(value)){
+                value = '';
+            }
+            return value;
+        },
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     }
 };

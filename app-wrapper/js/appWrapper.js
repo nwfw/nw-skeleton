@@ -136,6 +136,7 @@ class AppWrapper extends BaseClass {
         appState.platformData = this.getHelper('util').getPlatformData();
 
         appState.appDir = await this.getAppDir();
+        appState.appRootDir = path.join(appState.appDir, '../');
 
         this.getHelper('menu').initializeAppMenu();
 
@@ -633,6 +634,7 @@ class AppWrapper extends BaseClass {
             e.preventDefault();
         }
         appState.modalData.modalVisible = false;
+        appState.modalData.modalElement = null;
         if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
             appState.closeModalResolve(true);
         }
