@@ -2,10 +2,10 @@
 	<div class="message-line">
 		<div class="message-line-data">
 			<template v-if="message.type != 'delimiter'">
-				<div v-bind:class="message.iconClass">
+				<div v-bind:class="getIconClass(message)">
 				</div>
 				<transition name="size-width-short">
-					<div v-if="config.messageTimestamp" class="message-timestamp" :title="message.timestamps.join('\n')">
+					<div v-if="message.timestamp && config.messageTimestamp" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
 						{{ message.timestamp }}
 					</div>
 				</transition>
@@ -18,7 +18,7 @@
 						<span :title="translate('Show call stack')" v-else class="fa fa-list"></span>
 					</a>
 				</div>
-				<div :class="{'not-visible': message.count <= 1}" class="message-count" :title="message.count">
+				<div v-if="message.count" :class="{'not-visible': message.count && message.count <= 1}" class="message-count" :title="message.count">
 					{{ message.count }}
 				</div>
 			</template>

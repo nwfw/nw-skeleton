@@ -338,6 +338,16 @@ class ComponentHelper extends BaseClass {
                 }
             }
 
+            let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
+            if (componentStateFile){
+                if (await _appWrapper.fileManager.isFile(componentStateFile)){
+                    let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
+                    if (componentState && _.isObject(componentState)) {
+                        _.extend(appState, componentState);
+                    }
+                }
+            }
+
             if (component.mixins){
                 component.mixins.push(BaseComponent);
             } else {

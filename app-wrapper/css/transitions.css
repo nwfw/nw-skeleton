@@ -251,6 +251,38 @@
     opacity: 1;
 }
 
+
+
+/* attention */
+
+.attention-enter,
+.attention-leave {
+    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
+    color linear var(--short-animation-duration) var(--short-animation-duration),
+    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
+}
+
+.attention-enter-to,
+.attention-leave-to {
+    background-color: unset;
+    color: unset;
+    text-shadow: unset;
+    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
+    color linear var(--short-animation-duration) var(--short-animation-duration),
+    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
+}
+
+.attention-enter-active,
+.attention-leave-active {
+    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
+    color linear var(--short-animation-duration) var(--short-animation-duration),
+    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
+}
+
+
+
+
+
 /* size */
 
 .size-short-enter,

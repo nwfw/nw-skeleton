@@ -1,0 +1,43 @@
+<div class="log-viewer">
+	<template v-if="!appState.modalData.currentModal.file">
+		<label>{{ translate('Please select file') }}:</label>
+        <input type="file" v-on:change="callViewHandler" data-change-handler="helpers.utilHelper.pickLogViewerFile" />
+    </template>
+    <template v-else>
+        <div class="log-viewer-list-wrapper">
+            <div class="log-viewer-list-header">
+                <div class="log-viewer-list-header-info">
+                    {{ translate('Log file') }}
+                    &quot;{{ appState.modalData.currentModal.file }}&quot; -
+                    {{ getMessages().length }} {{ translate('visible messages out of') }}
+                    {{ appState.modalData.currentModal.fileMessages.length }}
+                </div>
+                <div class="log-viewer-list-header-toolbar">
+                    <div class="log-viewer-list-header-toolbar-item">
+                        {{ translate('Filter messages') }}:
+                        <template v-for="type in getTypes()">
+                            <label class="log-viewer-filter-type">
+                                {{ type }}
+                                <checkbox-styled v-bind:change="typeChangeMethod" ref="pickLogMessageTypes" v-bind:modelProperty="'appState.modalData.currentModal.displayTypes.' + type" v-bind:name="'type[]'"></checkbox-styled>
+                            </label>
+                        </template>
+                    </div>
+                    <div class="log-viewer-list-header-toolbar-item log-viewer-list-header-toolbar-item-right">
+                        <a v-if="stacksCount > 0" href="#" class="user-message-control-link user-messages-toggle-stacks" @click.prevent="toggleMessageStacks">
+                            <span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
+                            <span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="log-viewer-list-search">
+                <input type="text" @input="performSearch" :placeholder="translate('Search')" value="" />
+            </div>
+            <div class="log-viewer-list">
+                <template v-if="appState.modalData.currentModal.dataLoaded">
+                    <message-list v-bind:messages="getMessages()" v-bind:config="appState.config" ref="messageList"></message-list>
+                </template>
+            </div>
+        </div>
+    </template>
+</div>

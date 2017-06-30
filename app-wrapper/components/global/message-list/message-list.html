@@ -1,0 +1,33 @@
+<div class="message-list-wrapper" :class="{'no-timestamps': !config.messageTimestamp}">
+	<template v-if="messages && messages.length">
+		<template v-if="config.animateMessages">
+			<transition-group name="highlight" tag="ul" class="message-list">
+				<li class="message-list-item" v-bind:key="message" v-for="(message, i) in messages" v-bind:class="message.type">
+					<message-line v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+				</li>
+			</transition-group>
+		</template>
+		<template v-else>
+			<ul class="message-list">
+				<li class="message-list-item" v-bind:key="message" v-for="(message, i) in messages" v-bind:class="message.type">
+					<message-line v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+				</li>
+			</ul>
+		</template>
+	</template>
+	<template v-else>
+		<ul class="message-list">
+			<li class="message-list-item">
+				<div class="message" >
+					<div class="message-line">
+						<div class="message-line-data">
+							<div class="message-list-no-messages">
+								{{ translate('No messages') }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</template>
+</div>

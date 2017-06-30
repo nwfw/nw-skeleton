@@ -309,6 +309,121 @@ class UtilHelper extends BaseClass {
         return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
     }
 
+    async openLogViewer (){
+        let modalHelper = _appWrapper.getHelper('modal');
+        appState.modalData.currentModal = _.cloneDeep(appState.logViewerModal);
+        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Log viewer');
+        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Load');
+        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        appState.modalData.currentModal.confirmDisabled = true;
+        appState.modalData.currentModal.messages = [];
+        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
+        _appWrapper.closeModalPromise = new Promise((resolve) => {
+            appState.closeModalResolve = resolve;
+        });
+
+        if (appState.modalData.currentModal.file){
+            await _appWrapper.getHelper('util').loadLogViewerFile(appState.modalData.currentModal.file);
+        }
+
+        modalHelper.openCurrentModal();
+        return _appWrapper.closeModalPromise;
+    }
+
+    async pickLogViewerFile (e) {
+        let fileName = e.target.value;
+        e.target.value = '';
+        return await this.loadLogViewerFile(fileName);
+    }
+
+    async loadLogViewerFile (fileName) {
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        let fileValid = true;
+        let messages;
+        if (!fileName){
+            appState.modalData.currentModal.messages.push({
+                message: _appWrapper.appTranslations.translate('Please pick file'),
+                type: 'error'
+            });
+            fileValid = false;
+        } else {
+            if (!await _appWrapper.fileManager.isFile(fileName)){
+                appState.modalData.currentModal.messages.push({
+                    message: _appWrapper.appTranslations.translate('File is not valid'),
+                    type: 'error'
+                });
+                fileValid = false;
+            } else {
+                let fileContents = await _appWrapper.fileManager.loadFile(fileName);
+                if (!fileContents){
+                    appState.modalData.currentModal.messages.push({
+                        message: _appWrapper.appTranslations.translate('Problem reading file'),
+                        type: 'error'
+                    });
+                    fileValid = false;
+                } else {
+                    try {
+                        messages = JSON.parse(fileContents);
+                    } catch (ex) {
+                        this.log(ex, 'error', []);
+                        appState.modalData.currentModal.messages.push({
+                            message: _appWrapper.appTranslations.translate('Problem parsing file'),
+                            type: 'error'
+                        });
+                        fileValid = false;
+                    }
+                }
+            }
+        }
+        if (fileValid && messages && messages.length){
+            appState.modalData.currentModal.fileMessages = _.map(messages, (msg) => {
+                if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
+                    msg.type = 'info';
+                }
+                return msg;
+            });
+            appState.modalData.currentModal.file = fileName;
+            let types = _.uniq(_.map(messages, (msg) => {
+                return msg.type;
+            }));
+            appState.modalData.currentModal.displayTypes = {};
+            for (let i=0; i< types.length; i++){
+                appState.modalData.currentModal.displayTypes[types[i]] = true;
+            }
+        }
+        appState.modalData.currentModal.dataLoaded = true;
+        modalHelper.modalNotBusy();
+    }
+
+    confirmLogViewerModalAction () {
+        console.log('confirmLogViewerModalAction');
+    }
+
+    getMessageStacksCount (messages) {
+        let stackCount = 0;
+        for(let i=0; i<messages.length; i++){
+            if (messages[i].stack && messages[i].stack.length){
+                stackCount++;
+            }
+        }
+        return stackCount;
+    }
+
+    getMessageStacksState (messages) {
+        let stacksCount = this.getMessageStacksCount(messages);
+        let stacksOpen = 0;
+        for(let i=0; i<messages.length; i++){
+            if (messages[i].stack && messages[i].stack.length){
+                if (messages[i].stackVisible){
+                    stacksOpen++;
+                }
+            }
+        }
+        return stacksOpen >= stacksCount;
+    }
+
     noop () {
         return '';
     }

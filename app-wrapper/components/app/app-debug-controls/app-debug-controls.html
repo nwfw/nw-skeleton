@@ -1,7 +1,8 @@
 <div class="app-debug-controls">
 	<div class="app-debug-controls-item app-debug-config">
 		<a class="app-debug-tool clear-debug-messages fa fa-ban" v-bind:title="translate('Clear debug messages')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.clearDebugMessages"></a>
-		<a class="app-debug-tool save-debug-output fa fa-floppy-o" v-if="debugMessageCount > 0" v-bind:title="translate('Save log to file')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
+		<a class="app-debug-tool save-debug-output fa fa-floppy-o" v-if="appState.debugMessages.length > 0" v-bind:title="translate('Save log to file')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.saveDebug"></a>
+		<a class="app-debug-tool open-log-viewer fa fa-folder-open-o" v-bind:title="translate('Open log viewer')" @click.prevent="callViewHandler" data-click-handler="helpers.utilHelper.openLogViewer"></a>
 		<a class="app-debug-tool open-debug-config fa fa-cog" v-bind:title="translate('Open debug configuration')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor"></a>
 	</div>
 	<div class="app-debug-controls-item app-debug-settings">
@@ -30,6 +31,9 @@
 			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
 			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
 		</a>
-		<a class="app-debug-tool open-debug-window fa fa-external-link" v-bind:title="translate('Open debug in new window')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow"></a>
+		<a class="app-debug-tool open-debug-window" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugWindow">
+			<span class="fa fa-external-link" :title="translate('Open debug in new window')"></span>
+		</a>
+
 	</div>
 </div>

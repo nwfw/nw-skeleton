@@ -307,6 +307,15 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    scrollParentToElement (element, duration) {
+        let parentElement = element.parentNode;
+        let currentParentScrollTop = parentElement.scrollTop;
+        element.scrollIntoView();
+        let newParentScrollTop = parentElement.scrollTop;
+        parentElement.scrollTop = currentParentScrollTop;
+        return this.scrollElementTo(parentElement, newParentScrollTop, duration);
+    }
+
     getParentByClass(element, targetClass){
         var parent;
         if (element && element.parentNode){

@@ -158,9 +158,7 @@ class DebugHelper extends BaseClass {
                 messages = appState.allDebugMessages;
             }
 
-            var data = _.map(messages, (debugMessage) => {
-                return debugMessage.fullTimestamp + ' ' + debugMessage.type.toUpperCase() + ': ' + debugMessage.message;
-            }).join('\n');
+            var data = JSON.stringify(messages, ' ', 4);
 
             try {
                 fs.writeFileSync(debugFilePath, data, {
@@ -214,17 +212,11 @@ class DebugHelper extends BaseClass {
                 let dirPath = path.dirname(debugFileName);
                 if (!_appWrapper.fileManager.isDir(dirPath)){
                     fileValid = false;
-                    appState.modalData.currentModal.messages.push({
-                        message: _appWrapper.appTranslations.translate('Chosen file directory is not a directory!'),
-                        type: 'error'
-                    });
+                    this.addModalMessage(_appWrapper.appTranslations.translate('Chosen file directory is not a directory!'), 'error', []);
                 } else {
                     if (!_appWrapper.fileManager.isFileWritable(debugFileName)){
                         fileValid = false;
-                        appState.modalData.currentModal.messages.push({
-                            message: _appWrapper.appTranslations.translate('Chosen file is not writable!'),
-                            type: 'error'
-                        });
+                        this.addModalMessage(_appWrapper.appTranslations.translate('Chosen file is not writable!'), 'error', []);
                     }
                 }
             } else {
@@ -234,32 +226,20 @@ class DebugHelper extends BaseClass {
 
                 if (!_appWrapper.fileManager.isFile(filePath)){
                     fileValid = false;
-                    appState.modalData.currentModal.messages.push({
-                        message: _appWrapper.appTranslations.translate('Chosen file is not a file!'),
-                        type: 'error'
-                    });
+                    this.addModalMessage(_appWrapper.appTranslations.translate('Chosen file is not a file!'), 'error', []);
                 } else {
                     if (!_appWrapper.fileManager.fileExists(dirPath)){
                         fileValid = false;
-                        appState.modalData.currentModal.messages.push({
-                            message: _appWrapper.appTranslations.translate('Chosen directory does not exist!'),
-                            type: 'error'
-                        });
+                        this.addModalMessage(_appWrapper.appTranslations.translate('Chosen directory does not exist!'), 'error', []);
                     } else {
                         if (_appWrapper.fileManager.isDir(dirPath)){
                             if (!_appWrapper.fileManager.isFileWritable(filePath)){
                                 fileValid = false;
-                                appState.modalData.currentModal.messages.push({
-                                    message: _appWrapper.appTranslations.translate('Chosen file is not writable!'),
-                                    type: 'error'
-                                });
+                                this.addModalMessage(_appWrapper.appTranslations.translate('Chosen file is not writable!'), 'error', []);
                             }
                         } else {
                             fileValid = false;
-                            appState.modalData.currentModal.messages.push({
-                                message: _appWrapper.appTranslations.translate('Chosen direcory it not a directory!'),
-                                type: 'error'
-                            });
+                            this.addModalMessage(_appWrapper.appTranslations.translate('Chosen direcory it not a directory!'), 'error', []);
                         }
                     }
                 }

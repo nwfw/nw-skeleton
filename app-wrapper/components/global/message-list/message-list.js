@@ -7,7 +7,9 @@ exports.component = {
     props: ['messages', 'config'],
     updated: function () {
         let ul = this.$el.querySelector('ul');
-        _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
+        if (ul){
+            _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
+        }
     },
     data: function () {
         return {};

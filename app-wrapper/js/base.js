@@ -97,57 +97,24 @@ class BaseClass extends eventEmitter {
         if (_.isUndefined(force)){
             force = this.forceDebug;
         }
-        var debugLevel = this.getStateVar('debugLevel', 0);
-        var debugLevels = this.getStateVar('debugLevels');
-        var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
-        var iconClass = 'fa fa-info-circle';
+        let debugLevel = this.getStateVar('debugLevel', 0);
+        let debugLevels = this.getStateVar('debugLevels');
+        let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
 
-        if (type == 'warning'){
-            iconClass = 'fa fa-exclamation-circle';
-        } else if (type == 'error'){
-            iconClass = 'fa fa-exclamation-triangle';
-        }
-
-        var doLog = force || false;
+        let doLog = force || false;
         if (!doLog && this.getStateVar('debug')){
             if (typeLevel >= debugLevel){
                 doLog = true;
             }
         }
 
-        // if (debugLevel > 2 && (type == 'group' || type == 'groupend' || type == 'groupcollapsed')){
-        //     doLog = true;
-        // }
-
-        if (message && message.match && message.match(/{(\d+)}/) && _.isArray(data) && data.length) {
-            message = message.replace(/{(\d+)}/g, function replaceMessageData(match, number) {
-                var index = number - 1;
-                return !_.isUndefined(data[index]) ? data[index] : match;
-            });
-        }
-
-        let stack = this._getStack();
-
-        var timestamp = new Date().toISOString().slice(11, 19);
-        var debugMessage = {
-            count: 1,
-            timestamps: [timestamp],
-            timestamp: timestamp,
-            message: message,
-            iconClass: iconClass,
-            type: type,
-            force: force,
-            active: debugLevel >= typeLevel,
-            typeLevel: typeLevel,
-            stack: stack,
-            stackVisible: false
-        };
+        let debugMessage = await this.getMessageObject(debugLevel, message, type, data, false, true, force);
 
         if (doLog){
             this._doLog(debugMessage);
         }
         if (debugMessage && debugMessage.message && this.getConfig('debugToFile')){
-            var messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
+            let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
             await _appWrapper.fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), messageLine, {flag: 'a'});
         }
 
@@ -175,7 +142,7 @@ class BaseClass extends eventEmitter {
             console.log(debugMessage.message);
         }
 
-        if (debugMessage.type == 'error' || this.getConfig('alwaysTrace')){
+        if (this.getConfig('alwaysTrace')){
             console.trace();
         }
 
@@ -208,11 +175,27 @@ class BaseClass extends eventEmitter {
             delete msg.count;
             delete msg.timestamps;
         }
+        delete msg.count;
+        delete msg.timestamps;
         delete msg.iconClass;
         delete msg.force;
         delete msg.active;
         delete msg.typeLevel;
+        delete msg.stack;
+        delete msg.stackVisible;
         return JSON.stringify(msg);
+    }
+
+    async getUserMessageFileLine (message){
+        var line = '';
+        if (appState.userMessagesToFileStarted){
+            line += ',\n';
+        } else {
+            appState.userMessagesToFileStarted = true;
+        }
+
+        line += await this.getMessageFileLine(message);
+        return line;
     }
 
     async getDebugMessageFileLine (message){
@@ -231,10 +214,6 @@ class BaseClass extends eventEmitter {
             delete msg.count;
             delete msg.timestamps;
         }
-        delete msg.iconClass;
-        delete msg.force;
-        delete msg.active;
-        delete msg.typeLevel;
         line += await this.getMessageFileLine(msg);
         return line;
     }
@@ -251,19 +230,10 @@ class BaseClass extends eventEmitter {
             passToDebug = this.forceDebug;
         }
 
-        var userMessage = {};
-        var userMessageLevel = this.getStateVar('userMessageLevel', 0);
-        var debugLevels = this.getStateVar('debugLevels');
-        var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
-        var timestamp = new Date().toISOString().slice(11, 19);
-        var iconClass = 'fa fa-info-circle';
-        var umHelper = _appWrapper.getHelper('userMessage');
-
-        if (type == 'warning'){
-            iconClass = 'fa fa-exclamation-circle';
-        } else if (type == 'error'){
-            iconClass = 'fa fa-exclamation-triangle';
-        }
+        let userMessageLevel = this.getStateVar('userMessageLevel', 0);
+        let debugLevels = this.getStateVar('debugLevels');
+        let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
+        let umHelper = _appWrapper.getHelper('userMessage');
 
         if (important){
             type += ' important';
@@ -273,8 +243,57 @@ class BaseClass extends eventEmitter {
             force = false;
         }
 
-        if (message && (typeLevel > 2 || passToDebug || force)){
-            this.log(message, type, data, true);
+        let userMessage = await this.getMessageObject(userMessageLevel, message, type, data, important, dontTranslate, force);
+
+        if (message && passToDebug){
+            this.log(userMessage.message, type, [], true);
+        }
+
+        if (force || typeLevel >= userMessageLevel){
+            let maxUserMessages = this.getStateVar('maxUserMessages', 30);
+            let messageCount = this.getStateVar('userMessages.length', 30);
+
+            if (messageCount > maxUserMessages){
+                let startIndex = messageCount - (maxUserMessages + 1);
+                if (appState && appState.userMessages && _.isArray(appState.userMessages)){
+                    appState.userMessages = appState.userMessages.slice(startIndex);
+                }
+            }
+
+            if (appState && appState.userMessages && _.isArray(appState.userMessages)){
+                appState.userMessageQueue.push(userMessage);
+            }
+        }
+
+        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessagesToFile')){
+            let messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLine, {flag: 'a'});
+
+        }
+
+        if (appState && appState.allUserMessages && _.isArray(appState.allUserMessages)){
+            appState.allUserMessages.push(userMessage);
+        }
+
+        umHelper.processUserMessageQueue();
+    }
+
+    async getMessageObject (messageLevel, message, type, data, important, dontTranslate, force){
+
+        var userMessage = {};
+        var debugLevels = this.getStateVar('debugLevels');
+        var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
+        var timestamp = new Date().toISOString().slice(11, 19);
+        var iconClass = 'fa fa-info-circle';
+
+        if (type == 'warning'){
+            iconClass = 'fa fa-exclamation-circle';
+        } else if (type == 'error'){
+            iconClass = 'fa fa-exclamation-triangle';
+        }
+
+        if (important){
+            type += ' important';
         }
 
         if (message && !dontTranslate && window && window.getAppWrapper() && window.getAppWrapper().appTranslations && window.getAppWrapper().appTranslations.translate){
@@ -299,7 +318,7 @@ class BaseClass extends eventEmitter {
             iconClass: iconClass,
             type: type,
             force: force,
-            active: userMessageLevel >= typeLevel,
+            active: messageLevel >= typeLevel,
             typeLevel: typeLevel,
             stack: stack,
             stackVisible: false
@@ -312,46 +331,36 @@ class BaseClass extends eventEmitter {
             userMessage.iconClass = '';
         }
 
-        if (force || typeLevel >= userMessageLevel){
-            var maxUserMessages = this.getStateVar('maxUserMessages', 30);
-            var messageCount = this.getStateVar('userMessages.length', 30);
-
-            if (messageCount > maxUserMessages){
-                var startIndex = messageCount - (maxUserMessages + 1);
-                if (appState && appState.userMessages && _.isArray(appState.userMessages)){
-                    appState.userMessages = appState.userMessages.slice(startIndex);
-                }
-            }
-
-            if (appState && appState.userMessages && _.isArray(appState.userMessages)){
-                appState.userMessageQueue.push(userMessage);
-            }
-        }
-
-        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessagesToFile')){
-            var messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
-            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLine, {flag: 'a'});
-
-        }
-
-        if (appState && appState.allUserMessages && _.isArray(appState.allUserMessages)){
-            appState.allUserMessages.push(userMessage);
-        }
-
-        umHelper.processUserMessageQueue();
+        return userMessage;
     }
 
-    async getUserMessageFileLine (message){
-        var line = '';
-        if (appState.userMessagesToFileStarted){
-            line += ',\n';
-        } else {
-            appState.userMessagesToFileStarted = true;
+    async addModalMessage (message, type, data, important, dontTranslate, force, passToDebug){
+        if (!type){
+            type = 'info';
+        }
+        if (_.isUndefined(force)){
+            force = this.forceUserMessages;
         }
 
-        line += await this.getMessageFileLine(message);
-        return line;
+        if (_.isUndefined(passToDebug)){
+            passToDebug = this.forceDebug;
+        }
+
+        let messageLevel = 0;
+
+        if (important){
+            type += ' important';
+        }
+
+        if (!force){
+            force = false;
+        }
+
+        let userMessage = await this.getMessageObject(messageLevel, message, type, data, important, dontTranslate, force);
+
+        _appWrapper.getHelper('modal').addModalMessage(userMessage);
     }
+
 
     getStateVar (varPath, defaultValue){
         var varValue;

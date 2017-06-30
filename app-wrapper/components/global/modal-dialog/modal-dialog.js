@@ -6,6 +6,7 @@ var component;
 component = {
     name: 'modal-dialog',
     template: '',
+    messageAdded: false,
     methods: {
         _confirmModalAction: _appWrapper.confirmModalAction.bind(_appWrapper),
         _cancelModalAction: _appWrapper.cancelModalAction.bind(_appWrapper),
@@ -99,6 +100,39 @@ component = {
                 _appWrapper.helpers.htmlHelper.removeClass(element, 'transition-wh');
                 _appWrapper.helpers.htmlHelper.removeElementStyles(element, ['height', 'width']);
             }
+        },
+        addModalMessage: function(messageObject){
+            this.messageAdded = true;
+            appState.modalData.currentModal.messages.push(messageObject);
+            appState.modalData.currentModal.currentMessageIndex = appState.modalData.currentModal.messages.length - 1;
+        },
+        scrollModalMessageDown: function() {
+            let newIndex = appState.modalData.currentModal.currentMessageIndex + 1;
+            this.scrollToModalMessage(newIndex);
+        },
+        scrollModalMessageUp: function() {
+            let newIndex = appState.modalData.currentModal.currentMessageIndex - 1;
+            this.scrollToModalMessage(newIndex);
+        },
+        scrollToModalMessage: function(index){
+            let listElement = this.$el.querySelector('.modal-dialog-message-list');
+            let messageElements = listElement.querySelectorAll('.modal-dialog-message');
+            let messageCount = appState.modalData.currentModal.messages.length;
+            if (index >= messageCount){
+                index = messageCount - 1;
+            }
+            if (index < 0){
+                index = 0;
+            }
+            appState.modalData.currentModal.currentMessageIndex = index;
+            if (messageElements && messageElements.length && messageElements.length > index){
+                let messageElement = messageElements[index];
+                if (messageElement && messageElement.scrollIntoView){
+                    _appWrapper.getHelper('html').scrollParentToElement(messageElement, 100);
+                }
+            }
+
+
         }
     },
     data: function () {
@@ -115,6 +149,10 @@ component = {
         var activeElement = document.activeElement;
         if (!(activeElement && activeElement.tagName && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
             this.setFocus();
+        }
+        if (this.messageAdded){
+            this.messageAdded = false;
+            this.scrollToModalMessage((appState.modalData.currentModal.messages.length - 1));
         }
     }
 };

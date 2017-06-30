@@ -102,12 +102,6 @@
     --app-debug-header-tool-link-color-hovered: #FFFFFF;
     --app-debug-header-tool-text-shadow-hovered: 0 0 4px #000000;
 
-    --app-debug-message-even-background: #333333;
-    --app-debug-message-odd-background: #444444;
-
-    --app-debug-message-border-even: 1px solid #666666;
-    --app-debug-message-border-odd: var(--app-user-messages-message-border-even);
-
     /* message lists */
     --app-message-list-stack-table-heading-color: #333333;
     --app-message-list-stack-table-heading-background: #999999;
@@ -129,71 +123,71 @@
     --app-user-messages-clear-messages-link-color: #FF3333;
     --app-user-messages-clear-messages-link-color-hovered: #FF6666;
 
-    --app-user-messages-list-border: 1px solid #666666;
-    --app-user-messages-list-background: #000000;
+    --app-message-list-border: 1px solid #666666;
+    --app-message-list-background: #000000;
 
-    --app-user-messages-message-border-even: 1px solid #666666;
-    --app-user-messages-message-border-odd: var(--app-user-messages-message-border-even);
+    --app-message-list-message-border-even: 1px solid #666666;
+    --app-message-list-message-border-odd: var(--app-message-list-message-border-even);
 
-    --app-user-messages-message-highlight-color: #000000;
-    --app-user-messages-message-highlight-background: #FFCC33;
+    --app-message-list-message-highlight-color: #000000;
+    --app-message-list-message-highlight-background: #FFCC33;
 
-    --app-user-messages-message-debug-highlight-color: #000000;
-    --app-user-messages-message-debug-highlight-background: #EEEEEE;
+    --app-message-list-message-debug-highlight-color: #000000;
+    --app-message-list-message-debug-highlight-background: #EEEEEE;
 
-    --app-user-messages-message-info-color: #006600;
-    --app-user-messages-message-info-highlight-background: #66FF66;
+    --app-message-list-message-info-color: #006600;
+    --app-message-list-message-info-highlight-background: #66FF66;
 
-    --app-user-messages-message-warning-highlight-color: #666600;
-    --app-user-messages-message-warning-highlight-background: #FFCC00;
+    --app-message-list-message-warning-highlight-color: #666600;
+    --app-message-list-message-warning-highlight-background: #FFCC00;
 
-    --app-user-messages-message-error-highlight-color: #660000;
-    --app-user-messages-message-error-highlight-background: #FFCCCC;
+    --app-message-list-message-error-highlight-color: #660000;
+    --app-message-list-message-error-highlight-background: #FFCCCC;
 
 
     /* message type definitions */
-    --app-user-messages-message-text-color: #999999;
-    --app-user-messages-message-background-color: #333333;
-    --app-user-messages-message-text-text-shadow: 0 0 1px #999999;
-    --app-user-messages-message-highlight-background-color: var(--lightest-orange-color) !important;
-    --app-user-messages-message-highlight-text-color: #000000 !important;
+    --app-message-list-message-text-color: #999999;
+    --app-message-list-message-background-color: #333333;
+    --app-message-list-message-text-text-shadow: 0 0 1px #999999;
+    --app-message-list-message-highlight-background-color: var(--lightest-orange-color) !important;
+    --app-message-list-message-highlight-text-color: #000000 !important;
 
-    --app-user-messages-message-debug-text-color: #CCCCCC;
-    --app-user-messages-message-debug-background-color: none;
-    --app-user-messages-message-debug-highlight-background-color: #EEEEEE !important;
-    --app-user-messages-message-debug-highlight-text-color: #000000 !important;
+    --app-message-list-message-debug-text-color: #CCCCCC;
+    --app-message-list-message-debug-background-color: none;
+    --app-message-list-message-debug-highlight-background-color: #EEEEEE !important;
+    --app-message-list-message-debug-highlight-text-color: #000000 !important;
 
-    --app-user-messages-message-info-text-color: #00CC00;
-    --app-user-messages-message-info-background-color: none;
-    --app-user-messages-message-info-highlight-background-color: #66FF66 !important;
-    --app-user-messages-message-info-highlight-text-color: #006600 !important;
+    --app-message-list-message-info-text-color: #00CC00;
+    --app-message-list-message-info-background-color: none;
+    --app-message-list-message-info-highlight-background-color: #66FF66 !important;
+    --app-message-list-message-info-highlight-text-color: #006600 !important;
 
-    --app-user-messages-message-warning-text-color: #FFCC00;
-    --app-user-messages-message-warning-background-color: none;
-    --app-user-messages-message-warning-highlight-background-color: #FFCC00 !important;
-    --app-user-messages-message-warning-highlight-text-color: #666600 !important;
+    --app-message-list-message-warning-text-color: #FFCC00;
+    --app-message-list-message-warning-background-color: none;
+    --app-message-list-message-warning-highlight-background-color: #FFCC00 !important;
+    --app-message-list-message-warning-highlight-text-color: #666600 !important;
 
---app-user-messages-message-error-text-color: #FF3333;
-    --app-user-messages-message-error-background-color: none;
-    --app-user-messages-message-error-highlight-background-color: #FFCCCC !important;
-    --app-user-messages-message-error-highlight-text-color: #660000 !important;
+    --app-message-list-message-error-text-color: #FF3333;
+    --app-message-list-message-error-background-color: none;
+    --app-message-list-message-error-highlight-background-color: #FFCCCC !important;
+    --app-message-list-message-error-highlight-text-color: #660000 !important;
 
 
-    --app-user-messages-message-delimiter-text-color: #999999;
-    --app-user-messages-message-delimiter-background-color: none;
-    --app-user-messages-message-delimiter-highlight-background-color: #EEEEEE !important;
-    --app-user-messages-message-delimiter-highlight-text-color: #000000 !important;
+    --app-message-list-message-delimiter-text-color: #999999;
+    --app-message-list-message-delimiter-background-color: none;
+    --app-message-list-message-delimiter-highlight-background-color: #EEEEEE !important;
+    --app-message-list-message-delimiter-highlight-text-color: #000000 !important;
 
-    --app-user-messages-message-delimiter-stroke-color: #000000;
-    --app-user-messages-message-delimiter-stroke-width: 1;
-    --app-user-messages-message-delimiter-center-fill: #FFFFFF;
+    --app-message-list-message-delimiter-stroke-color: #000000;
+    --app-message-list-message-delimiter-stroke-width: 1;
+    --app-message-list-message-delimiter-center-fill: #FFFFFF;
 
-    --app-user-messages-message-delimiter-fill-color-0: #CCCCCC;
-    --app-user-messages-message-delimiter-fill-color-10: #CCCCCC;
-    --app-user-messages-message-delimiter-fill-color-30: #CCCCCC;
-    --app-user-messages-message-delimiter-fill-color-70: #CCCCCC;
-    --app-user-messages-message-delimiter-fill-color-90: #CCCCCC;
-    --app-user-messages-message-delimiter-fill-color-100: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-0: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-10: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-30: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-70: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-90: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-100: #CCCCCC;
 
     /* window controls */
     --window-control-link-color: #999999;
@@ -343,12 +337,17 @@
     --app-live-info-busy-status-text-shadow: none;
     --app-live-info-busy-status-font-size: var(--app-live-info-status-font-size);
 
+
+
     --modal-dialog-backdrop-background: #FFFFFF;
     --modal-dialog-backdrop-opacity: 0.7;
 
     --modal-dialog-background: #333333;
     --modal-dialog-border: 1px solid #666666;
     --modal-dialog-box-shadow: 0 0 50px #333333;
+
+    --modal-dialog-body-background: #444444;
+    --modal-dialog-body-padding: 5px;
 
     --modal-dialog-title-text-color: #CCCCCC;
     --modal-dialog-title-font-size: 1.2rem;

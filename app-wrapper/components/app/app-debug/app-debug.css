@@ -12,7 +12,7 @@
     display: flex;
     flex-flow: column;
     flex: 1 1 auto;
-    background: var(--app-user-messages-list-background);
+    background: var(--app-message-list-background);
 }
 
 .app-debug-wrapper .app-debug-header {

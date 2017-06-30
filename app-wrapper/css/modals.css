@@ -25,7 +25,6 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    padding: 5px 10px;
     border-radius: 5px;
     transform: translate(-50%, -50%);
     z-index: 11;
@@ -76,32 +75,72 @@
 }
 
 .modal-dialog .modal-dialog-messages {
-    padding: 4px 10px;
-    max-height: 30px;
+    height: 30px;
+    font-size: 0.9rem;
     overflow: hidden;
     position: relative;
-    top: -8px;
+    margin: 0 5px;
+    padding: 1px 5px 2px 5px;
+    display: flex;
 }
 
+.modal-dialog .modal-dialog-messages .modal-dialog-message-list {
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
+    flex: 1 1 auto;
+}
+.modal-dialog .modal-dialog-messages .modal-dialog-message-controls {
+    flex: 0 1 auto;
+    font-size: 0.5rem;
+    line-height: 0.5rem;
+}
+
+.modal-dialog .modal-dialog-messages .modal-dialog-message-controls .modal-dialog-message-control {
+    display: block;
+    padding: 0px 3px;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity linear var(--short-animation-duration);
+}
+
+.modal-dialog .modal-dialog-messages .modal-dialog-message-controls .modal-dialog-message-control:first-child {
+    margin-bottom: 1px;
+}
+
+.modal-dialog .modal-dialog-messages .modal-dialog-message-controls .modal-dialog-message-control.hide-control {
+    opacity: 0;
+    pointer-events: none;
+}
 
 .modal-dialog .modal-dialog-messages .modal-dialog-message {
     text-align: center;
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-info {
-    color: var(--app-user-messages-message-info-text-color);
+    color: var(--app-message-list-message-info-text-color);
+    /*background: var(--app-message-list-message-info-highlight-background);*/
 }
 .modal-dialog .modal-dialog-messages .modal-dialog-warning {
-    color: var(--app-user-messages-message-warning-text-color);
+    color: var(--app-message-list-message-warning-text-color);
+    /*background: var(--app-message-list-message-warning-highlight-background);*/
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-error {
-    color: var(--app-user-messages-message-error-text-color);
+    color: var(--app-message-list-message-error-text-color);
+    /*background: var(--app-message-list-message-error-highlight-background);*/
 }
 
 .modal-dialog .modal-dialog-content {
+    display: flex;
+    flex-flow: column;
     overflow: auto;
     max-height: calc(75vh - 40px);
+}
+
+.modal-dialog .modal-dialog-content-wrapper {
+    display: flex;
+    flex-flow: column;
 }
 
 .modal-dialog-busy-wrapper {
@@ -138,9 +177,6 @@
     align-self: center;
 }
 
-.modal-dialog .modal-dialog-buttons {
-    text-align: right;
-}
 
 .form-row.modal-form-row {
 }
@@ -204,4 +240,23 @@
 }
 .modal-dialog-wrapper.confirm-modal .modal-dialog .modal-dialog-title {
     color: var(--modal-dialog-confirm-modal-title-color);
+}
+
+.modal-dialog .modal-dialog-form {
+    display: flex;
+    flex-flow: column;
+    margin: 5px;
+}
+.modal-dialog .modal-dialog-body {
+    background: var(--modal-dialog-body-background);
+    padding: var(--modal-dialog-body-padding);
+    max-height: 75vh;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+.modal-dialog .modal-dialog-buttons {
+    text-align: right;
+    padding: 5px 10px;
+    flex: 1 1 auto;
 }

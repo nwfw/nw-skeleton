@@ -1,0 +1,85 @@
+.log-viewer-modal .modal-dialog-content {
+    min-width: 85vw;
+    display: flex;
+    flex-flow: column;
+}
+
+.log-viewer-modal .modal-dialog-content-wrapper {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-title {
+    display: flex;
+    flex: 0 1 auto;
+    margin: 5px auto 10px auto;
+}
+
+.log-viewer-modal .modal-dialog-content form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: column;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer-list-wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: column;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer-list-wrapper .log-viewer-list-header {
+    flex: 0 1 auto;
+    text-align: center;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer-list-wrapper .log-viewer-list-search {
+    flex: 0 1 auto;
+    text-align: center;
+}
+
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer-list-wrapper .log-viewer-list {
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-buttons {
+    flex: 0 1 auto;
+}
+
+.log-viewer-modal .modal-dialog-content .modal-dialog-body .log-viewer-list-wrapper .log-viewer-list-header .log-viewer-list-header-info {
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
+
+.log-viewer-modal .log-viewer-filter-type {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.log-viewer-modal .log-viewer-list-header-toolbar {
+    display: flex;
+    font-size: 0.8rem;
+    margin: 5px 0;
+}
+
+.log-viewer-modal .log-viewer-list-header-toolbar-item {
+    flex: 1 1 auto;
+}
+
+.log-viewer-modal .log-viewer-list-header-toolbar-item-right {
+    flex: 0 1 auto;
+    margin-right: 31px;
+}

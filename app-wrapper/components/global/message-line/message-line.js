@@ -6,6 +6,19 @@ exports.component = {
     template: '',
     props: ['message', 'config'],
     methods: {
+        getIconClass: function(message){
+            if (message.iconClass){
+                return message.iconClass;
+            } else {
+                var iconClass = 'fa fa-info-circle';
+                if (message.type == 'warning'){
+                    iconClass = 'fa fa-exclamation-circle';
+                } else if (message.type == 'error'){
+                    iconClass = 'fa fa-exclamation-triangle';
+                }
+                return iconClass;
+            }
+        },
         beforeEnter: function(el){
             let dims = _appWrapper.getHelper('html').getRealDimensions(el);
             _appWrapper.getHelper('html').setElementStyles(el, {height: dims.height + 'px'});

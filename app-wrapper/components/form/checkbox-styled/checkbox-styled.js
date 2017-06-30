@@ -1,3 +1,4 @@
+const _ = require('lodash');
 var utilHelper = window.getAppWrapper().getHelper('util');
 
 exports.component = {
@@ -36,6 +37,9 @@ exports.component = {
     methods: {
         handleChange: function(){
             utilHelper.setVar(this.modelProperty, this.cbModel);
+            if (this.change && _.isFunction(this.change)){
+                this.change();
+            }
         },
         modelPropertyChanged: function(){
             this.cbModel = utilHelper.getVar(this.modelProperty);

@@ -82,7 +82,7 @@ class FormatHelper extends BaseClass {
 
 
         if ((milliseconds + '').match(/\./)){
-            milliseconds = parseInt((milliseconds + '').replace(/[^\.]+/, ''), 10);
+            milliseconds = parseInt((milliseconds + '').replace(/[^.]+/, ''), 10);
         }
 
 
@@ -170,6 +170,16 @@ class FormatHelper extends BaseClass {
     formatCurrency (value){
         var returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
+    }
+
+    addZeros (value, maxLength){
+        let _value = value + '';
+        if (_value.length < maxLength){
+            for (let i=0; i<maxLength - _value.length; i++){
+                _value = '0' + _value;
+            }
+        }
+        return _value;
     }
 
 

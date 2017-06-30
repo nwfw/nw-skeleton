@@ -65,6 +65,8 @@ class ModalHelper extends BaseClass {
     }
 
     openCurrentModal (showContentImmediately) {
+        appState.modalData.currentModal.messages = [];
+        appState.modalData.currentModal.currentMessageIndex = -1;
         appState.modalData.modalVisible = true;
         appState.modalData.modalElement = document.querySelector('.modal-dialog');
         clearTimeout(this.timeouts.autoClose);
@@ -168,6 +170,16 @@ class ModalHelper extends BaseClass {
         });
         this.openCurrentModal();
         return _appWrapper.closeModalPromise;
+    }
+
+    addModalMessage (messageObject) {
+        if (appState.modalData.currentModal && appState.modalData.modalVisible){
+            if (appState.modalData.currentModal.messages){
+                if (_.isArray(appState.modalData.currentModal.messages)){
+                    window.getFeApp().$refs.modalDialog.addModalMessage(messageObject);
+                }
+            }
+        }
     }
 }
 

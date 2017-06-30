@@ -1,31 +1,7 @@
-.debug-config-editor-modal {
-
-}
-
-.debug-config-editor-modal .modal-dialog-content {
+.debug-config-editor-modal .debug-config-editor-inner {
     display: flex;
-    flex-flow: column;
 }
 
-.debug-config-editor-modal .modal-dialog-content-wrapper {
-    display: flex;
-    flex-flow: column;
-}
-
-.debug-config-editor-modal form {
-    display: flex;
-    flex-flow: column;
-}
-
-.debug-config-editor-modal .modal-dialog-body {
+.debug-config-editor-modal .debug-config-editor-inner fieldset {
     flex: 1 1 auto;
-    overflow: auto;
-    margin: 5px 10px;
-}
-
-.debug-config-editor-modal .modal-dialog-buttons {
-    flex: 1 1 auto;
-}
-.debug-config-editor {
-    max-height: 75vh;
 }

@@ -37,14 +37,6 @@ exports.config = {
                                 components: {
                                     'user-messages-controls': {
                                         name: 'user-messages-controls'
-                                    },
-                                    'message-list': {
-                                        name: 'message-list',
-                                        components: {
-                                            'message-line': {
-                                                name: 'message-line'
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -90,14 +82,6 @@ exports.config = {
                                         components: {
                                             'user-messages-controls': {
                                                 name: 'user-messages-controls'
-                                            },
-                                            'message-list': {
-                                                name: 'message-list',
-                                                components: {
-                                                    'message-line': {
-                                                        name: 'message-line'
-                                                    }
-                                                }
                                             }
                                         }
                                     }
@@ -109,14 +93,6 @@ exports.config = {
                                 components: {
                                     'app-debug-controls': {
                                         name: 'app-debug-controls'
-                                    },
-                                    'message-list': {
-                                        name: 'message-list',
-                                        components: {
-                                            'message-line': {
-                                                name: 'message-line'
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -128,14 +104,6 @@ exports.config = {
                         components: {
                             'app-debug-controls': {
                                 name: 'app-debug-controls'
-                            },
-                            'message-list': {
-                                name: 'message-list',
-                                components: {
-                                    'message-line': {
-                                        name: 'message-line'
-                                    }
-                                }
                             }
                         }
                     },
@@ -148,14 +116,6 @@ exports.config = {
                                 components: {
                                     'user-messages-controls': {
                                         name: 'user-messages-controls'
-                                    },
-                                    'message-list': {
-                                        name: 'message-list',
-                                        components: {
-                                            'message-line': {
-                                                name: 'message-line'
-                                            }
-                                        }
                                     }
                                 }
                             }
