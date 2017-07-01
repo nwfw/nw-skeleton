@@ -39,9 +39,13 @@ class WindowManager extends BaseClass {
             resize: null
         };
 
-        this.addEventListeners();
         this.initWinState();
-        this.initWindow();
+    }
+
+    async initialize(){
+        await super.initialize();
+        await this.initWindow();
+        this.addEventListeners();
     }
 
     addEventListeners () {
@@ -92,7 +96,12 @@ class WindowManager extends BaseClass {
         }
     }
 
-    initWindow () {
+    async initWindow () {
+        var returnPromise;
+        var resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
         nw.Screen.Init();
         this.screenWidth = nw.Screen.screens[0].bounds.width;
         this.screenHeight = nw.Screen.screens[0].bounds.height;
@@ -130,17 +139,8 @@ class WindowManager extends BaseClass {
         setTimeout(() => {
             this.winState.width = appW;
             this.winState.height = appH;
-            if (windowLeft){
-                this.winState.x = windowLeft;
-            }
-            if (windowTop){
-                this.winState.y = windowTop;
-            }
-        }, 10);
-
-        setTimeout(() => {
             if (appState.config.debug.enabled){
-                this.win.show();
+                // this.win.show();
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
@@ -155,9 +155,9 @@ class WindowManager extends BaseClass {
                     //     this.win.toggleFullscreen();
                     // }
                 }
-                this.document.body.className = this.document.body.className + ' nw-body-initialized';
-                this.win.focus();
-                this.window.focus();
+                // this.document.body.className = this.document.body.className + ' nw-body-initialized';
+                // this.win.focus();
+                // this.window.focus();
             } else {
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
@@ -182,7 +182,9 @@ class WindowManager extends BaseClass {
             this.document.body.className = this.document.body.className + ' nw-body-initialized';
             this.win.focus();
             this.window.focus();
+            resolveReference(true);
         }, 200);
+        return returnPromise;
     }
 
     initWinState () {
@@ -685,7 +687,7 @@ class WindowManager extends BaseClass {
         let newHeight = window.outerHeight;
         let newLeft = window.screenLeft;
         let newTop = window.screenTop;
-        if (!this.winState.fullscreen && !this.winState.maximized){
+        if (appState.status.appInitialized && !this.winState.fullscreen && !this.winState.maximized){
             let config = _.cloneDeep(appState.config.appConfig.windowConfig);
             let configChanged = false;
             if (newWidth && newWidth > 100){
@@ -706,7 +708,6 @@ class WindowManager extends BaseClass {
             }
             if (configChanged){
                 appState.config.appConfig.windowConfig = config;
-                _appWrapper.appConfig.saveUserConfig();
             }
         }
     }

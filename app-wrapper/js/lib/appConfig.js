@@ -45,9 +45,13 @@ class AppConfig extends BaseClass {
         _.each(theConfig.configData.vars, function(value, key){
             if (!value.editable){
                 theConfig.configData.uneditableConfig.push(key);
+            } else {
+                theConfig.configData.editableConfig.push(key);
             }
             if (!value.reload){
                 theConfig.configData.noReloadConfig.push(key);
+            } else {
+                theConfig.configData.reloadConfig.push(key);
             }
         });
         this.config = _.cloneDeep(theConfig);
@@ -132,10 +136,16 @@ class AppConfig extends BaseClass {
             });
 
             var userConfigKeys = _.keys(userConfig);
+            var userConfigKeyMap = utilHelper.propertyMap(userConfig);
+            var oldUserConfigKeyMap = utilHelper.propertyMap(this.userConfig);
+            var keyMapDiff = _.difference(userConfigKeyMap, oldUserConfigKeyMap);
+            keyMapDiff = _.union(keyMapDiff, _.difference(oldUserConfigKeyMap, userConfigKeyMap));
 
-            var noReloadConfig = this.getConfig('configData.noReloadConfig');
-            var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
-            var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
+
+
+            var reloadConfig = this.getConfig('configData.reloadConfig');
+            var reloadChanges = _.intersection(keyMapDiff, reloadConfig);
+            var shouldReload = reloadChanges.length > 0;
 
             try {
                 if (userConfig && Object.keys(userConfigKeys).length){
@@ -147,7 +157,9 @@ class AppConfig extends BaseClass {
                     this.userConfig = _.cloneDeep(userConfig);
                     appState.userConfig = _.cloneDeep(userConfig);
                     if (shouldReload){
-                        _appWrapper.windowManager.reloadWindow(null, true);
+                        _appWrapper.helpers.modalHelper.closeCurrentModal(true);
+                        await _appWrapper.wait(appState.config.mediumPauseDuration);
+                        _appWrapper.windowManager.reloadWindow(null, false);
                     } else {
                         this.config = _.cloneDeep(appState.config);
                     }
@@ -160,7 +172,9 @@ class AppConfig extends BaseClass {
                         this.userConfig = {};
                         appState.userConfig = {};
                         if (shouldReload){
-                            _appWrapper.windowManager.reloadWindow(null, true);
+                            _appWrapper.helpers.modalHelper.closeCurrentModal(true);
+                            await _appWrapper.wait(appState.config.mediumPauseDuration);
+                            _appWrapper.windowManager.reloadWindow(null, false);
                         } else {
                             this.config = _.cloneDeep(appState.config);
                         }

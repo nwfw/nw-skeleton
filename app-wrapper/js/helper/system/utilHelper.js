@@ -417,7 +417,7 @@ class UtilHelper extends BaseClass {
         }
         for (let i=0; i<objKeys.length;i++){
             if (_.isArray(obj[objKeys[i]]) || _.isObject(obj[objKeys[i]])){
-                keyMap = _.union(keyMap, this.propertyMap(obj[objKeys[i]], objKeys[i]));
+                keyMap = _.union(keyMap, this.propertyMap(obj[objKeys[i]], prepend + objKeys[i]));
             } else {
                 keyMap.push(prepend + objKeys[i]);
             }

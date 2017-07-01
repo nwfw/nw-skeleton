@@ -178,7 +178,9 @@ exports.config = {
 
     configData: {
         uneditableConfig: [],
+        editableConfig: [],
         noReloadConfig: [],
+        reloadConfig: [],
         ignoreUserConfig: ['appConfig.menuData'],
         defaultVar: {
             editable: true,
@@ -202,26 +204,26 @@ exports.config = {
                 editable: false,
                 reload: true
             },
-            // debugMessagesFilename: {
-            //     editable: false,
-            //     reload: true
-            // },
-            // userMessagesFilename: {
-            //     editable: false,
-            //     reload: true
-            // },
-            // debug: {
-            //     editable: true,
-            //     reload: false
-            // },
-            // hideDebug: {
-            //     editable: true,
-            //     reload: false
-            // },
-            // debugLevels: {
-            //     editable: false,
-            //     reload: true
-            // },
+            'debug.debugMessagesFilename': {
+                editable: false,
+                reload: true
+            },
+            'userMessages.userMessagesFilename': {
+                editable: false,
+                reload: true
+            },
+            'debug.enabled': {
+                editable: true,
+                reload: false
+            },
+            'debug.hideDebug': {
+                editable: true,
+                reload: false
+            },
+            'logger.messageLevels': {
+                editable: false,
+                reload: true
+            },
             windowWidth: {
                 editable: false,
                 reload: false
@@ -262,54 +264,30 @@ exports.config = {
                     }
                 }
             },
-            // messageLevel: {
-            //     editable: true,
-            //     reload: false,
-            //     type: 'string',
-            //     control: 'select',
-            //     controlData: {
-            //         items: {
-            //             1: 'debug',
-            //             2: 'info',
-            //             3: 'warning',
-            //             4: 'error'
-            //         }
-            //     }
-            // },
-            // userMessageLevel: {
-            //     editable: true,
-            //     reload: false,
-            //     type: 'string',
-            //     control: 'select',
-            //     controlData: {
-            //         items: {
-            //             1: 'debug',
-            //             2: 'info',
-            //             3: 'warning',
-            //             4: 'error'
-            //         }
-            //     }
-            // },
-            // userMessagesExpanded: {
-            //     editable: true,
-            //     reload: false
-            // },
-            // messageTimestamp: {
-            //     editable: true,
-            //     reload: false
-            // },
-            // userMessagesToolbarVisible: {
-            //     editable: true,
-            //     reload: false
-            // },
-            // forceDebug: {
-            //     editable: false,
-            //     reload: true
-            // },
-            // forceUserMessages: {
-            //     editable: false,
-            //     reload: true
-            // },
+            'debug.messagesExpanded': {
+                editable: true,
+                reload: false
+            },
+            'userMessages.messagesExpanded': {
+                editable: true,
+                reload: false
+            },
+            'debug.displayTimestamps': {
+                editable: true,
+                reload: false
+            },
+            'userMessages.displayTimestamps': {
+                editable: true,
+                reload: false
+            },
+            'debug.forceDebug': {
+                editable: false,
+                reload: true
+            },
+            'userMessages.forceUserMessages': {
+                editable: false,
+                reload: false
+            },
             compileCss: {
                 editable: true,
                 reload: false
