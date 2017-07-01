@@ -299,7 +299,7 @@ exports.config = {
     allowLanguageChange: true,
     autoAddLabels: true,
 
-    theme: 'basic',
+    theme: 'dark',
     allowThemeChange: true,
 
     liveCss: false,
@@ -326,6 +326,7 @@ exports.config = {
         devTools: true,
         alwaysTrace: false,
         debugLevel: 3,
+        maxDebugMessages: 200,
         debugGroupsCollapsed: true,
         debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
         forceDebug: {
@@ -354,7 +355,7 @@ exports.config = {
     userMessages: {
         animateMessages: true,
         userMessageLevel: 3,
-        maxUserMessages: 1000,
+        maxUserMessages: 200,
         userMessagesToFile: true,
         saveStacksToFile: true,
         userMessagesToFileAppend: false,

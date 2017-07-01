@@ -28,11 +28,28 @@ class UserMessageHelper extends BaseClass {
     }
 
     processUserMessageQueue (){
-        var messageCount = appState.userMessageQueue.length;
         let intervalDuration = 1;
 
+        let queueCount = appState.userMessageQueue.length;
+        let maxUserMessages = this.getConfig('userMessages.maxUserMessages', 30);
+        let messageCount = this.getStateVar('userMessages.length', 30);
+
+        if ((messageCount + queueCount) > maxUserMessages){
+            let startIndex = (messageCount + queueCount) - (maxUserMessages + 1);
+            if (appState && appState.userMessages && _.isArray(appState.userMessages)){
+                appState.userMessages = appState.userMessages.slice(startIndex);
+            }
+            if (appState.userMessages.length == 0){
+                messageCount = this.getStateVar('userMessages.length', 30);
+                if ((messageCount + queueCount) > maxUserMessages){
+                    let startIndex = (messageCount + queueCount) - (maxUserMessages + 1);
+                    appState.userMessageQueue = appState.userMessageQueue.slice(startIndex);
+                }
+            }
+        }
+
         clearInterval(this.intervals.userMessageQueue);
-        if (messageCount && !appState.userMessagesData.selectFocused){
+        if (queueCount && !appState.userMessagesData.selectFocused){
             this.intervals.userMessageQueue = setInterval(this.unQueueUserMessage.bind(this), intervalDuration);
         }
     }
