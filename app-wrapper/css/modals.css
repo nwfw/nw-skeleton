@@ -30,7 +30,7 @@
     z-index: 11;
     max-height: 75vh;
     max-width: 90vw;
-    min-height: 30vh;
+    min-height: 100px;
     min-width: 50vw;
 }
 
@@ -244,6 +244,7 @@
 
 .modal-dialog .modal-dialog-form {
     display: flex;
+    flex: 1 1 auto;
     flex-flow: column;
     margin: 5px;
 }
