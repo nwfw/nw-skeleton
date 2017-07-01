@@ -117,7 +117,7 @@ class KeyboardHelper extends BaseClass {
                 } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
-                } else if ( appState.status.ctrlPressed && !appState.status.noHandlingKeys && appState && appState.debug && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
+                } else if ( appState.status.ctrlPressed && !appState.status.noHandlingKeys && appState && appState.config.debug.enabled && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     this.pressedKeys = [];
                     _appWrapper.windowManager.reloadWindow();
                     fulfilled = true;
@@ -131,10 +131,10 @@ class KeyboardHelper extends BaseClass {
 
                     if (this.pressedKeys.length == this.keyCodes.debugKeys.length){
                         this.pressedKeys = [];
-                        appState.debug = !appState.debug;
+                        appState.config.debug.enabled = !appState.config.debug.enabled;
                         fulfilled = true;
-                        _appWrapper.appConfig.setConfigVar('debug', appState.debug);
-                        if (appState.debug){
+                        _appWrapper.appConfig.setConfigVar('debug.enabled', appState.config.debug.enabled);
+                        if (appState.config.debug.enabled){
                             this.addUserMessage('Debug mode enabled.', 'info', [], false);
                         } else {
                             this.addUserMessage('Debug mode disabled.', 'info', [], false);

@@ -1,11 +1,11 @@
 	<div class="app-debug-wrapper">
-		<div class="app-debug" v-if="!appState.config.hideDebug">
+		<div class="app-debug" v-if="!appState.config.debug.hideDebug">
 			<div class="app-debug-header">
 				<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
 				<app-debug-controls v-bind:debugMessageCount="debugMessageCount" ref="appDebugControls"></app-debug-controls>
 			</div>
 			<div class="app-debug-body">
-				<message-list v-bind:messages="appState.debugMessages" v-bind:config="appState.config" ref="messageList"></message-list>
+				<message-list v-bind:messages="appState.debugMessages" v-bind:config="appState.config.debug" ref="messageList"></message-list>
 			</div>
 		</div>
 	</div>

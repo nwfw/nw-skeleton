@@ -1,8 +1,5 @@
 <div class="user-message-controls">
 	<div class="user-message-controls-item user-messages-config">
-		<a v-if="0" href="#" class="user-message-control-link user-messages-settings-link" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.showUserMessageSettings">
-			<span class="fa fa-cog" :title="translate('User messages settings')"></span>
-		</a>
 		<a class="user-message-control-link clear-user-messages" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }"  @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages">
 			<span class="fa fa-ban" :title="translate('Clear user messages')"></span>
 		</a>
@@ -11,8 +8,8 @@
 		<div class="user-message-control user-message-level-picker">
 			<label v-html="translate('Message level')"></label>
 			<select name="userMessageLevels" v-on:focus="callViewHandler" data-focus-handler="helpers.userMessageHelper.userMessageLevelSelectFocus" v-on:blur="callViewHandler" data-blur-handler="helpers.userMessageHelper.userMessageLevelSelectBlur" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeUserMessageLevel">
-				<template v-for="(levelValue, levelName) in appState.debugLevels">
-					<template v-if="levelValue == appState.userMessageLevel">
+				<template v-for="(levelValue, levelName) in appState.config.logger.messageLevels">
+					<template v-if="levelValue == appState.config.userMessages.userMessageLevel">
 						<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
 					</template>
 					<template v-else>
@@ -24,7 +21,7 @@
 		<div class="user-message-control">
 			<label>
 				{{ translate('Display timestamps') }}
-				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.messageTimestamp'" v-bind:name="'displayTimestamps'"></checkbox-styled>
+				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.userMessages.displayTimestamps'" v-bind:name="'displayTimestamps'"></checkbox-styled>
 			</label>
 		</div>
 	</div>
@@ -33,6 +30,6 @@
 			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
 			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
 		</a>
-		<a class="user-message-control-link expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessagesExpanded, 'fa-arrow-down': appState.config.userMessagesExpanded }" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" :title="translate('Expand user message list')"></a>
+		<a class="user-message-control-link expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessages.messagesExpanded, 'fa-arrow-down': appState.config.userMessages.messagesExpanded }" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" :title="translate('Expand user message list')"></a>
 	</div>
 </div>

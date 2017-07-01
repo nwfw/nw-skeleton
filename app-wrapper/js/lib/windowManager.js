@@ -99,7 +99,7 @@ class WindowManager extends BaseClass {
             windowPosition = '';
         }
 
-        if (appState.debug){
+        if (appState.config.debug.enabled){
             this.document.body.className = this.document.body.className + ' nw-body-debug';
         }
 
@@ -109,7 +109,7 @@ class WindowManager extends BaseClass {
         }, 10);
 
         setTimeout(() => {
-            if (appState.debug){
+            if (appState.config.debug.enabled){
                 this.win.show();
                 if (appState.isDebugWindow){
                     this.winState.x = 0;

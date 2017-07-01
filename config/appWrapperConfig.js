@@ -195,26 +195,26 @@ exports.config = {
                 editable: false,
                 reload: true
             },
-            debugMessagesFilename: {
-                editable: false,
-                reload: true
-            },
-            userMessagesFilename: {
-                editable: false,
-                reload: true
-            },
-            debug: {
-                editable: true,
-                reload: false
-            },
-            hideDebug: {
-                editable: true,
-                reload: false
-            },
-            debugLevels: {
-                editable: false,
-                reload: true
-            },
+            // debugMessagesFilename: {
+            //     editable: false,
+            //     reload: true
+            // },
+            // userMessagesFilename: {
+            //     editable: false,
+            //     reload: true
+            // },
+            // debug: {
+            //     editable: true,
+            //     reload: false
+            // },
+            // hideDebug: {
+            //     editable: true,
+            //     reload: false
+            // },
+            // debugLevels: {
+            //     editable: false,
+            //     reload: true
+            // },
             windowWidth: {
                 editable: false,
                 reload: false
@@ -255,54 +255,54 @@ exports.config = {
                     }
                 }
             },
-            debugLevel: {
-                editable: true,
-                reload: false,
-                type: 'string',
-                control: 'select',
-                controlData: {
-                    items: {
-                        1: 'debug',
-                        2: 'info',
-                        3: 'warning',
-                        4: 'error'
-                    }
-                }
-            },
-            userMessageLevel: {
-                editable: true,
-                reload: false,
-                type: 'string',
-                control: 'select',
-                controlData: {
-                    items: {
-                        1: 'debug',
-                        2: 'info',
-                        3: 'warning',
-                        4: 'error'
-                    }
-                }
-            },
-            userMessagesExpanded: {
-                editable: true,
-                reload: false
-            },
-            messageTimestamp: {
-                editable: true,
-                reload: false
-            },
-            userMessagesToolbarVisible: {
-                editable: true,
-                reload: false
-            },
-            forceDebug: {
-                editable: false,
-                reload: true
-            },
-            forceUserMessages: {
-                editable: false,
-                reload: true
-            },
+            // messageLevel: {
+            //     editable: true,
+            //     reload: false,
+            //     type: 'string',
+            //     control: 'select',
+            //     controlData: {
+            //         items: {
+            //             1: 'debug',
+            //             2: 'info',
+            //             3: 'warning',
+            //             4: 'error'
+            //         }
+            //     }
+            // },
+            // userMessageLevel: {
+            //     editable: true,
+            //     reload: false,
+            //     type: 'string',
+            //     control: 'select',
+            //     controlData: {
+            //         items: {
+            //             1: 'debug',
+            //             2: 'info',
+            //             3: 'warning',
+            //             4: 'error'
+            //         }
+            //     }
+            // },
+            // userMessagesExpanded: {
+            //     editable: true,
+            //     reload: false
+            // },
+            // messageTimestamp: {
+            //     editable: true,
+            //     reload: false
+            // },
+            // userMessagesToolbarVisible: {
+            //     editable: true,
+            //     reload: false
+            // },
+            // forceDebug: {
+            //     editable: false,
+            //     reload: true
+            // },
+            // forceUserMessages: {
+            //     editable: false,
+            //     reload: true
+            // },
             compileCss: {
                 editable: true,
                 reload: false
@@ -324,79 +324,86 @@ exports.config = {
     liveCss: false,
     compileCss: false,
 
-    hideDebug: false,
-    debug: true,
-    debugToFile: true,
-    debugToFileAppend: false,
-    debugMessagesFilename: './app/var/log/debug-messages.log',
-    devTools: true,
-    alwaysTrace: false,
-    debugLevel: 3,
-    debugLevels: {
-        'debug': 1,
-        'info': 2,
-        'warning': 3,
-        'error': 4
+    logger: {
+        messageLevels: {
+            'debug': 1,
+            'info': 2,
+            'warning': 3,
+            'error': 4
+        },
     },
-    debugGroupsCollapsed: true,
-    debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
+    debug: {
+        animateMessages: true,
+        hideDebug: false,
+        enabled: true,
+        debugToFile: true,
+        debugToFileAppend: false,
+        debugMessagesFilename: './app/var/log/debug-messages.log',
+        displayTimestamps: true,
+        devTools: true,
+        alwaysTrace: false,
+        debugLevel: 3,
+        debugGroupsCollapsed: true,
+        debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
+        forceDebug: {
+            AppWrapper: false,
+            AppConfig: false,
+            AppTemplates: false,
+            AppTranslations: false,
+            ComponentHelper: false,
+            KeyboardHelper: false,
+            DebugHelper: false,
+            HtmlHelper: false,
+            ModalHelper: false,
+            StorageHelper: false,
+            StaticFilesHelper: false,
+            UserMessageHelper: false,
+            UserDataHelper: false,
+            AppOperationHelper: false,
+            UtilHelper: false,
+            MenuHelper: false,
+            FormatHelper: false,
+            WindowManager: false,
+            FileManager: false
+        },
+    },
 
-    userMessageLevel: 2,
-    maxUserMessages: 1000,
-    userMessagesToFile: true,
-    userMessagesToFileAppend: false,
-    userMessagesFilename: './app/var/log/user-messages.log',
-    userMessagesExpanded: false,
-    messageTimestamp: true,
-    userMessagesToolbarVisible: false,
+    userMessages: {
+        animateMessages: true,
+        userMessageLevel: 3,
+        maxUserMessages: 1000,
+        userMessagesToFile: true,
+        userMessagesToFileAppend: false,
+        userMessagesFilename: './app/var/log/user-messages.log',
+        messagesExpanded: false,
+        displayTimestamps: true,
+        forceUserMessages: {
+            AppWrapper: false,
+            AppConfig: false,
+            AppTemplates: false,
+            AppTranslations: false,
+            ComponentHelper: false,
+            KeyboardHelper: false,
+            DebugHelper: false,
+            HtmlHelper: false,
+            ModalHelper: false,
+            StorageHelper: false,
+            StaticFilesHelper: false,
+            UserMessageHelper: false,
+            UserDataHelper: false,
+            AppOperationHelper: false,
+            UtilHelper: false,
+            MenuHelper: false,
+            FormatHelper: false,
+            WindowManager: false,
+            FileManager: false
+        }
+    },
 
     windowCloseTimeoutDuration: 15000,
     windowReloadTimeoutDuration: 15000,
 
     windowWidth: null,
     windowHeight: null,
-
-    forceDebug: {
-        AppWrapper: false,
-        AppConfig: false,
-        AppTemplates: false,
-        AppTranslations: false,
-        ComponentHelper: false,
-        KeyboardHelper: false,
-        DebugHelper: false,
-        HtmlHelper: false,
-        ModalHelper: false,
-        StorageHelper: false,
-        StaticFilesHelper: false,
-        UserMessageHelper: false,
-        UserDataHelper: false,
-        AppOperationHelper: false,
-        UtilHelper: false,
-        MenuHelper: false,
-        FormatHelper: false,
-        WindowManager: false,
-        FileManager: false
-    },
-    forceUserMessages: {
-        AppWrapper: false,
-        AppConfig: false,
-        AppTemplates: false,
-        AppTranslations: false,
-        ComponentHelper: false,
-        KeyboardHelper: false,
-        DebugHelper: false,
-        HtmlHelper: false,
-        ModalHelper: false,
-        StorageHelper: false,
-        StaticFilesHelper: false,
-        UserMessageHelper: false,
-        UserDataHelper: false,
-        AppOperationHelper: false,
-        UtilHelper: false,
-        MenuHelper: false,
-        FormatHelper: false,
-        WindowManager: false,
-        FileManager: false
-    }
 
 };

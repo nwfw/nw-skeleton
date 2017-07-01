@@ -9,8 +9,8 @@
 		<div class="app-debug-control">
 			<label v-html="translate('Message level')"></label>
 			<select name="debugLevels" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.changeDebugLevel">
-				<template v-for="(levelValue, levelName) in config.debugLevels">
-					<template v-if="levelValue == config.debugLevel">
+				<template v-for="(levelValue, levelName) in config.logger.messageLevels">
+					<template v-if="levelValue == config.debug.debugLevel">
 						<option selected="selected" v-bind:value="levelValue">{{ levelName }}</option>
 					</template>
 					<template v-else>
@@ -22,7 +22,7 @@
 		<div class="app-debug-control">
 			<label>
 				{{ translate('Display timestamps') }}
-				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.messageTimestamp'" v-bind:name="'displayTimestamps'"></checkbox-styled>
+				<checkbox-styled ref="toggleUMTimestamps" v-bind:modelProperty="'appState.config.debug.displayTimestamps'" v-bind:name="'displayTimestamps'"></checkbox-styled>
 			</label>
 		</div>
 	</div>

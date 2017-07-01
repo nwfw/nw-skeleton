@@ -24,21 +24,27 @@ class BaseClass extends eventEmitter {
     }
 
     async initialize () {
+        await this.initializeLogging();
+        this.addBoundMethods();
+        return this;
+    }
+
+    async initializeLogging() {
         let className = this.constructor.name;
         if (appState && appState.config){
-            if (appState.config.forceDebug){
-                if (_.isUndefined(appState.config.forceDebug[className])){
+            if (appState.config.debug && appState.config.debug.forceDebug){
+                if (_.isUndefined(appState.config.debug.forceDebug[className])){
                     console.error('Class "' + className + '" has no forceDebug config set!');
                 } else {
-                    this.forceDebug = _.get(appState.config.forceDebug, className);
+                    this.forceDebug = _.get(appState.config.debug.forceDebug, className);
                 }
             }
 
-            if (appState.config.forceUserMessages){
-                if (_.isUndefined(appState.config.forceUserMessages[className])){
+            if (appState.config.userMessages && appState.config.userMessages.forceUserMessages){
+                if (_.isUndefined(appState.config.userMessages.forceUserMessages[className])){
                     console.error('Class "' + className + '" has no forceUserMessages config set!');
                 } else {
-                    this.forceUserMessages = _.get(appState.config.forceUserMessages, className);
+                    this.forceUserMessages = _.get(appState.config.userMessages.forceUserMessages, className);
                 }
             }
         } else {
@@ -46,7 +52,6 @@ class BaseClass extends eventEmitter {
                 console.warn('Could not get config object (class "' + className + '").');
             }
         }
-        this.addBoundMethods();
         return this;
     }
 
@@ -97,12 +102,13 @@ class BaseClass extends eventEmitter {
         if (_.isUndefined(force)){
             force = this.forceDebug;
         }
-        let debugLevel = this.getStateVar('debugLevel', 0);
-        let debugLevels = this.getStateVar('debugLevels');
+        let debugEnabled = this.getConfig('debug.enabled', false);
+        let debugLevel = this.getConfig('debug.debugLevel', 3);
+        let debugLevels = this.getConfig('logger.messageLevels');
         let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
 
         let doLog = force || false;
-        if (!doLog && this.getStateVar('debug')){
+        if (!doLog && debugEnabled){
             if (typeLevel >= debugLevel){
                 doLog = true;
             }
@@ -113,9 +119,9 @@ class BaseClass extends eventEmitter {
         if (doLog){
             this._doLog(debugMessage);
         }
-        if (debugMessage && debugMessage.message && this.getConfig('debugToFile')){
+        if (debugMessage && debugMessage.message && this.getConfig('debug.debugToFile')){
             let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
-            await _appWrapper.fileManager.writeFileSync(path.resolve(this.getConfig('debugMessagesFilename')), messageLine, {flag: 'a'});
+            await _appWrapper.fileManager.writeFileSync(path.resolve(this.getConfig('debug.debugMessagesFilename')), messageLine, {flag: 'a'});
         }
 
         if (appState && appState.allDebugMessages && _.isArray(appState.allDebugMessages)){
@@ -125,7 +131,7 @@ class BaseClass extends eventEmitter {
 
     _doLog (debugMessage){
         if (debugMessage.type == 'group'){
-            if (this.getConfig('debugGroupsCollapsed')){
+            if (this.getConfig('debug.debugGroupsCollapsed')){
                 console.groupCollapsed(debugMessage.message);
             } else {
                 console.group(debugMessage.message);
@@ -142,11 +148,11 @@ class BaseClass extends eventEmitter {
             console.log(debugMessage.message);
         }
 
-        if (this.getConfig('alwaysTrace')){
+        if (this.getConfig('debug.alwaysTrace')){
             console.trace();
         }
 
-        var maxDebugMessages = this.getStateVar('maxDebugMessages', 30);
+        var maxDebugMessages = this.getConfig('debug.maxDebugMessages', 30);
         var messageCount = this.getStateVar('debugMessages.length', 0);
 
         if (messageCount > maxDebugMessages){
@@ -175,10 +181,9 @@ class BaseClass extends eventEmitter {
             delete msg.count;
             delete msg.timestamps;
         }
-        delete msg.count;
-        delete msg.timestamps;
         delete msg.iconClass;
         delete msg.force;
+        delete msg.important;
         delete msg.active;
         delete msg.typeLevel;
         delete msg.stack;
@@ -230,14 +235,10 @@ class BaseClass extends eventEmitter {
             passToDebug = this.forceDebug;
         }
 
-        let userMessageLevel = this.getStateVar('userMessageLevel', 0);
-        let debugLevels = this.getStateVar('debugLevels');
+        let userMessageLevel = this.getConfig('userMessages.userMessageLevel', 0);
+        let debugLevels = this.getConfig('logger.messageLevels');
         let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
         let umHelper = _appWrapper.getHelper('userMessage');
-
-        if (important){
-            type += ' important';
-        }
 
         if (!force){
             force = false;
@@ -250,7 +251,7 @@ class BaseClass extends eventEmitter {
         }
 
         if (force || typeLevel >= userMessageLevel){
-            let maxUserMessages = this.getStateVar('maxUserMessages', 30);
+            let maxUserMessages = this.getConfig('userMessages.maxUserMessages', 30);
             let messageCount = this.getStateVar('userMessages.length', 30);
 
             if (messageCount > maxUserMessages){
@@ -265,9 +266,9 @@ class BaseClass extends eventEmitter {
             }
         }
 
-        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessagesToFile')){
+        if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessages.userMessagesToFile')){
             let messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
-            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessagesFilename')), messageLine, {flag: 'a'});
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessages.userMessagesFilename')), messageLine, {flag: 'a'});
 
         }
 
@@ -281,7 +282,7 @@ class BaseClass extends eventEmitter {
     async getMessageObject (messageLevel, message, type, data, important, dontTranslate, force){
 
         var userMessage = {};
-        var debugLevels = this.getStateVar('debugLevels');
+        var debugLevels = this.getConfig('logger.messageLevels');
         var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
         var timestamp = new Date().toISOString().slice(11, 19);
         var iconClass = 'fa fa-info-circle';
@@ -290,10 +291,6 @@ class BaseClass extends eventEmitter {
             iconClass = 'fa fa-exclamation-circle';
         } else if (type == 'error'){
             iconClass = 'fa fa-exclamation-triangle';
-        }
-
-        if (important){
-            type += ' important';
         }
 
         if (message && !dontTranslate && window && window.getAppWrapper() && window.getAppWrapper().appTranslations && window.getAppWrapper().appTranslations.translate){
@@ -317,6 +314,7 @@ class BaseClass extends eventEmitter {
             message: message,
             iconClass: iconClass,
             type: type,
+            important: important,
             force: force,
             active: messageLevel >= typeLevel,
             typeLevel: typeLevel,
@@ -348,10 +346,6 @@ class BaseClass extends eventEmitter {
 
         let messageLevel = 0;
 
-        if (important){
-            type += ' important';
-        }
-
         if (!force){
             force = false;
         }
@@ -374,7 +368,7 @@ class BaseClass extends eventEmitter {
         return _appWrapper.getHelper(name);
     }
 
-    getConfig (name){
+    getConfig (name, defaultValue){
         var path = name;
         var value;
         if (!path.match(/^config\./)){
@@ -395,6 +389,9 @@ class BaseClass extends eventEmitter {
             }
             value = _.get(appState.u, path);
         }
+        if (_.isUndefined(value) && !_.isUndefined(defaultValue)){
+            value = defaultValue;
+        }
         return value;
     }
 
@@ -407,7 +404,7 @@ class BaseClass extends eventEmitter {
                 return msg.match(/^\s+at\s/);
             });
             // stackMessages = _.drop(_.dropRight(stackMessages));
-            stackMessages = _.drop(stackMessages);
+            stackMessages = _.drop(stackMessages, 3);
 
             stackArray = _.map(stackMessages, (msg) => {
                 let stackData = _.drop(_.trim(msg).split(' '));

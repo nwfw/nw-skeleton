@@ -31,12 +31,12 @@ class AppWrapper extends BaseClass {
         this.fileManager = null;
         this.appConfig = null;
 
-        if (initialAppConfig && initialAppConfig.forceDebug && !_.isUndefined(initialAppConfig.forceDebug.AppWrapper)){
-            this.forceDebug = initialAppConfig.forceDebug.AppWrapper;
+        if (initialAppConfig && initialAppConfig.debug && initialAppConfig.debug.forceDebug && !_.isUndefined(initialAppConfig.debug.forceDebug.AppWrapper)){
+            this.forceDebug = initialAppConfig.debug.forceDebug.AppWrapper;
         }
 
-        if (initialAppConfig && initialAppConfig.forceUserMessages && !_.isUndefined(initialAppConfig.forceUserMessages.AppWrapper)){
-            this.forceUserMessages = initialAppConfig.forceUserMessages.AppWrapper;
+        if (initialAppConfig && initialAppConfig.userMessages && initialAppConfig.userMessages.forceUserMessages && !_.isUndefined(initialAppConfig.userMessages.forceUserMessages.AppWrapper)){
+            this.forceUserMessages = initialAppConfig.userMessages.forceUserMessages.AppWrapper;
         }
 
         this.boundMethods = {
@@ -99,7 +99,7 @@ class AppWrapper extends BaseClass {
 
         await super.initialize();
 
-        this.log('Initializing application.', 'group', []);
+
         if (isDebugWindow){
             appState.isDebugWindow = true;
             isDebugWindow = null;
@@ -108,8 +108,12 @@ class AppWrapper extends BaseClass {
         this.fileManager = new FileManager();
         await this.fileManager.initialize();
 
-
         appState.config = await this.appConfig.initializeConfig();
+        await this.initializeLogging();
+        await this.appConfig.initializeLogging();
+        await this.fileManager.initializeLogging();
+
+        this.log('Initializing application.', 'group', []);
 
         var tmpDataDir = this.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
@@ -117,11 +121,11 @@ class AppWrapper extends BaseClass {
             this.fileManager.createDirRecursive(tmpDataDir);
         }
 
-        if (this.getConfig('debugToFile') && !this.getConfig('debugToFileAppend')){
-            this.fileManager.createDirFileRecursive(this.getConfig('debugMessagesFilename'));
+        if (this.getConfig('debug.debugToFile') && !this.getConfig('debug.debugToFileAppend')){
+            this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
         }
-        if (this.getConfig('userMessagesToFile') && !this.getConfig('userMessagesToFileAppend')){
-            this.fileManager.createDirFileRecursive(this.getConfig('userMessagesFilename'));
+        if (this.getConfig('userMessages.userMessagesToFile') && !this.getConfig('userMessages.userMessagesToFileAppend')){
+            this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
         }
 
         appState.config = await this.appConfig.loadUserConfig();
@@ -168,7 +172,7 @@ class AppWrapper extends BaseClass {
 
         this.app = new App();
 
-        if (this.getConfig('devTools')){
+        if (this.getConfig('debug.devTools')){
             this.windowManager.winState.devTools = true;
         }
 
@@ -300,7 +304,7 @@ class AppWrapper extends BaseClass {
             components: this.helpers.componentHelper.vueComponents,
             translations: appState.translations,
             mounted: async () => {
-                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug')){
+                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
                     document.body.addEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
                 }
                 return await this.finalize();
@@ -438,7 +442,7 @@ class AppWrapper extends BaseClass {
             resolveReference = resolve;
         });
         setTimeout(async () => {
-            if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug')){
+            if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
                 document.body.removeEventListener('contextmenu', utilHelper.boundMethods.prevent);
             }
             await this.shutdownApp();
@@ -643,13 +647,6 @@ class AppWrapper extends BaseClass {
     setDynamicAppStateValues () {
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
-        appState.hideDebug = this.getConfig('hideDebug');
-        appState.debug = this.getConfig('debug');
-        appState.debugLevel = this.getConfig('debugLevel');
-        appState.debugLevels = this.getConfig('debugLevels');
-        appState.userMessageLevel = this.getConfig('userMessageLevel');
-        appState.maxUserMessages = this.getConfig('maxUserMessages');
-        appState.autoAddLabels = this.getConfig('autoAddLabels');
         appState.closeModalResolve = null;
     }
 
@@ -756,8 +753,8 @@ class AppWrapper extends BaseClass {
     }
 
     async finalizeUserMessageLog(){
-        if (this.getConfig('debugToFile')){
-            let debugLogFile = path.resolve(this.getConfig('debugMessagesFilename'));
+        if (this.getConfig('debug.debugToFile')){
+            let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
             this.log('Finalizing debug message log...', 'info', []);
             let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]';
             await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
@@ -767,8 +764,8 @@ class AppWrapper extends BaseClass {
     }
 
     async finalizeDebugMessageLog(){
-        if (this.getConfig('userMessagesToFile')){
-            let messageLogFile = path.resolve(this.getConfig('userMessagesFilename'));
+        if (this.getConfig('userMessages.userMessagesToFile')){
+            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
             this.log('Finalizing user message log...', 'info', []);
             let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]';
             await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});

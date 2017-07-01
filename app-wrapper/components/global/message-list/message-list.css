@@ -82,6 +82,10 @@
     padding-left: 0;
 }
 
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body.important-message {
+    font-weight: bold;
+}
+
 .message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-count {
     flex: 0 1 1rem;
     max-height: 1rem;
@@ -155,10 +159,6 @@
 
 .message-list-wrapper .message-list li.message-list-item:first-child {
     border-top: none;
-}
-
-.message-list-wrapper .message-list li.message-list-item.important {
-    font-weight: bold;
 }
 
 .message-list-wrapper .message-list li.message-list-item.info {

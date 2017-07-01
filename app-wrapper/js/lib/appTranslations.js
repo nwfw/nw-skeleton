@@ -119,8 +119,8 @@ class AppTranslations extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        let autoAdd = appState.autoAddLabels;
-        appState.autoAddLabels = false;
+        let autoAdd = appState.config.autoAddLabels;
+        appState.config.autoAddLabels = false;
         var modalElement = window.document.querySelector('.modal-dialog-wrapper');
         var allSaved = true;
         var savedLangs = [];
@@ -173,7 +173,7 @@ class AppTranslations extends BaseClass {
                 this.addUserMessage('* Can\'t save {1} translations for {2} languages ("{3}") in translation files.', 'error', [translationsCount, savedLangs.length, savedLangs.join('", "')], false, false);
             }
         }
-        appState.autoAddLabels = autoAdd;
+        appState.config.autoAddLabels = autoAdd;
         // appState.status.noHandlingKeys = false;
         clearTimeout(this.timeouts.translationModalInitTimeout);
         _appWrapper.helpers.modalHelper.modalNotBusy();
@@ -259,7 +259,7 @@ class AppTranslations extends BaseClass {
             } else {
                 this.log('No translation found for label "{1}" using language "{2}".', 'warning', [label, currentLanguage]);
                 translation = '__' + label + '__';
-                if (appState.autoAddLabels){
+                if (appState.config.autoAddLabels){
                     this.addLabel(label);
                     translation = '_' + label + '_';
                 }

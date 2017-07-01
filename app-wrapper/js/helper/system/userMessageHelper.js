@@ -34,9 +34,9 @@ class UserMessageHelper extends BaseClass {
     unQueueUserMessage (){
         if (appState && appState.userMessageQueue && appState.userMessageQueue.length){
             if (appState.userMessageQueue.length > 10){
-                appState.animateMessages = false;
+                appState.config.userMessages.animateMessages = false;
             } else {
-                appState.animateMessages = true;
+                appState.config.userMessages.animateMessages = true;
             }
             let userMessage = appState.userMessageQueue.shift();
             let addMessage = true;
@@ -60,18 +60,11 @@ class UserMessageHelper extends BaseClass {
         }
     }
 
-    showUserMessageSettings (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        _appWrapper.appConfig.setConfigVar('userMessagesToolbarVisible', !this.getConfig('userMessagesToolbarVisible'));
-    }
-
     toggleUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        _appWrapper.appConfig.setConfigVar('userMessagesExpanded', !this.getConfig('userMessagesExpanded'));
+        _appWrapper.appConfig.setConfigVar('userMessages.messagesExpanded', !this.getConfig('userMessages.messagesExpanded'));
     }
 
     userMessageLevelSelectFocus () {

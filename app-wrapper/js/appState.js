@@ -75,12 +75,8 @@ exports.appState = {
 
     hasUserConfig: false,
 
-    hideDebug: true,
-    debug: false,
-    devTools: false,
     allDebugMessages: [],
     debugMessages: [],
-    maxDebugMessages: 200,
     hasDebugWindow: false,
     isDebugWindow: false,
     debugToFileStarted: false,
@@ -88,12 +84,7 @@ exports.appState = {
     allUserMessages: [],
     userMessages: [],
     userMessageQueue: [],
-    userMessageLevel: 0,
-    maxUserMessages: 30,
     userMessagesToFileStarted: false,
-    animateMessages: true,
-
-    autoAddLabels: false,
 
     languageData: {
         currentLanguage: null,

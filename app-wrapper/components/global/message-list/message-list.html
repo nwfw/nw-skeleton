@@ -1,4 +1,4 @@
-<div class="message-list-wrapper" :class="{'no-timestamps': !config.messageTimestamp}">
+<div class="message-list-wrapper" :class="{'no-timestamps': !config.displayTimestamps}">
 	<template v-if="messages && messages.length">
 		<template v-if="config.animateMessages">
 			<transition-group name="highlight" tag="ul" class="message-list">

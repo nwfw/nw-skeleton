@@ -8,20 +8,24 @@ exports.component = {
     data: function () {
         var appConfig = {
             liveCss: appState.config.liveCss,
-            hideDebug: appState.config.hideDebug,
-            debug: appState.config.debug,
-            alwaysTrace: appState.config.alwaysTrace,
-            devTools: appState.config.devTools,
-            debugGroupsCollapsed: appState.config.debugGroupsCollapsed
+            hideDebug: appState.config.debug.hideDebug,
+            enabled: appState.config.debug.enabled,
+            alwaysTrace: appState.config.debug.alwaysTrace,
+            devTools: appState.config.debug.devTools,
+            debugGroupsCollapsed: appState.config.debug.debugGroupsCollapsed
         };
         var config = _.map(appConfig, function(value, name){
-            return _appWrapper.getHelper('util').getControlObject(value, name, 'config');
+            if (name == 'liveCss'){
+                return _appWrapper.getHelper('util').getControlObject(value, name, 'config');
+            } else {
+                return _appWrapper.getHelper('util').getControlObject(value, name, 'config.debug');
+            }
         });
-        var forceDebug = _.map(appState.config.forceDebug, function(value, name){
-            return _appWrapper.getHelper('util').getControlObject(value, name, 'config.forceDebug');
+        var forceDebug = _.map(appState.config.debug.forceDebug, function(value, name){
+            return _appWrapper.getHelper('util').getControlObject(value, name, 'config.debug.forceDebug');
         });
-        var forceUserMessages = _.map(appState.config.forceUserMessages, function(value, name){
-            return _appWrapper.getHelper('util').getControlObject(value, name, 'config.forceUserMessages');
+        var forceUserMessages = _.map(appState.config.userMessages.forceUserMessages, function(value, name){
+            return _appWrapper.getHelper('util').getControlObject(value, name, 'config.userMessages.forceUserMessages');
         });
 
         var data = {

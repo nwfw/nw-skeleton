@@ -424,6 +424,24 @@ class UtilHelper extends BaseClass {
         return stacksOpen >= stacksCount;
     }
 
+    propertyMap (obj, prepend){
+        let keyMap = [];
+        let objKeys = Object.keys(obj);
+        if (!prepend){
+            prepend = '';
+        } else {
+            prepend += '.';
+        }
+        for (let i=0; i<objKeys.length;i++){
+            if (_.isArray(obj[objKeys[i]]) || _.isObject(obj[objKeys[i]])){
+                keyMap = _.union(keyMap, this.propertyMap(obj[objKeys[i]], objKeys[i]));
+            } else {
+                keyMap.push(prepend + objKeys[i]);
+            }
+        }
+        return keyMap;
+    }
+
     noop () {
         return '';
     }

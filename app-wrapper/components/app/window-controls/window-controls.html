@@ -1,13 +1,13 @@
 <div class="window-controls-wrapper">
 	<transition name="fade">
-		<span class="window-controls window-controls-debug" v-if="appState.config.debug && !appState.isDebugWindow">
+		<span class="window-controls window-controls-debug" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 			<span class="window-control-wrapper">
 				<a class="window-control window-control-reload-css " @click.prevent="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss" :title="translate('Reload CSS')">
 					<span data-event-target="parent" class="fa fa-retweet"></span>
 				</a>
 			</span>
 			<span class="window-control-wrapper">
-				<a class="window-control window-control-toggle-hide-debug " v-bind:class="{'window-control-active': !appState.config.hideDebug}" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" :title="translate('Toggle debug visible')">
+				<a class="window-control window-control-toggle-hide-debug " v-bind:class="{'window-control-active': !appState.config.debug.hideDebug}" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" :title="translate('Toggle debug visible')">
 					<span data-event-target="parent" class="fa fa-bug"></span>
 				</a>
 			</span>
@@ -29,12 +29,12 @@
 				<span data-event-target="parent" class="fa fa-eraser"></span>
 			</a>
 		</span>
-		<span class="window-control-wrapper" v-if="appState.config.debug && !appState.isDebugWindow">
+		<span class="window-control-wrapper" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 			<a class="window-control window-control-open-translation-editor" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor" :title="translate('Open translation editor')">
 				<span data-event-target="parent" class="fa fa-globe"></span>
 			</a>
 		</span>
-		<span class="window-control-wrapper" v-if="appState.config.debug && !appState.isDebugWindow">
+		<span class="window-control-wrapper" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 			<a class="window-control window-control-edit-configuration" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler" :title="translate('Edit configuration')">
 				<span data-event-target="parent" class="fa fa-cog"></span>
 			</a>

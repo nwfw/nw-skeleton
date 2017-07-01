@@ -5,11 +5,11 @@
 				<div v-bind:class="getIconClass(message)">
 				</div>
 				<transition name="size-width-short">
-					<div v-if="message.timestamp && config.messageTimestamp" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
+					<div v-if="message.timestamp && config.displayTimestamps" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
 						{{ message.timestamp }}
 					</div>
 				</transition>
-				<div class="message-body">
+				<div class="message-body" :class="{'important-message': message.important}">
 					{{ message.message }}
 				</div>
 				<div class="message-stack-toggle" :class="{'not-visible': !(message.stack && message.stack.length)}">

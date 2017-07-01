@@ -54,7 +54,7 @@ class StaticFilesHelper extends BaseClass {
                 cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
             }
 
-            if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
+            if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
                 _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
             }
         } else {
@@ -80,7 +80,7 @@ class StaticFilesHelper extends BaseClass {
             hrefPath = path.join(processDir, href);
         }
 
-        if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug')){
+        if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
             _appWrapper.fileManager.watch(hrefPath, {}, this.boundMethods.cssFileChanged);
         }
 

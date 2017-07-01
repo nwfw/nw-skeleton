@@ -115,7 +115,8 @@ class AppConfig extends BaseClass {
     async saveUserConfig () {
         let configName = this.getConfigStorageName();
         if (localStorage){
-            var userConfig = _appWrapper.getHelper('util').difference(this.baseConfig, appState.config);
+            let utilHelper = _appWrapper.getHelper('util');
+            var userConfig = utilHelper.difference(this.baseConfig, appState.config);
 
             let ignoreUserConfig = this.getConfig('configData.ignoreUserConfig');
             if (ignoreUserConfig && ignoreUserConfig.length){
@@ -124,18 +125,18 @@ class AppConfig extends BaseClass {
 
             var userConfigKeys = _.keys(userConfig);
 
-            var userConfigKeysDiff = _.difference(userConfigKeys, _.keys(this.userConfig));
-            userConfigKeysDiff = _.union(userConfigKeysDiff, _.difference(_.keys(this.userConfig), userConfigKeys));
-            userConfigKeysDiff = _.uniq(userConfigKeysDiff);
+            let userConfigKeyMap = utilHelper.propertyMap(userConfig);
+            let savedConfigKeyMap = utilHelper.propertyMap(this.userConfig);
+            let keyMapDifference = _.difference(userConfigKeyMap, savedConfigKeyMap);
+            keyMapDifference = _.uniq(_.union(keyMapDifference, _.difference(savedConfigKeyMap, userConfigKeyMap)));
 
             var noReloadConfig = this.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
             var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
 
-
             try {
-                if (userConfig && userConfigKeysDiff.length){
-                    this.log('Saving user config (changed: "{1}"}', 'info', [userConfigKeysDiff.join('", "')]);
+                if (userConfig && keyMapDifference.length){
+                    this.log('Saving user config (changed: "{1}"}', 'info', [keyMapDifference.join('", "')]);
                     localStorage.setItem(configName, JSON.stringify(userConfig));
                     this.addUserMessage('Configuration data saved', 'info', [], true);
                     appState.hasUserConfig = true;
@@ -209,7 +210,8 @@ class AppConfig extends BaseClass {
 
     async setConfigVar(name, value, noSave){
         this.watchConfig = false;
-        appState.config[name] = value;
+        _.set(appState.config, name, value);
+        // appState.config[name] = value;
         if (!noSave){
             await this.saveUserConfig();
         }

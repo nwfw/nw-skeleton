@@ -35,7 +35,7 @@ class DebugHelper extends BaseClass {
     openDebugWindow (){
         this.log('Opening standalone debug window', 'info', []);
         appState.hasDebugWindow = true;
-        _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debugWindowFile'), {
+        _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debug.debugWindowFile'), {
             id: 'debugWindow',
             frame: false
         });
@@ -48,26 +48,21 @@ class DebugHelper extends BaseClass {
         _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
         _appWrapper.debugWindow.appState.hasDebugWindow = false;
         _appWrapper.debugWindow.appState.config = appState.config;
-
-        // _appWrapper.debugWindow.appState.isDebugWindow = true;
-
         _appWrapper.debugWindow.document.body.className += ' nw-body-initialized';
         return _appWrapper.debugWindow;
     }
 
     toggleDebug () {
-        // appState.config.hideDebug = !appState.config.hideDebug;
-        _appWrapper.appConfig.setConfigVar('hideDebug', !appState.config.hideDebug);
+        _appWrapper.appConfig.setConfigVar('debug.hideDebug', !appState.config.debug.hideDebug);
     }
 
     changeDebugLevel(e){
         var level = e.target.value;
         this.addUserMessage('Changing debug level to "{1}".', 'info', [level], false, false);
-        // appState.debugLevel = level;
-        _appWrapper.appConfig.setConfigVar('debugLevel', level);
+        _appWrapper.appConfig.setConfigVar('debug.debugLevel', level);
         if (appState.isDebugWindow) {
             this.addUserMessage('Changing debug level in main window to "{1}".', 'info', [level], false, false);
-            _appWrapper.mainWindow.appState.config.debugLevel = level;
+            _appWrapper.mainWindow.appState.config.debug.debugLevel = level;
         }
 
     }
@@ -263,8 +258,7 @@ class DebugHelper extends BaseClass {
     }
     changeUserMessageLevel (e) {
         var level = e.target.value;
-        appState.userMessageLevel = level;
-        _appWrapper.appConfig.setConfigVar('userMessageLevel', level);
+        _appWrapper.appConfig.setConfigVar('userMessages.userMessageLevel', level);
         appState.userMessagesData.selectFocused = false;
     }
 
@@ -282,7 +276,6 @@ class DebugHelper extends BaseClass {
             }
             // appState.status.noHandlingKeys = false;
             modalHelper.modalNotBusy();
-            // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             return _appWrapper.__cancelModalAction();
         };
