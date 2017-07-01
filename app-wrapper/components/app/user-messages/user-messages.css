@@ -79,3 +79,10 @@
 	text-decoration: none;
 	color: var(--app-user-messages-clear-messages-link-color-hovered);
 }
+
+.user-messages .message-list-wrapper .message-list-no-messages {
+    padding: 0px;
+}
+.user-messages-expanded .message-list-wrapper .message-list-no-messages {
+    padding: 8px 0px 10px;
+}

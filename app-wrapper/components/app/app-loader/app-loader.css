@@ -22,8 +22,8 @@
     color: var(--app-loader-spinner-text-color);
 }
 
-.app-loader .user-messages {
-    margin-top: 30px;
+.app-loader .message-list-wrapper {
+    min-height: 100px;
 }
 
 .app-loader .user-messages .user-message-controls,

@@ -75,6 +75,7 @@
 .app-debug-wrapper .app-debug-header a.clear-debug-messages {
     color: var(--app-user-messages-clear-messages-link-color);
     margin-right: 10px;
+    visibility: hidden;
 }
 
 .app-debug-wrapper .app-debug-header a.clear-debug-messages:hover {
