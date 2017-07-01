@@ -181,6 +181,14 @@ class ModalHelper extends BaseClass {
             }
         }
     }
+
+    getModalObject(modalName){
+        let modalObj = false;
+        if (!_.isUndefined(appState[modalName])){
+            modalObj = _.extend({}, appState.defaultModal, appState[modalName]);
+        }
+        return modalObj;
+    }
 }
 
 exports.ModalHelper = ModalHelper;

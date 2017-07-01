@@ -550,7 +550,8 @@ class AppWrapper extends BaseClass {
             e.preventDefault();
         }
 
-        appState.modalData.currentModal = _.cloneDeep(appState.closeModal);
+        let modalHelper = this.getHelper('modal');
+        appState.modalData.currentModal = modalHelper.getModalObject('closeModal');
 
         appState.modalData.currentModal.bodyComponent = 'modal-body';
         appState.modalData.currentModal.title = this.appTranslations.translate('Are you sure?');

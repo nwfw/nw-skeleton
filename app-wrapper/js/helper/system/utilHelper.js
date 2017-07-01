@@ -349,7 +349,7 @@ class UtilHelper extends BaseClass {
         }
         if (fileValid && messages && messages.length){
             let modalHelper = _appWrapper.getHelper('modal');
-            appState.modalData.currentModal = _.cloneDeep(appState.logViewerModal);
+            appState.modalData.currentModal = modalHelper.getModalObject('logViewerModal');
             appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Log viewer');
             appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Load');
             appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');

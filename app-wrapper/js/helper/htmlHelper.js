@@ -1,15 +1,18 @@
 const _ = require('lodash');
 const BaseClass = require('../base').BaseClass;
 
-var _appWrapper;
-var appState;
+// var _appWrapper;
+// var appState;
 
 class HtmlHelper extends BaseClass {
 
     constructor(){
         super();
-        _appWrapper = window.getAppWrapper();
-        appState = _appWrapper.getAppState();
+        // _appWrapper = window.getAppWrapper();
+        // appState = _appWrapper.getAppState();
+        this.intervals = {
+            scrollTo: {}
+        };
     }
 
     async initialize () {
@@ -275,8 +278,8 @@ class HtmlHelper extends BaseClass {
             stepIncrease = difference > 0 ? 1 : -1;
         }
 
-        clearInterval(appState.intervals.scrollTo[identifier]);
-        appState.intervals.scrollTo[identifier] = setInterval(() => {
+        clearInterval(this.intervals.scrollTo[identifier]);
+        this.intervals.scrollTo[identifier] = setInterval(() => {
             this.scrollElementStep(element, stepIncrease, finalValue);
         }, frameDuration);
     }
@@ -301,9 +304,9 @@ class HtmlHelper extends BaseClass {
         element.scrollTop = nextValue;
 
         if (stepIncrease >= 0 && nextValue >= finalValue){
-            clearInterval(appState.intervals.scrollTo[identifier]);
+            clearInterval(this.intervals.scrollTo[identifier]);
         } else if (stepIncrease < 0 && nextValue <= finalValue){
-            clearInterval(appState.intervals.scrollTo[identifier]);
+            clearInterval(this.intervals.scrollTo[identifier]);
         }
     }
 

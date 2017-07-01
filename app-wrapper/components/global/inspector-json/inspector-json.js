@@ -1,19 +1,19 @@
-var _ = require('lodash');
+const _ = require('lodash');
 
-var _appWrapper = window.getAppWrapper();
-var appState = _appWrapper.getAppState();
+let _appWrapper = window.getAppWrapper();
+let appState = _appWrapper.getAppState();
 
-var inspectorJson = require('../../../js/lib/ext/inspector-json');
-var inspector;
-var dragging = false;
-var mouseXOffset = null;
+let inspectorJson = require('../../../js/lib/ext/inspector-json');
 
 exports.component = {
     name: 'inspector-json',
     template: '',
     props: ['jsonData', 'collapsed', 'allowDrag'],
+    inspector: null,
+    dragging: false,
+    mouseXOffset: null,
     data: function () {
-        return appState;
+        return {};
     },
     methods: {
         startDrag(e){
@@ -23,22 +23,22 @@ exports.component = {
 
             var posX = e.clientX;
             var elLeft = this.$el.parentNode.offsetLeft;
-            mouseXOffset = posX - elLeft;
+            this.mouseXOffset = posX - elLeft;
 
-            dragging = true;
+            this.dragging = true;
         },
         stopDrag(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault();
             }
-            dragging = false;
+            this.dragging = false;
         },
         drag(e){
-            if (dragging){
+            if (this.dragging){
                 var posX = e.clientX;
                 var elLeft = this.$el.parentNode.offsetLeft;
                 var newMouseXOffset = posX - elLeft;
-                var diff = mouseXOffset - newMouseXOffset;
+                var diff = this.mouseXOffset - newMouseXOffset;
                 var width = this.$el.clientWidth;
                 var newWidth = width + diff;
                 var newStyles = { width: newWidth + 'px;'};
@@ -47,20 +47,20 @@ exports.component = {
         }
     },
     mounted: function(){
-        var element = this.$el.querySelector('.inspector-json');
-        var jsonData = this.$el.getAttribute('data-jsonData');
-        inspector = new inspectorJson({
+        let element = this.$el.querySelector('.inspector-json');
+        let jsonData = this.$el.getAttribute('data-jsonData');
+        this.inspector = new inspectorJson({
             element: element,
             json: jsonData,
             collapsed: this.collapsed
         });
     },
     updated: function(){
-        var jsonData = this.$el.getAttribute('data-jsonData');
-        inspector.view(jsonData);
+        let jsonData = this.$el.getAttribute('data-jsonData');
+        this.inspector.view(jsonData);
     },
     beforeDestroy: function(){
-        inspector.destroy();
+        this.inspector.destroy();
     },
     computed: {
         appState: function(){

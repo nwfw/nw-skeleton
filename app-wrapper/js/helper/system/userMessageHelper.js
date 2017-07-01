@@ -16,6 +16,10 @@ class UserMessageHelper extends BaseClass {
             appState = _appWrapper.getAppState();
         }
 
+        this.intervals = {
+            userMessageQueue: null
+        };
+
         return this;
     }
 
@@ -27,9 +31,9 @@ class UserMessageHelper extends BaseClass {
         var messageCount = appState.userMessageQueue.length;
         let intervalDuration = 1;
 
-        clearInterval(appState.intervals.userMessageQueue);
+        clearInterval(this.intervals.userMessageQueue);
         if (messageCount && !appState.userMessagesData.selectFocused){
-            appState.intervals.userMessageQueue = setInterval(this.unQueueUserMessage.bind(this), intervalDuration);
+            this.intervals.userMessageQueue = setInterval(this.unQueueUserMessage.bind(this), intervalDuration);
         }
     }
 
@@ -58,7 +62,7 @@ class UserMessageHelper extends BaseClass {
                 }
             }
         } else {
-            clearInterval(appState.intervals.userMessageQueue);
+            clearInterval(this.intervals.userMessageQueue);
         }
     }
 
@@ -118,7 +122,7 @@ class UserMessageHelper extends BaseClass {
 
     async showSaveMessagesModal () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = _.cloneDeep(appState.saveUserMessagesModal);
+        appState.modalData.currentModal = modalHelper.getModalObject('saveUserMessagesModal');
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Saving user messages to file');
         appState.modalData.currentModal.bodyComponent = 'save-user-messages';
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
@@ -313,7 +317,7 @@ class UserMessageHelper extends BaseClass {
 
     openUserMessageConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = _.cloneDeep(appState.userMessagesConfigEditorModal);
+        appState.modalData.currentModal = modalHelper.getModalObject('userMessagesConfigEditorModal');
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('User message config editor');
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
         appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');

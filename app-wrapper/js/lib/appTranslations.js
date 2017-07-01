@@ -89,7 +89,8 @@ class AppTranslations extends BaseClass {
 
         // appState.status.noHandlingKeys = true;
 
-        appState.modalData.currentModal = _.cloneDeep(appState.translationModal);
+        let modalHelper = _appWrapper.getHelper('modal');
+        appState.modalData.currentModal = modalHelper.getModalObject('translationModal');
         let cm = appState.modalData.currentModal;
         cm.hasSearch = false;
         cm.title = _appWrapper.appTranslations.translate('Translation editor');

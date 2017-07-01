@@ -90,7 +90,7 @@ class DebugHelper extends BaseClass {
 
     async showSaveDebugModal () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = _.cloneDeep(appState.saveDebugModal);
+        appState.modalData.currentModal = modalHelper.getModalObject('saveDebugModal');
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Saving debug log to file');
         appState.modalData.currentModal.bodyComponent = 'save-debug';
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
@@ -296,7 +296,7 @@ class DebugHelper extends BaseClass {
 
     openDebugConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = _.cloneDeep(appState.debugConfigEditorModal);
+        appState.modalData.currentModal = modalHelper.getModalObject('debugConfigEditorModal');
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Debug config editor');
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
         appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');

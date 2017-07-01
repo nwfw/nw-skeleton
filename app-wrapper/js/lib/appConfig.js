@@ -281,7 +281,8 @@ class AppConfig extends BaseClass {
 
         await this.prepareConfigEditorData();
 
-        appState.modalData.currentModal = _.cloneDeep(appState.configEditorModal);
+        let modalHelper = _appWrapper.getHelper('modal');
+        appState.modalData.currentModal = modalHelper.getModalObject('configEditorModal');
         appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Config editor');
         appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
         appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
