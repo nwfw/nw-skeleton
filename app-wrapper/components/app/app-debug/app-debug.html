@@ -1,4 +1,4 @@
-<div class="app-debug-wrapper" v-bind:class="{ 'message-list-expanded': appState.config.debug.messagesExpanded }">
+<div class="app-debug-wrapper" v-bind:class="{ 'message-list-expanded': appState.config.debug.messagesExpanded, 'message-list-collapsed': !appState.config.debug.messagesExpanded  }">
 	<div class="app-debug" v-if="!appState.config.debug.hideDebug">
 		<div class="app-debug-header">
 			<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>

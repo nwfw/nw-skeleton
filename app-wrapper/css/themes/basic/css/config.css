@@ -375,16 +375,19 @@
     --modal-dialog-button-border-radius: 3px;
 
     --modal-dialog-button-background-hovered: #EEEEEE;
+    --modal-dialog-button-color-hovered: #666666;
 
     --modal-dialog-button-cancel-border: 1px solid #993333;
     --modal-dialog-button-cancel-color: #993333;
 
     --modal-dialog-button-cancel-background-hovered: #FFEEEE;
+    --modal-dialog-button-cancel-color-hovered: #990000;
 
     --modal-button-confirm-border: 1px solid #339933;
     --modal-button-confirm-color: #339933;
 
-    --modal-dialog-button-cancel-background-hovered: #EEFFEE;
+    --modal-dialog-button-confirm-background-hovered: #EEFFEE;
+    --modal-dialog-button-confirm-color-hovered: #009900;
 
     --modal-dialog-button-confirm-disabled-background: #CCC;
     --modal-dialog-button-confirm-disabled-border: 1px solid #EEE;

@@ -392,6 +392,7 @@ class AppWrapper extends BaseClass {
                 cm.title = this.appTranslations.translate('Operation in progress');
                 cm.body = this.appTranslations.translate('You can\'t quit until current operation completes.');
                 cm.showCancelButton = false;
+                cm.autoCloseTime = 5000;
                 this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.onWindowClose(); });
                 this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, exiting.'); cm.title = this.appTranslations.translate('Operation finished'); });
                 await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
@@ -539,6 +540,7 @@ class AppWrapper extends BaseClass {
                 cm.title = this.appTranslations.translate('Operation in progress');
                 cm.body = this.appTranslations.translate('You can\'t quit until current operation completes.');
                 cm.showCancelButton = false;
+                cm.autoCloseTime = 5000;
                 this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.beforeUnload(); });
                 this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, reloading.'); cm.title = this.appTranslations.translate('Operation finished'); });
                 await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);

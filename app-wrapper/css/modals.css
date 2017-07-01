@@ -201,6 +201,7 @@
 
 .modal-button:hover {
     background: var(--modal-dialog-button-background-hovered);
+    color: var(--modal-dialog-button-color-hovered);
 }
 
 .modal-button-cancel {
@@ -210,6 +211,7 @@
 
 .modal-button-cancel:hover {
     background: var(--modal-dialog-button-cancel-background-hovered);
+    color: var(--modal-dialog-button-cancel-color-hovered);
 }
 
 .modal-button-confirm {
@@ -220,6 +222,7 @@
 
 .modal-button-confirm:hover {
     background: var(--modal-dialog-button-confirm-background-hovered);
+    color: var(--modal-dialog-button-confirm-color-hovered);
 }
 
 .modal-button-confirm[disabled],
