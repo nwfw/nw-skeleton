@@ -13,7 +13,9 @@ class ModalHelper extends BaseClass {
         appState = this.getAppState();
 
         this.boundMethods = {
-            confirmResolve: null
+            confirmResolve: null,
+            queryResolve: null,
+            queryReject: null,
         };
 
         this.timeouts = {
@@ -107,7 +109,7 @@ class ModalHelper extends BaseClass {
         }
     }
 
-    async openSimpleModal(title, text, options) {
+    async openSimpleModal(title, text, options, confirmAction, cancelAction) {
         this.closeCurrentModal(true);
         appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
         if (options && _.isObject(options)){
@@ -115,6 +117,12 @@ class ModalHelper extends BaseClass {
         }
         appState.modalData.currentModal.title = title;
         appState.modalData.currentModal.body = text;
+        if (confirmAction){
+            _appWrapper._confirmModalAction = confirmAction;
+        }
+        if (cancelAction){
+            _appWrapper._cancelModalAction = cancelAction;
+        }
         appState.currentModalClosePromise = new Promise((resolve) => {
             appState.closeModalResolve = resolve;
         });
@@ -163,6 +171,46 @@ class ModalHelper extends BaseClass {
             _appWrapper._confirmModalAction = confirmAction;
         } else {
             _appWrapper._confirmModalAction = this.boundMethods.confirmResolve;
+        }
+        _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
+            appState.closeModalResolve = resolve;
+            appState.closeModalReject = reject;
+        });
+        this.openCurrentModal();
+        return _appWrapper.closeModalPromise;
+    }
+
+    async queryResolve (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
+            appState.closeModalResolve(true);
+        }
+        this.closeCurrentModal();
+    }
+
+    async queryReject (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        // if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
+        //     appState.closeModalResolve(true);
+        // }
+        this.closeCurrentModal();
+    }
+
+    async query (confirmAction, cancelAction) {
+        this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        if (confirmAction){
+            _appWrapper._confirmModalAction = confirmAction;
+        } else {
+            _appWrapper._confirmModalAction = this.boundMethods.queryResolve;
+        }
+        if (cancelAction){
+            _appWrapper._cancelModalAction = cancelAction;
+        } else {
+            _appWrapper._cancelModalAction = this.boundMethods.queryReject;
         }
         _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
             appState.closeModalResolve = resolve;

@@ -48,3 +48,18 @@ header {
     display: inline-block;
     margin-left: 5px;
 }
+
+header .progress-bar-wrapper {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top: none;
+    border-radius: 0 0 var(--app-progress-bar-wrapper-border-radius) var(--app-progress-bar-wrapper-border-radius);
+    background: var(--app-progress-bar-wrapper-background);
+}
+header .progress-bar-wrapper.progress-bar-wrapper-active {
+    margin-top: 20px;
+}
+header .progress-bar-wrapper .progress-cancel {
+    display: inline-block;
+}

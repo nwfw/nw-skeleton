@@ -151,6 +151,7 @@ exports.appState = {
             defaultBodyComponent: 'modal-body',
             busyText: 'Please wait...',
             busy: true,
+            preventEscClose: false,
             messages: [],
             currentMessageIndex: -1,
             autoCloseTime: 0,
@@ -180,6 +181,7 @@ exports.appState = {
         currentMessageIndex: -1,
         autoCloseTime: 0,
         modalClassName: '',
+        preventEscClose: false,
         showConfirmButton: true,
         showCancelButton: true,
         confirmButtonText: 'confirm',
@@ -199,6 +201,7 @@ exports.appState = {
         hasSearch: false,
         searchResults: null,
         modalClassName: 'translation-editor-modal',
+        preventEscClose: true,
     },
     configEditorModal: {
         name: 'config-modal',
@@ -243,6 +246,14 @@ exports.appState = {
         modalClassName: 'save-user-messages-modal',
         saveFileError: false,
         fileExists: false,
+    },
+
+    cancelAndExitModal: {
+        name: 'cancel-and-exit',
+        bodyComponent: 'cancel-and-exit',
+        defaultBodyComponent: 'cancel-and-exit',
+        modalClassName: 'cancel-and-exit-modal',
+        preventEscClose: true,
     },
 
 };

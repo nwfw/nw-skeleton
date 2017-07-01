@@ -1,7 +1,13 @@
 <div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy }]">
 	<transition v-bind:name="fadeModal">
-		<div v-show="modalVisible" class="modal-dialog-background" v-on:click="callViewHandler" data-click-handler="cancelModalAction">
-		</div>
+		<template v-if="!currentModal.preventEscClose">
+			<div v-show="modalVisible" class="modal-dialog-background" v-on:click="callViewHandler" data-click-handler="cancelModalAction">
+			</div>
+		</template>
+		<template v-else>
+			<div v-show="modalVisible" class="modal-dialog-background">
+			</div>
+		</template>
 	</transition>
 	<transition v-bind:name="fadeModal">
 		<div v-show="modalVisible" class="modal-dialog">

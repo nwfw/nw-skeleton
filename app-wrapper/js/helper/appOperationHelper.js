@@ -115,7 +115,8 @@ class AppOperationHelper extends BaseClass {
         appState.appOperation.operationActive = false;
 
         // _appWrapper.setAppStatus(appBusy, 'success');
-
+        //
+        _appWrapper.emit('appOperation:progressDone');
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
 
@@ -125,6 +126,7 @@ class AppOperationHelper extends BaseClass {
                 this.clearProgress();
             }
             this.resetOperationData();
+            _appWrapper.emit('appOperation:finish');
             _appWrapper.setAppStatus(false);
         }, timeoutDuration);
         appState.progressData.animated = true;

@@ -11,17 +11,12 @@
     font-size: var(--app-progress-bar-font-size);
     border: 1px solid var(--app-progress-bar-wrapper-border-color);
     border-radius: var(--app-progress-bar-wrapper-border-radius);
-    background: var(--app-progress-bar-wrapper-background);
-    border-top: none;
     padding: 0px 10px 5px 10px;
     transition: opacity linear 0.3s;
     text-align: center;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    border-top: none;
     width: 240px;
     height: 50px;
+    margin: 0 auto;
 }
 
 .has-progress-bar .progress-bar-wrapper {
@@ -31,7 +26,7 @@
 }
 
 .progress-bar-wrapper.progress-bar-wrapper-active {
-    margin-top: 20px;
+
 }
 
 .progress-bar-wrapper .progress-operation {
@@ -108,6 +103,7 @@
 	top: -4px;
     text-shadow: var(--app-progress-bar-cancel-link-text-shadow);
     color: var(--app-progress-bar-cancel-link-color);
+    display: none;
 }
 
 .progress-cancel:hover {

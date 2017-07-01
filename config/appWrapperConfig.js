@@ -57,10 +57,6 @@ exports.config = {
                             'window-controls': {
                                 name: 'window-controls'
                             },
-                            'progress-bar': {
-                                componentCssFiles: ['progress-bar.css'],
-                                name: 'progress-bar'
-                            },
                         }
                     },
                     'app-main': {
