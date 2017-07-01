@@ -19,6 +19,8 @@ class MenuHelper extends BaseClass {
 
         };
 
+        this.tray = null;
+        this.trayMenu = null;
         this.menu = null;
         this.menuMethodMap = [];
         this.menuShortcutMap = [];
@@ -255,6 +257,95 @@ class MenuHelper extends BaseClass {
         } else {
             this.log('Can\'t call menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'error', [methodIdentifier, label, menuIndex]);
             return false;
+        }
+    }
+
+    handleTrayClick (trayMenuItem) {
+        let methodIdentifier = trayMenuItem.method;
+        let objectIdentifier;
+        let method;
+        if (methodIdentifier){
+            var object = _appWrapper;
+            if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
+                objectIdentifier = methodIdentifier.replace(/\.[^.]+$/, '');
+            }
+
+            if (methodIdentifier){
+                method = _.get(_appWrapper, methodIdentifier);
+            }
+
+            if (objectIdentifier){
+                object = _.get(_appWrapper, objectIdentifier);
+            }
+
+            if (!methodIdentifier){
+                methodIdentifier = 'unknown';
+            } else {
+                methodIdentifier = 'appWrapper.' + methodIdentifier;
+            }
+
+            if (object && method && _.isFunction(method)){
+                this.log('Calling tray menu click handler "{1}" for menuItem "{2}"', 'info', [methodIdentifier, trayMenuItem.label]);
+                return method.call(object);
+            } else {
+                this.log('Can\'t call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label]);
+                return false;
+            }
+        }
+    }
+
+    async initializeTrayMenuItem (menuItemData) {
+        var menuItem;
+        if (menuItemData.type != 'separator'){
+            if (menuItemData.label){
+                menuItemData.label = _appWrapper.appTranslations.translate(menuItemData.label);
+            }
+            if (menuItemData.tooltip){
+                menuItemData.tooltip = _appWrapper.appTranslations.translate(menuItemData.tooltip);
+            }
+        }
+        var menuItemObj = _.extend(menuItemData, {
+            click: this.handleTrayClick.bind(this, menuItemData)
+        });
+        if (menuItemData.children && menuItemData.children.length){
+            let submenu = new nw.Menu();
+            for(let i=0; i<menuItemData.children.length; i++){
+                submenu.append(await this.initializeTrayMenuItem(menuItemData.children[i]));
+            }
+            menuItem = new nw.MenuItem(_.extend(menuItemObj, {submenu: submenu}));
+        } else {
+            menuItem = new nw.MenuItem(menuItemObj);
+        }
+        return menuItem;
+    }
+
+    async initializeTrayIcon(){
+        let hasTrayIcon = this.getConfig('appConfig.hasTrayIcon');
+        if (hasTrayIcon){
+            let trayData = _.cloneDeep(this.getConfig('appConfig.trayData'));
+            let trayOptions = {
+                title: trayData.title,
+                icon: trayData.icon
+            };
+            if (trayData.alticon){
+                trayOptions.alticon = trayData.alticon;
+            }
+            this.tray = new nw.Tray(trayOptions);
+            if (trayData.menus && trayData.menus.length){
+                this.trayMenu = new nw.Menu();
+                for (let i=0; i<trayData.menus.length; i++){
+                    let menuItem = await this.initializeTrayMenuItem(trayData.menus[i]);
+                    this.trayMenu.append(menuItem);
+                }
+                this.tray.menu = this.trayMenu;
+            }
+        }
+    }
+
+    async removeTrayIcon(){
+        if (this.tray && this.tray.remove && _.isFunction(this.tray.remove)){
+            this.tray.remove();
+            this.tray = null;
         }
     }
 }

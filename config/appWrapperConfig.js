@@ -163,6 +163,8 @@ exports.config = {
 
         hasAppMenu: false,
         menuData: {},
+        hasTrayIcon: false,
+        trayData: {},
         windowConfig: {
             left: null,
             top: null,

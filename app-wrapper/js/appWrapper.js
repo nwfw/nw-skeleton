@@ -174,6 +174,8 @@ class AppWrapper extends BaseClass {
 
         await this.initializeLanguage();
 
+        this.getHelper('menu').initializeTrayIcon();
+
         this.app = new App();
 
         if (this.getConfig('debug.devTools')){
@@ -491,6 +493,7 @@ class AppWrapper extends BaseClass {
         this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
         this.log('Shutting down...', 'group', []);
         await this.getHelper('menu').removeAppMenu();
+        await this.getHelper('menu').removeTrayIcon();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
         }
