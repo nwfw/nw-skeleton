@@ -123,6 +123,14 @@ class AppConfig extends BaseClass {
                 userConfig = _.omit(userConfig, ignoreUserConfig);
             }
 
+            userConfig = _.omitBy(userConfig, (value) => {
+                let returnValue = false;
+                if (_.isObject(value) && Object.keys(value).length == 0){
+                    returnValue = true;
+                }
+                return returnValue;
+            });
+
             var userConfigKeys = _.keys(userConfig);
 
             let userConfigKeyMap = utilHelper.propertyMap(userConfig);

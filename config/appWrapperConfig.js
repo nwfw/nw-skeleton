@@ -172,7 +172,7 @@ exports.config = {
     configData: {
         uneditableConfig: [],
         noReloadConfig: [],
-        ignoreUserConfig: [],
+        ignoreUserConfig: ['appConfig.menuData'],
         defaultVar: {
             editable: true,
             reload: true,
