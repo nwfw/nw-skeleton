@@ -273,6 +273,31 @@ exports.appState = {
         animateSize: false
     },
 
+    userMessagesConfigEditorModal: {
+        title: '',
+        body: '',
+        name: 'user-messages-config-modal',
+        bodyComponent: 'user-messages-config-editor',
+        defaultBodyComponent: 'user-messages-config-editor',
+        busyText: 'Please wait...',
+        busy: true,
+        messages: [],
+        currentMessageIndex: -1,
+        autoCloseTime: 0,
+        modalClassName: 'user-messages-config-editor-modal',
+        showConfirmButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        confirmDisabled: false,
+        cancelDisabled: false,
+        confirmSelected: true,
+        cancelSelected: false,
+        modalAction: null,
+        animating: false,
+        animateSize: false
+    },
+
     closeModal: {
         title: '',
         body: '',

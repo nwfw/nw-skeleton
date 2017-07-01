@@ -1,0 +1,7 @@
+.user-messages-config-editor-modal .user-messages-config-editor-inner {
+    display: flex;
+}
+
+.user-messages-config-editor-modal .user-messages-config-editor-inner fieldset {
+    flex: 1 1 auto;
+}

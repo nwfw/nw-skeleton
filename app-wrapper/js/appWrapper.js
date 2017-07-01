@@ -129,6 +129,9 @@ class AppWrapper extends BaseClass {
         }
 
         appState.config = await this.appConfig.loadUserConfig();
+        await this.initializeLogging();
+        await this.appConfig.initializeLogging();
+        await this.fileManager.initializeLogging();
 
         this.windowManager = new WindowManager();
         await this.windowManager.initialize();

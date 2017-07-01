@@ -11,7 +11,7 @@ header {
     border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
     border-style: var(--app-main-border-style);
     border-color: var(--app-header-border-color);
-    -webkit-app-region: drag;
+    /*-webkit-app-region: drag;*/
 }
 
 .header-top {
@@ -39,7 +39,7 @@ header {
 	text-align: right;
     float: right;
     padding: 0 10px 0 0;
-    -webkit-app-region: no-drag;
+    /*-webkit-app-region: no-drag;*/
 }
 
 

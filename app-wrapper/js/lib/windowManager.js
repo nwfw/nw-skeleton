@@ -31,7 +31,12 @@ class WindowManager extends BaseClass {
             moveWindowMouseup: this.moveWindowMouseup.bind(this),
             winStateChanged: this.winStateChanged.bind(this),
             windowRestored: this.windowRestored.bind(this),
+            windowResize: this.windowResize.bind(this),
             beforeUnload: this.beforeUnload.bind(this)
+        };
+
+        this.timeouts = {
+            resize: null
         };
 
         this.addEventListeners();
@@ -42,12 +47,14 @@ class WindowManager extends BaseClass {
     addEventListeners () {
         this.on('winStateChange', this.boundMethods.winStateChanged);
         this.win.on('restore', this.boundMethods.windowRestored);
+        this.window.addEventListener('resize', this.boundMethods.windowResize);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
     }
 
     removeEventListeners () {
         this.removeListener('winStateChange', this.boundMethods.winStateChanged);
         this.win.removeListener('restore', this.boundMethods.windowRestored);
+        this.window.removeEventListener('resize', this.boundMethods.windowResize);
         this.window.removeEventListener('beforeunload', this.boundMethods.beforeUnload);
 
         Object.keys(this.boundMethods).forEach((key) => {
@@ -92,11 +99,28 @@ class WindowManager extends BaseClass {
         var appW = parseInt(this.screenWidth * 0.50, 10);
         var appH = parseInt(this.screenHeight * 0.66, 10);
         var windowPosition = 'center';
+        var windowLeft;
+        var windowTop;
 
         if (appState.isDebugWindow){
             appW = 550;
             appH = 400;
             windowPosition = '';
+        } else {
+            if (appState.config.appConfig.windowConfig){
+                if (appState.config.appConfig.windowConfig.width){
+                    appW = appState.config.appConfig.windowConfig.width;
+                }
+                if (appState.config.appConfig.windowConfig.height){
+                    appH = appState.config.appConfig.windowConfig.height;
+                }
+                if (appState.config.appConfig.windowConfig.left){
+                    windowLeft = appState.config.appConfig.windowConfig.left;
+                }
+                if (appState.config.appConfig.windowConfig.top){
+                    windowTop = appState.config.appConfig.windowConfig.top;
+                }
+            }
         }
 
         if (appState.config.debug.enabled){
@@ -106,6 +130,12 @@ class WindowManager extends BaseClass {
         setTimeout(() => {
             this.winState.width = appW;
             this.winState.height = appH;
+            if (windowLeft){
+                this.winState.x = windowLeft;
+            }
+            if (windowTop){
+                this.winState.y = windowTop;
+            }
         }, 10);
 
         setTimeout(() => {
@@ -115,24 +145,37 @@ class WindowManager extends BaseClass {
                     this.winState.x = 0;
                     this.winState.y = 0;
                 } else {
-                    this.winState.x = this.screenWidth - (this.winState.width + 5);
+                    if (windowLeft && windowTop){
+                        this.winState.x = windowLeft;
+                        this.winState.y = windowTop;
+                    } else {
+                        this.winState.x = this.screenWidth - (this.winState.width + 5);
+                    }
                 }
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
                 this.window.focus();
             } else {
-                if (windowPosition){
-                    this.winState.position = windowPosition;
-                }
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
+                } else {
+                    if (windowLeft && windowTop){
+                        this.winState.x = windowLeft;
+                        this.winState.y = windowTop;
+                    } else {
+                        if (windowPosition){
+                            this.winState.position = windowPosition;
+                        } else {
+                            this.winState.x = this.screenWidth - (this.winState.width + 5);
+                        }
+                    }
                 }
-                this.win.show();
-                this.document.body.className = this.document.body.className + ' nw-body-initialized';
-                this.win.focus();
-                this.window.focus();
             }
+            this.win.show();
+            this.document.body.className = this.document.body.className + ' nw-body-initialized';
+            this.win.focus();
+            this.window.focus();
         }, 200);
     }
 
@@ -588,6 +631,7 @@ class WindowManager extends BaseClass {
         appState.status.movingWindow = false;
         this.window.removeEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.removeEventListener('mouseup', this.boundMethods.moveWindowMouseup);
+        this.windowPositionSizeUpdated();
     }
 
     dragWindow (e) {
@@ -619,6 +663,24 @@ class WindowManager extends BaseClass {
 
     setMenu (menu) {
         nw.Window.get().menu = menu;
+    }
+
+    windowResize () {
+        clearTimeout(this.timeouts.resize);
+        this.timeouts.resize = setTimeout( () => {
+            this.windowPositionSizeUpdated();
+        }, 100);
+    }
+
+    windowPositionSizeUpdated () {
+        let newWidth = window.outerWidth;
+        let newHeight = window.outerHeight;
+        let newLeft = window.screenLeft;
+        let newTop = window.screenTop;
+        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.width', newWidth);
+        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.height', newHeight);
+        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.left', newLeft);
+        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.top', newTop);
     }
 }
 

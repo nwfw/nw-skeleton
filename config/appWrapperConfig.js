@@ -166,7 +166,13 @@ exports.config = {
         disableRightClick: true,
 
         hasAppMenu: false,
-        menuData: {}
+        menuData: {},
+        windowConfig: {
+            left: null,
+            top: null,
+            width: null,
+            height: null,
+        },
     },
 
     configData: {

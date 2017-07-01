@@ -1,0 +1,16 @@
+<div class="user-messages-config-editor">
+    <div class="user-messages-config-editor-inner">
+        <fieldset>
+            <legend>User message vars</legend>
+            <template v-for="configVar in userMessagesConfig">
+                <form-control v-bind:control="configVar"></form-control>
+            </template>
+        </fieldset>
+        <fieldset>
+            <legend>Force user messages</legend>
+            <template v-for="configVar in forceUserMessages">
+                <form-control v-bind:control="configVar"></form-control>
+            </template>
+        </fieldset>
+    </div>
+</div>

@@ -306,6 +306,75 @@ class UserMessageHelper extends BaseClass {
             appState.modalData.currentModal.confirmDisabled = false;
         }
     }
+
+
+
+
+
+    openUserMessageConfigEditor () {
+        let modalHelper = _appWrapper.getHelper('modal');
+        appState.modalData.currentModal = _.cloneDeep(appState.userMessagesConfigEditorModal);
+        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('User message config editor');
+        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
+        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        _appWrapper._confirmModalAction = this.saveUserMessageConfig.bind(this);
+        _appWrapper._cancelModalAction = (evt) => {
+            if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
+                evt.preventDefault();
+            }
+            // appState.status.noHandlingKeys = false;
+            modalHelper.modalNotBusy();
+            _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+            return _appWrapper.__cancelModalAction();
+        };
+        modalHelper.openCurrentModal();
+    }
+
+    async saveUserMessageConfig (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        let modalHelper = _appWrapper.getHelper('modal');
+        var form = e.target;
+        let newConfig = {};
+        _.each(form, (input) => {
+            if (input.getAttribute('type') == 'checkbox'){
+                let path = input.getAttribute('data-path');
+                var currentConfig = newConfig;
+                var appConfig = _.cloneDeep(appState.config);
+                var dataPath = path;
+                if (dataPath && dataPath.split){
+                    var pathChunks = _.drop(dataPath.split('.'), 1);
+                    var chunkCount = pathChunks.length - 1;
+                    _.each(pathChunks, (pathChunk, i) => {
+                        if (i == chunkCount){
+                            currentConfig[pathChunk] = input.checked;
+                        } else {
+                            if (_.isUndefined(currentConfig[pathChunk])){
+                                currentConfig[pathChunk] = {};
+                            }
+                        }
+                        currentConfig = currentConfig[pathChunk];
+                        appConfig = appConfig[pathChunk];
+                    });
+                }
+            }
+        });
+        var oldConfig = _.cloneDeep(appState.config);
+        var difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
+
+        if (difference && _.isObject(difference) && _.keys(difference).length){
+            var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
+            await _appWrapper.appConfig.setConfig(finalConfig);
+            modalHelper.closeCurrentModal();
+        } else {
+            modalHelper.closeCurrentModal();
+        }
+
+        modalHelper.closeCurrentModal();
+
+    }
 }
 
 exports.UserMessageHelper = UserMessageHelper;

@@ -92,6 +92,6 @@
 .user-messages .message-list-wrapper .message-list-no-messages {
     padding: 0px;
 }
-.message-list-expanded .message-list-wrapper .message-list-no-messages {
+.user-messages.message-list-expanded .message-list-wrapper .message-list-no-messages {
     padding: 8px 0px 10px;
 }

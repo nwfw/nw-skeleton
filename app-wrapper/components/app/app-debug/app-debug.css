@@ -119,3 +119,10 @@
 .app-debug-wrapper .log-file-picker-input {
     display: none;
 }
+
+.app-debug-wrapper .message-list-wrapper .message-list-no-messages {
+    padding: 0px;
+}
+.app-debug-wrapper.message-list-expanded .message-list-wrapper .message-list-no-messages {
+    padding: 8px 0px 10px;
+}
