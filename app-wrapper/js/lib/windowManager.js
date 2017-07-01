@@ -151,6 +151,9 @@ class WindowManager extends BaseClass {
                     } else {
                         this.winState.x = this.screenWidth - (this.winState.width + 5);
                     }
+                    // if (this.getConfig('appConfig.windowConfig.fullscreen') != this.winState.fullscreen){
+                    //     this.win.toggleFullscreen();
+                    // }
                 }
                 this.document.body.className = this.document.body.className + ' nw-body-initialized';
                 this.win.focus();
@@ -170,6 +173,9 @@ class WindowManager extends BaseClass {
                             this.winState.x = this.screenWidth - (this.winState.width + 5);
                         }
                     }
+                    // if (this.getConfig('appConfig.windowConfig.fullscreen') != this.winState.fullscreen){
+                    //     this.win.toggleFullscreen();
+                    // }
                 }
             }
             this.win.show();
@@ -590,7 +596,8 @@ class WindowManager extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.winState.fullscreen = !this.winState.fullscreen;
+        this.winState.fullscreen =! this.winState.fullscreen;
+        // _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.fullscreen', this.winState.fullscreen);
     }
 
     closeWindow (e) {
@@ -669,18 +676,39 @@ class WindowManager extends BaseClass {
         clearTimeout(this.timeouts.resize);
         this.timeouts.resize = setTimeout( () => {
             this.windowPositionSizeUpdated();
-        }, 100);
+        }, 500);
     }
 
     windowPositionSizeUpdated () {
+        clearTimeout(this.timeouts.resize);
         let newWidth = window.outerWidth;
         let newHeight = window.outerHeight;
         let newLeft = window.screenLeft;
         let newTop = window.screenTop;
-        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.width', newWidth);
-        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.height', newHeight);
-        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.left', newLeft);
-        _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.top', newTop);
+        if (!this.winState.fullscreen && !this.winState.maximized){
+            let config = _.cloneDeep(appState.config.appConfig.windowConfig);
+            let configChanged = false;
+            if (newWidth && newWidth > 100){
+                config.width = newWidth;
+                configChanged = true;
+            }
+            if (newHeight && newHeight > 100){
+                config.height = newHeight;
+                configChanged = true;
+            }
+            if (newLeft && newLeft > 0){
+                config.left = newLeft;
+                configChanged = true;
+            }
+            if (newTop && newTop > 0){
+                config.top = newTop;
+                configChanged = true;
+            }
+            if (configChanged){
+                appState.config.appConfig.windowConfig = config;
+                _appWrapper.appConfig.saveUserConfig();
+            }
+        }
     }
 }
 

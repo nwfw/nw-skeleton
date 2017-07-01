@@ -133,19 +133,15 @@ class AppConfig extends BaseClass {
 
             var userConfigKeys = _.keys(userConfig);
 
-            let userConfigKeyMap = utilHelper.propertyMap(userConfig);
-            let savedConfigKeyMap = utilHelper.propertyMap(this.userConfig);
-            let keyMapDifference = _.difference(userConfigKeyMap, savedConfigKeyMap);
-            keyMapDifference = _.uniq(_.union(keyMapDifference, _.difference(savedConfigKeyMap, userConfigKeyMap)));
-
             var noReloadConfig = this.getConfig('configData.noReloadConfig');
             var noReloadChanges = _.difference(userConfigKeys, noReloadConfig);
             var shouldReload = userConfigKeys.length && (userConfigKeys.length - noReloadChanges.length) <= 0;
 
             try {
-                if (userConfig && keyMapDifference.length){
-                    this.log('Saving user config (changed: "{1}"}', 'info', [keyMapDifference.join('", "')]);
-                    localStorage.setItem(configName, JSON.stringify(userConfig));
+                if (userConfig && Object.keys(userConfigKeys).length){
+                    this.log('Saving user config...', 'info', []);
+                    let configString = JSON.stringify(userConfig);
+                    localStorage.setItem(configName, configString);
                     this.addUserMessage('Configuration data saved', 'info', [], true);
                     appState.hasUserConfig = true;
                     this.userConfig = _.cloneDeep(userConfig);
@@ -156,8 +152,10 @@ class AppConfig extends BaseClass {
                         this.config = _.cloneDeep(appState.config);
                     }
                 } else {
+                    this.log('Removing user config...', 'info', []);
                     if (localStorage.getItem(configName)){
                         localStorage.removeItem(configName);
+                        this.log('Removed user config.', 'info', []);
                         appState.hasUserConfig = false;
                         this.userConfig = {};
                         appState.userConfig = {};

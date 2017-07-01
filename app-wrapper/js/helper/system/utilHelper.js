@@ -425,6 +425,24 @@ class UtilHelper extends BaseClass {
         return keyMap;
     }
 
+    propertyValuesMap (obj, prepend){
+        let keyMap = [];
+        let objKeys = Object.keys(obj);
+        if (!prepend){
+            prepend = '';
+        } else {
+            prepend += '.';
+        }
+        for (let i=0; i<objKeys.length;i++){
+            if (_.isArray(obj[objKeys[i]]) || _.isObject(obj[objKeys[i]])){
+                keyMap = _.merge(keyMap, this.propertyValuesMap(obj[objKeys[i]], objKeys[i]));
+            } else {
+                keyMap[prepend + objKeys[i]] = obj[objKeys[i]];
+            }
+        }
+        return keyMap;
+    }
+
     noop () {
         return '';
     }

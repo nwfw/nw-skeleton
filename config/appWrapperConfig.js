@@ -172,6 +172,7 @@ exports.config = {
             top: null,
             width: null,
             height: null,
+            fullscreen: false,
         },
     },
 
@@ -191,7 +192,7 @@ exports.config = {
             },
             appConfig: {
                 editable: false,
-                reload: true
+                reload: false
             },
             logDir: {
                 editable: false,
