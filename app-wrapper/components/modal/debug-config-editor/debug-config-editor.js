@@ -7,12 +7,16 @@ exports.component = {
     template: '',
     data: function () {
         var appConfig = {
-            liveCss: appState.config.liveCss,
-            hideDebug: appState.config.debug.hideDebug,
             enabled: appState.config.debug.enabled,
+            hideDebug: appState.config.debug.hideDebug,
+            debugGroupsCollapsed: appState.config.debug.debugGroupsCollapsed,
             alwaysTrace: appState.config.debug.alwaysTrace,
+            debugToFile: appState.config.debug.debugToFile,
+            debugToFileAppend: appState.config.debug.debugToFileAppend,
+            saveStacksToFile: appState.config.debug.saveStacksToFile,
+            animateMessages: appState.config.debug.animateMessages,
+            liveCss: appState.config.liveCss,
             devTools: appState.config.debug.devTools,
-            debugGroupsCollapsed: appState.config.debug.debugGroupsCollapsed
         };
         var config = _.map(appConfig, function(value, name){
             if (name == 'liveCss'){

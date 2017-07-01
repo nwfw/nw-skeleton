@@ -101,6 +101,11 @@
 
 .message-list-wrapper .message-list li.message-list-item .message .message-stack-toggle-link {
     color: var(--app-user-messages-tool-link-color);
+    visibility: hidden;
+}
+
+.message-list-expanded .message-list-wrapper .message-list li.message-list-item .message .message-stack-toggle-link {
+    visibility: visible;
 }
 
 .message-list-wrapper .message-list li.message-list-item .message .message-stack-toggle-link:hover,

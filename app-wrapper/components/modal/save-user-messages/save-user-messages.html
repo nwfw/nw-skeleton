@@ -1,0 +1,27 @@
+<div class="save-user-messages-dialog">
+	<div class="form-row modal-form-row" v-if="appState.allUserMessages.length - appState.userMessages.length > 0">
+		<label class="checkbox-label">
+			{{ translate('Save hidden messages as well') }} ({{ appState.allUserMessages.length - appState.userMessages.length }}):
+			<input type="checkbox" name="save_hidden_messages" value="1" />
+		</label>
+	</div>
+	<template v-if="currentModal.fileExists">
+		<div class="form-row modal-form-row">
+			<label class="radio-label">
+				<input type="radio" name="overwrite_file" checked="checked" value="overwrite" />
+				{{ translate('Overwrite existing file') }}
+			</label>
+		</div>
+		<div class="form-row modal-form-row">
+			<label class="radio-label">
+				<input type="radio" name="overwrite_file" value="append" />
+				{{ translate('Append to existing file') }}
+			</label>
+		</div>
+	</template>
+	<div class="form-row modal-form-row modal-form-row-pick-file" v-bind:class="{ 'form-row-has-error' : currentModal.saveFileError }">
+		<div class="form-row-error modal-form-row-error" v-html="translate('No file selected')"></div>
+		<input class="user-messages-file-picker-button" type="button" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.saveUserMessagesFileClick" :value="translate('Please select file')" />
+		<input class="user-messages-file-picker" type="file" v-bind:nwsaveas="currentModal.defaultFilename" v-on:change="callViewHandler" data-change-handler="helpers.userMessageHelper.saveUserMessagesFileChange" />
+	</div>
+</div>

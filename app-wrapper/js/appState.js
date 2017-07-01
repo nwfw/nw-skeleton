@@ -312,7 +312,7 @@ exports.appState = {
         messages: [],
         currentMessageIndex: -1,
         autoCloseTime: 0,
-        modalClassName: '',
+        modalClassName: 'save-debug-log-modal',
         saveDebugFileError: false,
         fileExists: false,
         showConfirmButton: true,
@@ -331,15 +331,17 @@ exports.appState = {
     saveUserMessagesModal: {
         title: '',
         body: '',
-        name: 'save-messages',
-        bodyComponent: 'save-messages',
-        defaultBodyComponent: 'save-messages',
+        name: 'save-user-messages',
+        bodyComponent: 'save-user-messages',
+        defaultBodyComponent: 'save-user-messages',
         busyText: 'Please wait...',
         busy: true,
         messages: [],
         currentMessageIndex: -1,
         autoCloseTime: 0,
-        modalClassName: '',
+        modalClassName: 'save-user-messages-modal',
+        saveFileError: false,
+        fileExists: false,
         showConfirmButton: true,
         showCancelButton: true,
         confirmButtonText: 'confirm',
@@ -351,5 +353,6 @@ exports.appState = {
         modalAction: null,
         animating: false,
         animateSize: false
-    }
+    },
+
 };

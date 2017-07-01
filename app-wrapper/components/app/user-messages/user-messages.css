@@ -45,7 +45,7 @@
 	overflow: hidden;
 }
 
-.user-messages-expanded .message-list-wrapper .message-list {
+.message-list-expanded .message-list-wrapper .message-list {
 	height: 200px;
 	overflow: auto;
 }
@@ -71,18 +71,27 @@
 }
 
 .user-messages .user-message-controls .user-message-control-link.clear-user-messages {
-	color: var(--app-user-messages-clear-messages-link-color);
-	visibility: hidden;
+    color: var(--app-user-messages-clear-messages-link-color);
+    margin-right: 10px;
+    visibility: hidden;
 }
 
 .user-messages .user-message-controls .user-message-control-link.clear-user-messages:hover {
-	text-decoration: none;
-	color: var(--app-user-messages-clear-messages-link-color-hovered);
+    text-decoration: none;
+    color: var(--app-user-messages-clear-messages-link-color-hovered);
+}
+
+.user-messages .user-message-controls .user-message-control-link.toggle-message-stacks {
+    visibility: hidden;
+}
+
+.user-messages.message-list-expanded .user-message-controls .user-message-control-link.toggle-message-stacks {
+    visibility: visible;
 }
 
 .user-messages .message-list-wrapper .message-list-no-messages {
     padding: 0px;
 }
-.user-messages-expanded .message-list-wrapper .message-list-no-messages {
+.message-list-expanded .message-list-wrapper .message-list-no-messages {
     padding: 8px 0px 10px;
 }

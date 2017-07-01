@@ -44,21 +44,21 @@ header {
 
 .app-debug-wrapper {
     display: flex;
-    flex: 0 0 0px;
-    position: relative;
-    right: 0px;
+    flex: 1 1 auto;
+    /*position: relative;*/
+    /*right: 0px;*/
     margin: 0;
-    max-height: 100px;
+    /*max-height: 100px;*/
 }
 
 .debug-enabled .app-debug-wrapper {
-    flex: 0 0 0;
+    /*flex: 0 0 0;*/
     /*max-height: unset;*/
     /*overflow: hidden;*/
 }
 
 .debug-enabled.debug-visible .app-debug-wrapper {
-    flex: 0 0 100px;
+    /*flex: 0 0 auto;*/
 }
 
 .debug-enabled .app-debug-wrapper .app-debug {
@@ -73,7 +73,7 @@ header {
 }
 
 .app-body.has-debug-window .app-debug-wrapper {
-    flex: 0 0 0px;
+    /*flex: 0 0 0px;*/
 }
 
 footer {

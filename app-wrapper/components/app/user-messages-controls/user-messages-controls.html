@@ -3,6 +3,7 @@
 		<a class="user-message-control-link clear-user-messages" v-bind:class="{ 'is-visible': appState.userMessages.length > 0 }"  @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.clearUserMessages">
 			<span class="fa fa-ban" :title="translate('Clear user messages')"></span>
 		</a>
+		<a class="app-debug-tool save-user-messages fa fa-floppy-o" v-if="appState.userMessages.length > 0" v-bind:title="translate('Save log to file')" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.saveMessages"></a>
 	</div>
 	<div class="user-message-controls-item user-messages-toolbar">
 		<div class="user-message-control user-message-level-picker">
@@ -26,7 +27,7 @@
 		</div>
 	</div>
 	<div class="user-message-controls-item user-messages-settings">
-		<a v-if="stacksCount > 0" href="#" class="user-message-control-link user-messages-toggle-stacks" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessageStacks">
+		<a v-if="stacksCount > 0" href="#" class="user-message-control-link toggle-message-stacks" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessageStacks">
 			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
 			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
 		</a>

@@ -109,7 +109,7 @@ class DebugHelper extends BaseClass {
         return _appWrapper.closeModalPromise;
     }
 
-    confirmSaveDebugModalAction (e){
+    async confirmSaveDebugModalAction (e){
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
@@ -144,16 +144,47 @@ class DebugHelper extends BaseClass {
             modalHelper.modalBusy();
             var saved = true;
             var writeMode = 'w';
-            if (fileExists && overwriteAction == 'append'){
-                writeMode = 'a';
+            let append = overwriteAction == 'append';
+
+            // if (fileExists && overwriteAction == 'append'){
+            //     writeMode = 'a';
+            // }
+            //
+            let previousMessages = [];
+            if (append && fileExists){
+                let fileContents = await _appWrapper.fileManager.readFileSync(debugFilePath, {encoding:'utf8'});
+                if (fileContents){
+                    try {
+                        previousMessages = JSON.parse(fileContents);
+                    } catch (ex) {
+                        this.log('Can not parse file contents for appending!', 'error', []);
+                    }
+                }
             }
 
-            var messages = appState.debugMessages;
+            var messages = _.cloneDeep(appState.debugMessages);
             if (saveAll){
-                messages = appState.allDebugMessages;
+                messages = _.cloneDeep(appState.allDebugMessages);
             }
 
-            var data = JSON.stringify(messages, ' ', 4);
+            let saveStacks = this.getConfig('debug.saveStacksToFile', false);
+
+            let processedMessages = _.map(messages, (message) => {
+                if (message.stackVisible){
+                    message.stackVisible = false;
+                }
+                delete message.force;
+                delete message.active;
+                if (!saveStacks){
+                    delete message.stackVisible;
+                    delete message.stack;
+                }
+                return message;
+            });
+
+            processedMessages = _.union(previousMessages, processedMessages);
+
+            var data = JSON.stringify(processedMessages, ' ', 4);
 
             try {
                 fs.writeFileSync(debugFilePath, data, {
@@ -185,8 +216,9 @@ class DebugHelper extends BaseClass {
     }
 
     saveDebugFileClick (e){
-        var el = e.target;
-        el.setAttribute('nwsaveas', 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt');
+        let fileEl = e.target.parentNode.querySelector('.debug-file-picker');
+        fileEl.setAttribute('nwsaveas', 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json');
+        fileEl.click();
     }
 
     saveDebugFileChange (e) {
@@ -358,6 +390,11 @@ class DebugHelper extends BaseClass {
             }
         }
     }
+
+    toggleDebugMessages () {
+        _appWrapper.appConfig.setConfigVar('debug.messagesExpanded', !this.getConfig('debug.messagesExpanded'));
+    }
+
 }
 
 exports.DebugHelper = DebugHelper;

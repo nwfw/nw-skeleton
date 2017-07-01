@@ -19,9 +19,9 @@
 			</label>
 		</div>
 	</template>
-	<div class="form-row modal-form-row" v-bind:class="{ 'form-row-has-error' : currentModal.saveDebugFileError }">
+	<div class="form-row modal-form-row modal-form-row-pick-file" v-bind:class="{ 'form-row-has-error' : currentModal.saveDebugFileError }">
 		<div class="form-row-error modal-form-row-error" v-html="translate('No file selected')"></div>
-		<label>{{ translate('Please select file') }}:</label>
-		<input type="file" v-bind:nwsaveas="currentModal.defaultFilename" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.saveDebugFileChange" v-on:click="callViewHandler" data-click-handler="helpers.debugHelper.saveDebugFileClick" />
+		<input class="debug-file-picker-button" type="button" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.saveDebugFileClick" :value="translate('Please select file')" />
+		<input class="debug-file-picker" type="file" v-bind:nwsaveas="currentModal.defaultFilename" v-on:change="callViewHandler" data-change-handler="helpers.debugHelper.saveDebugFileChange" />
 	</div>
 </div>

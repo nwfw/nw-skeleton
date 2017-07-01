@@ -83,6 +83,14 @@
     color: var(--app-user-messages-clear-messages-link-color-hovered);
 }
 
+.app-debug-wrapper .app-debug-header a.toggle-message-stacks {
+    visibility: hidden;
+}
+
+.app-debug-wrapper.message-list-expanded .app-debug-header a.toggle-message-stacks {
+    visibility: visible;
+}
+
 
 .app-debug-wrapper .app-debug-body {
     flex: 1 1 auto;
@@ -93,5 +101,21 @@
 }
 
 .app-debug-wrapper .app-debug-body .message-list {
-    max-height: 95px;
+    /*max-height: 95px;*/
+}
+
+
+.app-debug-wrapper .message-list-wrapper .message-list {
+    height: 20px;
+    overflow: hidden;
+}
+
+.app-debug-wrapper.message-list-expanded .message-list-wrapper .message-list {
+    height: 200px;
+    overflow: auto;
+}
+
+
+.app-debug-wrapper .log-file-picker-input {
+    display: none;
 }

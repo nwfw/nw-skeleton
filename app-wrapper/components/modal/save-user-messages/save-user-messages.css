@@ -1,0 +1,6 @@
+.save-user-messages-modal .user-messages-file-picker {
+    display: none;
+}
+.save-user-messages-modal .modal-form-row-pick-file {
+    text-align: right;
+}

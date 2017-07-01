@@ -309,26 +309,9 @@ class UtilHelper extends BaseClass {
         return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
     }
 
-    async openLogViewer (){
-        let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = _.cloneDeep(appState.logViewerModal);
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Log viewer');
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Load');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        appState.modalData.currentModal.confirmDisabled = true;
-        appState.modalData.currentModal.messages = [];
-        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
-        _appWrapper.closeModalPromise = new Promise((resolve) => {
-            appState.closeModalResolve = resolve;
-        });
-
-        if (appState.modalData.currentModal.file){
-            await _appWrapper.getHelper('util').loadLogViewerFile(appState.modalData.currentModal.file);
-        }
-
-        modalHelper.openCurrentModal();
-        return _appWrapper.closeModalPromise;
+    async pickLogFile (e) {
+        let fileEl = e.target.parentNode.querySelector('.log-file-picker-input');
+        fileEl.click();
     }
 
     async pickLogViewerFile (e) {
@@ -343,41 +326,40 @@ class UtilHelper extends BaseClass {
         let fileValid = true;
         let messages;
         if (!fileName){
-            appState.modalData.currentModal.messages.push({
-                message: _appWrapper.appTranslations.translate('Please pick file'),
-                type: 'error'
-            });
+            this.addUserMessage(_appWrapper.appTranslations.translate('Please pick file'), 'error', []);
             fileValid = false;
         } else {
             if (!await _appWrapper.fileManager.isFile(fileName)){
-                appState.modalData.currentModal.messages.push({
-                    message: _appWrapper.appTranslations.translate('File is not valid'),
-                    type: 'error'
-                });
+                this.addUserMessage(_appWrapper.appTranslations.translate('File is not valid'), 'error', []);
                 fileValid = false;
             } else {
                 let fileContents = await _appWrapper.fileManager.loadFile(fileName);
                 if (!fileContents){
-                    appState.modalData.currentModal.messages.push({
-                        message: _appWrapper.appTranslations.translate('Problem reading file'),
-                        type: 'error'
-                    });
+                    this.addUserMessage(_appWrapper.appTranslations.translate('Problem reading file'), 'error', []);
                     fileValid = false;
                 } else {
                     try {
                         messages = JSON.parse(fileContents);
                     } catch (ex) {
-                        this.log(ex, 'error', []);
-                        appState.modalData.currentModal.messages.push({
-                            message: _appWrapper.appTranslations.translate('Problem parsing file'),
-                            type: 'error'
-                        });
+                        this.addUserMessage(_appWrapper.appTranslations.translate('Problem parsing file: "{1}"'), 'error', [ex.message]);
                         fileValid = false;
                     }
                 }
             }
         }
         if (fileValid && messages && messages.length){
+            let modalHelper = _appWrapper.getHelper('modal');
+            appState.modalData.currentModal = _.cloneDeep(appState.logViewerModal);
+            appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Log viewer');
+            appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Load');
+            appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+            appState.modalData.currentModal.confirmDisabled = true;
+            modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+            _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
+            _appWrapper.closeModalPromise = new Promise((resolve) => {
+                appState.closeModalResolve = resolve;
+            });
+
             appState.modalData.currentModal.fileMessages = _.map(messages, (msg) => {
                 if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
                     msg.type = 'info';
@@ -392,9 +374,10 @@ class UtilHelper extends BaseClass {
             for (let i=0; i< types.length; i++){
                 appState.modalData.currentModal.displayTypes[types[i]] = true;
             }
+            modalHelper.openCurrentModal();
+            appState.modalData.currentModal.dataLoaded = true;
+            return _appWrapper.closeModalPromise;
         }
-        appState.modalData.currentModal.dataLoaded = true;
-        modalHelper.modalNotBusy();
     }
 
     confirmLogViewerModalAction () {

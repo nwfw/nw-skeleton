@@ -1,0 +1,6 @@
+.save-debug-log-modal .debug-file-picker {
+    display: none;
+}
+.save-debug-log-modal .modal-form-row-pick-file {
+    text-align: right;
+}
