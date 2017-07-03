@@ -1,6 +1,9 @@
 <div class="user-messages" v-if="!appState.isDebugWindow" v-bind:class="{ 'message-list-expanded': !appState.status.appShuttingDown && !appState.appError.error && appState.config.userMessages.messagesExpanded, 'message-list-collapsed': !appState.status.appShuttingDown && !appState.appError.error && !appState.config.userMessages.messagesExpanded  }">
     <div class="user-messages-header">
-        <h2 v-html="translate('User messages') + ' (' + appState.userMessages.length + ') ' + translate('messages')"></h2>
+        <h2>
+            <span class="fa fa-commenting-o"></span>
+            <span v-html="translate('User messages') + ' (' + appState.userMessages.length + ') ' + translate('messages')"></span>
+        </h2>
         <user-messages-controls ref="userMessagesControls"></user-messages-controls>
     </div>
 	<message-list v-bind:messages="appState.userMessages" v-bind:config="appState.config.userMessages" ref="messageList"></message-list>

@@ -387,6 +387,21 @@ class HtmlHelper extends BaseClass {
             offsetTop: offsetTop
         };
     }
+
+    parentQuerySelector (element, selector){
+        let parent = element;
+        let parentFound = false;
+        do {
+            if (parent && parent.parentNode && parent.parentNode.querySelector){
+                parent = parent.parentNode;
+                let parentChildren = parent.parentNode.querySelectorAll(selector);
+                parentFound = _.includes(parentChildren, parent);
+            } else {
+                parentFound = true;
+            }
+        } while (!parentFound);
+        return parent;
+    }
 }
 
 exports.HtmlHelper = HtmlHelper;

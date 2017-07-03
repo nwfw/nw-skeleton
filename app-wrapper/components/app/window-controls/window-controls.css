@@ -6,6 +6,7 @@
     flex: 1 1 auto;
     -webkit-app-region: no-drag;
     cursor: pointer;
+    overflow: visible;
 }
 .window-control-hidden {
     visibility: hidden;
@@ -14,18 +15,19 @@
 .window-controls-wrapper .window-controls {
     display: flex;
     position: relative;
+    overflow: visible;
+    padding-left: 10px;
 }
 
-.window-controls-wrapper .window-controls.main-window-controls {
+.window-controls-wrapper .window-controls.window-controls-main {
     padding-left: 30px;
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper {
-    display: flex;
-    flex: 0 0 auto;
+    flex: 0 0 16px;
     display: inline-block;
     position: relative;
-    overflow: auto;
+    overflow: visible;
     margin-right: 5px;
     font-size: 1rem;
 }
@@ -68,4 +70,99 @@
 
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
     -webkit-text-stroke-color: var(--window-control-link-text-stroke-color-hovered);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu {
+    display: flex;
+    flex-flow: column;
+    overflow: auto;
+    max-height: 0;
+    position: absolute;
+    margin-top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+    z-index: 4;
+    transition-property: max-height;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu-link {
+    transition-property: color;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--long-animation-duration);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper.menu-opened .window-control-submenu-link {
+    color: var(--window-control-link-color-active);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper.menu-opened .window-control-submenu {
+    border-width: 1px;
+    max-height: 300px;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-arrow {
+    margin: 0px auto;
+    height: 12px;
+    color: var(--window-control-submenu-arrow-color);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-inner {
+    background-color: var(--window-control-submenu-background-color);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--window-control-submenu-border-color);
+    border-radius: var(--window-control-submenu-border-radius);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control {
+    display: flex;
+    padding: 3px 5px 4px 5px;
+    border-top: 1px solid  var(--window-control-submenu-border-color);
+    color: var(--window-control-submenu-text-color);
+    -webkit-text-stroke-width: 0px;
+    text-shadow: none;
+    cursor: pointer;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control:hover {
+    color: var(--window-control-submenu-text-color-hover);
+    background-color: var(--window-control-submenu-background-color-hover);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control-active {
+    color: var(--window-control-submenu-text-color-active);
+    background-color: var(--window-control-submenu-background-color-active);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control-active:hover {
+    color: var(--window-control-submenu-text-color-active);
+    background-color: var(--window-control-submenu-background-color-hover);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper:first-of-type .window-control {
+    border-top: none;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper.window-control-submenu-item-separator {
+    height: 2px;
+    background: var(--window-control-submenu-separator-background);
+    border: none;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control .window-control-submenu-item-section {
+    flex: 1 1 auto;
+    display: inline-block;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control .window-control-submenu-item-icon {
+    flex: 0 1 auto;
+    margin-right: 5px;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control .window-control-submenu-item-text {
+    font-size: 0.8rem;
+    white-space: nowrap;
 }

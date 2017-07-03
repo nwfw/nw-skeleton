@@ -45,17 +45,19 @@ exports.config = {
                     'app-header': {
                         name: 'app-header',
                         components: {
-                            'language-select': {
-                                name: 'language-select'
-                            },
-                            'theme-select': {
-                                name: 'theme-select'
-                            },
                             'live-info': {
                                 name: 'live-info'
                             },
                             'window-controls': {
-                                name: 'window-controls'
+                                name: 'window-controls',
+                                components: {
+                                    'theme-select': {
+                                        name: 'theme-select'
+                                    },
+                                    'language-select': {
+                                        name: 'language-select'
+                                    }
+                                }
                             },
                         }
                     },

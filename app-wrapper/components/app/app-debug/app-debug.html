@@ -1,7 +1,10 @@
 <div class="app-debug-wrapper" v-bind:class="{ 'message-list-expanded': appState.config.debug.messagesExpanded, 'message-list-collapsed': !appState.config.debug.messagesExpanded  }">
 	<div class="app-debug" v-if="!appState.config.debug.hideDebug">
 		<div class="app-debug-header">
-			<h2 v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></h2>
+			<h2>
+                <span class="fa fa-comment-o"></span>
+                <span v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></span>
+            </h2>
 			<app-debug-controls v-bind:debugMessageCount="debugMessageCount" ref="appDebugControls"></app-debug-controls>
 		</div>
 		<div class="app-debug-body">

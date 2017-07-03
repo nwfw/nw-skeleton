@@ -1,8 +1,11 @@
-<div v-if="appState.config.allowThemeChange && appState.availableThemes.length > 1" class="app-theme-wrapper">
-	<label for="app-theme-select" v-html="translate('Choose theme')"></label>
-	<select v-model="appState.config.theme" name="app-theme" id="app-theme-select" v-on:change="callViewHandler" data-change-handler="helpers.staticFilesHelper.changeTheme">
-		<template v-for="theme in appState.availableThemes">
-				<option :value="theme.name">{{ theme.name }}</option>
-		</template>
-	</select>
+<div class="window-control" :title="translate('Choose theme')">
+    <span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-paint-brush">
+    </span>
+    <span class="window-control-submenu-item-section window-control-submenu-item-text">
+        <select v-model="appState.config.theme" name="app-theme" id="app-theme-select" v-on:change="callViewHandler" data-change-handler="helpers.staticFilesHelper.changeTheme">
+            <template v-for="theme in appState.availableThemes">
+                <option :value="theme.name">{{ theme.name }}</option>
+            </template>
+        </select>
+    </span>
 </div>

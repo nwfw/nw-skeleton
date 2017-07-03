@@ -205,6 +205,17 @@
     --window-control-link-text-stroke-color-active: #CCCCCC;
     --window-control-link-text-shadow-active: 0 0 0px #FFFFFF;
 
+    --window-control-submenu-background-color: #333333;
+    --window-control-submenu-background-color-hover: #666666;
+    --window-control-submenu-background-color-active: #999999;
+    --window-control-submenu-text-color: #AAAAAA;
+    --window-control-submenu-text-color-hover: #CCCCCC;
+    --window-control-submenu-text-color-active: #FFFFFF;
+    --window-control-submenu-arrow-color: #999999;
+    --window-control-submenu-border-color: #666666;
+    --window-control-submenu-border-radius: 3px;
+    --window-control-submenu-separator-background: #CCCCCC;
+
     /* live info */
 
     --app-live-info-background-color-top: var(--app-header-background-color-top);
