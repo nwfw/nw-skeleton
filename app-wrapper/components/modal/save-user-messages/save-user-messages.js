@@ -15,8 +15,5 @@ exports.component = {
     mounted: function(){
         appState.modalData.currentModal.busy = false;
         appState.modalData.modalContentVisible = true;
-    },
-    methods: {
-        callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     }
 };

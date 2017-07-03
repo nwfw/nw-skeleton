@@ -175,7 +175,7 @@ class BaseClass extends eventEmitter {
     async getMessageFileLine(message){
         let msg = _.cloneDeep(message);
         if (!msg.timestamp){
-            msg.timestamp = new Date().toISOString();
+            msg.timestamp = new Date().toString();
         }
         if (msg.count == 1){
             delete msg.count;
@@ -213,7 +213,7 @@ class BaseClass extends eventEmitter {
         }
         let msg = _.cloneDeep(message);
         if (!msg.timestamp){
-            msg.timestamp = new Date().toISOString();
+            msg.timestamp = new Date().toString();
         }
         if (msg.count == 1){
             delete msg.count;
@@ -284,7 +284,7 @@ class BaseClass extends eventEmitter {
         var userMessage = {};
         var debugLevels = this.getConfig('logger.messageLevels');
         var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
-        var timestamp = new Date().toISOString().slice(11, 19);
+        var timestamp = new Date().toString();
         var iconClass = 'fa fa-info-circle';
 
         if (type == 'warning'){

@@ -7,7 +7,9 @@ exports.component = {
     template: '',
     searchValue: '',
     data: function () {
-        return {};
+        return {
+            logViewerConfig: _.cloneDeep(appState.config.debug)
+        };
     },
     methods: {
         performSearch: function(e){

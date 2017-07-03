@@ -11,8 +11,6 @@ component = {
         _confirmModalAction: _appWrapper.confirmModalAction.bind(_appWrapper),
         _cancelModalAction: _appWrapper.cancelModalAction.bind(_appWrapper),
 
-        callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper),
-
         getTitle: function(){
             let title = '';
             if (appState.modalData.currentModal.title){

@@ -6,7 +6,7 @@
 				</div>
 				<transition name="size-width-short">
 					<div v-if="message.timestamp && config.displayTimestamps" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
-						{{ message.timestamp }}
+						{{ formatTime(message.timestamp, {}, false) }}
 					</div>
 				</transition>
 				<div class="message-body" :class="{'important-message': message.important}">
