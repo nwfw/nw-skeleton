@@ -222,10 +222,13 @@ class ModalHelper extends BaseClass {
         }
     }
 
-    getModalObject(modalName){
+    getModalObject(modalName, options){
         let modalObj = false;
         if (!_.isUndefined(appState[modalName])){
             modalObj = _.extend({}, _.cloneDeep(appState.defaultModal), _.cloneDeep(appState[modalName]));
+            if (options && _.isObject(options)){
+                modalObj = _.extend({}, modalObj, options);
+            }
         }
         return modalObj;
     }

@@ -1,11 +1,10 @@
-var _ = require('lodash');
-var path = require('path');
+const _ = require('lodash');
+const path = require('path');
 
 var App;
 let BaseClass = require('./base').BaseClass;
 
 var AppTranslations = require('./lib/appTranslations').AppTranslations;
-
 var WindowManager = require('./lib/windowManager').WindowManager;
 var FileManager = require('./lib/fileManager').FileManager;
 
@@ -14,7 +13,6 @@ var AppConfig = require('./lib/appConfig').AppConfig;
 class AppWrapper extends BaseClass {
 
     constructor (initialAppConfig) {
-
         super();
 
         this.needsConfig = false;
@@ -73,15 +71,11 @@ class AppWrapper extends BaseClass {
         };
 
         this.noop = _.noop;
-
         appState = this.getAppState();
-
         return this;
     }
 
     async initialize(){
-
-
         let isDebugWindow = false;
         if (this.initialAppConfig.isDebugWindow){
             isDebugWindow = true;
@@ -93,7 +87,6 @@ class AppWrapper extends BaseClass {
         // appState is available from here;
 
         await super.initialize();
-
 
         if (isDebugWindow){
             appState.isDebugWindow = true;
@@ -108,13 +101,13 @@ class AppWrapper extends BaseClass {
         await this.appConfig.initializeLogging();
         await this.fileManager.initializeLogging();
 
-        this.log('Initializing application.', 'group', []);
-
         var tmpDataDir = this.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
             tmpDataDir = path.resolve(tmpDataDir);
-            this.fileManager.createDirRecursive(tmpDataDir);
+            await this.fileManager.createDirRecursive(tmpDataDir);
         }
+
+        this.log('Initializing application.', 'group', []);
 
         if (this.getConfig('debug.debugToFile') && !this.getConfig('debug.debugToFileAppend')){
             this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
@@ -228,25 +221,6 @@ class AppWrapper extends BaseClass {
 
     }
 
-    _addBoundMethods () {
-        if (this.boundMethods){
-            var keys = _.keys(this.boundMethods);
-            for (let i=0; i<keys.length; i++){
-                if (this[keys[i]] && _.isFunction(this[keys[i]]) && this[keys[i]].bind && _.isFunction(this[keys[i]].bind)){
-                    this.boundMethods[keys[i]] = this[keys[i]].bind(this);
-                }
-            }
-        }
-    }
-
-    removeBoundMethods () {
-        var keys = _.keys(this.boundMethods);
-        for (let i=0; i<keys.length; i++){
-            this.boundMethods[keys[i]] = null;
-        }
-        this.boundMethods = {};
-    }
-
     async initializeLanguage () {
         this.appTranslations = new AppTranslations();
         await this.appTranslations.initialize();
@@ -269,8 +243,6 @@ class AppWrapper extends BaseClass {
 
     async loadHelpers (helperDirs) {
         var helpers = {};
-
-
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
             this.log('No wrapper helper dirs defined', 'warning', []);
             this.log('You should define this in ./config/config.js file under "appConfig.templateDirectories.helperDirectories" variable', 'debug', []);
@@ -492,28 +464,6 @@ class AppWrapper extends BaseClass {
         this.setAppStatus(false);
     }
 
-    async showModalCloseConfirm (e){
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-
-        let modalHelper = this.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('closeModal');
-
-        appState.modalData.currentModal.bodyComponent = 'modal-body';
-        appState.modalData.currentModal.title = this.appTranslations.translate('Are you sure?');
-        appState.modalData.currentModal.body = this.appTranslations.translate('Action is being executed in the background. Are you sure wou want to exit?');
-        appState.modalData.currentModal.confirmButtonText = this.appTranslations.translate('Confirm');
-        appState.modalData.currentModal.cancelButtonText = this.appTranslations.translate('Cancel');
-        this._confirmModalAction = this.confirmCloseModalAction;
-        this.closeWindowPromise = new Promise((resolve, reject) => {
-            appState.closeWindowResolve = resolve;
-            appState.closeWindowReject = reject;
-        });
-        this.openCurrentModal(true);
-        return this.closeWindowPromise;
-    }
-
     /**
      * Placeholder method that handles modal confirm action
      *
@@ -582,17 +532,6 @@ class AppWrapper extends BaseClass {
             e.preventDefault();
         }
         this.helpers.modalHelper.closeCurrentModal();
-    }
-
-    confirmCloseModalAction (e){
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        appState.modalData.modalVisible = false;
-        appState.modalData.modalElement = null;
-        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-            appState.closeModalResolve(true);
-        }
     }
 
     setDynamicAppStateValues () {
@@ -724,6 +663,7 @@ class AppWrapper extends BaseClass {
         }
         return true;
     }
+
     getAppState () {
         var win = nw.Window.get().window;
         var appStateFile;

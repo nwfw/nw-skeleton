@@ -295,11 +295,13 @@ class AppOperationHelper extends BaseClass {
 
     async showCancelModal (reloading) {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
+        let modalOptions = {};
+        modalOptions.reloading = reloading ? true : false;
+        modalOptions.closing = reloading ? false : true;
+        modalOptions.cancelable = appState.appOperation.cancelable;
+
+        appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal', modalOptions);
         let cm = appState.modalData.currentModal;
-        cm.reloading = reloading ? true : false;
-        cm.closing = reloading ? false : true;
-        cm.cancelable = appState.appOperation.cancelable;
         _appWrapper.once('appOperation:finish', this.boundMethods.cancelOperationComplete);
         _appWrapper.once('appOperation:progressDone', this.boundMethods.cancelProgressDone);
         appState.headerData.hideLiveInfo = true;
