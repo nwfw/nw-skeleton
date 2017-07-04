@@ -27,6 +27,8 @@ class StaticFilesHelper extends BaseClass {
             removeOldCssTags: null
         };
 
+        this.watchedFiles = [];
+
         return this;
     }
 
@@ -55,6 +57,7 @@ class StaticFilesHelper extends BaseClass {
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
+                this.watchedFiles.push(cssFilePath);
                 _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
             }
         } else {
@@ -81,6 +84,7 @@ class StaticFilesHelper extends BaseClass {
         }
 
         if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
+            this.watchedFiles.push(hrefPath);
             _appWrapper.fileManager.watch(hrefPath, {}, this.boundMethods.cssFileChanged);
         }
 
@@ -699,7 +703,10 @@ class StaticFilesHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        await this.generateCss(true, true);
+        for (let i=0; i<this.watchedFiles.length; i++){
+            await _appWrapper.fileManager.unwatch(this.watchedFiles[i], this.boundMethods.cssFileChanged);
+        }
+        await this.generateCss(false, true);
         await this.refreshCss();
     }
 
