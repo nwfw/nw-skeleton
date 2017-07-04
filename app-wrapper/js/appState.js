@@ -61,6 +61,7 @@ exports.appState = {
         progressText: null,
         appBusy: null,
         operationActive: false,
+        operationVisible: false,
         operationId: null
     },
 
@@ -105,7 +106,8 @@ exports.appState = {
 
     },
     headerData: {
-
+        hideLiveInfo: false,
+        hideProgressBar: false,
     },
 
     debugData: {

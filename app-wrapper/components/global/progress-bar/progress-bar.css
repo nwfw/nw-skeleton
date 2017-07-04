@@ -102,7 +102,6 @@
 	top: -4px;
     text-shadow: var(--app-progress-bar-cancel-link-text-shadow);
     color: var(--app-progress-bar-cancel-link-color);
-    display: none;
 }
 
 .progress-cancel:hover {

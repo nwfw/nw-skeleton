@@ -20,12 +20,7 @@ exports.component = {
                 let submenuSelector = '.window-control-submenu[data-submenu="' + menuIdentifier + '"]';
                 let submenuEl = menuEl.querySelector(submenuSelector);
                 if (submenuEl){
-                    let openMenus = this.$el.querySelectorAll('.menu-opened');
-                    if (openMenus && openMenus.length){
-                        for (let i=0; i<openMenus.length;i++){
-                            htmlHelper.removeClass(openMenus[i], 'menu-opened');
-                        }
-                    }
+                    this.closeAllSubmenus();
                     htmlHelper.addClass(menuEl, 'menu-opened');
                     submenuEl.addEventListener('mouseout', this.closeSubmenuIntent);
                     submenuEl.addEventListener('mouseover', this.keepSubmenuIntent);
@@ -63,6 +58,14 @@ exports.component = {
                 if (this.timeouts[menuIdentifier]){
                     clearTimeout(this.timeouts[menuIdentifier]);
                     delete this.timeouts[menuIdentifier];
+                }
+            }
+        },
+        closeAllSubmenus: function(){
+            let openMenus = this.$el.querySelectorAll('.menu-opened');
+            if (openMenus && openMenus.length){
+                for (let i=0; i<openMenus.length;i++){
+                    this.closeSubmenu(openMenus[i]);
                 }
             }
         }

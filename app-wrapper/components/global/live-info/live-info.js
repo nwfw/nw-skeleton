@@ -4,6 +4,7 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'live-info',
     template: '',
+    props: ['dontDisplay'],
     computed: {
         appStatusClassObject: function () {
             var appState = _appWrapper.getAppState();
@@ -12,13 +13,15 @@ exports.component = {
                 'fa-spin fa-cog': appState.status.appStatus == 'working',
                 'fa-exclamation-triangle': appState.status.appStatus == 'error',
                 'fa-check': appState.status.appStatus == 'success',
-                'fa-ban': appState.status.appStatus == 'offline'
+                'fa-ban': appState.status.appStatus == 'offline',
+                'app-status-icon-placeholder': appState.status.appStatus == 'idle'
+
             };
         },
         appStatusWrapperClassObject: function () {
             var appState = _appWrapper.getAppState();
             return {
-                '': appState.status.appStatus == 'idle',
+                'idle': appState.status.appStatus == 'idle',
                 'busy': appState.status.appStatus == 'busy',
                 'not-busy': appState.status.appStatus == 'success',
                 'working': appState.status.appStatus == 'working',

@@ -1,12 +1,10 @@
 <header v-bind:class="{'has-progress-bar': appState.progressData.inProgress, 'app-status-changing': appState.status.appStatusChanging}">
 	<div class="header-top">
 		<div class="header-app-title" :title="appState.config.appInfo.description" v-html="appState.config.appInfo.name"></div>
-		<window-controls></window-controls>
+		<window-controls ref="windowControls"></window-controls>
 	</div>
-	<div class="header-bottom" v-bind:class="{'has-progress-bar': appState.progressData.inProgress}">
-		<div class="header-toolbar">
-		</div>
-		<progress-bar></progress-bar>
-		<live-info></live-info>
+	<div class="header-bottom" v-bind:class="{'has-progress-bar': !hideProgressBar && appState.progressData.inProgress}">
+		<progress-bar v-bind:dont-display="hideProgressBar" ref="headerProgressBar"></progress-bar>
+		<live-info v-bind:dont-display="hideLiveInfo" ref="headerLiveInfo"></live-info>
 	</div>
 </header>

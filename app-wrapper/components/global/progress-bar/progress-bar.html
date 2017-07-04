@@ -1,5 +1,5 @@
 <transition name="size-height-long">
-	<div v-show="progressData.inProgress" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
+	<div v-show="progressData.inProgress && !dontDisplay" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
 		<div class="progress-operation">
 			<div class="progress-detail-text" v-bind:title="progressData.operationText">
 			{{ progressData.operationText }}

@@ -1,5 +1,5 @@
-<transition name="size-height-long">
-	<div class="live-info" v-show="appState.status.appStatusChanging" v-bind:class="appStatusWrapperClassObject">
+<transition name="live-info">
+	<div class="live-info" v-show="appState.appOperation.operationVisible && !dontDisplay" v-bind:class="appStatusWrapperClassObject">
         <div class="live-info-inner">
            <span class="live-info-item app-status" v-bind:class="appStatusWrapperClassObject">
               <span class="app-operation-text" v-html="appState.appOperation.operationText"></span>

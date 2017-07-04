@@ -2,7 +2,6 @@ header {
 	color: var(--app-header-text-color);
 	background-color: var(--app-header-background-color);
 	background: var(--app-header-background);
-	opacity: 0.9;
 	overflow: visible;
 	position: relative;
     flex-direction: column;
@@ -11,42 +10,20 @@ header {
     border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
     border-style: var(--app-main-border-style);
     border-color: var(--app-header-border-color);
-    /*-webkit-app-region: drag;*/
 }
 
-.header-top {
-    flex: 0 0 40px;
+header .header-top {
+    flex: 1 1 auto;
 }
 
-.header-bottom {
-    flex: 1 1 20px;
-    /*overflow: hidden;*/
+header .header-bottom {
+    flex: 1 1 auto;
 }
 
-.header-app-title {
+header .header-app-title {
     flex: 0 1 auto;
     font-size: 1rem;
-    padding: 10px;
-}
-
-.logo {
-	margin-left: 10px;
-	margin-bottom: -6px;
-}
-
-.header-toolbar {
-    display: inline-block;
-	text-align: right;
-    float: right;
-    padding: 0 10px 0 0;
-    /*-webkit-app-region: no-drag;*/
-}
-
-
-.app-language-wrapper,
-.app-theme-wrapper {
-    display: inline-block;
-    margin-left: 5px;
+    padding: 3px 10px 5px 10px;
 }
 
 header .progress-bar-wrapper {
@@ -58,16 +35,17 @@ header .progress-bar-wrapper {
     border-radius: 0 0 var(--app-progress-bar-wrapper-border-radius) var(--app-progress-bar-wrapper-border-radius);
     background: var(--app-progress-bar-wrapper-background);
 }
+
 header .progress-bar-wrapper .progress-bar {
     width: var(--app-progress-bar-width);
 }
-header .progress-bar-wrapper.progress-bar-wrapper-active {
-    margin-top: 20px;
-}
-header .progress-bar-wrapper .progress-cancel {
-    display: inline-block;
-}
-header .progress-bar-wrapper .progress-bar-inner,
-header .progress-bar-wrapper .progress-bar-inner-below {
+
+header .live-info {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    background: var(--app-live-info-background);
 
 }

@@ -45,9 +45,6 @@ exports.config = {
                     'app-header': {
                         name: 'app-header',
                         components: {
-                            'live-info': {
-                                name: 'live-info'
-                            },
                             'window-controls': {
                                 name: 'window-controls',
                                 components: {

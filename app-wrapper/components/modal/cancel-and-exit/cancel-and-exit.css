@@ -1,4 +1,43 @@
-.cancel-and-exit-message {
+.cancel-and-exit-modal .cancel-and-exit-message {
     margin-bottom: 5px;
     text-align: center;
+}
+
+.cancel-and-exit-modal .progress-bar-wrapper {
+    border: 1px solid;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.cancel-and-exit-modal .progress-bar-wrapper .progress-cancel {
+    display: none;
+}
+
+
+.cancel-and-exit-modal .live-info,
+.cancel-and-exit-modal .live-info.offline,
+.cancel-and-exit-modal .live-info.not,
+.cancel-and-exit-modal .live-info.error,
+.cancel-and-exit-modal .live-info.working,
+.cancel-and-exit-modal .live-info.busy,
+.cancel-and-exit-modal .live-info.not-busy,
+.cancel-and-exit-modal .live-info .live-info-item,
+.cancel-and-exit-modal .live-info.offline .live-info-item,
+.cancel-and-exit-modal .live-info.not .live-info-item,
+.cancel-and-exit-modal .live-info.error .live-info-item,
+.cancel-and-exit-modal .live-info.working .live-info-item,
+.cancel-and-exit-modal .live-info.busy .live-info-item {
+    background: none;
+    box-shadow: none;
+}
+
+.cancel-and-exit-modal .live-info,
+.cancel-and-exit-modal .live-info.offline,
+.cancel-and-exit-modal .live-info.not,
+.cancel-and-exit-modal .live-info.error,
+.cancel-and-exit-modal .live-info.working,
+.cancel-and-exit-modal .live-info.not-busy,
+.cancel-and-exit-modal .live-info.busy {
+    border: 1px solid;
+    border-bottom: none;
 }

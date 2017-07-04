@@ -16,11 +16,11 @@
     display: flex;
     position: relative;
     overflow: visible;
-    padding-left: 10px;
+    padding: 0 3px;
 }
 
 .window-controls-wrapper .window-controls.window-controls-main {
-    padding-left: 30px;
+    padding-left: 15px;
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper {
@@ -78,11 +78,11 @@
     overflow: auto;
     max-height: 0;
     position: absolute;
-    margin-top: -4px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - 1px));
     overflow: hidden;
     z-index: 4;
+    padding: 0px var(--window-control-submenu-shadow-size);
     transition-property: max-height;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
@@ -100,12 +100,15 @@
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper.menu-opened .window-control-submenu {
     border-width: 1px;
-    max-height: 300px;
+    max-height: 100vh;
+    z-index: 5;
 }
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-arrow {
     margin: 0px auto;
-    height: 12px;
+    height: 8px;
+    line-height: 8px;
+    display: block;
     color: var(--window-control-submenu-arrow-color);
 }
 
@@ -115,6 +118,8 @@
     border-style: solid;
     border-color: var(--window-control-submenu-border-color);
     border-radius: var(--window-control-submenu-border-radius);
+    box-shadow: var(--window-control-submenu-box-shadow);
+    margin-bottom: var(--window-control-submenu-shadow-size);
 }
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control {

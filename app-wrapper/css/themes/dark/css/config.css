@@ -207,13 +207,19 @@
 
     --window-control-submenu-background-color: #333333;
     --window-control-submenu-background-color-hover: #666666;
-    --window-control-submenu-background-color-active: #999999;
+    --window-control-submenu-background-color-active: #555555;
+
     --window-control-submenu-text-color: #AAAAAA;
     --window-control-submenu-text-color-hover: #CCCCCC;
     --window-control-submenu-text-color-active: #FFFFFF;
-    --window-control-submenu-arrow-color: #999999;
+
     --window-control-submenu-border-color: #666666;
     --window-control-submenu-border-radius: 3px;
+
+    --window-control-submenu-shadow-size: 15px;
+    --window-control-submenu-box-shadow: 0 0 var(--window-control-submenu-shadow-size) #FFFFFF;
+
+    --window-control-submenu-arrow-color: #CCCCCC;
     --window-control-submenu-separator-background: #CCCCCC;
 
     /* live info */
@@ -271,7 +277,7 @@
     --app-live-info-operation-text-text-stroke-width: 0.2px;
     --app-live-info-operation-text-text-stroke-color: #000000;
     --app-live-info-operation-text-text-shadow: none;
-    --app-live-info-operation-text-font-size: 0.9rem;
+    --app-live-info-operation-text-font-size: 0.8rem;
 
     --app-live-info-offline-operation-text-color: #666666;
     --app-live-info-offline-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);

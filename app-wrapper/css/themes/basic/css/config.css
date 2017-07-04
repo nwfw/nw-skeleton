@@ -78,7 +78,6 @@
 
 
 
-
     --app-error-text-color: #DD0000;
     --app-error-background-color: #EEEEEE;
 
@@ -214,12 +213,18 @@
     --window-control-submenu-background-color: #CCCCCC;
     --window-control-submenu-background-color-hover: #BBBBBB;
     --window-control-submenu-background-color-active: #999999;
+
     --window-control-submenu-text-color: #666666;
     --window-control-submenu-text-color-hover: #333333;
     --window-control-submenu-text-color-active: #000000;
-    --window-control-submenu-arrow-color: #666666;
+
     --window-control-submenu-border-color: #999999;
     --window-control-submenu-border-radius: 3px;
+
+    --window-control-submenu-shadow-size: 15px;
+    --window-control-submenu-box-shadow: 0 0 var(--window-control-submenu-shadow-size) #333333;
+
+    --window-control-submenu-arrow-color: #666666;
     --window-control-submenu-separator-background: #666666;
 
     /* live info */
@@ -277,7 +282,7 @@
     --app-live-info-operation-text-text-stroke-width: 0.2px;
     --app-live-info-operation-text-text-stroke-color: #000000;
     --app-live-info-operation-text-text-shadow: none;
-    --app-live-info-operation-text-font-size: 0.9rem;
+    --app-live-info-operation-text-font-size: 0.8rem;
 
     --app-live-info-offline-operation-text-color: #666666;
     --app-live-info-offline-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
@@ -294,19 +299,19 @@
     --app-live-info-error-operation-text-color: #FF0000;
     --app-live-info-error-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
     --app-live-info-error-operation-text-text-stroke-color: #990000;
-    --app-live-info-error-operation-text-text-shadow: 0 0 1px #660000;
+    --app-live-info-error-operation-text-text-shadow: 0 0 1px #FF0000;
     --app-live-info-error-operation-text-font-size: var(--app-live-info-operation-text-font-size);
 
-    --app-live-info-working-operation-text-color: #FFCC33;
+    --app-live-info-working-operation-text-color: #CC9900;
     --app-live-info-working-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
     --app-live-info-working-operation-text-text-stroke-color: #996600;
-    --app-live-info-working-operation-text-text-shadow: 0 0 2px #000000;
+    --app-live-info-working-operation-text-text-shadow: 0 0 0px #CCCC00;
     --app-live-info-working-operation-text-font-size: var(--app-live-info-operation-text-font-size);
 
-    --app-live-info-busy-operation-text-color: #FFCC33;
+    --app-live-info-busy-operation-text-color: #CC9900;
     --app-live-info-busy-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
     --app-live-info-busy-operation-text-text-stroke-color: #000000;
-    --app-live-info-busy-operation-text-text-shadow: 0 0 2px #000000;
+    --app-live-info-busy-operation-text-text-shadow: 0 0 0px #CCCC00;
     --app-live-info-busy-operation-text-font-size: var(--app-live-info-operation-text-font-size);
 
     /* live info status icon */
@@ -318,7 +323,7 @@
     --app-live-info-status-font-size: 1rem;
 
 
-    --app-live-info-offline-status-color: #CCC;
+    --app-live-info-offline-status-color: #CCCCCC;
     --app-live-info-offline-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
     --app-live-info-offline-status-text-stroke-color: #000000;
     --app-live-info-offline-status-text-shadow: none;
@@ -342,15 +347,15 @@
     --app-live-info-error-status-text-shadow: none;
     --app-live-info-error-status-font-size: var(--app-live-info-status-font-size);
 
-    --app-live-info-working-status-color: #FFCC33;
+    --app-live-info-working-status-color: #CC9900;
     --app-live-info-working-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
-    --app-live-info-working-status-text-stroke-color: #441100;
+    --app-live-info-working-status-text-stroke-color: #996600;
     --app-live-info-working-status-text-shadow: none;
     --app-live-info-working-status-font-size: var(--app-live-info-status-font-size);
 
-    --app-live-info-busy-status-color: #FFCC33;
+    --app-live-info-busy-status-color: #CC9900;
     --app-live-info-busy-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
-    --app-live-info-busy-status-text-stroke-color: #441100;
+    --app-live-info-busy-status-text-stroke-color: #996600;
     --app-live-info-busy-status-text-shadow: none;
     --app-live-info-busy-status-font-size: var(--app-live-info-status-font-size);
 
@@ -361,7 +366,7 @@
     --modal-dialog-border: 1px solid #666666;
     --modal-dialog-box-shadow: 0 0 50px #333333;
 
-    --modal-dialog-body-background: #444444;
+    --modal-dialog-body-background: #EEEEEE;
     --modal-dialog-body-padding: 5px;
 
     --modal-dialog-title-text-color: #333333;

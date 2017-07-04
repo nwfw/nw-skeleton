@@ -82,6 +82,7 @@ class AppOperationHelper extends BaseClass {
         }
 
         appState.status.appStatusChanging = true;
+        appState.appOperation.operationVisible = true;
         _appWrapper.setAppStatus(appBusy);
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
@@ -262,8 +263,11 @@ class AppOperationHelper extends BaseClass {
         return !appState.appOperation.operationActive || appState.appOperation.cancelled;
     }
 
-    resetOperationData () {
-        appState.appOperation = {
+    resetOperationData (data) {
+        if (!data){
+            data = {};
+        }
+        appState.appOperation = _.extend({
             operationText: '',
             useProgress: false,
             progressText: '',
@@ -272,8 +276,9 @@ class AppOperationHelper extends BaseClass {
             cancelling: false,
             cancelled: false,
             operationActive: false,
+            operationVisible: false,
             operationId: '',
-        };
+        }, data);
     }
 }
 
