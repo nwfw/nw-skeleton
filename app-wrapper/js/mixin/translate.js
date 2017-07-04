@@ -9,8 +9,8 @@ var TranslateMixin  = {
     },
 
     methods: {
-        translate: function (label, currentLanguage) {
-            return _appWrapper.appTranslations.translate(label, currentLanguage);
+        translate: function (label, currentLanguage, data) {
+            return _appWrapper.appTranslations.translate(label, currentLanguage, data);
         }
     }
 };

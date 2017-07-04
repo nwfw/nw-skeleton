@@ -243,12 +243,15 @@ class AppTranslations extends BaseClass {
         }
     }
 
-    translate (label, currentLanguage){
+    translate (label, currentLanguage, data){
         var languageData = appState.languageData;
         if (!currentLanguage){
             currentLanguage = languageData.currentLanguage;
         }
         var translation = label;
+        if (!data){
+            data = [];
+        }
         try {
             if (languageData.translations[currentLanguage] && (languageData.translations[currentLanguage][label])){
                 translation = languageData.translations[currentLanguage][label];
@@ -267,6 +270,13 @@ class AppTranslations extends BaseClass {
             }
         } catch(e) {
             this.log('Problem translating label "{1}" for language "{2}" - "{3}".', 'error', [label, currentLanguage, e]);
+        }
+
+        if (translation && translation.match && translation.match(/{(\d+)}/) && _.isArray(data) && data.length) {
+            translation = translation.replace(/{(\d+)}/g, (match, number) => {
+                var index = number - 1;
+                return !_.isUndefined(data[index]) ? data[index] : match;
+            });
         }
         return translation;
     }

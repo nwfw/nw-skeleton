@@ -256,6 +256,13 @@ exports.appState = {
         defaultBodyComponent: 'cancel-and-exit',
         modalClassName: 'cancel-and-exit-modal',
         preventEscClose: true,
+        hideProgress: false,
+        remainingTime: 0,
+        success: false,
+        fail: false,
+        closing: false,
+        reloading: false,
+        cancelable: false,
     },
 
 };

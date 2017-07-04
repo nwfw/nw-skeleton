@@ -3,6 +3,14 @@
     text-align: center;
 }
 
+.cancel-and-exit-modal .cancel-and-exit-timer {
+    margin: 10px;
+}
+
+.cancel-and-exit-modal .cancel-and-exit-timer-time {
+    font-weight: 600;
+}
+
 .cancel-and-exit-modal .progress-bar-wrapper {
     border: 1px solid;
     border-top-left-radius: 0px;

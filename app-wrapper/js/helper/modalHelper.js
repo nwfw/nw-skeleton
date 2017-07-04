@@ -92,35 +92,7 @@ class ModalHelper extends BaseClass {
             appState.modalData.fadeModal = fadeModal;
         }
         if (appState.modalData.currentModal.autoCloseTime) {
-            var seconds = parseInt(appState.modalData.currentModal.autoCloseTime / 1000, 10);
-            let confirmVisible = appState.modalData.currentModal.showConfirmButton;
-            let cancelVisible = appState.modalData.currentModal.showCancelButton;
-            var confirmButtonText = appState.modalData.currentModal.confirmButtonText;
-            var cancelButtonText = appState.modalData.currentModal.cancelButtonText;
-            if (confirmVisible){
-                appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
-            } else if (cancelVisible) {
-                appState.modalData.currentModal.cancelButtonText = cancelButtonText + ' (' + seconds + ')';
-            }
-
-            this.timeouts.autoClose = setTimeout(() => {
-                clearInterval(this.intervals.autoClose);
-                clearTimeout(this.timeouts.autoClose);
-                this.closeCurrentModal();
-            }, appState.modalData.currentModal.autoCloseTime);
-
-            this.intervals.autoClose = setInterval(() => {
-                seconds--;
-                if (seconds < 0){
-                    seconds = 0;
-                }
-                if (confirmVisible){
-                    appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
-                } else if (cancelVisible) {
-                    appState.modalData.currentModal.cancelButtonText = cancelButtonText + ' (' + seconds + ')';
-                }
-
-            }, 1000);
+            this.autoCloseModal();
         }
     }
 
@@ -248,9 +220,43 @@ class ModalHelper extends BaseClass {
     getModalObject(modalName){
         let modalObj = false;
         if (!_.isUndefined(appState[modalName])){
-            modalObj = _.extend({}, appState.defaultModal, appState[modalName]);
+            modalObj = _.extend({}, _.cloneDeep(appState.defaultModal), _.cloneDeep(appState[modalName]));
         }
         return modalObj;
+    }
+
+    autoCloseModal () {
+        var seconds = parseInt(appState.modalData.currentModal.autoCloseTime / 1000, 10);
+        let confirmVisible = appState.modalData.currentModal.showConfirmButton;
+        let cancelVisible = appState.modalData.currentModal.showCancelButton;
+        var confirmButtonText = appState.modalData.currentModal.confirmButtonText;
+        var cancelButtonText = appState.modalData.currentModal.cancelButtonText;
+        if (confirmVisible){
+            appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
+        } else if (cancelVisible) {
+            appState.modalData.currentModal.cancelButtonText = cancelButtonText + ' (' + seconds + ')';
+        }
+
+        clearTimeout(this.timeouts.autoClose);
+        this.timeouts.autoClose = setTimeout(() => {
+            clearInterval(this.intervals.autoClose);
+            clearTimeout(this.timeouts.autoClose);
+            this.closeCurrentModal();
+        }, appState.modalData.currentModal.autoCloseTime);
+
+        clearInterval(this.intervals.autoClose);
+        this.intervals.autoClose = setInterval(() => {
+            seconds--;
+            if (seconds < 0){
+                seconds = 0;
+            }
+            if (confirmVisible){
+                appState.modalData.currentModal.confirmButtonText = confirmButtonText + ' (' + seconds + ')';
+            } else if (cancelVisible) {
+                appState.modalData.currentModal.cancelButtonText = cancelButtonText + ' (' + seconds + ')';
+            }
+
+        }, 1000);
     }
 }
 

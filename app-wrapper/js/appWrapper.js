@@ -44,18 +44,12 @@ class AppWrapper extends BaseClass {
             saveUserConfig: null,
             onWindowClose: null,
             onDebugWindowClose: null,
-            cancelAndClose: null,
-            cancelAndReload: null,
-            stopCancelAndExit: null,
         };
 
         this.timeouts = {
             cleanupTimeout: null,
             windowCloseTimeout: null,
             modalContentVisibleTimeout: null,
-        };
-
-        this.intervals = {
         };
 
         this.debugWindow = null;
@@ -374,36 +368,12 @@ class AppWrapper extends BaseClass {
 
     async onWindowClose () {
         let modalHelper = this.getHelper('modal');
+        let appOperationHelper = this.getHelper('appOperation');
         modalHelper.closeCurrentModal(true);
         let confirmed = true;
         if (appState.appOperation.operationActive){
-            if (appState.appOperation.cancelable){
-                appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
-                let cm = appState.modalData.currentModal;
-                cm.title = this.appTranslations.translate('Are you sure?');
-                cm.body = this.appTranslations.translate('Operation is still in progress, do you want to cancel?');
-                this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.onWindowClose(); });
-                this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, exiting.'); cm.title = this.appTranslations.translate('Operation finished'); });
-                // confirmed = await modalHelper.confirm('Are you sure?', 'There is an operation currently in progress, are you sure you want to exit?', 'Yes', 'No', this.boundMethods.cancelAndClose);
-                appState.headerData.hideLiveInfo = true;
-                appState.headerData.hideProgressBar = true;
-                confirmed = await modalHelper.query(this.boundMethods.cancelAndClose, this.boundMethods.stopCancelAndExit);
-                return;
-            } else {
-                confirmed = false;
-                appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
-                let cm = appState.modalData.currentModal;
-                cm.title = this.appTranslations.translate('Operation in progress');
-                cm.body = this.appTranslations.translate('You can\'t quit until current operation completes.');
-                cm.showCancelButton = false;
-                cm.autoCloseTime = 5000;
-                this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.onWindowClose(); });
-                this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, exiting.'); cm.title = this.appTranslations.translate('Operation finished'); });
-                appState.headerData.hideLiveInfo = true;
-                appState.headerData.hideProgressBar = true;
-                await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
-                this.stopCancelAndExit();
-            }
+            appOperationHelper.showCancelModal(false);
+            return;
         }
         if (confirmed){
             await this.cleanup();
@@ -414,63 +384,6 @@ class AppWrapper extends BaseClass {
         } else {
             return;
         }
-    }
-    async cancelAndClose (result) {
-        this.removeAllListeners('appOperation:finish');
-        let modalHelper = this.getHelper('modal');
-        let success = result;
-        if (success){
-            modalHelper.modalBusy(this.appTranslations.translate('Please wait while operation is cancelled...'));
-            success = await this.getHelper('appOperation').operationCancel();
-            modalHelper.closeCurrentModal(true);
-            if (success){
-                await this.cleanup();
-                if (!appState.isDebugWindow){
-                    appState.appError.error = false;
-                    this.windowManager.closeWindowForce();
-                    return;
-                }
-            }
-        }
-        if (!success){
-            modalHelper.closeCurrentModal(true);
-            modalHelper.openSimpleModal(this.appTranslations.translate('Problem cancelling operation'), this.appTranslations.translate('You could try to cancel it yourself or kill the program if it is unresponsive.'), { showCancelButton: false, confirmButtonText: 'Ok', autoCloseTime: 5000});
-        }
-    }
-
-    async cancelAndReload (result) {
-        this.removeAllListeners('appOperation:finish');
-        let modalHelper = this.getHelper('modal');
-        let success = result;
-        if (success){
-            modalHelper.modalBusy(this.appTranslations.translate('Please wait while operation is cancelled...'));
-            success = await this.getHelper('appOperation').operationCancel();
-            modalHelper.closeCurrentModal(true);
-            if (success){
-                await this.cleanup();
-                if (!appState.isDebugWindow){
-                    appState.appError.error = false;
-                    this.windowManager.reloadWindow(null, true);
-                    return;
-                }
-            }
-        }
-        if (!success){
-            modalHelper.closeCurrentModal(true);
-            modalHelper.openSimpleModal(this.appTranslations.translate('Problem cancelling operation'), this.appTranslations.translate('You could try to cancel it yourself or kill the program if it is unresponsive.'), { showCancelButton: false, confirmButtonText: 'Ok', autoCloseTime: 5000});
-        }
-    }
-
-    async stopCancelAndExit(){
-        appState.closeModalResolve = null;
-        appState.closeModalReject = null;
-        this.removeAllListeners('appOperation:finish');
-        this.removeAllListeners('appOperation:progressDone');
-        this._confirmModalAction = this.__confirmModalAction;
-        this._cancelModalAction = this.__cancelModalAction;
-        this.helpers.modalHelper.closeCurrentModal();
-        appState.headerData.hideLiveInfo = false;
-        appState.headerData.hideProgressBar = false;
     }
 
     async cleanup(){
@@ -529,36 +442,12 @@ class AppWrapper extends BaseClass {
 
     async beforeUnload () {
         let modalHelper = this.getHelper('modal');
+        let appOperationHelper = this.getHelper('appOperation');
         modalHelper.closeCurrentModal(true);
         let confirmed = true;
         if (appState.appOperation.operationActive){
-            if (appState.appOperation.cancelable){
-                appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
-                let cm = appState.modalData.currentModal;
-                cm.title = this.appTranslations.translate('Are you sure?');
-                cm.body = this.appTranslations.translate('Operation is still in progress, do you want to cancel?');
-                this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.beforeUnload(); });
-                this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, reloading.'); cm.title = this.appTranslations.translate('Operation finished'); });
-                // confirmed = await modalHelper.confirm('Are you sure?', 'There is an operation currently in progress, are you sure you want to exit?', 'Yes', 'No', this.boundMethods.cancelAndReload);
-                appState.headerData.hideLiveInfo = true;
-                appState.headerData.hideProgressBar = true;
-                confirmed = await modalHelper.query(this.boundMethods.cancelAndReload, this.boundMethods.stopCancelAndExit);
-                return;
-            } else {
-                confirmed = false;
-                appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
-                let cm = appState.modalData.currentModal;
-                cm.title = this.appTranslations.translate('Operation in progress');
-                cm.body = this.appTranslations.translate('You can\'t quit until current operation completes.');
-                cm.showCancelButton = false;
-                cm.autoCloseTime = 5000;
-                this.once('appOperation:finish', () => { this.helpers.modalHelper.closeCurrentModal(); this.beforeUnload(); });
-                this.once('appOperation:progressDone', () => { cm.showCancelButton = false; cm.showConfirmButton = false; cm.body = this.appTranslations.translate('Operation finished, reloading.'); cm.title = this.appTranslations.translate('Operation finished'); });
-                appState.headerData.hideLiveInfo = true;
-                appState.headerData.hideProgressBar = true;
-                await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
-                this.stopCancelAndExit();
-            }
+            appOperationHelper.showCancelModal(true);
+            return;
         }
         if (confirmed){
             await this.cleanup();

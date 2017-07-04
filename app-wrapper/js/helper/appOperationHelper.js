@@ -14,11 +14,21 @@ class AppOperationHelper extends BaseClass {
 
         this.timeouts = {
             appStatusChangingTimeout: null,
-            cancellingTimeout: null
+            cancellingTimeout: null,
+            cancelCountdown: null,
         };
 
         this.intervals = {
-            cancellingCheck: null
+            cancellingCheck: null,
+            cancelCountdown: null,
+        };
+
+        this.boundMethods = {
+            cancelAndClose: null,
+            cancelAndReload: null,
+            stopCancelAndExit: null,
+            cancelProgressDone: null,
+            cancelOperationComplete: null,
         };
 
         this.operationStartTime = null;
@@ -153,12 +163,14 @@ class AppOperationHelper extends BaseClass {
                 clearInterval(this.intervals.cancellingCheck);
                 appState.appOperation.cancelling = false;
                 appState.appOperation.cancelled = true;
+                _appWrapper.emit('appOperation:cancelled');
                 resolveReference(cancelled);
             }
         }, 100);
         this.timeouts.cancellingTimeout = setTimeout( () => {
             clearInterval(this.intervals.cancellingCheck);
             clearTimeout(this.timeouts.cancellingTimeout);
+            _appWrapper.emit('appOperation:cancelTimedOut');
             resolveReference(false);
         }, this.getConfig('cancelOperationTimeout'));
         return returnPromise;
@@ -279,6 +291,117 @@ class AppOperationHelper extends BaseClass {
             operationVisible: false,
             operationId: '',
         }, data);
+    }
+
+    async showCancelModal (reloading) {
+        let modalHelper = _appWrapper.getHelper('modal');
+        appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal');
+        let cm = appState.modalData.currentModal;
+        cm.reloading = reloading ? true : false;
+        cm.closing = reloading ? false : true;
+        cm.cancelable = appState.appOperation.cancelable;
+        _appWrapper.once('appOperation:finish', this.boundMethods.cancelOperationComplete);
+        _appWrapper.once('appOperation:progressDone', this.boundMethods.cancelProgressDone);
+        appState.headerData.hideLiveInfo = true;
+        appState.headerData.hideProgressBar = true;
+        if (appState.appOperation.cancelable){
+            cm.title = _appWrapper.appTranslations.translate('Are you sure?');
+            if (cm.reloading){
+                await modalHelper.query(this.boundMethods.cancelAndReload, this.boundMethods.stopCancelAndExit);
+            } else {
+                await modalHelper.query(this.boundMethods.cancelAndClose, this.boundMethods.stopCancelAndExit);
+            }
+            return;
+        } else {
+            cm.title = _appWrapper.appTranslations.translate('Operation in progress');
+            cm.showCancelButton = false;
+            cm.autoCloseTime = 5000;
+            await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
+            this.stopCancelAndExit();
+        }
+    }
+
+    async cancelProgressDone () {
+        let cm = appState.modalData.currentModal;
+        cm.showCancelButton = false;
+        cm.showConfirmButton = false;
+        cm.hideProgress = true;
+        cm.success = true;
+        cm.title = _appWrapper.appTranslations.translate('Operation finished');
+    }
+
+    async cancelOperationComplete () {
+        let cm = _.cloneDeep(appState.modalData.currentModal);
+        _appWrapper.getHelper('modal').closeCurrentModal();
+        if (cm.reloading){
+            _appWrapper.beforeUnload();
+        } else {
+            _appWrapper.onWindowClose();
+        }
+    }
+
+    async cancelAndClose (result) {
+        await this.cancelAndExit(result, () => {_appWrapper.windowManager.closeWindowForce();});
+    }
+
+    async cancelAndReload (result) {
+        await this.cancelAndExit(result, () => {_appWrapper.windowManager.reloadWindow(null, true);});
+    }
+
+    async cancelAndExit (result, callback) {
+        _appWrapper.removeAllListeners('appOperation:finish');
+        let modalHelper = _appWrapper.getHelper('modal');
+        let success = result;
+        let cm = appState.modalData.currentModal;
+        if (success){
+            cm.title = _appWrapper.appTranslations.translate('Please wait while operation is cancelled.');
+            cm.body = '';
+            cm.showCancelButton = false;
+            cm.showConfirmButton = false;
+            cm.remainingTime = appState.config.cancelOperationTimeout;
+            clearInterval(this.intervals.cancelCountdown);
+            this.intervals.cancelCountdown = setInterval( () => {
+                if (cm.remainingTime >= 1000){
+                    cm.remainingTime = cm.remainingTime - 1000;
+                } else {
+                    cm.remainingTime = 0;
+                }
+            }, 1000);
+            success = await this.operationCancel();
+            cm.remainingTime = 0;
+            clearInterval(this.intervals.cancelCountdown);
+            if (success){
+                modalHelper.closeCurrentModal(true);
+                await _appWrapper.cleanup();
+                if (!appState.isDebugWindow){
+                    appState.appError.error = false;
+                    callback();
+                    return;
+                }
+            }
+        }
+        if (!success){
+            cm.title = _appWrapper.appTranslations.translate('Problem cancelling operation');
+            cm.fail = true;
+            cm.success = false;
+            cm.showConfirmButton = true;
+            cm.confirmButtonText = 'Ok';
+            cm.hideProgress = true;
+            cm.autoCloseTime = 5000;
+            modalHelper.autoCloseModal();
+        }
+    }
+
+    async stopCancelAndExit(){
+        appState.closeModalResolve = null;
+        appState.closeModalReject = null;
+        appState.headerData.hideLiveInfo = false;
+        appState.headerData.hideProgressBar = false;
+        _appWrapper.removeAllListeners('appOperation:finish');
+        _appWrapper.removeAllListeners('appOperation:progressDone');
+        _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
+        _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+        _appWrapper.getHelper('modal').closeCurrentModal();
     }
 }
 

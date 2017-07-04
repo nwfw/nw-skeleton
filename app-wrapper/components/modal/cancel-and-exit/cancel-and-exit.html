@@ -1,7 +1,27 @@
 <div>
-    <div class="cancel-and-exit-message">
-        {{ currentModal.body }}
+    <div v-if="currentModal.success" class="cancel-and-exit-message">
+        <div v-if="currentModal.reloading">
+            {{ translate('Operation finished, reloading.') }}
+        </div>
+        <div v-else>
+            {{ translate('Operation finished, exiting.') }}
+        </div>
     </div>
-    <live-info ref="modalLiveInfo"></live-info>
-    <progress-bar ref="modalProgressBar"></progress-bar>
+    <div v-else-if="currentModal.fail" class="cancel-and-exit-message">
+        {{ translate('You could try to cancel it yourself or kill the program if it is unresponsive.') }}
+    </div>
+    <div v-else class="cancel-and-exit-message">
+        <div v-if="!currentModal.cancelable">
+            {{ translate('You can\'t quit until current operation completes.') }}
+        </div>
+        <div v-else="!currentModal.cancelable">
+            {{ translate('Operation is still in progress, do you want to cancel?') }}
+        </div>
+        <div v-if="currentModal.remainingTime" class="cancel-and-exit-timer">
+            <span class="cancel-and-exit-timer-message" v-html="translate('Cancelling will time out in')"></span>
+            <span class="cancel-and-exit-timer-time" v-html="formatDuration(parseInt(currentModal.remainingTime / 1000, 10))"></span>
+        </div>
+    </div>
+    <live-info v-bind:dont-display="currentModal.hideProgress" ref="modalLiveInfo"></live-info>
+    <progress-bar v-bind:dont-display="currentModal.hideProgress" ref="modalProgressBar"></progress-bar>
 </div>
