@@ -1,15 +1,11 @@
 const _ = require('lodash');
 const BaseClass = require('../base').BaseClass;
 
-// var _appWrapper;
-// var appState;
 
 class HtmlHelper extends BaseClass {
 
     constructor(){
         super();
-        // _appWrapper = window.getAppWrapper();
-        // appState = _appWrapper.getAppState();
         this.intervals = {
             scrollTo: {}
         };
@@ -17,6 +13,7 @@ class HtmlHelper extends BaseClass {
 
     async initialize () {
         await super.initialize();
+        this.extendElementProto();
         return this;
     }
 
@@ -24,16 +21,33 @@ class HtmlHelper extends BaseClass {
         return true;
     }
 
-    getCssVarValue (name, defaultValue, element) {
-        if (!element){
-            element = document.body;
+    extendElementProto () {
+        var self = this;
+
+        var customMethods = _.without((Object.getOwnPropertyNames(HtmlHelper.prototype).filter(function (p) {
+            return typeof HtmlHelper.prototype[p] == 'function';
+        })), 'constructor', 'initialize', 'finalize', 'extendElementProto');
+
+        Element.prototype.getCustomMethods = function() {
+            return customMethods;
+        };
+
+        for (let i=0; i<customMethods.length; i++){
+            Element.prototype[customMethods[i]] = function() {
+                if (arguments && arguments.length){
+                    if (typeof arguments[0] == Element){
+                        // if first argument is Element, use 'this' instead
+                        return self[customMethods[i]].apply(self, arguments);
+                    } else {
+                        // call method with unchanged arguments
+                        return self[customMethods[i]].apply(self, _.union([this], arguments));
+                    }
+                } else {
+                    // call method with 'this' as only argument
+                    return self[customMethods[i]](this);
+                }
+            };
         }
-        var elementStyles = window.getComputedStyle(element);
-        var value = elementStyles.getPropertyValue(name);
-        if (!value && defaultValue) {
-            value = defaultValue;
-        }
-        return value;
     }
 
     setElementStyles (element, styles, merge){
@@ -153,7 +167,7 @@ class HtmlHelper extends BaseClass {
         return dimensions;
     }
 
-    getUniqueElementIdentifier(element, setAttr){
+    getUniqueElementIdentifier (element, setAttr){
         var identifier = '';
 
         if (element.getAttribute('data-identifier')){
@@ -330,15 +344,11 @@ class HtmlHelper extends BaseClass {
         return parent;
     }
 
-    nl2br (value) {
-        return value.replace(/\r?\n/g, '<br />');
-    }
-
     selectAll (element){
         var selection = window.getSelection();
-        var range = document.createRange();
-        range.selectNodeContents(element);
         selection.removeAllRanges();
+        var range = document.createRange();
+        range.selectNode(element);
         selection.addRange(range);
     }
 

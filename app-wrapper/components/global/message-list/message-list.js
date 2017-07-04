@@ -8,7 +8,7 @@ exports.component = {
     updated: function () {
         let ul = this.$el.querySelector('ul');
         if (ul){
-            _appWrapper.getHelper('html').scrollElementTo(ul, ul.scrollHeight, 0);
+            ul.scrollElementTo(ul.scrollHeight, 0);
         }
     },
     data: function () {

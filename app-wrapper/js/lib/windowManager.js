@@ -646,7 +646,7 @@ class WindowManager extends BaseClass {
     dragWindow (e) {
         var link = this.window.document.querySelector('.window-control-move');
         /* link offset position to body */
-        var offsetPosition = _appWrapper.getHelper('html').getAbsolutePosition(link);
+        var offsetPosition = link.getAbsolutePosition();
         /* azimuths are half of link widths/heights */
         var widthAzimuth = -parseInt(link.parentNode.offsetWidth/2, 10);
         var heightAzimuth = -parseInt(link.parentNode.offsetHeight/2, 10);

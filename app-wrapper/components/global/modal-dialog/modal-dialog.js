@@ -56,18 +56,18 @@ component = {
 
         beforeEnter: function (element) {
             if (appState.modalData.currentModal.animateSize){
-                _appWrapper.helpers.htmlHelper.addClass(element, 'transition-wh');
-                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
+                element.addClass('transition-wh');
+                element.setElementStyles({width: 0, height: 0, opacity: 0});
             }
         },
         enter: function (element, done) {
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
-                var duration = parseInt(parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-                var dimensions = _appWrapper.helpers.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
+                var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+                var dimensions = modalDialogWrapper.getRealDimensions('.' + element.className.split(' ')[0]);
 
-                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+                element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
 
                 setTimeout(done, duration + 100);
             } else {
@@ -78,15 +78,15 @@ component = {
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
-                _appWrapper.helpers.htmlHelper.addClass(element, 'transition-wh');
-                var dimensions = _appWrapper.helpers.htmlHelper.getRealDimensions(modalDialogWrapper, '.' + element.className.split(' ')[0]);
-                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+                element.addClass('transition-wh');
+                var dimensions = modalDialogWrapper.getRealDimensions('.' + element.className.split(' ')[0]);
+                element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
             }
         },
         leave: function (element, done) {
             if (appState.modalData.currentModal.animateSize){
-                var duration = parseInt(parseFloat(_appWrapper.helpers.htmlHelper.getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-                _appWrapper.helpers.htmlHelper.setElementStyles(element, {width: 0, height: 0, opacity: 0});
+                var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+                element.setElementStyles({width: 0, height: 0, opacity: 0});
 
                 setTimeout(done, duration + 100);
             } else {
@@ -95,8 +95,8 @@ component = {
         },
         afterCancel: function (element) {
             if (appState.modalData.currentModal.animateSize){
-                _appWrapper.helpers.htmlHelper.removeClass(element, 'transition-wh');
-                _appWrapper.helpers.htmlHelper.removeElementStyles(element, ['height', 'width']);
+                element.removeClass('transition-wh');
+                element.removeElementStyles(['height', 'width']);
             }
         },
         addModalMessage: function(messageObject){
@@ -126,7 +126,7 @@ component = {
             if (messageElements && messageElements.length && messageElements.length > index){
                 let messageElement = messageElements[index];
                 if (messageElement && messageElement.scrollIntoView){
-                    _appWrapper.getHelper('html').scrollParentToElement(messageElement, 100);
+                    messageElement.scrollParentToElement(100);
                 }
             }
 

@@ -199,7 +199,7 @@ class AppWrapper extends BaseClass {
 
     async finalize () {
         appState.status.appLoaded = true;
-        await this.wait(parseInt(parseFloat(this.getHelper('html').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
+        await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
         var retValue = await this.app.finalize();
         if (retValue){
             appState.status.appInitialized = true;

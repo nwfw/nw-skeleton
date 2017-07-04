@@ -42,7 +42,7 @@ exports.component = {
                 var width = this.$el.clientWidth;
                 var newWidth = width + diff;
                 var newStyles = { width: newWidth + 'px;'};
-                _appWrapper.getHelper('html').setElementStyles(this.$el, newStyles, true);
+                this.$el.setElementStyles(newStyles, true);
             }
         }
     },

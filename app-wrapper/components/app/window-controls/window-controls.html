@@ -46,7 +46,7 @@
 				<div class="fa fa-caret-up window-control-submenu-arrow"></div>
 				<div class="window-control-submenu-inner">
 					<div class="window-control-submenu-item-wrapper">
-						<a class="window-control window-control-edit-configuration" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
+						<a class="window-control window-control-edit-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-cog"></span>
 							<span v-html="translate('Edit configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
@@ -63,7 +63,7 @@
 						<language-select ref="languageSelect"></language-select>
 					</div>
 					<div class="window-control-submenu-item-wrapper">
-						<a class="window-control window-control-open-translation-editor" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor">
+						<a class="window-control window-control-open-translation-editor" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-globe"></span>
 							<span v-html="translate('Open translation editor')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
@@ -76,13 +76,13 @@
 					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator">
 					</div>
 					<div class="window-control-submenu-item-wrapper" v-if="appState.config.debug.enabled && !appState.config.debug.hideDebug && !appState.hasDebugWindow && !appState.status.appShuttingDown">
-						<a class="window-control window-control-app-debug-configuration" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor">
+						<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-comment-o"></span>
 							<span v-html="translate('Debug log configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
 					</div>
 					<div class="window-control-submenu-item-wrapper">
-						<a class="window-control window-control-app-debug-configuration" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.openUserMessageConfigEditor">
+						<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.openUserMessageConfigEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-commenting-o"></span>
 							<span v-html="translate('User messages configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>

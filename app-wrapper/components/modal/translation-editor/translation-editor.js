@@ -35,7 +35,7 @@ exports.component = {
                 e.preventDefault;
             }
             this.$el.querySelector('.translation-editor-search-field').value = '';
-            _appWrapper.getHelper('html').unsetFixedSize(this.$el.querySelector('.tab-item.active'));
+            this.$el.querySelector('.tab-item.active').unsetFixedSize();
             this.performSearch();
 
         },
@@ -45,24 +45,24 @@ exports.component = {
             }
             var value = this.$el.querySelector('.translation-editor-search-field').value;
             if (value && value.length >= 2){
-                _appWrapper.getHelper('html').setFixedSize(this.$el.querySelector('.tab-item.active'));
+                this.$el.querySelector('.tab-item.active').setFixedSize();
                 var valueRegex = new RegExp(value, 'i');
                 let rows = this.$el.querySelectorAll('.lang-form-row');
                 for(let i=0; i<rows.length; i++){
                     var label = rows[i].getAttribute('data-label');
                     var translation = rows[i].getAttribute('data-translation');
                     if ((label && label.match(valueRegex)) || (translation && translation.match(valueRegex))){
-                        _appWrapper.helpers.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
+                        rows[i].removeClass('lang-form-row-hidden');
                     } else {
-                        _appWrapper.helpers.htmlHelper.addClass(rows[i], 'lang-form-row-hidden');
+                        rows[i].addClass('lang-form-row-hidden');
                     }
                 }
                 appState.modalData.currentModal.searchResults = this.$el.querySelectorAll('.lang-form-row:not(.lang-form-row-hidden)').length;
             } else {
-                _appWrapper.getHelper('html').unsetFixedSize(this.$el.querySelector('.tab-item.active'));
+                this.$el.querySelector('.tab-item.active').unsetFixedSize();
                 let rows = this.$el.querySelectorAll('.lang-form-row-hidden');
                 for (let i=0; i<rows.length; i++){
-                    _appWrapper.helpers.htmlHelper.removeClass(rows[i], 'lang-form-row-hidden');
+                    rows[i].removeClass('lang-form-row-hidden');
                 }
             }
             if (value && value.length){

@@ -15,8 +15,8 @@
     --no-selection-background: transparent;
     --no-selection-color: inherit;
 
-    --selection-background: #999999;
-    --selection-color: #DDDDDD;
+    --selection-background: #CCCCCC;
+    --selection-color: #000000;
 
     /* transition durations */
     --short-animation-duration: 0.2s;

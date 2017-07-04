@@ -274,6 +274,11 @@ class FormatHelper extends BaseClass {
         return _value;
     }
 
+    nl2br (value) {
+        return value.replace(/\r?\n/g, '<br />');
+    }
+
+
 
 }
 

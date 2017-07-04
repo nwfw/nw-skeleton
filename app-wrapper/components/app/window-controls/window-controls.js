@@ -13,31 +13,28 @@ exports.component = {
     },
     methods: {
         openSubmenu: function(e){
-            let htmlHelper = _appWrapper.getHelper('html');
-            let menuEl = htmlHelper.parentQuerySelector(e.target, '.window-control-menu-wrapper', true);
+            let menuEl = e.target.parentQuerySelector('.window-control-menu-wrapper');
             if (menuEl){
                 let menuIdentifier = menuEl.getAttribute('data-submenu');
                 let submenuSelector = '.window-control-submenu[data-submenu="' + menuIdentifier + '"]';
                 let submenuEl = menuEl.querySelector(submenuSelector);
                 if (submenuEl){
                     this.closeAllSubmenus();
-                    htmlHelper.addClass(menuEl, 'menu-opened');
+                    menuEl.addClass('menu-opened');
                     submenuEl.addEventListener('mouseout', this.closeSubmenuIntent);
                     submenuEl.addEventListener('mouseover', this.keepSubmenuIntent);
                 }
             }
         },
         keepSubmenuIntent: function(e) {
-            let htmlHelper = _appWrapper.getHelper('html');
-            let menuEl = htmlHelper.parentQuerySelector(e.target, '.window-control-menu-wrapper');
+            let menuEl = e.target.parentQuerySelector('.window-control-menu-wrapper');
             if (menuEl){
                 let menuIdentifier = menuEl.getAttribute('data-submenu');
                 clearTimeout(this.timeouts[menuIdentifier]);
             }
         },
         closeSubmenuIntent: function(e) {
-            let htmlHelper = _appWrapper.getHelper('html');
-            let menuEl = htmlHelper.parentQuerySelector(e.target, '.window-control-menu-wrapper');
+            let menuEl = e.target.parentQuerySelector('.window-control-menu-wrapper');
             if (menuEl){
                 let menuIdentifier = menuEl.getAttribute('data-submenu');
                 clearTimeout(this.timeouts[menuIdentifier]);
@@ -47,14 +44,13 @@ exports.component = {
             }
         },
         closeSubmenu: function(menuEl) {
-            let htmlHelper = _appWrapper.getHelper('html');
             let menuIdentifier = menuEl.getAttribute('data-submenu');
             let submenuSelector = '.window-control-submenu[data-submenu="' + menuIdentifier + '"]';
             let submenuEl = menuEl.querySelector(submenuSelector);
             if (submenuEl){
                 submenuEl.removeEventListener('mouseout', this.closeSubmenuIntent);
                 submenuEl.removeEventListener('mouseover', this.keepSubmenuIntent);
-                htmlHelper.removeClass(menuEl, 'menu-opened');
+                menuEl.removeClass('menu-opened');
                 if (this.timeouts[menuIdentifier]){
                     clearTimeout(this.timeouts[menuIdentifier]);
                     delete this.timeouts[menuIdentifier];
