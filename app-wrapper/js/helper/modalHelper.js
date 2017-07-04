@@ -48,6 +48,7 @@ class ModalHelper extends BaseClass {
     closeCurrentModal (force){
         let fadeModal = appState.modalData.fadeModal;
         if (!appState.modalData.currentModal.busy || force) {
+            this.log('Closing current modal.', 'info', []);
             if (force){
                 appState.modalData.fadeModal = 'none';
             }
@@ -69,6 +70,7 @@ class ModalHelper extends BaseClass {
     }
 
     openCurrentModal (showContentImmediately) {
+        this.log('Opening current modal.', 'info', []);
         appState.modalData.currentModal.messages = [];
         appState.modalData.currentModal.currentMessageIndex = -1;
         appState.modalData.modalVisible = true;
@@ -98,6 +100,7 @@ class ModalHelper extends BaseClass {
 
     async openSimpleModal(title, text, options, confirmAction, cancelAction) {
         this.closeCurrentModal(true);
+        this.log('Opening simple modal.', 'info', []);
         appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
         if (options && _.isObject(options)){
             appState.modalData.currentModal = _.merge(appState.modalData.currentModal, options);
@@ -128,6 +131,7 @@ class ModalHelper extends BaseClass {
     }
 
     async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
+        this.log('Opening confirm modal.', 'info', []);
         appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
 
         if (!text){
@@ -188,6 +192,7 @@ class ModalHelper extends BaseClass {
     }
 
     async query (confirmAction, cancelAction) {
+        this.log('Opening query modal.', 'info', []);
         this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         if (confirmAction){
             _appWrapper._confirmModalAction = confirmAction;
@@ -226,6 +231,7 @@ class ModalHelper extends BaseClass {
     }
 
     autoCloseModal () {
+        this.log('Setting up modal auto-close.', 'info', []);
         var seconds = parseInt(appState.modalData.currentModal.autoCloseTime / 1000, 10);
         let confirmVisible = appState.modalData.currentModal.showConfirmButton;
         let cancelVisible = appState.modalData.currentModal.showCancelButton;
@@ -241,7 +247,9 @@ class ModalHelper extends BaseClass {
         this.timeouts.autoClose = setTimeout(() => {
             clearInterval(this.intervals.autoClose);
             clearTimeout(this.timeouts.autoClose);
+            this.log('Auto-closing modal.', 'info', []);
             this.closeCurrentModal();
+
         }, appState.modalData.currentModal.autoCloseTime);
 
         clearInterval(this.intervals.autoClose);

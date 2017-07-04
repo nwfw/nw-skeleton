@@ -26,9 +26,12 @@ class StorageHelper extends BaseClass {
         var returnValue = null;
         var savedValue;
         if (localStorage && localStorage.setItem && _.isFunction(localStorage.setItem)){
+            this.log('Setting local storage var "{1}".', 'info', [name]);
             savedValue = JSON.stringify(value);
             localStorage.setItem(name, savedValue);
             returnValue = savedValue == localStorage.getItem(name);
+        } else {
+            this.log('Problem setting local storage var "{1}".', 'error', [name]);
         }
         return returnValue;
     }
@@ -36,6 +39,7 @@ class StorageHelper extends BaseClass {
     async get (name){
         var returnValue;
         if (localStorage && localStorage.getItem && _.isFunction(localStorage.getItem)){
+            this.log('Getting local storage var "{1}".', 'info', [name]);
             var savedValue = localStorage.getItem(name);
             if (savedValue){
                 try {

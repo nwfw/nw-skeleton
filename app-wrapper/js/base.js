@@ -23,13 +23,13 @@ class BaseClass extends eventEmitter {
         return this;
     }
 
-    async initialize () {
-        await this.initializeLogging();
+    async initialize (options) {
+        await this.initializeLogging(options);
         this.addBoundMethods();
         return this;
     }
 
-    async initializeLogging() {
+    async initializeLogging(options) {
         let className = this.constructor.name;
         if (appState && appState.config){
             if (appState.config.debug && appState.config.debug.forceDebug){
@@ -51,6 +51,9 @@ class BaseClass extends eventEmitter {
             if (this.needsConfig){
                 console.warn('Could not get config object (class "' + className + '").');
             }
+        }
+        if (!(options && options.silent)){
+            this.log('Initialized object "{1}"', 'debug', [className]);
         }
         return this;
     }

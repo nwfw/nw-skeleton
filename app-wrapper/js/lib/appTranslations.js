@@ -50,9 +50,11 @@ class AppTranslations extends BaseClass {
     }
 
     async loadTranslations () {
+        this.log('Loading translations.', 'info', []);
         var translationData = await this.loadTranslationsFromDir(path.resolve(this.getConfig('wrapper.translationsRoot')), this.getConfig('wrapper.translationExtensionRegex'));
         appState.languageData.availableLanguages = translationData.availableLanguages;
         appState.languageData.translations = translationData.translations;
+        this.log('Translations loaded.', 'info', []);
         return translationData;
     }
 
@@ -129,6 +131,7 @@ class AppTranslations extends BaseClass {
         if (modalElement){
             var modalForm = modalElement.querySelector('form');
             if (modalForm){
+                this.log('Saving translations.', 'info', []);
                 _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
                 var fieldsets = modalForm.querySelectorAll('fieldset');
                 for (var i=0; i<fieldsets.length; i++){

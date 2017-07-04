@@ -50,12 +50,19 @@ class ComponentHelper extends BaseClass {
         var vueMixins = [];
         var appVueMixins = [];
 
+        this.log('Loading mixins...', 'group', []);
+
         var mixinsDir = this.getConfig('wrapper.mixinRoot');
         if (mixinsDir){
             mixinsDir = path.resolve(mixinsDir);
             var mixinRegex = this.getConfig('wrapper.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
+                this.log('Loading wrapper mixins', 'group', []);
                 vueMixins = await this.initMixins(await _appWrapper.fileManager.loadFilesFromDir(mixinsDir, mixinRegex, true));
+                this.log('Loaded {1} wrapper mixins', 'info', [Object.keys(vueMixins).length]);
+                this.log('Loading wrapper mixins', 'groupend', []);
+            } else {
+                this.log('Wrapper mixins dir "{1}" does not exist', 'warning', [mixinsDir]);
             }
         }
 
@@ -64,17 +71,25 @@ class ComponentHelper extends BaseClass {
             appMixinsDir = path.resolve(appMixinsDir);
             var appMixinRegex = this.getConfig('appConfig.mixinExtensionRegex');
             if (fs.existsSync(mixinsDir)){
+                this.log('Loading app mixins', 'group', []);
                 appVueMixins = await this.initMixins(await _appWrapper.fileManager.loadFilesFromDir(appMixinsDir, appMixinRegex, true));
+                this.log('Loaded {1} app mixins', 'info', [Object.keys(appVueMixins).length]);
+                this.log('Loading app mixins', 'groupend', []);
+            } else {
+                this.log('App mixins dir "{1}" does not exist', 'warning', [appMixinsDir]);
             }
 
             vueMixins = _.merge(vueMixins, appVueMixins);
         }
+
+        this.log('Loading mixins...', 'groupend', []);
         return vueMixins;
     }
 
     async initMixins (vueMixinData){
         var vueMixins = [];
         for (let mixinName in vueMixinData){
+            this.log('Initializing mixin "{1}"', 'info', [mixinName]);
             vueMixins.push(vueMixinData[mixinName]);
             Vue.mixin(vueMixinData[mixinName]);
         }
@@ -85,12 +100,18 @@ class ComponentHelper extends BaseClass {
         var vueFilters = [];
         var appVueFilters = [];
 
+        this.log('Initializing filters...', 'group', []);
+
         var filtersDir = this.getConfig('wrapper.filterRoot');
         if (filtersDir){
             filtersDir = path.resolve(filtersDir);
             var filterRegex = this.getConfig('wrapper.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
+                this.log('Loading wrapper filters', 'info', []);
                 vueFilters = await _appWrapper.fileManager.loadFilesFromDir(filtersDir, filterRegex, true);
+                this.log('Loaded {1} wrapper filters - "{2}"', 'info', [Object.keys(vueFilters).length, Object.keys(vueFilters).join('", "')]);
+            } else {
+                this.log('Wrapper filters dir "{1}" does not exist', 'warning', [filtersDir]);
             }
         }
 
@@ -99,11 +120,17 @@ class ComponentHelper extends BaseClass {
             appFiltersDir = path.resolve(appFiltersDir);
             var appFilterRegex = this.getConfig('appConfig.filterExtensionRegex');
             if (fs.existsSync(filtersDir)){
+                this.log('Loading app filters', 'info', []);
                 appVueFilters = await _appWrapper.fileManager.loadFilesFromDir(appFiltersDir, appFilterRegex, true);
+                this.log('Loaded {1} app filters - "{2}"', 'info', [Object.keys(appVueFilters).length, Object.keys(appVueFilters).join('", "')]);
+            } else {
+                this.log('App filters dir "{1}" does not exist', 'warning', [appFiltersDir]);
             }
 
             vueFilters = _.merge(vueFilters, appVueFilters);
         }
+
+        this.log('Initializing filters...', 'groupend', []);
         return vueFilters;
     }
 
@@ -274,7 +301,7 @@ class ComponentHelper extends BaseClass {
                 data = [componentName, parentName, childCount];
             } else {
                 message = 'Initializing child component "{1}" of "{2}".';
-                type = 'info';
+                type = 'group';
                 data = [componentName, parentName];
             }
         } else if (childCount) {
@@ -283,7 +310,7 @@ class ComponentHelper extends BaseClass {
             data = [componentName, childCount];
         } else {
             message = 'Initializing component "{1}".';
-            type = 'info';
+            type = 'group';
             data = [componentName];
         }
 
@@ -292,7 +319,10 @@ class ComponentHelper extends BaseClass {
         let loadDirs = _.union(componentOverrideDirs, [path.join(componentBaseDir, componentName)]);
         let component = await _appWrapper.fileManager.loadFileFromDirs(componentName + '.js', loadDirs, true);
         if (!component){
+            this.log('Problem loading component "{1}"', 'error', [componentName]);
             return false;
+        } else {
+            this.log('Loaded component "{1}"', 'info', [componentName]);
         }
 
         await this.loadComponentTemplate(component, loadDirs);
@@ -301,9 +331,6 @@ class ComponentHelper extends BaseClass {
         if (additionalSubComponents && _.keys(additionalSubComponents).length){
             component.components = _.merge(component.components, additionalSubComponents);
         }
-        // component.updated = function(){
-        //     console.log(componentName);
-        // };
         if (componentMapping){
             if (childCount){
                 for (let i in componentMapping.components){
@@ -363,13 +390,13 @@ class ComponentHelper extends BaseClass {
         if (type == 'group'){
             this.log(message, 'groupend', data);
         }
-        // this.log('Component "{1}" initialized.', 'info', data);
         return component;
     }
 
     async loadComponentTemplate (component, loadDirs) {
         let templateContents = await _appWrapper.fileManager.loadFileFromDirs(component.name + '.html', loadDirs);
         if (templateContents){
+            this.log('Loaded component template "{1}"', 'info', [component.name + '.html']);
             component.template = templateContents;
         } else {
             this.log('Problem loading template for component "{1}".', 'error', [component.name]);

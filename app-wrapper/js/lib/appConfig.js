@@ -29,8 +29,8 @@ class AppConfig extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        await super.initialize();
+    async initialize (options) {
+        await super.initialize(options);
     }
 
     async _loadConfig () {

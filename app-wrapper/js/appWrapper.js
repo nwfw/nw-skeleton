@@ -89,7 +89,7 @@ class AppWrapper extends BaseClass {
         }
 
         this.appConfig = new AppConfig(this.initialAppConfig);
-        await this.appConfig.initialize();
+        await this.appConfig.initialize({silent: true});
         // appState is available from here;
 
         await super.initialize();
