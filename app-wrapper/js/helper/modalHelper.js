@@ -56,9 +56,6 @@ class ModalHelper extends BaseClass {
             clearTimeout(this.timeouts.autoClose);
             _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
-            if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-                appState.closeModalResolve(false);
-            }
             appState.modalData.currentModal.autoCloseTime = null;
             appState.modalData.modalVisible = false;
             appState.modalData.modalElement = null;
@@ -113,19 +110,12 @@ class ModalHelper extends BaseClass {
         if (cancelAction){
             _appWrapper._cancelModalAction = cancelAction;
         }
-        appState.currentModalClosePromise = new Promise((resolve) => {
-            appState.closeModalResolve = resolve;
-        });
         this.openCurrentModal();
-        return appState.currentModalClosePromise;
     }
 
     async confirmResolve (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
-        }
-        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-            appState.closeModalResolve(true);
         }
         this.closeCurrentModal();
     }
@@ -163,20 +153,12 @@ class ModalHelper extends BaseClass {
         } else {
             _appWrapper._confirmModalAction = this.boundMethods.confirmResolve;
         }
-        _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
-            appState.closeModalResolve = resolve;
-            appState.closeModalReject = reject;
-        });
         this.openCurrentModal();
-        return _appWrapper.closeModalPromise;
     }
 
     async queryResolve (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
-        }
-        if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-            appState.closeModalResolve(true);
         }
         this.closeCurrentModal();
     }
@@ -185,13 +167,10 @@ class ModalHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        // if (appState.closeModalResolve && _.isFunction(appState.closeModalResolve)){
-        //     appState.closeModalResolve(true);
-        // }
         this.closeCurrentModal();
     }
 
-    async query (confirmAction, cancelAction) {
+    async queryModal (confirmAction, cancelAction) {
         this.log('Opening query modal.', 'info', []);
         this.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         if (confirmAction){
@@ -204,12 +183,7 @@ class ModalHelper extends BaseClass {
         } else {
             _appWrapper._cancelModalAction = this.boundMethods.queryReject;
         }
-        _appWrapper.closeModalPromise = new Promise((resolve, reject) => {
-            appState.closeModalResolve = resolve;
-            appState.closeModalReject = reject;
-        });
         this.openCurrentModal();
-        return _appWrapper.closeModalPromise;
     }
 
     addModalMessage (messageObject) {

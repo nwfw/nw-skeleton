@@ -349,16 +349,15 @@ class UtilHelper extends BaseClass {
         }
         if (fileValid && messages && messages.length){
             let modalHelper = _appWrapper.getHelper('modal');
-            appState.modalData.currentModal = modalHelper.getModalObject('logViewerModal');
-            appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Log viewer');
-            appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Load');
-            appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-            appState.modalData.currentModal.confirmDisabled = true;
+            let modalOptions = {
+                title: _appWrapper.appTranslations.translate('Log viewer'),
+                confirmButtonText: _appWrapper.appTranslations.translate('Load'),
+                cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+                confirmDisabled: true,
+            };
+            appState.modalData.currentModal = modalHelper.getModalObject('logViewerModal', modalOptions);
             modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
             _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
-            _appWrapper.closeModalPromise = new Promise((resolve) => {
-                appState.closeModalResolve = resolve;
-            });
 
             appState.modalData.currentModal.fileMessages = _.map(messages, (msg) => {
                 if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
@@ -376,7 +375,6 @@ class UtilHelper extends BaseClass {
             }
             modalHelper.openCurrentModal();
             appState.modalData.currentModal.dataLoaded = true;
-            return _appWrapper.closeModalPromise;
         }
     }
 

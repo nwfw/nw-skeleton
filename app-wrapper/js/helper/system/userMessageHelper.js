@@ -139,22 +139,20 @@ class UserMessageHelper extends BaseClass {
 
     async showSaveMessagesModal () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('saveUserMessagesModal');
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Saving user messages to file');
-        appState.modalData.currentModal.bodyComponent = 'save-user-messages';
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        appState.modalData.currentModal.showCancelButton = false;
-        appState.modalData.currentModal.confirmDisabled = true;
-        appState.modalData.currentModal.saveFileError = false;
+        let modalOptions = {
+            title: _appWrapper.appTranslations.translate('Saving user messages to file'),
+            bodyComponent: 'save-user-messages',
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+            showCancelButton: false,
+            confirmDisabled: true,
+            saveFileError: false,
+            defaultFilename: 'user-messages-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json',
+        };
+        appState.modalData.currentModal = modalHelper.getModalObject('saveUserMessagesModal', modalOptions);
         modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        appState.modalData.currentModal.defaultFilename = 'user-messages-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json';
         _appWrapper._confirmModalAction = this.confirmSaveUserMessagesModalAction;
-        _appWrapper.closeModalPromise = new Promise((resolve) => {
-            appState.closeModalResolve = resolve;
-        });
         modalHelper.openCurrentModal();
-        return _appWrapper.closeModalPromise;
     }
 
     async confirmSaveUserMessagesModalAction (e){
@@ -194,10 +192,6 @@ class UserMessageHelper extends BaseClass {
             var writeMode = 'w';
             let append = overwriteAction == 'append';
 
-            // if (fileExists && overwriteAction == 'append'){
-            //     writeMode = 'a';
-            // }
-            //
             let previousMessages = [];
             if (append && fileExists){
                 let fileContents = await _appWrapper.fileManager.readFileSync(messageFilePath, {encoding:'utf8'});
@@ -334,10 +328,12 @@ class UserMessageHelper extends BaseClass {
 
     openUserMessageConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('userMessagesConfigEditorModal');
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('User message config editor');
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        let modalOptions = {
+            title: _appWrapper.appTranslations.translate('User message config editor'),
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+        };
+        appState.modalData.currentModal = modalHelper.getModalObject('userMessagesConfigEditorModal', modalOptions);
         modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveUserMessageConfig.bind(this);
         _appWrapper._cancelModalAction = (evt) => {

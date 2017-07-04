@@ -92,18 +92,19 @@ class AppTranslations extends BaseClass {
         // appState.status.noHandlingKeys = true;
 
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('translationModal');
-        let cm = appState.modalData.currentModal;
-        cm.hasSearch = false;
-        cm.title = _appWrapper.appTranslations.translate('Translation editor');
-        cm.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        cm.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        cm.translationData = this.getTranslationEditorData();
-        _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
-        cm.translations = {
-            'not translated': this.translate('not translated'),
-            'Copy label to translation': this.translate('Copy label to translation')
+        let modalOptions = {
+            hasSearch: false,
+            title: _appWrapper.appTranslations.translate('Translation editor'),
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+            translationData: this.getTranslationEditorData(),
+            translations: {
+                'not translated': this.translate('not translated'),
+                'Copy label to translation': this.translate('Copy label to translation')
+            },
         };
+        appState.modalData.currentModal = modalHelper.getModalObject('translationModal', modalOptions);
+        _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveTranslations.bind(this);
         _appWrapper._cancelModalAction = (evt) => {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){

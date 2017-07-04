@@ -53,11 +53,6 @@ class AppWrapper extends BaseClass {
         this.debugWindow = null;
         this.mainWindow = null;
 
-        this.closeModalPromise = null;
-
-        this.closeWindowResolve = null;
-        this.closeWindowPromise = null;
-
         this.cleanupCancelled = false;
 
         this.initialAppConfig = initialAppConfig;
@@ -531,13 +526,12 @@ class AppWrapper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.helpers.modalHelper.closeCurrentModal();
+        this.getHelper('modal').closeCurrentModal();
     }
 
     setDynamicAppStateValues () {
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
-        appState.closeModalResolve = null;
     }
 
     clearTimeouts (){

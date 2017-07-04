@@ -90,23 +90,20 @@ class DebugHelper extends BaseClass {
 
     async showSaveDebugModal () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('saveDebugModal');
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Saving debug log to file');
-        appState.modalData.currentModal.bodyComponent = 'save-debug';
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
-        appState.modalData.currentModal.showCancelButton = false;
-        appState.modalData.currentModal.confirmDisabled = true;
-        appState.modalData.currentModal.saveDebugFileError = false;
-        appState.modalData.currentModal.messages = [];
+        let modalOptions = {
+            title: _appWrapper.appTranslations.translate('Saving debug log to file'),
+            bodyComponent: 'save-debug',
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+            showCancelButton: false,
+            confirmDisabled: true,
+            saveDebugFileError: false,
+            defaultFilename: 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt',
+        };
+        appState.modalData.currentModal = modalHelper.getModalObject('saveDebugModal', modalOptions);
         modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        appState.modalData.currentModal.defaultFilename = 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt';
         _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
-        _appWrapper.closeModalPromise = new Promise((resolve) => {
-            appState.closeModalResolve = resolve;
-        });
         modalHelper.openCurrentModal();
-        return _appWrapper.closeModalPromise;
     }
 
     async confirmSaveDebugModalAction (e){
@@ -146,10 +143,6 @@ class DebugHelper extends BaseClass {
             var writeMode = 'w';
             let append = overwriteAction == 'append';
 
-            // if (fileExists && overwriteAction == 'append'){
-            //     writeMode = 'a';
-            // }
-            //
             let previousMessages = [];
             if (append && fileExists){
                 let fileContents = await _appWrapper.fileManager.readFileSync(debugFilePath, {encoding:'utf8'});
@@ -296,10 +289,12 @@ class DebugHelper extends BaseClass {
 
     openDebugConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal = modalHelper.getModalObject('debugConfigEditorModal');
-        appState.modalData.currentModal.title = _appWrapper.appTranslations.translate('Debug config editor');
-        appState.modalData.currentModal.confirmButtonText = _appWrapper.appTranslations.translate('Save');
-        appState.modalData.currentModal.cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
+        let modalOptions = {
+            title: _appWrapper.appTranslations.translate('Debug config editor'),
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+        };
+        appState.modalData.currentModal = modalHelper.getModalObject('debugConfigEditorModal', modalOptions);
         modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveDebugConfig.bind(this);
         _appWrapper._cancelModalAction = (evt) => {

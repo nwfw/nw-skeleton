@@ -136,10 +136,6 @@ exports.appState = {
         }
     },
 
-    currentModalClosePromise: null,
-    closeModalResolve: null,
-    closeModalReject: null,
-
     modalData: {
         modalVisible: false,
         modalContentVisible: false,

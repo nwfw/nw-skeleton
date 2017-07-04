@@ -309,16 +309,16 @@ class AppOperationHelper extends BaseClass {
         if (appState.appOperation.cancelable){
             cm.title = _appWrapper.appTranslations.translate('Are you sure?');
             if (cm.reloading){
-                await modalHelper.query(this.boundMethods.cancelAndReload, this.boundMethods.stopCancelAndExit);
+                await modalHelper.queryModal(this.boundMethods.cancelAndReload, this.boundMethods.stopCancelAndExit);
             } else {
-                await modalHelper.query(this.boundMethods.cancelAndClose, this.boundMethods.stopCancelAndExit);
+                await modalHelper.queryModal(this.boundMethods.cancelAndClose, this.boundMethods.stopCancelAndExit);
             }
             return;
         } else {
             cm.title = _appWrapper.appTranslations.translate('Operation in progress');
             cm.showCancelButton = false;
             cm.autoCloseTime = 5000;
-            await modalHelper.query(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
+            await modalHelper.queryModal(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
             this.stopCancelAndExit();
         }
     }
@@ -395,8 +395,6 @@ class AppOperationHelper extends BaseClass {
     }
 
     async stopCancelAndExit(){
-        appState.closeModalResolve = null;
-        appState.closeModalReject = null;
         appState.headerData.hideLiveInfo = false;
         appState.headerData.hideProgressBar = false;
         _appWrapper.removeAllListeners('appOperation:finish');
