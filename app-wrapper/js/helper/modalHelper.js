@@ -48,6 +48,9 @@ class ModalHelper extends BaseClass {
     closeCurrentModal (force){
         let fadeModal = appState.modalData.fadeModal;
         if (!appState.modalData.currentModal.busy || force) {
+            if (appState.modalData.currentModal.onBeforeClose && _.isFunction(appState.modalData.currentModal.onBeforeClose)){
+                appState.modalData.currentModal.onBeforeClose();
+            }
             this.log('Closing current modal.', 'info', []);
             if (force){
                 appState.modalData.fadeModal = 'none';
@@ -60,6 +63,15 @@ class ModalHelper extends BaseClass {
             appState.modalData.modalVisible = false;
             appState.modalData.modalElement = null;
             this.modalNotBusy();
+            let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+            if (appState.modalData.currentModal.onClose && _.isFunction(appState.modalData.currentModal.onClose)){
+                setTimeout( () => {
+                    appState.modalData.currentModal.onClose();
+                    this.resetCurrentCallbacks();
+                }, duration);
+            } else {
+                this.resetCurrentCallbacks();
+            }
             appState.modalData.fadeModal = fadeModal;
         } else {
             this.log('Can\'t close modal because it is busy', 'warning', []);
@@ -68,6 +80,9 @@ class ModalHelper extends BaseClass {
 
     openCurrentModal (showContentImmediately) {
         this.log('Opening current modal.', 'info', []);
+        if (appState.modalData.currentModal.onBeforeOpen && _.isFunction(appState.modalData.currentModal.onBeforeOpen)){
+            appState.modalData.currentModal.onBeforeOpen();
+        }
         appState.modalData.currentModal.messages = [];
         appState.modalData.currentModal.currentMessageIndex = -1;
         appState.modalData.modalVisible = true;
@@ -75,19 +90,28 @@ class ModalHelper extends BaseClass {
         clearTimeout(this.timeouts.autoClose);
         clearInterval(this.intervals.autoClose);
         let fadeModal = appState.modalData.fadeModal;
+        let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
         if (!showContentImmediately){
             setTimeout(() => {
                 if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){
                     appState.modalData.currentModal.bodyComponent = appState.modalData.currentModal.defaultBodyComponent;
                 }
                 this.modalNotBusy();
-            }, 300);
+                if (appState.modalData.currentModal.onOpen && _.isFunction(appState.modalData.currentModal.onOpen)){
+                    appState.modalData.currentModal.onOpen();
+                }
+            }, duration);
         } else {
             appState.modalData.fadeModal = 'none';
             if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){
                 appState.modalData.currentModal.bodyComponent = appState.modalData.currentModal.defaultBodyComponent;
             }
             this.modalNotBusy();
+            if (appState.modalData.currentModal.onOpen && _.isFunction(appState.modalData.currentModal.onOpen)){
+                setTimeout( () => {
+                    appState.modalData.currentModal.onOpen();
+                }, duration);
+            }
             appState.modalData.fadeModal = fadeModal;
         }
         if (appState.modalData.currentModal.autoCloseTime) {
@@ -199,9 +223,9 @@ class ModalHelper extends BaseClass {
     getModalObject(modalName, options){
         let modalObj = false;
         if (!_.isUndefined(appState[modalName])){
-            modalObj = _.extend({}, _.cloneDeep(appState.defaultModal), _.cloneDeep(appState[modalName]));
+            modalObj = _.merge(_.cloneDeep(appState.defaultModal), _.cloneDeep(appState[modalName]));
             if (options && _.isObject(options)){
-                modalObj = _.extend({}, modalObj, options);
+                modalObj = _.merge(modalObj, options);
             }
         }
         return modalObj;
@@ -242,6 +266,13 @@ class ModalHelper extends BaseClass {
             }
 
         }, 1000);
+    }
+
+    resetCurrentCallbacks () {
+        appState.modalData.currentModal.onBeforeOpen = null;
+        appState.modalData.currentModal.onOpen = null;
+        appState.modalData.currentModal.onBeforeClose = null;
+        appState.modalData.currentModal.onClose = null;
     }
 }
 

@@ -164,7 +164,11 @@ exports.appState = {
             cancelSelected: false,
             modalAction: null,
             animating: false,
-            animateSize: false
+            animateSize: false,
+            onBeforeOpen: null,
+            onOpen: null,
+            onBeforeClose: null,
+            onClose: null,
         }
     },
     defaultModal: {
@@ -190,7 +194,11 @@ exports.appState = {
         cancelSelected: false,
         modalAction: null,
         animating: false,
-        animateSize: false
+        animateSize: false,
+        onBeforeOpen: null,
+        onOpen: null,
+        onBeforeClose: null,
+        onClose: null,
     },
     translationModal: {
         name: 'translation-modal',
