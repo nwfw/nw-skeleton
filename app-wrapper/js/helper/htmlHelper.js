@@ -402,10 +402,15 @@ class HtmlHelper extends BaseClass {
         let parent = element;
         let parentFound = false;
         do {
-            if (parent && parent.parentNode && parent.parentNode.querySelector){
+            if (parent && parent.parentNode){
                 parent = parent.parentNode;
-                let parentChildren = parent.parentNode.querySelectorAll(selector);
-                parentFound = _.includes(parentChildren, parent);
+                if (parent && parent.parentNode && parent.parentNode.querySelectorAll && _.isFunction(parent.parentNode.querySelectorAll)){
+                    let parentChildren = parent.parentNode.querySelectorAll(selector);
+                    parentFound = _.includes(parentChildren, parent);
+                } else {
+                    parentFound = true;
+                    parent = false;
+                }
             } else {
                 parentFound = true;
             }

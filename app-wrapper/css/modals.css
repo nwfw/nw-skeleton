@@ -225,15 +225,6 @@
     color: var(--modal-dialog-button-confirm-color-hovered);
 }
 
-.modal-button-confirm[disabled],
-.modal-button-confirm[disabled]:hover {
-    background: var(--modal-dialog-button-confirm-disabled-background);
-    border: var(--modal-dialog-button-confirm-disabled-border);
-    color: var(--modal-dialog-button-confirm-disabled-color);
-    margin-left: 5px;
-    cursor: not-allowed;
-}
-
 .modal-dialog-wrapper.confirm-modal {
     border-color: var(--modal-dialog-confirm-modal-border-color);
 }
@@ -263,4 +254,22 @@
     text-align: right;
     padding: 5px 10px;
     flex: 1 1 auto;
+}
+
+.modal-button-confirm[disabled],
+.modal-button-confirm[disabled]:hover {
+    background: var(--modal-dialog-button-confirm-disabled-background);
+    border: var(--modal-dialog-button-confirm-disabled-border);
+    color: var(--modal-dialog-button-confirm-disabled-color);
+    margin-left: 5px;
+    cursor: not-allowed;
+}
+
+.modal-button-cancel[disabled],
+.modal-button-cancel[disabled]:hover {
+    background: var(--modal-dialog-button-cancel-disabled-background);
+    border: var(--modal-dialog-button-cancel-disabled-border);
+    color: var(--modal-dialog-button-cancel-disabled-color);
+    margin-left: 5px;
+    cursor: not-allowed;
 }

@@ -56,6 +56,17 @@ class StorageHelper extends BaseClass {
         return returnValue;
     }
 
+    async delete (name){
+        if (localStorage && localStorage.removeItem && _.isFunction(localStorage.removeItem)){
+            this.log('Clearing local storage var "{1}".', 'info', [name]);
+            localStorage.removeItem(name);
+        } else {
+            this.log('Problem clearing local storage var "{1}".', 'error', [name]);
+            return false;
+        }
+        return true;
+    }
+
 
 }
 

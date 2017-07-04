@@ -1,7 +1,7 @@
 <div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy }]">
 	<transition v-bind:name="fadeModal">
 		<template v-if="!currentModal.preventEscClose">
-			<div v-show="modalVisible" class="modal-dialog-background" v-on:click="callViewHandler" data-click-handler="cancelModalAction">
+			<div v-show="modalVisible" class="modal-dialog-background" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
 			</div>
 		</template>
 		<template v-else>
@@ -11,7 +11,7 @@
 	</transition>
 	<transition v-bind:name="fadeModal">
 		<div v-show="modalVisible" class="modal-dialog">
-			<a class="modal-dialog-close fa fa-times" v-on:click="callViewHandler" data-click-handler="cancelModalAction"></a>
+			<a v-if="currentModal.showCloseLink" class="modal-dialog-close fa fa-times" @click.prevent="callViewHandler" data-click-handler="cancelModalAction"></a>
 			<div class="modal-dialog-content">
 				<transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterCancel" v-on:enter-cancelled="afterCancel" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterCancel" v-on:leave-cancelled="afterCancel">
 					<div v-if="currentModal.busy" key="modalBusy" class="modal-dialog-busy-indicator">
@@ -59,10 +59,10 @@
 									</template>
 									<template v-if="currentModal.showCancelButton">
 										<template v-if="currentModal.cancelDisabled">
-											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+											<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
 										</template>
 										<template v-else>
-											<button class="modal-button modal-button-cancel" v-on:click="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+											<button class="modal-button modal-button-cancel" @click.prevent="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
 										</template>
 									</template>
 								</div>

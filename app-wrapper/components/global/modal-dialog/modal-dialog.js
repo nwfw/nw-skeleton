@@ -145,7 +145,7 @@ component = {
 
     updated: function(){
         var activeElement = document.activeElement;
-        if (!(activeElement && activeElement.tagName && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
+        if (!(activeElement && activeElement.tagName && activeElement.parentQuerySelector('.modal-dialog-wrapper') && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
             this.setFocus();
         }
         if (this.messageAdded){

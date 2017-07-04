@@ -274,6 +274,14 @@ class ModalHelper extends BaseClass {
         appState.modalData.currentModal.onBeforeClose = null;
         appState.modalData.currentModal.onClose = null;
     }
+
+    emptyModal () {
+        appState.modalData.currentModal.title = '';
+        appState.modalData.currentModal.body = '';
+        appState.modalData.currentModal.showConfirmButton = false;
+        appState.modalData.currentModal.showCancelButton = false;
+        appState.modalData.currentModal.bodyComponent = 'modal-body';
+    }
 }
 
 exports.ModalHelper = ModalHelper;

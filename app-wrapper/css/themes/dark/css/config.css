@@ -406,6 +406,11 @@
     --modal-dialog-button-confirm-disabled-border: 1px solid #EEE;
     --modal-dialog-button-confirm-disabled-color: #EEE;
 
+    --modal-dialog-button-cancel-disabled-background: #CCC;
+    --modal-dialog-button-cancel-disabled-border: 1px solid #EEE;
+    --modal-dialog-button-cancel-disabled-color: #EEE;
+
+
     --modal-dialog-confirm-modal-border-color: #FF9999;
     --modal-dialog-confirm-modal-box-shadow: 0 0 50px #CC9999;
 

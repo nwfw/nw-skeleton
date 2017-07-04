@@ -62,6 +62,18 @@ class UserDataHelper extends BaseClass {
         return userData;
     }
 
+    async clearUserData () {
+        this.log('Clearing user data', 'info', []);
+        let userDataName = this.getUserDataStorageName();
+        let deleted = await this.getHelper('storage').delete(userDataName);
+        if (!deleted){
+            this.addUserMessage('Could not delete user data!', 'error', [], false, false);
+        } else {
+            this.addUserMessage('Deleted user data.', 'info', [], false,  false);
+        }
+        return deleted;
+    }
+
 }
 
 exports.UserDataHelper = UserDataHelper;
