@@ -87,6 +87,7 @@ a:visited {
 .app-body {
 	font-size: 0.8rem;
 	border-radius: var(--app-main-border-radius);
+	transition: opacity linear var(--short-animation-duration);
 }
 
 .app-body.moving-window {

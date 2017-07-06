@@ -2,7 +2,7 @@
 	<transition name="fade">
 		<span class="window-controls window-controls-debug" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 			<span class="window-control-wrapper window-control-menu-wrapper" v-if="appState.config.debug.enabled && !appState.isDebugWindow" data-submenu="debug">
-				<a :title="translate('Debug')" class="window-control window-control-submenu-link window-control-debug" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
+				<a :title="translate('Debug')" class="window-control window-control-submenu-link window-control-debug" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 					<span class="fa fa-bug"></span>
 				</a>
 				<div class="window-control-submenu" data-submenu="debug">
@@ -39,7 +39,7 @@
 	</transition>
 	<span class="window-controls window-controls-user">
 		<span class="window-control-wrapper window-control-menu-wrapper" data-submenu="configuration">
-			<a :title="translate('Configuration')" class="window-control window-control-submenu-link window-control-configuration" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent">
+			<a :title="translate('Configuration')" class="window-control window-control-submenu-link window-control-configuration" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
 				<span class="fa fa-cog"></span>
 			</a>
 			<div class="window-control-submenu" data-submenu="configuration">

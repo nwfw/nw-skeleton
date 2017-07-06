@@ -134,7 +134,7 @@ exports.config = {
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
-        cssCompiledFile: '/app/var/css/style.css',
+        cssCompiledFile: '/app/var/css/dist.css',
         cssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
             '/node_modules/nw-skeleton/app-wrapper/css/header.css',

@@ -4,7 +4,7 @@ var utilHelper = window.getAppWrapper().getHelper('util');
 exports.component = {
     name: 'checkbox-styled',
     template: '',
-    props: ['class', 'change', 'name', 'data', 'modelProperty'],
+    props: ['change', 'name', 'data', 'modelProperty'],
     cbModel: false,
     modelParent: null,
     watchOn: false,
