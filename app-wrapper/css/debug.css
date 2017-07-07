@@ -10,6 +10,7 @@
 
 .debug-window .debug-enabled.debug-visible .app-debug-wrapper .message-list {
     max-height: unset;
+    overflow: auto;
 }
 
 .debug-window .debug-toggle .status {
@@ -48,12 +49,7 @@
 	flex-flow: column;
 }
 
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-config,
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-debug-window,
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-translation-editor,
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .toggle-debug-link,
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .expand-app-debug,
-.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .open-log-viewer {
+.debug-enabled.debug-visible .app-debug-wrapper .app-debug-header .hide-in-debug-window {
 	display: none;
 }
 

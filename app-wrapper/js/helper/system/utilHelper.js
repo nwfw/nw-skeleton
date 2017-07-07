@@ -444,6 +444,53 @@ class UtilHelper extends BaseClass {
     noop () {
         return '';
     }
+
+    async setObjectValuesFromForm (form, source, keepFirstChunk) {
+        if (!source){
+            source = {};
+        }
+        let newObject = _.cloneDeep(source);
+        let finalObject = {};
+        _.each(form, (input) => {
+            if (!input.hasClass('modal-dialog-button') && input.hasAttribute('data-path')){
+                let path = input.getAttribute('data-path');
+                var currentObject = newObject;
+                var dataPath = path;
+                if (dataPath && dataPath.split){
+                    var pathChunks;
+                    if (keepFirstChunk){
+                        pathChunks = dataPath.split('.');
+                    } else {
+                        pathChunks = _.drop(dataPath.split('.'), 1);
+                    }
+                    var chunkCount = pathChunks.length - 1;
+                    _.each(pathChunks, (pathChunk, i) => {
+                        if (i == chunkCount){
+                            if (input.getAttribute('type') == 'checkbox'){
+                                currentObject[pathChunk] = input.checked;
+                            } else {
+                                currentObject[pathChunk] = input.value;
+                            }
+                        } else {
+                            if (_.isUndefined(currentObject[pathChunk])){
+                                currentObject[pathChunk] = {};
+                            }
+                        }
+                        currentObject = currentObject[pathChunk];
+                    });
+                }
+            }
+        });
+        var oldObject = _.cloneDeep(source);
+        var difference = this.difference(oldObject, newObject);
+
+        if (difference && _.isObject(difference) && _.keys(difference).length){
+            finalObject = _appWrapper.mergeDeep({}, source, difference);
+        } else {
+            finalObject = _.cloneDeep(source);
+        }
+        return finalObject;
+    }
 }
 
 exports.UtilHelper = UtilHelper;

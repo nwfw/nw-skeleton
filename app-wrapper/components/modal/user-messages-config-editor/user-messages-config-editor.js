@@ -11,6 +11,8 @@ exports.component = {
             userMessagesToFileAppend: appState.config.userMessages.userMessagesToFileAppend,
             saveStacksToFile: appState.config.userMessages.saveStacksToFile,
             animateMessages: appState.config.userMessages.animateMessages,
+            displayTimestamps: appState.config.userMessages.displayTimestamps,
+            userMessageLevel: appState.config.userMessages.userMessageLevel,
         };
         var config = _.map(appConfig, function(value, name){
             return _appWrapper.getHelper('util').getControlObject(value, name, 'config.userMessages');

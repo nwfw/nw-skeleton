@@ -28,9 +28,13 @@ class UserDataHelper extends BaseClass {
         return userDataName;
     }
 
-    async saveUserData (userData) {
+    async saveUserData (userData, omitSettingAppState) {
         if (!userData){
             userData = appState.userData;
+        } else {
+            if (!omitSettingAppState){
+                appState.userData = userData;
+            }
         }
         this.log('Saving user data', 'info', []);
         let userDataName = this.getUserDataStorageName();
@@ -43,7 +47,7 @@ class UserDataHelper extends BaseClass {
         return saved;
     }
 
-    async loadUserData () {
+    async loadUserData (omitSettingAppState) {
         this.log('Loading user data', 'group', []);
         let userDataName = this.getUserDataStorageName();
         let userData = await this.getHelper('storage').get(userDataName);
@@ -57,6 +61,9 @@ class UserDataHelper extends BaseClass {
                 this.log('No user data found.', 'info', []);
             }
             userData = {};
+        }
+        if (!omitSettingAppState){
+            appState.userData = userData;
         }
         this.log('Loading user data', 'groupend', []);
         return userData;

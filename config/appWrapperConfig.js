@@ -209,6 +209,34 @@ exports.config = {
                 editable: false,
                 reload: true
             },
+            'userMessages.userMessageLevel': {
+                editable: true,
+                reload: false,
+                type: 'string',
+                control: 'select',
+                controlData: {
+                    items: {
+                        1: 'debug',
+                        2: 'info',
+                        3: 'warning',
+                        4: 'error'
+                    }
+                }
+            },
+            'debug.debugLevel': {
+                editable: true,
+                reload: false,
+                type: 'string',
+                control: 'select',
+                controlData: {
+                    items: {
+                        1: 'debug',
+                        2: 'info',
+                        3: 'warning',
+                        4: 'error'
+                    }
+                }
+            },
             'debug.enabled': {
                 editable: true,
                 reload: false

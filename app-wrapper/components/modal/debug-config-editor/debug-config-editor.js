@@ -12,6 +12,8 @@ exports.component = {
             debugGroupsCollapsed: appState.config.debug.debugGroupsCollapsed,
             alwaysTrace: appState.config.debug.alwaysTrace,
             debugToFile: appState.config.debug.debugToFile,
+            debugLevel: appState.config.debug.debugLevel,
+            messagesExpanded: appState.config.debug.messagesExpanded,
             debugToFileAppend: appState.config.debug.debugToFileAppend,
             saveStacksToFile: appState.config.debug.saveStacksToFile,
             animateMessages: appState.config.debug.animateMessages,

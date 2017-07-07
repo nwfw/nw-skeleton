@@ -314,44 +314,11 @@ class DebugHelper extends BaseClass {
             e.preventDefault();
         }
         let modalHelper = _appWrapper.getHelper('modal');
+        let utilHelper = _appWrapper.getHelper('util');
         var form = e.target;
-        let newConfig = {};
-        _.each(form, (input) => {
-            if (input.getAttribute('type') == 'checkbox'){
-                let path = input.getAttribute('data-path');
-                var currentConfig = newConfig;
-                var appConfig = _.cloneDeep(appState.config);
-                var dataPath = path;
-                if (dataPath && dataPath.split){
-                    var pathChunks = _.drop(dataPath.split('.'), 1);
-                    var chunkCount = pathChunks.length - 1;
-                    _.each(pathChunks, (pathChunk, i) => {
-                        if (i == chunkCount){
-                            currentConfig[pathChunk] = input.checked;
-                        } else {
-                            if (_.isUndefined(currentConfig[pathChunk])){
-                                currentConfig[pathChunk] = {};
-                            }
-                        }
-                        currentConfig = currentConfig[pathChunk];
-                        appConfig = appConfig[pathChunk];
-                    });
-                }
-            }
-        });
-        var oldConfig = _.cloneDeep(appState.config);
-        var difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
-
-        if (difference && _.isObject(difference) && _.keys(difference).length){
-            var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
-            await _appWrapper.appConfig.setConfig(finalConfig);
-            modalHelper.closeCurrentModal();
-        } else {
-            modalHelper.closeCurrentModal();
-        }
-
+        let finalConfig = await utilHelper.setObjectValuesFromForm(form, appState.config);
+        await _appWrapper.appConfig.setConfig(finalConfig);
         modalHelper.closeCurrentModal();
-
     }
 
     getDebugMessageStacksCount () {
