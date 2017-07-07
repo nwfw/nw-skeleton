@@ -265,6 +265,9 @@ exports.config = {
     liveCss: false,
     compileCss: false,
 
+    appNotifications: {
+        duration: 5000
+    },
     logger: {
         messageLevels: {
             'debug': 1,
@@ -306,6 +309,7 @@ exports.config = {
             UserDataHelper: false,
             AppOperationHelper: false,
             UtilHelper: false,
+            AppNotificationsHelper: false,
             MenuHelper: false,
             FormatHelper: false,
             WindowManager: false,
@@ -340,6 +344,7 @@ exports.config = {
             UserDataHelper: false,
             AppOperationHelper: false,
             UtilHelper: false,
+            AppNotificationsHelper: false,
             MenuHelper: false,
             FormatHelper: false,
             WindowManager: false,

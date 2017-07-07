@@ -1,0 +1,45 @@
+.app-notifications {
+    position: fixed;
+    font-size: 0.9rem;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    padding: 2px 10px;
+    background: #88BBDD;
+    max-height: 30vh;
+    color: #000033;
+    border-radius: 4px;
+    overflow: hidden;
+    width: auto;
+    opacity: 1;
+    min-height: 24px;
+    max-width: 90vw;
+    transition-property: opacity, top;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--long-animation-duration);
+}
+.app-notifications.no-notifications {
+    opacity: 0;
+}
+
+.has-app-operation .app-notifications {
+    top: 35px;
+}
+
+.has-app-operation.has-active-app-operation .app-notifications {
+    top: 85px;
+}
+
+.app-notifications .app-notification {
+    text-align: center;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.modal-dialog-wrapper .app-notifications {
+    position: absolute;
+    max-height: 10vh;
+    max-width: 90%;
+    top: 30px;
+}

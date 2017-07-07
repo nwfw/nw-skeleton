@@ -519,6 +519,18 @@
 }
 
 
+/* custom transition for notifications */
+
+.transition-wh2 {
+    transition-property: width, height, opacity;
+    transition-duration: var(--medium-animation-duration);
+    overflow: hidden;
+}
+
+
+
+
+
 
 /* live-info */
 

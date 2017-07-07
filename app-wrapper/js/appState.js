@@ -124,6 +124,13 @@ exports.appState = {
     userMessagesData: {
         selectFocused: false
     },
+    appNotificationsData: {
+        notificationExpired: true,
+        timeouts: {},
+        newNotifications: [],
+        currentNotification: null,
+        oldNotifications: []
+    },
     modalStatus: {
         animating: false,
         timeouts: {

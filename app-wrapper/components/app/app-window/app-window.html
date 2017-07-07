@@ -1,5 +1,5 @@
 <transition name="fade">
-    <div v-show="status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': status.movingWindow, 'debug-enabled': config.debug.enabled, 'debug-visible': config.debug.enabled && !config.debug.hideDebug, 'has-debug-window': !isDebugWindow && hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': status.appLoaded }]">
+    <div v-show="status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': status.movingWindow, 'debug-enabled': config.debug.enabled, 'debug-visible': config.debug.enabled && !config.debug.hideDebug, 'has-debug-window': !isDebugWindow && hasDebugWindow, 'modal-visible': modalData.modalVisible, 'app-loaded': status.appLoaded, 'has-app-operation': appOperation.operationVisible, 'has-active-app-operation': appOperation.operationVisible && appOperation.operationActive && appOperation.useProgress }]">
         <div class="app-content">
             <template v-if="status.appInitialized">
                 <app-header ref="appHeader"></app-header>
@@ -18,5 +18,6 @@
                 <app-footer ref="appFooter"></app-footer>
             </template>
         </div>
+        <app-notifications v-if="!appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
     </div>
 </transition>

@@ -140,6 +140,7 @@ class HtmlHelper extends BaseClass {
             // clonedElStyles['margin-top'] = '-10000px';
 
             this.setElementStyles(clonedEl, clonedElStyles);
+            this.removeElementStyles(clonedEl, ['width', 'height']);
 
             var clonedMounted = document.body.appendChild(clonedEl);
 

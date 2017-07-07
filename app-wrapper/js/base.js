@@ -358,6 +358,11 @@ class BaseClass extends eventEmitter {
         _appWrapper.getHelper('modal').addModalMessage(userMessage);
     }
 
+    async addNotification (message, data){
+        let notification = await this.getMessageObject(0, message, 'info', data);
+        _appWrapper.getHelper('appNotifications').addNotification(notification);
+    }
+
 
     getStateVar (varPath, defaultValue){
         var varValue;
