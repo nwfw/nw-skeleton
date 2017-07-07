@@ -44,6 +44,4 @@
     --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);
 
     --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
-
-    --app-loader-user-message-list-border: 1px solid #CCC;
 }

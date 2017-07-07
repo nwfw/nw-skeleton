@@ -84,6 +84,7 @@
     --app-loader-text-color: #666666;
     --app-loader-background-color: #EEEEEE;
     --app-loader-spinner-text-color: #333333;
+    --app-loader-user-message-list-border: 1px solid #CCCCCC;
 
 
     --app-debug-wrapper-background-color: #EEEEEE;
@@ -129,6 +130,9 @@
 
     --app-message-list-border: 1px solid #666666;
     --app-message-list-background: #EEEEEE;
+
+    --app-message-no-messages-border: none;
+    --app-message-no-messages-background: none;
 
     --app-message-list-message-border-even: 1px solid #666666;
     --app-message-list-message-border-odd: var(--app-message-list-message-border-even);

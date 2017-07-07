@@ -27,6 +27,24 @@
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-toggle-error " v-bind:class="{'window-control-active': appState.appError.error}" @click.prevent="toggleAppError">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-exclamation-triangle"></span>
+								<span v-html="translate('Toggle app error')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-toggle-app-initialized " v-bind:class="{'window-control-active': appState.status.appInitialized}" @click.prevent="toggleAppInitialized">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-check-circle-o"></span>
+								<span v-html="translate('Toggle app initialized')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-toggle-app-shutting-down " v-bind:class="{'window-control-active': appState.status.appShuttingDown}" @click.prevent="toggleAppShuttingDown">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-power-off"></span>
+								<span v-html="translate('Toggle app shutting down')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-reload " @click.prevent="callViewHandler" data-click-handler="windowManager.reloadWindow">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-refresh"></span>
 								<span v-html="translate('Reload window')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
@@ -37,15 +55,16 @@
 			</span>
 		</span>
 	</transition>
-	<span class="window-controls window-controls-user">
+
+	<span class="window-controls window-controls-user" v-bind:class="{'window-control-hidden': appState.status.appShuttingDown || !appState.status.appInitialized || (!appState.hasUserConfig && appState.appError.error)}">
 		<span class="window-control-wrapper window-control-menu-wrapper" data-submenu="configuration">
-			<a :title="translate('Configuration')" class="window-control window-control-submenu-link window-control-configuration" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
+			<a :title="translate('Configuration')" class="window-control window-control-submenu-link window-control-configuration" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" @click.prevent="openConfigEditorHandler">
 				<span class="fa fa-cog"></span>
 			</a>
 			<div class="window-control-submenu" data-submenu="configuration">
 				<div class="fa fa-caret-up window-control-submenu-arrow"></div>
 				<div class="window-control-submenu-inner">
-					<div class="window-control-submenu-item-wrapper">
+					<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
 						<a class="window-control window-control-edit-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-cog"></span>
 							<span v-html="translate('Edit configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
@@ -57,31 +76,31 @@
 							<span v-html="translate('Clear saved configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
 					</div>
-					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator">
+					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error">
 					</div>
-					<div v-if="appState.config.allowLanguageChange && appState.languageData.availableLanguages.length > 1" class="window-control-submenu-item-wrapper">
+					<div v-if="appState.config.allowLanguageChange && appState.languageData.availableLanguages.length > 1 && !appState.appError.error" class="window-control-submenu-item-wrapper">
 						<language-select ref="languageSelect"></language-select>
 					</div>
-					<div class="window-control-submenu-item-wrapper">
+					<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
 						<a class="window-control window-control-open-translation-editor" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-globe"></span>
 							<span v-html="translate('Open translation editor')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
 					</div>
-					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator">
+					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error">
 					</div>
-					<div class="window-control-submenu-item-wrapper" v-if="appState.config.allowThemeChange && appState.availableThemes.length > 1">
+					<div class="window-control-submenu-item-wrapper" v-if="appState.config.allowThemeChange && appState.availableThemes.length > 1 && !appState.appError.error">
 						<theme-select ref="themeSelect"></theme-select>
 					</div>
-					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator">
+					<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error">
 					</div>
-					<div class="window-control-submenu-item-wrapper" v-if="appState.config.debug.enabled && !appState.config.debug.hideDebug && !appState.hasDebugWindow && !appState.status.appShuttingDown">
+					<div class="window-control-submenu-item-wrapper" v-if="appState.config.debug.enabled && !appState.config.debug.hideDebug && !appState.hasDebugWindow && !appState.status.appShuttingDown && !appState.appError.error">
 						<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-comment-o"></span>
 							<span v-html="translate('Debug log configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 						</a>
 					</div>
-					<div class="window-control-submenu-item-wrapper">
+					<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
 						<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.openUserMessageConfigEditor">
 							<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-commenting-o"></span>
 							<span v-html="translate('User messages configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
@@ -91,18 +110,20 @@
 			</div>
 		</span>
 	</span>
-	<span class="window-controls window-controls-window">
+
+	<span class="window-controls window-controls-window" v-bind:class="{'window-control-hidden': appState.status.appShuttingDown || !appState.status.appInitialized}">
 		<span class="window-control-wrapper">
 			<a :title="translate('Toggle full screen')" class="window-control window-control-fullscreen" @click.prevent="callViewHandler" data-click-handler="windowManager.toggleFullScreen">
 				<span data-event-target="parent" class="fa fa-arrows-alt"></span>
 			</a>
 		</span>
-		<span class="window-control-wrapper">
+		<span class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.status.appShuttingDown || !appState.status.appInitialized}">
 			<a :title="translate('Move window')" class="window-control window-control-move" v-bind:class="{'window-control-moving': appState.status.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="windowManager.moveWindowMouseup">
 				<span data-event-target="parent" class="fa fa-arrows"></span>
 			</a>
 		</span>
 	</span>
+
 	<span class="window-controls window-controls-main">
 		<span class="window-control-wrapper">
 			<a :title="translate('Minimize window')" class="window-control window-control-minimize" @click.prevent="callViewHandler" data-click-handler="windowManager.minimizeWindow">

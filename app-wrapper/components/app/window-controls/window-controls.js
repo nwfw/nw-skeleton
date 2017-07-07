@@ -64,6 +64,21 @@ exports.component = {
                     this.closeSubmenu(openMenus[i]);
                 }
             }
+        },
+        openConfigEditorHandler: function() {
+            if (!appState.appError.error){
+                _appWrapper.appConfig.openConfigEditor();
+                this.closeAllSubmenus();
+            }
+        },
+        toggleAppError: function(){
+            appState.appError.error = !appState.appError.error;
+        },
+        toggleAppInitialized: function(){
+            appState.status.appInitialized = !appState.status.appInitialized;
+        },
+        toggleAppShuttingDown: function(){
+            appState.status.appShuttingDown = !appState.status.appShuttingDown;
         }
     },
     computed: {

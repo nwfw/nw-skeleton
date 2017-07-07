@@ -43,6 +43,8 @@ exports.appState = {
     },
     appError: {
         error: false,
+        defaultTitle: 'Application error',
+        defaultText: 'An unknown error occured.',
         title: '',
         text: '',
         component: '',

@@ -3,29 +3,23 @@
 		<template v-if="config.animateMessages">
 			<transition-group name="highlight" tag="ul" class="message-list">
 				<li class="message-list-item" v-bind:key="message" v-for="(message, i) in messages" v-bind:class="message.type">
-					<message-line v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
 				</li>
 			</transition-group>
 		</template>
 		<template v-else>
 			<ul class="message-list">
 				<li class="message-list-item" v-bind:key="message" v-for="(message, i) in messages" v-bind:class="message.type">
-					<message-line v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
 				</li>
 			</ul>
 		</template>
 	</template>
 	<template v-else>
 		<ul class="message-list">
-			<li class="message-list-item">
-				<div class="message" >
-					<div class="message-line">
-						<div class="message-line-data">
-							<div class="message-list-no-messages">
-								{{ translate('No messages') }}
-							</div>
-						</div>
-					</div>
+			<li class="message-list-item message-list-item-no-messages">
+				<div class="message-list-no-messages">
+					{{ translate('No messages') }}
 				</div>
 			</li>
 		</ul>

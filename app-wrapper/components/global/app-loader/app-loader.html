@@ -2,6 +2,6 @@
     <div class="app-loader-content">
         <h2 v-if="appState.mainLoaderTitle" class="app-loader-title" v-html="appState.mainLoaderTitle"></h2>
         <app-loader-spinner ref="appLoaderSpinner"></app-loader-spinner>
-        <user-messages v-if="appState.appError.userMessages"></user-messages>
+        <user-messages v-bind:hide-stacks="true" v-bind:list-only="true" ref="appLoaderUserMessages" v-if="appState.appError.userMessages"></user-messages>
     </div>
 </div>

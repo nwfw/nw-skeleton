@@ -32,8 +32,7 @@ header {
 }
 
 .app-loader {
-    flex: 0 0 100%;
-    position: relative;
+    flex: 50 1 auto;
 }
 
 .app-error {
@@ -45,35 +44,14 @@ header {
 .app-debug-wrapper {
     display: flex;
     flex: 1 1 auto;
-    /*position: relative;*/
-    /*right: 0px;*/
     margin: 0;
-    /*max-height: 100px;*/
-}
-
-.debug-enabled .app-debug-wrapper {
-    /*flex: 0 0 0;*/
-    /*max-height: unset;*/
-    /*overflow: hidden;*/
-}
-
-.debug-enabled.debug-visible .app-debug-wrapper {
-    /*flex: 0 0 auto;*/
 }
 
 .debug-enabled .app-debug-wrapper .app-debug {
-    /*position: absolute;*/
-    /*right: 0;*/
-    /*width: 85px;*/
-    /*height: 100%;*/
     width: 100vw;
 }
 .debug-enabled.debug-visible .app-debug-wrapper .app-debug {
     width: 100vw;
-}
-
-.app-body.has-debug-window .app-debug-wrapper {
-    /*flex: 0 0 0px;*/
 }
 
 footer {

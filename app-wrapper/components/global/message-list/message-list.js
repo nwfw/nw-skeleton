@@ -4,7 +4,7 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'message-list',
     template: '',
-    props: ['messages', 'config'],
+    props: ['messages', 'config', 'hideStacks'],
     updated: function () {
         let ul = this.$el.querySelector('ul');
         if (ul){

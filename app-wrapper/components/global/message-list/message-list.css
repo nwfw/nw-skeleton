@@ -19,8 +19,8 @@
 
 .message-list-wrapper .message-list-no-messages {
     text-align: center;
-    border: var(--app-message-list-border);
-    background: var(--app-message-list-background);
+    border: var(--app-message-no-messages-border);
+    background: var(--app-message-no-messages-background);
     padding: 8px 0px 10px;
     flex: 1 1 auto;
 }
@@ -43,6 +43,13 @@
     margin: 0;
     font-size: 0.8rem;
 }
+
+.message-list-wrapper .message-list li.message-list-item.message-list-item-no-messages {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 
 .message-list-wrapper .message-list li.message-list-item .message .message-line-data {
     display: flex;

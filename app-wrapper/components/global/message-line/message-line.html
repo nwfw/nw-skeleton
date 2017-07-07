@@ -13,7 +13,7 @@
 					{{ message.message }}
 				</div>
 				<div class="message-stack-toggle" :class="{'not-visible': !(message.stack && message.stack.length)}">
-					<a href="#" class="message-stack-toggle-link" @click.prevent="toggleStackVisible" :class="{'message-stack-toggle-link-active': message.stackVisible}">
+					<a href="#" class="message-stack-toggle-link" @click.prevent="toggleStackVisible" :class="{'message-stack-toggle-link-active': message.stackVisible, 'not-visible': hideStacks}">
 						<span :title="translate('Hide call stack')" v-if="message.stackVisible" class="fa fa-close"></span>
 						<span :title="translate('Show call stack')" v-else class="fa fa-list"></span>
 					</a>
@@ -43,8 +43,8 @@
 				</svg>
 			</template>
 		</div>
-		<transition name="size-height-short"  v-on:before-enter="beforeEnter" v-on:after-enter="afterEnter" v-on:before-leave="beforeLeave" v-on:after-leave="afterLeave" v-on:enter-cancelled="afterEnter" v-on:leave-cancelled="afterLeave">
-			<div class="message-stack-info" v-if="message.stack && message.stack.length && message.stackVisible">
+		<transition name="size-height-short" v-on:before-enter="beforeEnter" v-on:after-enter="afterEnter" v-on:before-leave="beforeLeave" v-on:after-leave="afterLeave" v-on:enter-cancelled="afterEnter" v-on:leave-cancelled="afterLeave">
+			<div class="message-stack-info" v-if="!hideStacks && (message.stack && message.stack.length && message.stackVisible)">
 				<div class="message-stack-info-data">
 					<table align="center" class="message-stack-info-table" width="95%" border="1" cellpadding="0" cellspacing="0">
 						<tr>

@@ -156,6 +156,9 @@ class AppWrapper extends BaseClass {
 
         await this.initializeLanguage();
 
+        appState.appError.title = this.appTranslations.translate(appState.appError.defaultTitle);
+        appState.appError.text = this.appTranslations.translate(appState.appError.defaultText);
+
         this.getHelper('menu').initializeTrayIcon();
 
         this.app = new App();
@@ -394,6 +397,7 @@ class AppWrapper extends BaseClass {
         await this.fileManager.unwatchAll();
         this.addUserMessage('Shutdown complete.', 'info', [], true, false, true, true);
         this.log('Shutting down...', 'groupend', []);
+        appState.status.appLoaded = false;
         await this.wait(appState.config.longPauseDuration);
         return true;
     }

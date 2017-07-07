@@ -1,24 +1,49 @@
 .app-error {
     text-align: center;
     background: var(--app-error-background-color);
-    color: var(--app-error-text-color);
 }
 
 .app-error-content {
     position: absolute;
     top: 50%;
     left: 50%;
+    min-width: 70%;
     transform: translate(-50%, -50%);
 }
 
 .app-error-title {
     font-size: 2rem;
+    color: var(--app-error-text-color);
+}
+
+.app-error-text {
+    font-size: 1rem;
+    color: var(--app-error-text-color);
 }
 
 .app-error-icon {
     text-align: center;
+    color: var(--app-error-text-color);
 }
 
 .app-error-icon span {
     font-size: 10rem;
+}
+
+.app-error .message-list-wrapper {
+    min-height: 100px;
+}
+
+.app-error .user-messages .message-list-wrapper .message-list {
+    height: 100px;
+    border: var(--app-loader-user-message-list-border);
+    flex: 1 1 auto;
+}
+
+.app-error .message-list-expanded .message-list-wrapper .message-list {
+    height: 100px;
+}
+
+.app-error .user-messages .message-list-wrapper .message-list-no-messages {
+    padding: 8px 0px 10px;
 }

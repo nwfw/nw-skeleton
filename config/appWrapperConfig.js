@@ -25,23 +25,6 @@ exports.config = {
             'app-window' : {
                 name: 'app-window',
                 components: {
-                    'app-loader': {
-                        name: 'app-loader',
-                        componentCssFiles: ['app-loader.css'],
-                        components: {
-                            'app-loader-spinner': {
-                                name: 'app-loader-spinner'
-                            },
-                            'user-messages': {
-                                name: 'user-messages',
-                                components: {
-                                    'user-messages-controls': {
-                                        name: 'user-messages-controls'
-                                    }
-                                }
-                            }
-                        }
-                    },
                     'app-header': {
                         name: 'app-header',
                         components: {
@@ -64,57 +47,11 @@ exports.config = {
                             'app-error': {
                                 name: 'app-error',
                                 componentCssFiles: ['app-error.css'],
-                            },
-                            'app-loader': {
-                                name: 'app-loader',
-                                componentCssFiles: ['app-loader.css'],
-                                components: {
-                                    'app-loader-spinner': {
-                                        name: 'app-loader-spinner'
-                                    },
-                                    'user-messages': {
-                                        name: 'user-messages',
-                                        components: {
-                                            'user-messages-controls': {
-                                                name: 'user-messages-controls'
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            'app-debug': {
-                                componentCssFiles: ['app-debug.css'],
-                                name: 'app-debug',
-                                components: {
-                                    'app-debug-controls': {
-                                        name: 'app-debug-controls'
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    'app-debug': {
-                        componentCssFiles: ['app-debug.css'],
-                        name: 'app-debug',
-                        components: {
-                            'app-debug-controls': {
-                                name: 'app-debug-controls'
                             }
                         }
                     },
                     'app-footer': {
                         name: 'app-footer',
-                        components: {
-                            'user-messages': {
-                                name: 'user-messages',
-                                componentCssFiles: ['user-messages.css'],
-                                components: {
-                                    'user-messages-controls': {
-                                        name: 'user-messages-controls'
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }

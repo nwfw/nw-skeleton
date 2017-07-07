@@ -24,6 +24,10 @@ class AppConfig extends BaseClass {
         this.previousConfig = {};
         this.watchConfig = true;
 
+        this.boundMethods = {
+            clearUserConfig: null
+        };
+
         this.needsConfig = false;
 
         return this;
@@ -212,16 +216,11 @@ class AppConfig extends BaseClass {
         }
     }
 
-    async clearUserConfigHandler (e) {
+    clearUserConfigHandler (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var confirmed = await _appWrapper.helpers.modalHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'));
-        if (confirmed){
-            this.clearUserConfig();
-        } else {
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
-        }
+        _appWrapper.helpers.modalHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'), '', '', this.boundMethods.clearUserConfig);
     }
 
     hasConfigVar(name){
