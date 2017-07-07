@@ -42,13 +42,7 @@ exports.config = {
                         }
                     },
                     'app-main': {
-                        name: 'app-main',
-                        components: {
-                            'app-error': {
-                                name: 'app-error',
-                                componentCssFiles: ['app-error.css'],
-                            }
-                        }
+                        name: 'app-main'
                     },
                     'app-footer': {
                         name: 'app-footer',
