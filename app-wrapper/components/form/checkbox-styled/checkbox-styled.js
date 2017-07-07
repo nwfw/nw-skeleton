@@ -35,10 +35,10 @@ exports.component = {
         }
     },
     methods: {
-        handleChange: function(){
+        handleChange: function(e){
             utilHelper.setVar(this.modelProperty, this.cbModel);
             if (this.change && _.isFunction(this.change)){
-                this.change();
+                this.change(e);
             }
         },
         modelPropertyChanged: function(){

@@ -34,8 +34,8 @@ class AppOperationHelper extends BaseClass {
         this.operationStartTime = null;
         this.lastTimeCalculation = null;
         this.lastTimeValue = 0;
-        this.timeCalculationDelay = 0.5;
-        this.minPercentComplete = 0.3;
+        this.timeCalculationDelay = 0.3;
+        this.minPercentComplete = 0.5;
 
         this.lastCalculationPercent = 0;
 
@@ -233,7 +233,7 @@ class AppOperationHelper extends BaseClass {
         this.lastCalculationPercent = 0;
     }
 
-    calculateTime(percent){
+    calculateTimeOld(percent){
         var currentTime = (+ new Date()) / 1000;
         var remainingTime = null;
         if (percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
@@ -249,19 +249,23 @@ class AppOperationHelper extends BaseClass {
         return remainingTime;
     }
 
-    calculateTimeNew(percent){
+    calculateTime(percent){
         var currentTime = (+ new Date()) / 1000;
         var remainingTime = null;
         var change = percent - this.lastCalculationPercent;
-        if (change > 0 && percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
-            let remaining = 100 - percent;
-            var elapsedSinceLastCalculation = currentTime - this.lastTimeCalculation;
-            let timePerPercent = elapsedSinceLastCalculation / change;
-            remainingTime = remaining * timePerPercent;
-            this.lastTimeCalculation = currentTime;
-            this.lastTimeValue = remainingTime;
+        if (this.lastTimeCalculation){
+            if (change > 0 && percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
+                let remaining = 100 - percent;
+                var elapsedSinceLastCalculation = currentTime - this.lastTimeCalculation;
+                let timePerPercent = elapsedSinceLastCalculation / change;
+                remainingTime = remaining * timePerPercent;
+                this.lastTimeCalculation = currentTime;
+                this.lastTimeValue = remainingTime;
+            } else {
+                remainingTime = this.lastTimeValue;
+            }
         } else {
-            remainingTime = this.lastTimeValue;
+            this.lastTimeCalculation = currentTime;
         }
         this.lastCalculationPercent = percent;
         return remainingTime;
