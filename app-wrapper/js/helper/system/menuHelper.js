@@ -19,6 +19,8 @@ class MenuHelper extends BaseClass {
 
         };
 
+        this.hasMacBuiltin = false;
+        this.hasEditMenu = false;
         this.tray = null;
         this.trayMenu = null;
         this.menu = null;
@@ -43,6 +45,8 @@ class MenuHelper extends BaseClass {
                     this.menu = new nw.Menu({type: 'menubar'});
                     if (!(menuData.menus && menuData.menus.length) && utilHelper.isMac()){
                         this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                        this.hasMacBuiltin = true;
+                        this.hasEditMenu = !menuData.options.hideEdit;
                     }
                 }
             } else {
@@ -50,6 +54,8 @@ class MenuHelper extends BaseClass {
                     if (menuData && menuData.mainItemName && menuData.options){
                         this.menu = new nw.Menu({type: 'menubar'});
                         this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                        this.hasMacBuiltin = true;
+                        this.hasEditMenu = !menuData.options.hideEdit;
                     }
                 }
             }
@@ -66,6 +72,9 @@ class MenuHelper extends BaseClass {
             let menuData = this.getConfig('appConfig.menuData');
             this.menuMethodMap = [];
             if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
+                if (utilHelper.isMac() && !this.hasEditMenu){
+                    menuData.menus = _.concat(_.first(menuData.menus), menuData.editMenu, _.tail(menuData.menus));
+                }
                 for(let i=0; i<menuData.menus.length; i++){
                     let menuMethodData = await this.initializeAppMenuItemData(menuData.menus[i], i);
                     this.menuMethodMap = _.union(this.menuMethodMap, menuMethodData);

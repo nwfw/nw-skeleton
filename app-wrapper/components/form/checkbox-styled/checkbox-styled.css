@@ -1,5 +1,6 @@
 .checkbox-styled {
     position: relative;
+    cursor: pointer;
 }
 
 .hidden-checkbox {
@@ -11,4 +12,5 @@
     left: 4px;
     top: 4px;
     pointer-events: none;
+
 }

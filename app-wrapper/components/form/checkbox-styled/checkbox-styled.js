@@ -5,17 +5,16 @@ exports.component = {
     name: 'checkbox-styled',
     template: '',
     props: ['change', 'name', 'data', 'modelProperty'],
-    cbModel: false,
     modelParent: null,
     watchOn: false,
     noWatchChange: false,
     data: function () {
         return {
-            cbModel: this.cbModel
+
         };
     },
     created: function() {
-        this.cbModel = utilHelper.getVar(this.modelProperty);
+        // this.cbModel = utilHelper.getVar(this.modelProperty);
     },
     mounted: function(){
         if (!this.watchOn && window && window.feApp && window.feApp.$watch){
@@ -36,13 +35,20 @@ exports.component = {
     },
     methods: {
         handleChange: function(e){
-            utilHelper.setVar(this.modelProperty, this.cbModel);
+            utilHelper.setVar(this.modelProperty, e.target.checked);
             if (this.change && _.isFunction(this.change)){
                 this.change(e);
             }
         },
         modelPropertyChanged: function(){
-            this.cbModel = utilHelper.getVar(this.modelProperty);
+            // let newVal = utilHelper.getVar(this.modelProperty);
+            // this.cbModel = newVal;
+
+        }
+    },
+    computed: {
+        cbModel: function(){
+            return utilHelper.getVar(this.modelProperty);
         }
     }
 };

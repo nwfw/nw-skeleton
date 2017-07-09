@@ -1,27 +1,27 @@
-<div class="save-user-messages-dialog">
-	<div class="form-row modal-form-row" v-if="appState.allUserMessages.length - appState.userMessages.length > 0">
+<div class="save-log-dialog">
+	<div class="form-row modal-form-row" v-if="hasHiddenMessages">
 		<label class="checkbox-label">
-			{{ translate('Save hidden messages as well') }} ({{ appState.allUserMessages.length - appState.userMessages.length }}):
-			<input type="checkbox" name="save_hidden_messages" value="1" />
+			{{ translate('Save hidden messages as well') }} ({{ hasHiddenMessages }}):
+			<input type="checkbox" name="save_hidden" v-model="saveAll" />
 		</label>
 	</div>
-	<template v-if="currentModal.fileExists">
+	<template v-if="fileExists">
 		<div class="form-row modal-form-row">
 			<label class="radio-label">
-				<input type="radio" name="overwrite_file" checked="checked" value="overwrite" />
+				<input type="radio" name="overwrite_file" v-model="overwriteAction" value="overwrite" />
 				{{ translate('Overwrite existing file') }}
 			</label>
 		</div>
 		<div class="form-row modal-form-row">
 			<label class="radio-label">
-				<input type="radio" name="overwrite_file" value="append" />
+				<input type="radio" name="overwrite_file" v-model="overwriteAction" value="append" />
 				{{ translate('Append to existing file') }}
 			</label>
 		</div>
 	</template>
-	<div class="form-row modal-form-row modal-form-row-pick-file" v-bind:class="{ 'form-row-has-error' : currentModal.saveFileError }">
+	<div class="form-row modal-form-row modal-form-row-pick-file" v-bind:class="{ 'form-row-has-error' : saveFileError }">
 		<div class="form-row-error modal-form-row-error" v-html="translate('No file selected')"></div>
-		<input class="user-messages-file-picker-button" type="button" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.saveUserMessagesFileClick" :value="translate('Please select file')" />
-		<input class="user-messages-file-picker" type="file" v-bind:nwsaveas="currentModal.defaultFilename" v-on:change="callViewHandler" data-change-handler="helpers.userMessageHelper.saveUserMessagesFileChange" />
+		<input class="file-picker-button" type="button" @click.prevent="saveFileClick" :value="translate('Please select file')" />
+		<input accept=".json" class="file-picker" type="file" v-bind:nwsaveas="defaultFilename" v-on:change="saveFileChange" />
 	</div>
 </div>

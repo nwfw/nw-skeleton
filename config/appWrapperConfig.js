@@ -92,7 +92,95 @@ exports.config = {
         disableRightClick: true,
 
         hasAppMenu: false,
-        menuData: {},
+        menuData: {
+            editMenu: {
+                menuItem: {
+                    label: 'Edit',
+                    method: 'noop'
+                },
+                children: [
+                    // {
+                    //     menuItem: {
+                    //         label: 'Undo',
+                    //         method: 'helpers.clipboardHelper.undo',
+                    //         shortcut: {
+                    //             key: 'z',
+                    //             modifiers: {
+                    //                 ctrl: true
+                    //             }
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     menuItem: {
+                    //         label: 'Redo',
+                    //         method: 'helpers.clipboardHelper.redo',
+                    //         shortcut: {
+                    //             key: 'z',
+                    //             modifiers: {
+                    //                 ctrl: true,
+                    //                 shift: true
+                    //             }
+                    //         }
+                    //     }
+                    // },
+                    {
+                        menuItem: {
+                            type: 'separator'
+                        },
+                        children: []
+                    },
+                    {
+                        menuItem: {
+                            label: 'Cut',
+                            method: 'helpers.clipboardHelper.cut',
+                            shortcut: {
+                                key: 'x',
+                                modifiers: {
+                                    ctrl: true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        menuItem: {
+                            label: 'Copy',
+                            method: 'helpers.clipboardHelper.copy',
+                            shortcut: {
+                                key: 'c',
+                                modifiers: {
+                                    ctrl: true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        menuItem: {
+                            label: 'Paste',
+                            method: 'helpers.clipboardHelper.paste',
+                            shortcut: {
+                                key: 'v',
+                                modifiers: {
+                                    ctrl: true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        menuItem: {
+                            label: 'Select all',
+                            method: 'helpers.clipboardHelper.selectAll',
+                            shortcut: {
+                                key: 'a',
+                                modifiers: {
+                                    ctrl: true
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
         hasTrayIcon: false,
         trayData: {},
         windowConfig: {
@@ -307,6 +395,7 @@ exports.config = {
             StaticFilesHelper: false,
             UserMessageHelper: false,
             UserDataHelper: false,
+            ClipboardHelper: false,
             AppOperationHelper: false,
             UtilHelper: false,
             AppNotificationsHelper: false,
@@ -342,6 +431,7 @@ exports.config = {
             StaticFilesHelper: false,
             UserMessageHelper: false,
             UserDataHelper: false,
+            ClipboardHelper: false,
             AppOperationHelper: false,
             UtilHelper: false,
             AppNotificationsHelper: false,

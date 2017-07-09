@@ -285,17 +285,22 @@ class UtilHelper extends BaseClass {
         let found = false;
         if (varChunks && varChunks.length){
             currentVar = context[varChunks[0]];
-        }
-        if (!_.isUndefined(currentVar) && currentVar){
-            for (let i=1; i<varChunks.length-1;i++){
-                if (!_.isUndefined(currentVar[varChunks[i]])){
-                    found = true;
-                    currentVar = currentVar[varChunks[i]];
+            if (!_.isUndefined(currentVar) && currentVar){
+                if (varChunks.length > 1){
+                    for (let i=1; i<varChunks.length-1;i++){
+                        if (!_.isUndefined(currentVar[varChunks[i]])){
+                            found = true;
+                            currentVar = currentVar[varChunks[i]];
+                        }
+                    }
+                    if (found){
+                        currentVar[varChunks[varChunks.length-1]] = value;
+                        return true;
+                    }
+                } else {
+                    currentVar = value;
+                    return true;
                 }
-            }
-            if (found){
-                currentVar[varChunks[varChunks.length-1]] = value;
-                return true;
             }
         }
         return false;
@@ -321,27 +326,25 @@ class UtilHelper extends BaseClass {
     }
 
     async loadLogViewerFile (fileName) {
-        let modalHelper = _appWrapper.getHelper('modal');
-        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         let fileValid = true;
         let messages;
         if (!fileName){
-            this.addUserMessage(_appWrapper.appTranslations.translate('Please pick file'), 'error', []);
+            this.addUserMessage(this.translate('Please pick file'), 'error', []);
             fileValid = false;
         } else {
             if (!await _appWrapper.fileManager.isFile(fileName)){
-                this.addUserMessage(_appWrapper.appTranslations.translate('File is not valid'), 'error', []);
+                this.addUserMessage(this.translate('File is not valid'), 'error', []);
                 fileValid = false;
             } else {
                 let fileContents = await _appWrapper.fileManager.loadFile(fileName);
                 if (!fileContents){
-                    this.addUserMessage(_appWrapper.appTranslations.translate('Problem reading file'), 'error', []);
+                    this.addUserMessage(this.translate('Problem reading file'), 'error', []);
                     fileValid = false;
                 } else {
                     try {
                         messages = JSON.parse(fileContents);
                     } catch (ex) {
-                        this.addUserMessage(_appWrapper.appTranslations.translate('Problem parsing file: "{1}"'), 'error', [ex.message]);
+                        this.addUserMessage(this.translate('Problem parsing file: "{1}"'), 'error', [ex.message]);
                         fileValid = false;
                     }
                 }
@@ -349,32 +352,34 @@ class UtilHelper extends BaseClass {
         }
         if (fileValid && messages && messages.length){
             let modalHelper = _appWrapper.getHelper('modal');
-            let modalOptions = {
-                title: _appWrapper.appTranslations.translate('Log viewer'),
-                confirmButtonText: _appWrapper.appTranslations.translate('Load'),
-                cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
-                confirmDisabled: true,
-            };
-            appState.modalData.currentModal = modalHelper.getModalObject('logViewerModal', modalOptions);
-            modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-            _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
-
-            appState.modalData.currentModal.fileMessages = _.map(messages, (msg) => {
-                if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
-                    msg.type = 'info';
-                }
-                return msg;
-            });
-            appState.modalData.currentModal.file = fileName;
             let types = _.uniq(_.map(messages, (msg) => {
                 return msg.type;
             }));
-            appState.modalData.currentModal.displayTypes = {};
+            let displayTypes = {};
             for (let i=0; i< types.length; i++){
-                appState.modalData.currentModal.displayTypes[types[i]] = true;
+                displayTypes[types[i]] = true;
             }
-            modalHelper.openCurrentModal();
-            appState.modalData.currentModal.dataLoaded = true;
+
+            let modalOptions = {
+                title: this.translate('Log viewer'),
+                confirmButtonText: this.translate('Load'),
+                cancelButtonText: this.translate('Cancel'),
+                confirmDisabled: true,
+                busy: true,
+                busyText: this.translate('Please wait...'),
+                file: fileName,
+                fileMessages: _.map(messages, (msg) => {
+                    if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
+                        msg.type = 'info';
+                    }
+                    return msg;
+                }),
+                displayTypes: displayTypes,
+                dataLoaded: true,
+            };
+            _appWrapper._confirmModalAction = this.confirmLogViewerModalAction;
+
+            modalHelper.openModal('logViewerModal', modalOptions);
         }
     }
 
@@ -490,6 +495,121 @@ class UtilHelper extends BaseClass {
             finalObject = _.cloneDeep(source);
         }
         return finalObject;
+    }
+
+    async confirmSaveLogAction (e){
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.setModalVar('saveFileError', false);
+        modalHelper.clearModalMessages();
+
+        var filePath = modalHelper.getModalVar('file');
+        var saveAll = modalHelper.getModalVar('saveAll');
+        let overwriteAction = modalHelper.getModalVar('overwriteAction');
+        let append = overwriteAction == 'append';
+
+        if (filePath){
+            modalHelper.modalBusy();
+            await _appWrapper.wait(this.getConfig('shortPauseDuration'));
+            var saved = true;
+            var writeMode = 'w';
+
+            let previousMessages = [];
+            let canAppend = true;
+            if (append){
+                let fileContents = await _appWrapper.fileManager.readFileSync(filePath, {encoding:'utf8'});
+                if (fileContents){
+                    try {
+                        previousMessages = JSON.parse(fileContents);
+                    } catch (ex) {
+                        canAppend = false;
+                        this.addModalMessage('Can not parse file contents for appending!', 'error', []);
+                        this.log('Can not parse file contents for appending!', 'error', []);
+                    }
+                }
+            }
+
+            if (append && !canAppend){
+                modalHelper.modalNotBusy();
+                return;
+            }
+
+            let modalName = modalHelper.getModalVar('name');
+            let messages;
+            let saveStacks;
+            if (modalName == 'save-user-messages'){
+                messages = _.cloneDeep(appState.userMessages);
+                if (saveAll){
+                    messages = _.cloneDeep(appState.allUserMessages);
+                }
+                saveStacks = this.getConfig('userMessages.saveStacksToFile', false);
+            } else {
+                messages = _.cloneDeep(appState.debugMessages);
+                if (saveAll){
+                    messages = _.cloneDeep(appState.allDebugMessages);
+                }
+                saveStacks = this.getConfig('debug.saveStacksToFile', false);
+            }
+
+
+
+            let processedMessages = _.map(messages, (message) => {
+                if (message.stackVisible){
+                    message.stackVisible = false;
+                }
+                delete message.force;
+                delete message.active;
+                if (!saveStacks){
+                    delete message.stackVisible;
+                    delete message.stack;
+                }
+                return message;
+            });
+
+            processedMessages = _.union(previousMessages, processedMessages);
+
+            var data = JSON.stringify(processedMessages, ' ', 4);
+
+            try {
+                await _appWrapper.fileManager.writeFileSync(filePath, data, {
+                    encoding: 'utf8',
+                    mode: 0o775,
+                    flag: writeMode
+                });
+            } catch (e) {
+                saved = false;
+                this.log('Problem saving log file "{1}" - {2}', 'error', [filePath, e]);
+            }
+
+            if (saved){
+                if (appState.isDebugWindow){
+                    this.log('Log file saved successfully', 'info', [], true);
+                } else {
+                    this.addUserMessage('Log file saved successfully', 'info', [], true,  false, true);
+                }
+                _appWrapper._confirmModalAction = () => {
+                    modalHelper.closeCurrentModal();
+                };
+                modalHelper.setModalVars({
+                    title: this.translate('Operation successful'),
+                    body: this.translate('Log file saved successfully'),
+                    bodyComponent: 'modal-body',
+                    confirmButtonText: this.translate('Close'),
+                    autoCloseTime: 5000,
+                });
+                modalHelper.autoCloseModal();
+            } else {
+                if (appState.isDebugWindow){
+                    this.log('Log saving failed', 'error', [], true);
+                } else {
+                    this.addUserMessage('Log saving failed', 'error', [], false,  false);
+                }
+                this.addModalMessage('Log saving failed', 'error', [], false,  false);
+            }
+            modalHelper.modalNotBusy();
+        }
     }
 }
 

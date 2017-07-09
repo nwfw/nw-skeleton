@@ -19,6 +19,7 @@ class AppConfig extends BaseClass {
         this.initialAppConfig = initialAppConfig;
         this.baseConfig = {};
         this.appStateConfig = {};
+        this.defaultConfig = {};
         this.config = {};
         this.userConfig = {};
         this.previousConfig = {};
@@ -60,22 +61,23 @@ class AppConfig extends BaseClass {
         });
         this.config = _.cloneDeep(theConfig);
         this.baseConfig = _.cloneDeep(theConfig);
-        let className = this.constructor.name;
-        if (this.config.forceDebug){
-            if (_.isUndefined(this.config.forceDebug[className])){
-                console.error('Class "' + className + '" has no forceDebug config set!');
-            } else {
-                this.forceDebug = _.get(this.config.forceDebug, className);
-            }
-        }
+        // let className = this.constructor.name;
+        // if (this.config.debug && this.config.debug.forceDebug){
+        //     if (_.isUndefined(this.config.debug.forceDebug[className])){
+        //         console.error('Class "' + className + '" has no forceDebug config set!');
+        //     } else {
+        //         this.forceDebug = _.get(this.config.debug.forceDebug, className);
+        //     }
+        // }
 
-        if (this.config.forceUserMessages){
-            if (_.isUndefined(this.config.forceUserMessages[className])){
-                console.error('Class "' + className + '" has no forceUserMessages config set!');
-            } else {
-                this.forceUserMessages = _.get(this.config.forceUserMessages, className);
-            }
-        }
+        // if (this.config.userMessages && this.config.userMessages.forceUserMessages){
+        //     if (_.isUndefined(this.config.userMessages.forceUserMessages[className])){
+        //         console.error('Class "' + className + '" has no forceUserMessages config set!');
+        //     } else {
+        //         this.forceUserMessages = _.get(this.config.userMessages.forceUserMessages, className);
+        //     }
+        // }
+        this.defaultConfig = _.cloneDeep(theConfig);
         return theConfig;
     }
 
@@ -161,7 +163,7 @@ class AppConfig extends BaseClass {
                     this.userConfig = _.cloneDeep(userConfig);
                     appState.userConfig = _.cloneDeep(userConfig);
                     if (shouldReload){
-                        _appWrapper.helpers.modalHelper.closeCurrentModal(true);
+                        _appWrapper.getHelper('modal').closeCurrentModal(true);
                         await _appWrapper.wait(appState.config.mediumPauseDuration);
                         _appWrapper.windowManager.reloadWindow(null, false);
                     } else {
@@ -176,7 +178,7 @@ class AppConfig extends BaseClass {
                         this.userConfig = {};
                         appState.userConfig = {};
                         if (shouldReload){
-                            _appWrapper.helpers.modalHelper.closeCurrentModal(true);
+                            _appWrapper.getHelper('modal').closeCurrentModal(true);
                             await _appWrapper.wait(appState.config.mediumPauseDuration);
                             _appWrapper.windowManager.reloadWindow(null, false);
                         } else {
@@ -192,22 +194,31 @@ class AppConfig extends BaseClass {
         }
     }
 
-    async clearUserConfig () {
+    async clearUserConfig (noReload) {
         let configName = this.getConfigStorageName();
         if (localStorage){
             this.log('Clearing user config...', 'info', []);
             try {
                 localStorage.removeItem(configName);
                 this.addUserMessage('Configuration data cleared', 'info', [], false,  false, true);
-                appState.hasUserConfig = false;
-                this.userConfig = {};
-                appState.userConfig = {};
-                _appWrapper.helpers.modalHelper.closeCurrentModal(true);
-                appState.appShuttingDown = true;
-                appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
-                setTimeout(() => {
-                    _appWrapper.windowManager.reloadWindow(null, true, appState.mainLoaderTitle);
-                }, 500);
+                if (!noReload){
+                    this.userConfig = {};
+                    appState.userConfig = {};
+                    appState.hasUserConfig = false;
+                    _appWrapper.getHelper('modal').closeCurrentModal(true);
+                    appState.appShuttingDown = true;
+                    appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
+                    setTimeout(() => {
+                        _appWrapper.windowManager.reloadWindow(null, true, appState.mainLoaderTitle);
+                    }, 500);
+                } else {
+                    appState.hasUserConfig = false;
+                    this.previousConfig = _.cloneDeep(appState.config);
+                    appState.config = _.cloneDeep(this.defaultConfig);
+                    this.userConfig = {};
+                    appState.userConfig = {};
+                    appState.hasUserConfig = false;
+                }
             } catch (ex) {
                 this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);
             }
@@ -220,7 +231,7 @@ class AppConfig extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        _appWrapper.helpers.modalHelper.confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'), '', '', this.boundMethods.clearUserConfig);
+        _appWrapper.getHelper('modal').confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'), '', '', this.boundMethods.clearUserConfig);
     }
 
     hasConfigVar(name){
@@ -301,19 +312,19 @@ class AppConfig extends BaseClass {
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
         };
         appState.modalData.currentModal = modalHelper.getModalObject('configEditorModal', modalOptions);
-        _appWrapper.helpers.modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
+        _appWrapper.getHelper('modal').modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveConfig.bind(this);
         _appWrapper._cancelModalAction = function(evt){
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
             // appState.status.noHandlingKeys = false;
-            _appWrapper.helpers.modalHelper.modalNotBusy();
+            _appWrapper.getHelper('modal').modalNotBusy();
             // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             return _appWrapper.__cancelModalAction();
         };
-        _appWrapper.helpers.modalHelper.openCurrentModal();
+        _appWrapper.getHelper('modal').openCurrentModal();
     }
 
     async saveConfig (e) {
@@ -357,9 +368,9 @@ class AppConfig extends BaseClass {
             var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             appState.config = _.cloneDeep(finalConfig);
             await this.saveUserConfig();
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
+            _appWrapper.getHelper('modal').closeCurrentModal();
         } else {
-            _appWrapper.helpers.modalHelper.closeCurrentModal();
+            _appWrapper.getHelper('modal').closeCurrentModal();
         }
     }
 

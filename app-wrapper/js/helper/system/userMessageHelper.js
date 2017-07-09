@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var BaseClass = require('../../base').BaseClass;
-const fs = require('fs');
 const path = require('path');
 
 var _appWrapper;
@@ -18,6 +17,11 @@ class UserMessageHelper extends BaseClass {
 
         this.intervals = {
             userMessageQueue: null
+        };
+
+        this.boundMethods = {
+            saveUserMessageConfig: null,
+            closeUserMessageConfig: null,
         };
 
         return this;
@@ -146,138 +150,44 @@ class UserMessageHelper extends BaseClass {
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
             showCancelButton: false,
             confirmDisabled: true,
+            hasHiddenMessages: appState.allUserMessages.length - appState.userMessages.length,
             saveFileError: false,
             defaultFilename: 'user-messages-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json',
+            busy: true,
+            busyText: _appWrapper.appTranslations.translate('Please wait...'),
+            onOpen: function() {
+                let buttonEl = appState.modalData.modalElement.querySelector('.file-picker-button');
+                if (buttonEl){
+                    buttonEl.focus();
+                }
+            },
         };
-        appState.modalData.currentModal = modalHelper.getModalObject('saveUserMessagesModal', modalOptions);
-        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.confirmSaveUserMessagesModalAction;
-        modalHelper.openCurrentModal();
-    }
-
-    async confirmSaveUserMessagesModalAction (e){
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal.saveFileError = false;
-        appState.modalData.currentModal.messages = [];
-
-        var fileExists = false;
-
-        var modalElement = window.document.querySelector('.modal-dialog');
-
-        var fileNameElement = modalElement.querySelector('input[type=file]');
-        var messageFilePath = fileNameElement.value;
-
-        var saveAll = false;
-
-        var saveAllElement = modalElement.querySelector('input[name=save_hidden_messages]');
-        if (saveAllElement){
-            saveAll = saveAllElement.value ? true : false;
-        }
-
-        var overwriteElements = modalElement.querySelectorAll('input[name=overwrite_file]');
-        if (overwriteElements && overwriteElements.length){
-            var overwriteElement = _.find(overwriteElements, (el) => {
-                return el.checked;
-            });
-            fileExists = true;
-            var overwriteAction = overwriteElement.value;
-        }
-
-        if (messageFilePath){
-            modalHelper.modalBusy();
-            var saved = true;
-            var writeMode = 'w';
-            let append = overwriteAction == 'append';
-
-            let previousMessages = [];
-            if (append && fileExists){
-                let fileContents = await _appWrapper.fileManager.readFileSync(messageFilePath, {encoding:'utf8'});
-                if (fileContents){
-                    try {
-                        previousMessages = JSON.parse(fileContents);
-                    } catch (ex) {
-                        this.log('Can not parse file contents for appending!', 'error', []);
-                    }
-                }
-            }
-
-            var messages = _.cloneDeep(appState.userMessages);
-            if (saveAll){
-                messages = _.cloneDeep(appState.allUserMessages);
-            }
-
-            let saveStacks = this.getConfig('userMessages.saveStacksToFile', false);
-
-            let processedMessages = _.map(messages, (message) => {
-                if (message.stackVisible){
-                    message.stackVisible = false;
-                }
-                delete message.force;
-                delete message.active;
-                if (!saveStacks){
-                    delete message.stackVisible;
-                    delete message.stack;
-                }
-                return message;
-            });
-
-            processedMessages = _.union(previousMessages, processedMessages);
-
-            var data = JSON.stringify(processedMessages, ' ', 4);
-
-            try {
-                fs.writeFileSync(messageFilePath, data, {
-                    encoding: 'utf8',
-                    mode: 0o775,
-                    flag: writeMode
-                });
-                modalHelper.modalNotBusy();
-            } catch (e) {
-                saved = false;
-                this.log('Problem saving user messages file "{1}" - {2}', 'error', [messageFilePath, e]);
-                modalHelper.modalNotBusy();
-            }
-            modalHelper.closeCurrentModal();
-            if (saved){
-                if (appState.isDebugWindow){
-                    this.log('User messages saved successfully', 'info', [], true);
-                } else {
-                    this.addUserMessage('User messages saved successfully', 'info', [], true,  false, true);
-                }
-            } else {
-                if (appState.isDebugWindow){
-                    this.log('User messages saving failed', 'error', [], true);
-                } else {
-                    this.addUserMessage('User messages saving failed', 'error', [], false,  false);
-                }
-            }
-        }
+        _appWrapper._confirmModalAction = _appWrapper.getHelper('util').confirmSaveLogAction;
+        modalHelper.openModal('saveUserMessagesModal', modalOptions);
     }
 
     saveUserMessagesFileClick (e){
-        let fileEl = e.target.parentNode.querySelector('.user-messages-file-picker');
+        let fileEl = e.target.parentNode.querySelector('.file-picker');
         fileEl.setAttribute('nwsaveas', 'user-messages-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json');
         fileEl.click();
     }
 
-    saveUserMessagesFileChange (e) {
-        e.target.parentNode.focus();
-        appState.modalData.currentModal.saveFileError = false;
+    saveUserMessagesFileChange () {
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.setModalVar('saveFileError', false);
         var modalElement = window.document.querySelector('.modal-dialog');
         var fileNameElement = modalElement.querySelector('input[type=file]');
         var messagesFileName = fileNameElement.value;
         var fileValid = true;
-        appState.modalData.currentModal.messages = [];
+        modalHelper.clearModalMessages();
+        modalHelper.modalBusy();
 
         if (!messagesFileName){
-            appState.modalData.currentModal.saveFileError = true;
+            modalHelper.setModalVar('saveFileError', true);
             fileValid = false;
         } else {
             if (!_appWrapper.fileManager.fileExists(messagesFileName)){
-                appState.modalData.currentModal.fileExists = false;
+                modalHelper.setModalVar('fileExists', false);
                 let dirPath = path.dirname(messagesFileName);
                 if (!_appWrapper.fileManager.isDir(dirPath)){
                     fileValid = false;
@@ -289,7 +199,7 @@ class UserMessageHelper extends BaseClass {
                     }
                 }
             } else {
-                appState.modalData.currentModal.fileExists = true;
+                modalHelper.setModalVar('fileExists', true);
                 var filePath = path.resolve(messagesFileName);
                 let dirPath = path.dirname(filePath);
 
@@ -315,10 +225,19 @@ class UserMessageHelper extends BaseClass {
             }
         }
         if (!fileValid){
-            appState.modalData.currentModal.fileExists = false;
-            appState.modalData.currentModal.confirmDisabled = true;
+            modalHelper.setModalVar('fileExists', false);
+            modalHelper.setModalVar('confirmDisabled', true);
+            modalHelper.modalNotBusy();
         } else {
-            appState.modalData.currentModal.confirmDisabled = false;
+            modalHelper.setModalVar('file', messagesFileName);
+            modalHelper.setModalVar('confirmDisabled', false);
+            modalHelper.modalNotBusy();
+            setTimeout(() => {
+                let buttonEl = appState.modalData.modalElement.querySelector('.modal-button-confirm');
+                if (buttonEl){
+                    buttonEl.focus();
+                }
+            }, this.getConfig('shortPauseDuration'));
         }
     }
 
@@ -328,20 +247,12 @@ class UserMessageHelper extends BaseClass {
             title: _appWrapper.appTranslations.translate('User message config editor'),
             confirmButtonText: _appWrapper.appTranslations.translate('Save'),
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+            busy: true,
+            busyText: _appWrapper.appTranslations.translate('Please wait...'),
         };
-        appState.modalData.currentModal = modalHelper.getModalObject('userMessagesConfigEditorModal', modalOptions);
-        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.saveUserMessageConfig.bind(this);
-        _appWrapper._cancelModalAction = (evt) => {
-            if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
-                evt.preventDefault();
-            }
-            // appState.status.noHandlingKeys = false;
-            modalHelper.modalNotBusy();
-            _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
-            return _appWrapper.__cancelModalAction();
-        };
-        modalHelper.openCurrentModal();
+        _appWrapper._confirmModalAction = this.boundMethods.saveUserMessageConfig;
+        _appWrapper._cancelModalAction = this.boundMethods.closeUserMessageConfig;
+        modalHelper.openModal('userMessagesConfigEditorModal', modalOptions);
     }
 
     async saveUserMessageConfig (e) {
@@ -354,6 +265,16 @@ class UserMessageHelper extends BaseClass {
         let finalConfig = await utilHelper.setObjectValuesFromForm(form, appState.config);
         await _appWrapper.appConfig.setConfig(finalConfig);
         modalHelper.closeCurrentModal();
+    }
+
+    async closeUserMessageConfig (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.modalNotBusy();
+        _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+        return _appWrapper.__cancelModalAction();
     }
 }
 

@@ -76,6 +76,18 @@
     --app-progress-bar-cancel-link-color-hovered: #FF6666;
     --app-progress-bar-cancel-link-text-shadow-hovered: 0 0 2px #FF0000;
 
+    /* app notifications */
+
+    --app-notification-font-size: 0.9rem;
+    --app-notification-background: #88BBDD;
+    --app-notification-color: #000033;
+    --app-notification-border-radius: 4px;
+
+    --app-notification-count-font-size: 0.8rem;
+    --app-notification-count-background: #FFFFFF;
+    --app-notification-count-color: #000033;
+    --app-notification-count-border: 1px solid #000000;
+    --app-notification-count-border-radius: 50%;
 
 
     --app-error-text-color: #DD0000;

@@ -15,6 +15,8 @@ class UserDataHelper extends BaseClass {
             appState = _appWrapper.getAppState();
         }
 
+        this.previousUserData = {};
+
         return this;
     }
 
@@ -28,21 +30,22 @@ class UserDataHelper extends BaseClass {
         return userDataName;
     }
 
-    async saveUserData (userData, omitSettingAppState) {
-        if (!userData){
-            userData = appState.userData;
-        } else {
-            if (!omitSettingAppState){
-                appState.userData = userData;
+    async saveUserData (userData) {
+        let saved = false;
+        if (this.userDataChanged(userData)){
+            this.previousUserData = _.cloneDeep(appState.userData);
+            appState.userData = userData;
+            this.log('Saving user data', 'info', []);
+            let userDataName = this.getUserDataStorageName();
+            saved = await this.getHelper('storage').set(userDataName, userData);
+            if (!saved){
+                this.addUserMessage('Could not save user data!', 'error', [], false, false);
+            } else {
+                this.previousUserData = _.cloneDeep(appState.userData);
+                this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
             }
-        }
-        this.log('Saving user data', 'info', []);
-        let userDataName = this.getUserDataStorageName();
-        let saved = await this.getHelper('storage').set(userDataName, userData);
-        if (!saved){
-            this.addUserMessage('Could not save user data!', 'error', [], false, false);
         } else {
-            this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
+            this.log('Not saving user data - data unchanged', 'info', []);
         }
         return saved;
     }
@@ -63,9 +66,10 @@ class UserDataHelper extends BaseClass {
             userData = {};
         }
         if (!omitSettingAppState){
-            appState.userData = userData;
+            appState.userData = _.cloneDeep(userData);
         }
         this.log('Loading user data', 'groupend', []);
+        this.previousUserData = _.cloneDeep(userData);
         return userData;
     }
 
@@ -79,6 +83,21 @@ class UserDataHelper extends BaseClass {
             this.addUserMessage('Deleted user data.', 'info', [], false,  false);
         }
         return deleted;
+    }
+
+    userDataChanged (userData) {
+        if (!userData){
+            userData = appState.userData;
+        }
+        let utilHelper = _appWrapper.getHelper('util');
+        let userDataMap = utilHelper.propertyValuesMap(userData);
+        let previousDataMap = utilHelper.propertyValuesMap(this.previousUserData);
+        let valuesDiff = utilHelper.difference(userDataMap, previousDataMap);
+
+        let userMap = utilHelper.propertyMap(userData);
+        let previousMap = utilHelper.propertyMap(this.previousUserData);
+        let propsDiff = _.difference(userMap, previousMap);
+        return Object.keys(valuesDiff).length > 0 || propsDiff.length > 0;
     }
 
 }

@@ -1,4 +1,4 @@
 <span class="checkbox-styled">
-    <input v-model="cbModel" :data-data="data" :name="name" class="hidden-checkbox" type="checkbox" @change="handleChange" />
+    <input v-model="cbModel" v-nwmodel.eval="modelProperty" :data-data="data" :name="name" class="hidden-checkbox" type="checkbox" @change="handleChange" />
     <span :data-name="name" :data-data="data" class="styled-checkbox-placeholder fa" v-bind:class="{'fa-square-o' : !cbModel, 'fa-check-square-o': cbModel}"></span>
 </span>

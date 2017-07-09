@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
@@ -97,134 +96,39 @@ class DebugHelper extends BaseClass {
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
             showCancelButton: false,
             confirmDisabled: true,
-            saveDebugFileError: false,
+            hasHiddenMessages: appState.allDebugMessages.length - appState.debugMessages.length,
+            saveFileError: false,
             defaultFilename: 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.txt',
+            busy: true,
+            busyText: _appWrapper.appTranslations.translate('Please wait...'),
+            onOpen: function() {
+                let buttonEl = appState.modalData.modalElement.querySelector('.file-picker-button');
+                if (buttonEl){
+                    buttonEl.focus();
+                }
+            },
         };
-        appState.modalData.currentModal = modalHelper.getModalObject('saveDebugModal', modalOptions);
-        modalHelper.modalBusy(_appWrapper.appTranslations.translate('Please wait...'));
-        _appWrapper._confirmModalAction = this.confirmSaveDebugModalAction;
-        modalHelper.openCurrentModal();
-    }
-
-    async confirmSaveDebugModalAction (e){
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
-        let modalHelper = _appWrapper.getHelper('modal');
-        appState.modalData.currentModal.saveDebugFileError = false;
-        appState.modalData.currentModal.messages = [];
-
-        var fileExists = false;
-
-        var modalElement = window.document.querySelector('.modal-dialog');
-
-        var fileNameElement = modalElement.querySelector('input[type=file]');
-        var debugFilePath = fileNameElement.value;
-
-        var saveAll = false;
-
-        var saveAllElement = modalElement.querySelector('input[name=save_hidden_debug]');
-        if (saveAllElement){
-            saveAll = saveAllElement.value ? true : false;
-        }
-
-        var overwriteElements = modalElement.querySelectorAll('input[name=overwrite_file]');
-        if (overwriteElements && overwriteElements.length){
-            var overwriteElement = _.find(overwriteElements, (el) => {
-                return el.checked;
-            });
-            fileExists = true;
-            var overwriteAction = overwriteElement.value;
-        }
-
-        if (debugFilePath){
-            modalHelper.modalBusy();
-            var saved = true;
-            var writeMode = 'w';
-            let append = overwriteAction == 'append';
-
-            let previousMessages = [];
-            if (append && fileExists){
-                let fileContents = await _appWrapper.fileManager.readFileSync(debugFilePath, {encoding:'utf8'});
-                if (fileContents){
-                    try {
-                        previousMessages = JSON.parse(fileContents);
-                    } catch (ex) {
-                        this.log('Can not parse file contents for appending!', 'error', []);
-                    }
-                }
-            }
-
-            var messages = _.cloneDeep(appState.debugMessages);
-            if (saveAll){
-                messages = _.cloneDeep(appState.allDebugMessages);
-            }
-
-            let saveStacks = this.getConfig('debug.saveStacksToFile', false);
-
-            let processedMessages = _.map(messages, (message) => {
-                if (message.stackVisible){
-                    message.stackVisible = false;
-                }
-                delete message.force;
-                delete message.active;
-                if (!saveStacks){
-                    delete message.stackVisible;
-                    delete message.stack;
-                }
-                return message;
-            });
-
-            processedMessages = _.union(previousMessages, processedMessages);
-
-            var data = JSON.stringify(processedMessages, ' ', 4);
-
-            try {
-                fs.writeFileSync(debugFilePath, data, {
-                    encoding: 'utf8',
-                    mode: 0o775,
-                    flag: writeMode
-                });
-                modalHelper.modalNotBusy();
-            } catch (e) {
-                saved = false;
-                this.log('Problem saving debug log file "{1}" - {2}', 'error', [debugFilePath, e]);
-                modalHelper.modalNotBusy();
-            }
-            modalHelper.closeCurrentModal();
-            if (saved){
-                if (appState.isDebugWindow){
-                    this.log('Debug log saved successfully', 'info', [], true);
-                } else {
-                    this.addUserMessage('Debug log saved successfully', 'info', [], true,  false, true);
-                }
-            } else {
-                if (appState.isDebugWindow){
-                    this.log('Debug log saving failed', 'error', [], true);
-                } else {
-                    this.addUserMessage('Debug log saving failed', 'error', [], false,  false);
-                }
-            }
-        }
+        _appWrapper._confirmModalAction = _appWrapper.getHelper('util').confirmSaveLogAction;
+        modalHelper.openModal('saveDebugModal', modalOptions);
     }
 
     saveDebugFileClick (e){
-        let fileEl = e.target.parentNode.querySelector('.debug-file-picker');
+        let fileEl = e.target.parentNode.querySelector('.file-picker');
         fileEl.setAttribute('nwsaveas', 'debug-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json');
         fileEl.click();
     }
 
-    saveDebugFileChange (e) {
-        e.target.parentNode.focus();
-        appState.modalData.currentModal.saveDebugFileError = false;
+    saveDebugFileChange () {
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.setModalVar('saveFileError', false);
         var modalElement = window.document.querySelector('.modal-dialog');
         var fileNameElement = modalElement.querySelector('input[type=file]');
         var debugFileName = fileNameElement.value;
         var fileValid = true;
-        appState.modalData.currentModal.messages = [];
-
+        modalHelper.clearModalMessages();
+        modalHelper.modalBusy();
         if (!debugFileName){
-            appState.modalData.currentModal.saveDebugFileError = true;
+            appState.modalData.currentModal.saveFileError = true;
             fileValid = false;
         } else {
             if (!_appWrapper.fileManager.fileExists(debugFileName)){
@@ -268,8 +172,17 @@ class DebugHelper extends BaseClass {
         if (!fileValid){
             appState.modalData.currentModal.fileExists = false;
             appState.modalData.currentModal.confirmDisabled = true;
+            modalHelper.modalNotBusy();
         } else {
-            appState.modalData.currentModal.confirmDisabled = false;
+            modalHelper.setModalVar('file', debugFileName);
+            modalHelper.setModalVar('confirmDisabled', false);
+            modalHelper.modalNotBusy();
+            setTimeout(() => {
+                let buttonEl = appState.modalData.modalElement.querySelector('.modal-button-confirm');
+                if (buttonEl){
+                    buttonEl.focus();
+                }
+            }, this.getConfig('shortPauseDuration'));
         }
     }
 

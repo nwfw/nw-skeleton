@@ -30,7 +30,9 @@ class ModalHelper extends BaseClass {
     }
 
     async initialize () {
-        return await super.initialize();
+        await super.initialize();
+        appState.modalData.currentModal = this.getModalObject('defaultModal', {});
+        return this;
     }
 
     modalBusy (message) {
@@ -42,7 +44,7 @@ class ModalHelper extends BaseClass {
 
     modalNotBusy () {
         appState.modalData.currentModal.busy = false;
-        appState.modalData.currentModal.busyText = appState.defaultModal.busyText;
+        appState.modalData.currentModal.busyText = appState.appModals.defaultModal.busyText;
     }
 
     closeCurrentModal (force){
@@ -57,8 +59,7 @@ class ModalHelper extends BaseClass {
             }
             clearInterval(this.intervals.autoClose);
             clearTimeout(this.timeouts.autoClose);
-            _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
-            _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+            this.resetModalActions();
             appState.modalData.currentModal.autoCloseTime = null;
             appState.modalData.modalVisible = false;
             appState.modalData.modalElement = null;
@@ -78,7 +79,7 @@ class ModalHelper extends BaseClass {
         }
     }
 
-    openCurrentModal (showContentImmediately) {
+    openCurrentModal () {
         this.log('Opening current modal.', 'info', []);
         if (appState.modalData.currentModal.onBeforeOpen && _.isFunction(appState.modalData.currentModal.onBeforeOpen)){
             appState.modalData.currentModal.onBeforeOpen();
@@ -91,14 +92,16 @@ class ModalHelper extends BaseClass {
         clearInterval(this.intervals.autoClose);
         let fadeModal = appState.modalData.fadeModal;
         let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-        if (!showContentImmediately){
+        if (!appState.modalData.currentModal.showContentImmediately){
             setTimeout(() => {
                 if (appState.modalData.currentModal.bodyComponent != appState.modalData.currentModal.defaultBodyComponent){
                     appState.modalData.currentModal.bodyComponent = appState.modalData.currentModal.defaultBodyComponent;
                 }
                 this.modalNotBusy();
                 if (appState.modalData.currentModal.onOpen && _.isFunction(appState.modalData.currentModal.onOpen)){
-                    appState.modalData.currentModal.onOpen();
+                    setTimeout(() => {
+                        appState.modalData.currentModal.onOpen();
+                    }, duration);
                 }
             }, duration);
         } else {
@@ -122,7 +125,7 @@ class ModalHelper extends BaseClass {
     async openSimpleModal(title, text, options, confirmAction, cancelAction) {
         this.closeCurrentModal(true);
         this.log('Opening simple modal.', 'info', []);
-        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+        appState.modalData.currentModal = _.cloneDeep(appState.appModals.defaultModal);
         if (options && _.isObject(options)){
             appState.modalData.currentModal = _.merge(appState.modalData.currentModal, options);
         }
@@ -146,7 +149,7 @@ class ModalHelper extends BaseClass {
 
     async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
         this.log('Opening confirm modal.', 'info', []);
-        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+        appState.modalData.currentModal = _.cloneDeep(appState.appModals.defaultModal);
 
         if (!text){
             text = '';
@@ -160,7 +163,7 @@ class ModalHelper extends BaseClass {
             cancelButtonText = _appWrapper.appTranslations.translate('Cancel');
         }
 
-        appState.modalData.currentModal = _.cloneDeep(appState.defaultModal);
+        appState.modalData.currentModal = _.cloneDeep(appState.appModals.defaultModal);
 
         appState.modalData.currentModal.bodyComponent = 'modal-body';
         appState.modalData.currentModal.title = title;
@@ -220,15 +223,33 @@ class ModalHelper extends BaseClass {
         }
     }
 
+    clearModalMessages () {
+        if (appState.modalData.currentModal && _.isObject(appState.modalData.currentModal)){
+            this.setModalVar('messages', []);
+        }
+    }
+
     getModalObject(modalName, options){
         let modalObj = false;
-        if (!_.isUndefined(appState[modalName])){
-            modalObj = _.merge(_.cloneDeep(appState.defaultModal), _.cloneDeep(appState[modalName]));
+        if (!_.isUndefined(appState.appModals[modalName])){
+            modalObj = _.cloneDeep(appState.appModals.defaultModal);
+            _.merge(modalObj, _.cloneDeep(appState.appModals[modalName]));
             if (options && _.isObject(options)){
                 modalObj = _.merge(modalObj, options);
             }
         }
+        if (!modalObj){
+            this.log('Can not find modal object with name "{1}"!', 'error', [modalName]);
+        }
         return modalObj;
+    }
+
+    openModal(modalName, options){
+        let modalObj = this.getModalObject(modalName, options);
+        if (modalObj){
+            appState.modalData.currentModal = modalObj;
+            this.openCurrentModal();
+        }
     }
 
     autoCloseModal () {
@@ -281,6 +302,31 @@ class ModalHelper extends BaseClass {
         appState.modalData.currentModal.showConfirmButton = false;
         appState.modalData.currentModal.showCancelButton = false;
         appState.modalData.currentModal.bodyComponent = 'modal-body';
+    }
+
+    resetModalActions () {
+        _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
+        _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
+    }
+
+    setModalVar(name, value){
+        appState.modalData.currentModal[name] = value;
+    }
+
+    setModalVars(data){
+        appState.modalData.currentModal = _.merge(appState.modalData.currentModal, data);
+    }
+
+    getModalVar(name){
+        return _.get(appState.modalData.currentModal, name);
+    }
+
+    setModalData(data, overwrite){
+        if (!overwrite){
+            _.merge(appState.modalData.currentModal, data);
+        } else {
+            appState.modalData.currentModal = data;
+        }
     }
 }
 

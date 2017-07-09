@@ -8,8 +8,13 @@ component = {
     template: '',
     messageAdded: false,
     methods: {
-        _confirmModalAction: _appWrapper.confirmModalAction.bind(_appWrapper),
-        _cancelModalAction: _appWrapper.cancelModalAction.bind(_appWrapper),
+        _confirmModalAction: function(){
+            _appWrapper.confirmModalAction.call(_appWrapper);
+        },
+
+        _cancelModalAction: function(){
+            _appWrapper.cancelModalAction.call(_appWrapper);
+        },
 
         getTitle: function(){
             let title = '';

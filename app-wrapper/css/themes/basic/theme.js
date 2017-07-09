@@ -12,4 +12,4 @@ exports.theme = {
     ],
     initJsFiles: [],
     jsFiles: []
-}
+};

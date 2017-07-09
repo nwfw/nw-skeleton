@@ -5,7 +5,15 @@ exports.component = {
     name: 'save-debug',
     template: '',
     data: function () {
-        return appState.modalData;
+        return appState.modalData.currentModal;
+    },
+    methods: {
+        saveFileClick: async function(e){
+            return await _appWrapper.getHelper('debug').saveDebugFileClick(e);
+        },
+        saveFileChange: async function(e){
+            return await _appWrapper.getHelper('debug').saveDebugFileChange(e);
+        },
     },
     computed: {
         appState: function(){
@@ -13,7 +21,8 @@ exports.component = {
         }
     },
     mounted: function(){
-        appState.modalData.currentModal.busy = false;
+        let modalHelper = _appWrapper.getHelper('modal');
+        modalHelper.modalNotBusy();
         appState.modalData.modalContentVisible = true;
     }
 };

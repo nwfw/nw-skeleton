@@ -1,8 +1,13 @@
-<div class="app-notifications" v-bind:class="{'no-notifications': !currentNotification }">
-    <transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
-        <div class="app-notification" v-if="currentNotification && currentNotification.message">
-            <div class="app-notification-text" v-if="currentNotification.message" v-html="currentNotification.message">
+<div class="app-notifications" v-bind:class="{'no-notifications': !notification }">
+    <div class="app-notification">
+        <transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
+            <div class="app-notification-contents" v-if="notification && notification.message">
+                <div class="app-notification-text" v-if="notification.message" v-html="notification.message">
+                </div>
+                <div class="app-notification-count" v-if="notification.count > 1">
+                &nbsp;&nbsp;{{ notification.count }}&nbsp;&nbsp;
+                </div>
             </div>
-        </div>
-    </transition>
+        </transition>
+    </div>
 </div>

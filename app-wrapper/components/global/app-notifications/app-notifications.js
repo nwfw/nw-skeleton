@@ -11,6 +11,15 @@ exports.component = {
     mounted: function(){
         this.processQueue();
     },
+    updated: function(){
+        if (!this.notificationExpired){
+            let element = this.$el.querySelector('.app-notification-contents');
+            let dimensions = this.$el.getRealDimensions('.app-notification-contents');
+            if (element && dimensions && dimensions.width && dimensions.height){
+                element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
+            }
+        }
+    },
     beforeUnmount: function(){
         this.stopQueue();
     },
@@ -21,7 +30,7 @@ exports.component = {
         },
         enter: function (element, done) {
             var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10) + 100;
-            var dimensions = this.$el.getRealDimensions('.app-notification');
+            var dimensions = this.$el.getRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
 
             setTimeout( () => {
@@ -30,7 +39,7 @@ exports.component = {
         },
         beforeLeave: function (element) {
             element.addClass('transition-wh2');
-            var dimensions = this.$el.getRealDimensions('.app-notification');
+            var dimensions = this.$el.getRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
         },
         leave: function (element, done) {
@@ -51,16 +60,13 @@ exports.component = {
                     let newNotification = _.pullAt(this.newNotifications, 0)[0];
                     if (this.currentNotification){
                         this.oldNotifications.push(this.currentNotification);
-                        this.currentNotification = {};
-                        await _appWrapper.wait(animationDuration);
+                        // this.currentNotification = {};
+                        // await _appWrapper.wait(animationDuration);
                     }
+                    this.notificationExpired = false;
                     this.currentNotification = newNotification;
                     await _appWrapper.wait(animationDuration);
-                    this.notificationExpired = false;
-                    this.timeouts.notificationQueue = setTimeout( () => {
-                        this.notificationExpired = true;
-                        this.processQueue();
-                    }, _appWrapper.getConfig('appNotifications.duration'));
+                    this.setNotificationTimeout();
 
                 } else {
                     await this.stopQueue();
@@ -78,16 +84,32 @@ exports.component = {
             this.currentNotification = null;
             await _appWrapper.wait(animationDuration);
             this.notificationExpired = true;
+        },
+
+        setNotificationTimeout: function(){
+            clearTimeout(this.timeouts.notificationQueue);
+            this.timeouts.notificationQueue = setTimeout( () => {
+                this.notificationExpired = true;
+                this.processQueue();
+            }, _appWrapper.getConfig('appNotifications.duration'));
         }
     },
     watch: {
         newNotifications: function(){
             this.processQueue();
+        },
+        'currentNotification.count': function(count){
+            if (count > 1){
+                this.setNotificationTimeout();
+            }
         }
     },
     computed: {
         appState: function(){
             return appState;
+        },
+        notification: function(){
+            return appState.appNotificationsData.currentNotification;
         }
     }
 };

@@ -418,6 +418,62 @@ class HtmlHelper extends BaseClass {
         } while (!parentFound);
         return parent;
     }
+
+    canPasteText (element) {
+        return (element && !_.isUndefined(element.selectionStart) && !_.isUndefined(element.selectionEnd) && !_.isUndefined(element.value));
+    }
+
+    isTextSelectable (element) {
+        return (element && !_.isUndefined(element.selectionStart) && !_.isNull(element.selectionStart) && !_.isUndefined(element.selectionEnd) && !_.isNull(element.selectionEnd) && !_.isUndefined(element.value));
+    }
+
+    triggerCustomEvent (element, eventName, eventOptions){
+        if (this instanceof Element){
+            element = this;
+        }
+        if (!eventOptions){
+            eventOptions = {};
+        }
+        let options = _.extend({
+            bubbles: true,
+            cancelable: true,
+            target: element,
+            type: 'input',
+            isTrusted: true,
+        }, eventOptions);
+
+        var event = new CustomEvent(eventName, options);
+        element.dispatchEvent(event);
+    }
+
+    getInputValue (element){
+        if (this instanceof Element){
+            element = this;
+        }
+        let value;
+        if (_.includes(['checkbox'], element.getAttribute('type'))){
+            value = element.checked;
+        } else {
+            value = element.value;
+        }
+        return value;
+    }
+
+    setInputValue (element, value){
+        if (this instanceof Element){
+            element = this;
+        }
+        if (_.includes(['checkbox'], element.getAttribute('type'))){
+            if (value) {
+                element.checked = true;
+            } else {
+                element.checked = false;
+            }
+        } else {
+            element.value = value;
+        }
+        return value;
+    }
 }
 
 exports.HtmlHelper = HtmlHelper;

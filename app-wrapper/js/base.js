@@ -358,8 +358,8 @@ class BaseClass extends eventEmitter {
         _appWrapper.getHelper('modal').addModalMessage(userMessage);
     }
 
-    async addNotification (message, data){
-        let notification = await this.getMessageObject(0, message, 'info', data);
+    async addNotification (message, data, dontTranslate){
+        let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
         _appWrapper.getHelper('appNotifications').addNotification(notification);
     }
 
@@ -456,6 +456,10 @@ class BaseClass extends eventEmitter {
             return item.function ? true : false;
         });
         return stackArray;
+    }
+
+    translate (text) {
+        return _appWrapper.appTranslations.translate(text);
     }
 }
 exports.BaseClass = BaseClass;

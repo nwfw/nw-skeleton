@@ -370,7 +370,7 @@ class ComponentHelper extends BaseClass {
                 if (await _appWrapper.fileManager.isFile(componentStateFile)){
                     let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
                     if (componentState && _.isObject(componentState)) {
-                        _.extend(appState, componentState);
+                        _.merge(appState, componentState);
                     }
                 }
             }

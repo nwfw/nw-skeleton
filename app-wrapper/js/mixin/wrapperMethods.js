@@ -4,6 +4,7 @@ var _appWrapper = window.getAppWrapper();
 
 var MixinWrapperMethods  = {
     methods: {
+        callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper),
         log: function(value){
             console.log(value);
         },
@@ -49,7 +50,33 @@ var MixinWrapperMethods  = {
             }
             return value;
         },
-        callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
+        onUpdateModel: function(e) {
+            if (e && e.target && e.target.triggerCustomEvent && _.isFunction(e.target.triggerCustomEvent)) {
+                e.target.triggerCustomEvent('input');
+                e.target.triggerCustomEvent('change');
+            }
+        },
+        nwModelInput: function (e){
+
+            let utilHelper = _appWrapper.getHelper('util');
+            let binding = e.target.nwModelData.binding;
+            let context = e.target.nwModelData.vnode.context;
+            let value = e.target.getInputValue();
+            if (binding.modifiers.number){
+                value = +value;
+            }
+            if (binding.modifiers.trim){
+                value = _.trim(value);
+            }
+            if (binding.modifiers.literal){
+                utilHelper.setVar(binding.expression, value);
+            } else if (binding.modifiers.eval){
+                utilHelper.setVar(e.target.nwModelData.propName, value);
+            } else {
+                context[binding.expression] = value;
+            }
+
+        },
     }
 };
 exports.mixin = MixinWrapperMethods;
