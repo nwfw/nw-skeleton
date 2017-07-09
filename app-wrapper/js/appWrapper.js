@@ -531,6 +531,7 @@ class AppWrapper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        this.getHelper('modal').closeCurrentModal();
     }
 
     /**

@@ -69,9 +69,11 @@ class ModalHelper extends BaseClass {
                 setTimeout( () => {
                     appState.modalData.currentModal.onClose();
                     this.resetCurrentCallbacks();
+                    appState.modalData.currentModal = this.getModalObject('defaultModal');
                 }, duration);
             } else {
                 this.resetCurrentCallbacks();
+                appState.modalData.currentModal = this.getModalObject('defaultModal');
             }
             appState.modalData.fadeModal = fadeModal;
         } else {
