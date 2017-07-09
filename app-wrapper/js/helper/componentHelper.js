@@ -25,6 +25,9 @@ class ComponentHelper extends BaseClass {
         this.vueMixins = null;
         this.appVueMixins = null;
 
+        this.vueDirectives = null;
+        this.appVueDirectives = null;
+
         this.vueFilters = null;
         this.appVueFilters = null;
 
@@ -38,12 +41,63 @@ class ComponentHelper extends BaseClass {
         await super.initialize();
         this.vueFilters = await this.initFilters();
         this.vueMixins = await this.loadMixins();
+        this.vueDirectives = await this.loadDirectives();
         await this.initializeComponents();
         return this;
     }
 
     async finalize () {
         return true;
+    }
+
+    async loadDirectives(){
+        var vueDirectives = [];
+        var appVueDirectives = [];
+
+        this.log('Loading directives...', 'group', []);
+
+        var directivesDir = this.getConfig('wrapper.directiveRoot');
+        if (directivesDir){
+            directivesDir = path.resolve(directivesDir);
+            var directiveRegex = this.getConfig('wrapper.directiveExtensionRegex');
+            if (fs.existsSync(directivesDir)){
+                this.log('Loading wrapper directives', 'group', []);
+                vueDirectives = await this.initDirectives(await _appWrapper.fileManager.loadFilesFromDir(directivesDir, directiveRegex, true));
+                this.log('Loaded {1} wrapper directives', 'info', [Object.keys(vueDirectives).length]);
+                this.log('Loading wrapper directives', 'groupend', []);
+            } else {
+                this.log('Wrapper directives dir "{1}" does not exist', 'warning', [directivesDir]);
+            }
+        }
+
+        var appDirectivesDir = this.getConfig('appConfig.directiveRoot');
+        if (appDirectivesDir){
+            appDirectivesDir = path.resolve(appDirectivesDir);
+            var appMixinRegex = this.getConfig('appConfig.directiveExtensionRegex');
+            if (fs.existsSync(directivesDir)){
+                this.log('Loading app directives', 'group', []);
+                appVueDirectives = await this.initDirectives(await _appWrapper.fileManager.loadFilesFromDir(appDirectivesDir, appMixinRegex, true));
+                this.log('Loaded {1} app directives', 'info', [Object.keys(appVueDirectives).length]);
+                this.log('Loading app directives', 'groupend', []);
+            } else {
+                this.log('App directives dir "{1}" does not exist', 'warning', [appDirectivesDir]);
+            }
+
+            vueDirectives = _.merge(vueDirectives, appVueDirectives);
+        }
+
+        this.log('Loading directives...', 'groupend', []);
+        return vueDirectives;
+    }
+
+    async initDirectives (vueDirectiveData){
+        var vueDirectives = [];
+        for (let directiveName in vueDirectiveData){
+            this.log('Initializing directive "{1}"', 'info', [directiveName]);
+            vueDirectives.push(vueDirectiveData[directiveName]);
+            Vue.directive(directiveName, vueDirectiveData[directiveName]);
+        }
+        return vueDirectives;
     }
 
     async loadMixins(){

@@ -15,6 +15,9 @@ exports.config = {
         mixinRoot: './node_modules/nw-skeleton/app-wrapper/js/mixin/',
         mixinExtensionRegex: /\.js$/,
 
+        directiveRoot: './node_modules/nw-skeleton/app-wrapper/js/directive/',
+        directiveExtensionRegex: /\.js$/,
+
         filterRoot: './node_modules/nw-skeleton/app-wrapper/js/filter/',
         filterExtensionRegex: /\.js$/,
 
@@ -88,6 +91,9 @@ exports.config = {
         debugJsFiles: [],
 
         mixinRoot: './app/js/mixin/',
+
+        directiveRoot: './app/js/directive/',
+        directiveExtensionRegex: /\.js$/,
 
         disableRightClick: true,
 
