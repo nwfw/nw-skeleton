@@ -362,6 +362,10 @@ class BaseClass extends eventEmitter {
         _appWrapper.getHelper('appNotifications').addNotification(notification);
     }
 
+    async addDesktopNotification (message, data, dontTranslate, options, callbacks){
+        let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
+        return await _appWrapper.getHelper('appNotifications').addDesktopNotification(notification, options, callbacks);
+    }
 
     getStateVar (varPath, defaultValue){
         var varValue;
@@ -457,8 +461,8 @@ class BaseClass extends eventEmitter {
         return stackArray;
     }
 
-    translate (text) {
-        return _appWrapper.appTranslations.translate(text);
+    translate (text, currentLanguage, data) {
+        return _appWrapper.appTranslations.translate(text, currentLanguage, data);
     }
 }
 exports.BaseClass = BaseClass;

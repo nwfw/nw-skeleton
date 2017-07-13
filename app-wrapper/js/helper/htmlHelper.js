@@ -1,11 +1,17 @@
 const _ = require('lodash');
 const BaseClass = require('../base').BaseClass;
 
+var _appWrapper;
+// var appState;
 
 class HtmlHelper extends BaseClass {
 
     constructor(){
         super();
+
+        _appWrapper = window.getAppWrapper();
+        // appState = _appWrapper.getAppState();
+
         this.intervals = {
             scrollTo: {}
         };
@@ -246,6 +252,40 @@ class HtmlHelper extends BaseClass {
                 this.setElementStyles(element, {display: defaultDisplay}, true);
             } else {
                 this.hide(element);
+            }
+        }
+    }
+
+    makeInvisible (element) {
+        if (this instanceof Element){
+            element = this;
+        }
+        if (element){
+            this.setElementStyles(element, {visibility: 'hidden'}, true);
+        }
+    }
+
+    makeVisible (element) {
+        if (this instanceof Element){
+            element = this;
+        }
+        if (element){
+            this.setElementStyles(element, {visibility: 'visible'}, true);
+        }
+    }
+
+    toggleVisibility (element) {
+        if (this instanceof Element){
+            element = this;
+        }
+        if (element){
+            let styles = element.getComputedStyles();
+            if (styles && styles.visibility){
+                if (styles.visibility == 'hidden'){
+                    _appWrapper.getHelper('html').makeVisible(element);
+                } else {
+                    _appWrapper.getHelper('html').makeInvisible(element);
+                }
             }
         }
     }

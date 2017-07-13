@@ -39,6 +39,10 @@ class AppOperationHelper extends BaseClass {
 
         this.lastCalculationPercent = 0;
 
+        this.progressNotificationId = null;
+        this.progressNotificationCreated = false;
+        this.progressNotificationProgress = null;
+
         return this;
     }
 
@@ -52,7 +56,7 @@ class AppOperationHelper extends BaseClass {
     }
 
 
-    operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation){
+    operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation, notify){
         if (appState.appOperation.operationActive){
             this.log('Can\'t start another operation, one is already in progress', 'warning', []);
             return;
@@ -69,11 +73,16 @@ class AppOperationHelper extends BaseClass {
             appState.progressData.animated = true;
         }
 
+        if (!notify){
+            notify = false;
+        }
+
         let operationActive = true;
         let cancelling = false;
         let cancelled = false;
         let utilHelper = _appWrapper.getHelper('util');
         let operationId = utilHelper.getRandomString(10);
+        let operationStartTimestamp = parseInt((+ new Date()) / 1000, 10);
 
         appState.appOperation = {
             operationText,
@@ -84,7 +93,9 @@ class AppOperationHelper extends BaseClass {
             cancelling,
             cancelled,
             operationActive,
+            operationStartTimestamp,
             operationId,
+            notify
         };
 
         if (_.isUndefined(appBusy)){
@@ -112,6 +123,7 @@ class AppOperationHelper extends BaseClass {
     }
 
     operationFinish(operationText, timeoutDuration){
+        let originalText = appState.appOperation.operationText;
         if (operationText){
             appState.appOperation.operationText = operationText;
         }
@@ -128,6 +140,23 @@ class AppOperationHelper extends BaseClass {
         // _appWrapper.setAppStatus(appBusy, 'success');
         //
         _appWrapper.emit('appOperation:progressDone');
+        if (appState.appOperation.notify && !appState.status.windowFocused){
+            let duration = _appWrapper.getHelper('format').formatDurationCustom(parseInt((+ new Date()) / 1000, 10) - appState.appOperation.operationStartTimestamp);
+            this.addDesktopNotification('Operation "{1}" completed.', [originalText], false, {
+                message: this.translate('Duration: {1} seconds', null, [duration]),
+            }, {
+                onClicked: () => {
+                    // console.log('onclick');
+                    // console.log(_appWrapper.windowManager.window);
+                    _appWrapper.windowManager.window.focus();
+                },
+                onClosed: () => {
+                    // console.log('onclose');
+                    // console.log(_appWrapper.windowManager.window);
+                    _appWrapper.windowManager.window.focus();
+                }
+            });
+        }
 
         clearTimeout(this.timeouts.appStatusChangingTimeout);
 
@@ -182,7 +211,7 @@ class AppOperationHelper extends BaseClass {
         this.updateProgress(0, total, operationText);
     }
 
-    updateProgress (completed, total, operationText) {
+    async updateProgress (completed, total, operationText) {
         if (!appState.progressData.inProgress){
             this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', []);
             return;
@@ -197,6 +226,31 @@ class AppOperationHelper extends BaseClass {
             completed = 0;
         }
         var percentComplete = Math.ceil((completed / total) * 100);
+
+        //TODO fix notification
+
+        // let appNotificationsHelper = _appWrapper.getHelper('appNotifications');
+        // if (appState.appOperation.notify && !appState.status.windowFocused){
+        //     let notifOptions = {
+        //         imageUrl: '',
+        //         type: 'progress',
+        //         progress: percentComplete,
+        //         requireInteraction: true,
+        //         message: ' '
+        //     };
+        //     if (!this.progressNotificationId && !this.progressNotificationCreated){
+        //         this.progressNotificationCreated = true;
+        //         this.progressNotificationProgress = percentComplete;
+        //         notifOptions.progress = percentComplete;
+        //         this.progressNotificationId = await this.addDesktopNotification(appState.appOperation.operationText, [], true, notifOptions);
+        //     } else if (this.progressNotificationCreated && this.progressNotificationId){
+        //         if (this.progressNotificationProgress != percentComplete){
+        //             this.progressNotificationProgress = percentComplete;
+        //             notifOptions.progress = percentComplete;
+        //             appNotificationsHelper.updateDesktopNotification(this.progressNotificationId, notifOptions);
+        //         }
+        //     }
+        // }
         var remainingTime = this.calculateTime(percentComplete);
         percentComplete = parseInt(percentComplete);
         if (operationText){
@@ -293,7 +347,9 @@ class AppOperationHelper extends BaseClass {
             cancelled: false,
             operationActive: false,
             operationVisible: false,
+            operationStartTimestamp: false,
             operationId: '',
+            notify: false,
         }, data);
     }
 

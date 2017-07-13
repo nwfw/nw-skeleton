@@ -32,6 +32,8 @@ class WindowManager extends BaseClass {
             winStateChanged: this.winStateChanged.bind(this),
             windowRestored: this.windowRestored.bind(this),
             windowResize: this.windowResize.bind(this),
+            windowBlur: this.windowBlur.bind(this),
+            windowFocus: this.windowFocus.bind(this),
             beforeUnload: this.beforeUnload.bind(this)
         };
 
@@ -52,6 +54,8 @@ class WindowManager extends BaseClass {
         this.on('winStateChange', this.boundMethods.winStateChanged);
         this.win.on('restore', this.boundMethods.windowRestored);
         this.window.addEventListener('resize', this.boundMethods.windowResize);
+        this.window.addEventListener('blur', this.boundMethods.windowBlur);
+        this.window.addEventListener('focus', this.boundMethods.windowFocus);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
     }
 
@@ -59,6 +63,8 @@ class WindowManager extends BaseClass {
         this.removeListener('winStateChange', this.boundMethods.winStateChanged);
         this.win.removeListener('restore', this.boundMethods.windowRestored);
         this.window.removeEventListener('resize', this.boundMethods.windowResize);
+        this.window.removeEventListener('blur', this.boundMethods.windowBlur);
+        this.window.removeEventListener('focus', this.boundMethods.windowFocus);
         this.window.removeEventListener('beforeunload', this.boundMethods.beforeUnload);
 
         Object.keys(this.boundMethods).forEach((key) => {
@@ -710,6 +716,14 @@ class WindowManager extends BaseClass {
                 appState.config.appConfig.windowConfig = config;
             }
         }
+    }
+
+    windowBlur (){
+        appState.status.windowFocused = false;
+    }
+
+    windowFocus (){
+        appState.status.windowFocused = true;
     }
 }
 

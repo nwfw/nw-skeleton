@@ -40,6 +40,7 @@ exports.appState = {
         shiftPressed: false,
         altPressed: false,
         noHandlingKeys: false,
+        windowFocused: false,
     },
     appError: {
         error: false,
@@ -64,7 +65,9 @@ exports.appState = {
         appBusy: null,
         operationActive: false,
         operationVisible: false,
-        operationId: null
+        operationStartedTimestamp: false,
+        operationId: null,
+        notify: false
     },
 
     hasUserConfig: false,
