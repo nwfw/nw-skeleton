@@ -3,6 +3,7 @@ const _ = require('lodash');
 exports.directive = {
     bind: function (el, binding, vnode) {
         let utilHelper = window.getAppWrapper().getHelper('util');
+
         el.nwModelData = {
             binding: binding,
             vnode: vnode,
@@ -11,7 +12,6 @@ exports.directive = {
             propName: '',
             unwatch: null
         };
-
 
         el.nwWatcher = function(newVal){
             this.setInputValue(newVal);
@@ -36,13 +36,15 @@ exports.directive = {
     },
     update: function(el, binding, vnode){
         let utilHelper = window.getAppWrapper().getHelper('util');
+        let updatedValue;
         if (binding.modifiers.literal){
-            el.setInputValue(utilHelper.getVar(binding.expression));
+            updatedValue = utilHelper.getVar(binding.expression);
         } else if (binding.modifiers.eval) {
-            el.setInputValue(utilHelper.getVar(el.nwModelData.propName));
+            updatedValue = utilHelper.getVar(el.nwModelData.propName);
         } else {
-            el.setInputValue(utilHelper.getVar(binding.expression, vnode.context));
+            updatedValue = utilHelper.getVar(binding.expression, vnode.context);
         }
+        el.setInputValue(updatedValue);
     },
     unbind: function (el) {
         el.removeEventListener(el.nwModelData.eventName, el.nwModelData.vnode.context.nwModelInput);

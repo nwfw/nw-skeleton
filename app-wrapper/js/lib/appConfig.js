@@ -218,6 +218,7 @@ class AppConfig extends BaseClass {
                     this.userConfig = {};
                     appState.userConfig = {};
                     appState.hasUserConfig = false;
+                    _appWrapper.getHelper('modal').closeCurrentModal(true);
                 }
             } catch (ex) {
                 this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);

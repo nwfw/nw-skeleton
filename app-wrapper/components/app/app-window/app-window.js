@@ -6,7 +6,12 @@ exports.component = {
     template: '',
     props: ['state','isDebug'],
     data: function () {
-        return appState;
+        return appState.appData;
+    },
+    computed: {
+        appState: function(){
+            return appState;
+        }
     },
     components: {}
 };

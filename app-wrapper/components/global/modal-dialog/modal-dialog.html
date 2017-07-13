@@ -11,7 +11,22 @@
 	</transition>
 	<transition v-bind:name="fadeModal">
 		<div v-show="modalVisible" class="modal-dialog">
-			<a v-if="currentModal.showCloseLink" class="modal-dialog-close fa fa-times" @click.prevent="callViewHandler" data-click-handler="cancelModalAction"></a>
+			<a v-if="currentModal.showCloseLink && !currentModal.closing" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
+				<span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime">
+					<template v-if="currentModal.autoClosing">
+						<template v-if="!currentModal.autoCloseTime">
+							{{ currentModal.closeLinkText }}
+						</template>
+						<template v-else-if="!currentModal.closeLinkText">
+							{{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }}
+						</template>
+						<template v-else>
+							{{ currentModal.closeLinkText }} ({{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }})
+						</template>
+					</template>
+				</span>
+				<span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times"></span>
+			</a>
 			<div class="modal-dialog-content">
 				<transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterCancel" v-on:enter-cancelled="afterCancel" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterCancel" v-on:leave-cancelled="afterCancel">
 					<div v-if="currentModal.busy" key="modalBusy" class="modal-dialog-busy-indicator">

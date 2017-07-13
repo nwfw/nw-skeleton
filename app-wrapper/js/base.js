@@ -121,6 +121,9 @@ class BaseClass extends eventEmitter {
 
         if (doLog){
             this._doLog(debugMessage);
+            if (this.getConfig('debug.alwaysTrace')){
+                console.trace();
+            }
         }
         if (debugMessage && debugMessage.message && this.getConfig('debug.debugToFile')){
             let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
@@ -149,10 +152,6 @@ class BaseClass extends eventEmitter {
             console.warn(debugMessage.message);
         } else {
             console.log(debugMessage.message);
-        }
-
-        if (this.getConfig('debug.alwaysTrace')){
-            console.trace();
         }
 
         var maxDebugMessages = this.getConfig('debug.maxDebugMessages', 30);

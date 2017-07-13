@@ -395,16 +395,23 @@
     --modal-dialog-close-border-radius: 20px;
     --modal-dialog-close-box-shadow: 12px -10px 40px #999999;
 
+    --modal-dialog-close-highlighted-background: #333333;
+    --modal-dialog-close-highlighted-color: #FFFFFF;
+
+    --modal-dialog-close-highlighted-expiring-background: #FF3333;
+    --modal-dialog-close-highlighted-expiring-color: #FFFFFF;
+
+
     --modal-dialog-close-background-hovered: #999999;
     --modal-dialog-close-color-hovered: #FFFFFF;
-    --modal-dialog-close-text-shadow-hovered: 0 0 2px #000;
+    --modal-dialog-close-text-shadow-hovered: 0 0 2px #000000;
 
     --modal-dialog-error-text-color: #990000;
     --modal-dialog-busy-text-color: #666666;
 
-    --modal-dialog-button-background: #FFF;
-    --modal-dialog-button-border: 1px solid #999;
-    --modal-dialog-button-color: #666;
+    --modal-dialog-button-background: #FFFFFF;
+    --modal-dialog-button-border: 1px solid #999999;
+    --modal-dialog-button-color: #666666;
     --modal-dialog-button-border-radius: 3px;
 
     --modal-dialog-button-background-hovered: #EEEEEE;

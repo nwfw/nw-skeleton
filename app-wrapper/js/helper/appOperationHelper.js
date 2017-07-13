@@ -321,7 +321,7 @@ class AppOperationHelper extends BaseClass {
         } else {
             cm.title = _appWrapper.appTranslations.translate('Operation in progress');
             cm.showCancelButton = false;
-            cm.autoCloseTime = 5000;
+            cm.autoCloseTime = 10000;
             await modalHelper.queryModal(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
             this.stopCancelAndExit();
         }
@@ -393,7 +393,7 @@ class AppOperationHelper extends BaseClass {
             cm.showConfirmButton = true;
             cm.confirmButtonText = 'Ok';
             cm.hideProgress = true;
-            cm.autoCloseTime = 5000;
+            cm.autoCloseTime = 10000;
             modalHelper.autoCloseModal();
         }
     }

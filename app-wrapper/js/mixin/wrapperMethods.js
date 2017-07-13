@@ -51,6 +51,7 @@ var MixinWrapperMethods  = {
             return value;
         },
         onUpdateModel: function(e) {
+            console.log('nwModel onUpdateModel', e.target);
             if (e && e.target && e.target.triggerCustomEvent && _.isFunction(e.target.triggerCustomEvent)) {
                 e.target.triggerCustomEvent('input');
                 e.target.triggerCustomEvent('change');

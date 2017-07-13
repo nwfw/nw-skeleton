@@ -311,7 +311,7 @@ class UtilHelper extends BaseClass {
     }
 
     quoteRegex (string) {
-        return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
+        return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&').replace(/\s/g, '\\s');
     }
 
     async pickLogFile (e) {

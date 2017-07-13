@@ -483,6 +483,7 @@ class AppWrapper extends BaseClass {
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
     confirmModalAction (e) {
+        this.log('Calling appWrapper confirmModalAction', 'info', []);
         return this._confirmModalAction(e);
     }
 
@@ -493,6 +494,7 @@ class AppWrapper extends BaseClass {
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
     cancelModalAction (e) {
+        this.log('Calling appWrapper cancelModalAction', 'info', []);
         return this._cancelModalAction(e);
     }
 
@@ -504,9 +506,8 @@ class AppWrapper extends BaseClass {
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
     _confirmModalAction (e) {
-        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
-            e.preventDefault();
-        }
+        this.log('Calling appWrapper _confirmModalAction', 'info', []);
+        return this.__confirmModalAction(e);
     }
 
     /**
@@ -517,6 +518,7 @@ class AppWrapper extends BaseClass {
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
     _cancelModalAction (e) {
+        this.log('Calling appWrapper _cancelModalAction', 'info', []);
         return this.__cancelModalAction(e);
     }
 
@@ -528,6 +530,7 @@ class AppWrapper extends BaseClass {
      * @return {void}
      */
     __confirmModalAction (e) {
+        this.log('Calling appWrapper __confirmModalAction', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
@@ -541,6 +544,7 @@ class AppWrapper extends BaseClass {
      * @return {void}
      */
     __cancelModalAction (e) {
+        this.log('Calling appWrapper __cancelModalAction', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }

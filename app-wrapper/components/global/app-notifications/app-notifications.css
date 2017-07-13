@@ -54,6 +54,7 @@
     border: var(--app-notification-count-border);
     background: var(--app-notification-count-background);
     border-radius: var(--app-notification-count-border-radius);
+    opacity: 0.8;
 }
 
 .modal-dialog-wrapper .app-notifications {

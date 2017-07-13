@@ -42,36 +42,92 @@
     padding: 0;
 }
 
-.modal-dialog-wrapper .modal-dialog-close {
+.modal-dialog-wrapper .modal-dialog-close-no-icon .modal-dialog-close-icon {
+    display: none;
+}
+
+.modal-dialog-wrapper .modal-dialog-close-no-icon .modal-dialog-close-text,
+.modal-dialog-wrapper .modal-dialog-close-no-icon .modal-dialog-close-timer {
+    display: inline-block;
+}
+
+.modal-dialog-wrapper .modal-dialog-close-has-icon .modal-dialog-close-icon {
+    display: inline-block;
+}
+
+.modal-dialog-wrapper .modal-dialog-close-has-icon .modal-dialog-close-text,
+.modal-dialog-wrapper .modal-dialog-close-has-icon .modal-dialog-close-timer {
+    display: none;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents  {
     background: var(--modal-dialog-close-background);
     border: var(--modal-dialog-close-border);
     color: var(--modal-dialog-close-color);
     border-radius: var(--modal-dialog-close-border-radius);
     box-shadow: var(--modal-dialog-close-box-shadow);
-    width: 22px;
+    transition-property: background, color;
+    transition-timing-function: linear;
+    transition-duration:  var(--medium-animation-duration);
+    min-width: 22px;
     height: 22px;
     text-align: center;
     position: absolute;
-    right: -11px;
-    top: -10px;
+    right: 0;
+    /*top: 0;*/
+    transform: translate(50%, -50%);
     font-size: 20px;
     overflow: hidden;
 }
 
-.modal-dialog-wrapper .modal-dialog-close:hover {
+.modal-dialog-wrapper .modal-dialog-close:hover .modal-dialog-close-contents {
     text-decoration: none;
     color: var(--modal-dialog-close-color-hovered);
     background: var(--modal-dialog-close-background-hovered);
     text-shadow: var(--modal-dialog-close-text-shadow-hovered);
 }
 
-.modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close,
-.modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close:hover {
+.modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close .modal-dialog-close-contents,
+.modal-dialog-wrapper.modal-dialog-wrapper-busy .modal-dialog-close:hover .modal-dialog-close-contents {
     background: var(--modal-dialog-close-background-hovered);
     border: var(--modal-dialog-close-border-hovered);
     color: var(--modal-dialog-close-color-hovered);
     text-shadow: none;
     cursor: not-allowed;
+}
+
+.modal-dialog-wrapper .modal-dialog-close-no-icon:hover .modal-dialog-close-icon {
+    display: inline-block;
+}
+
+.modal-dialog-wrapper .modal-dialog-close-no-icon:hover .modal-dialog-close-text,
+.modal-dialog-wrapper .modal-dialog-close-no-icon:hover .modal-dialog-close-timer {
+    display: none;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents {
+    padding: 0 2px;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents.modal-dialog-close-text,
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents.modal-dialog-close-timer {
+    font-size: 15px;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents.modal-dialog-close-text {
+    padding: 0 6px;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents.modal-dialog-close-contents-highlighted {
+    background: var(--modal-dialog-close-highlighted-background);
+    color: var(--modal-dialog-close-highlighted-color);
+    transition-duration: 0s;
+}
+
+.modal-dialog-wrapper .modal-dialog-close .modal-dialog-close-contents.modal-dialog-close-contents-highlighted-expiring {
+    background: var(--modal-dialog-close-highlighted-expiring-background);
+    color: var(--modal-dialog-close-highlighted-expiring-color);
+    transition-duration: 0s;
 }
 
 .modal-dialog .modal-dialog-messages {

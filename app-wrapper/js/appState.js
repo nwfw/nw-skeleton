@@ -157,31 +157,53 @@ exports.appState = {
     },
     appModals: {
         defaultModal: {
-            title: '',
-            body: '',
             name: 'default-modal',
+
             bodyComponent: 'modal-body',
             defaultBodyComponent: 'modal-body',
+
+            title: '',
+            body: '',
+
             busyText: 'Please wait...',
             busy: false,
+
+            opening: false,
+            closing: false,
+
             messages: [],
             currentMessageIndex: -1,
+
             showContentImmediately: false,
+
+            autoClosing: false,
             autoCloseTime: 0,
+            autoCloseTimeIntervalDuration: 1000,
+            autoCloseTimeNotify: 6000,
+            autoCloseTimeExpireNotify: 3000,
+            autoCloseTimeText: '',
+
             modalClassName: '',
             preventEscClose: false,
+
             showCloseLink: true,
+            closeLinkText: null,
+
             showConfirmButton: true,
-            showCancelButton: true,
             confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
             confirmDisabled: false,
-            cancelDisabled: false,
             confirmSelected: true,
+
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            cancelDisabled: false,
             cancelSelected: false,
+
             modalAction: null,
+
             animating: false,
             animateSize: false,
+
             onBeforeOpen: null,
             onOpen: null,
             onBeforeClose: null,

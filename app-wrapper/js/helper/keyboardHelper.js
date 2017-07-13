@@ -109,7 +109,11 @@ class KeyboardHelper extends BaseClass {
         } else {
             if (e.type == 'keydown') {
                 if (appState && appState.modalData.currentModal && !appState.modalData.currentModal.preventEscClose && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
-                    _appWrapper.helpers.modalHelper.closeCurrentModal();
+                    if (_appWrapper.cancelModalAction && _.isFunction(_appWrapper.cancelModalAction)){
+                        _appWrapper.cancelModalAction();
+                    } else {
+                        _appWrapper.helpers.modalHelper.closeCurrentModal();
+                    }
                     fulfilled = true;
                 } else if (!appState.status.noHandlingKeys && appState && appState.status.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
                     _appWrapper.windowManager.closeWindow();

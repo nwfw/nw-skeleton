@@ -10,6 +10,6 @@ exports.component = {
         }
     },
     data: function () {
-        return appState;
+        return appState.appData;
     }
 };
