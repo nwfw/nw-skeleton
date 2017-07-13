@@ -60,12 +60,14 @@ component = {
         },
 
         beforeEnter: function (element) {
+            // console.log('beforeEnter', element);
             if (appState.modalData.currentModal.animateSize){
                 element.addClass('transition-wh');
                 element.setElementStyles({width: 0, height: 0, opacity: 0});
             }
         },
         enter: function (element, done) {
+            // console.log('enter', element);
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
@@ -79,7 +81,11 @@ component = {
                 done();
             }
         },
+        afterEnter: function(element){
+            // console.log('afterEnter', element);
+        },
         beforeLeave: function (element) {
+            // console.log('beforeLeave', element);
             if (appState.modalData.currentModal.animateSize){
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
@@ -89,6 +95,7 @@ component = {
             }
         },
         leave: function (element, done) {
+            // console.log('leave', element);
             if (appState.modalData.currentModal.animateSize){
                 var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
                 element.setElementStyles({width: 0, height: 0, opacity: 0});
@@ -98,7 +105,11 @@ component = {
                 done();
             }
         },
+        afterLeave: function(element){
+            // console.log('afterLeave', element);
+        },
         afterCancel: function (element) {
+            // console.log('afterCancel', element);
             if (appState.modalData.currentModal.animateSize){
                 element.removeClass('transition-wh');
                 element.removeElementStyles(['height', 'width']);

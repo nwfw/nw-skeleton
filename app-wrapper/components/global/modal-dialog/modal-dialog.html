@@ -28,18 +28,18 @@
 				<span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times"></span>
 			</a>
 			<div class="modal-dialog-content">
-				<transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterCancel" v-on:enter-cancelled="afterCancel" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterCancel" v-on:leave-cancelled="afterCancel">
-					<div v-if="currentModal.busy" key="modalBusy" class="modal-dialog-busy-indicator">
-						<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
-							{{ currentModal.busyText }}
-						</h2>
-						<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
-							<div class="fa fa-circle-o-notch fa-spin">
-							</div>
+				<div v-if="currentModal.busy" key="modalBusy" class="modal-dialog-busy-indicator">
+					<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
+						{{ currentModal.busyText }}
+					</h2>
+					<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
+						<div class="fa fa-circle-o-notch fa-spin">
 						</div>
 					</div>
+				</div>
+				<transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter" v-on:enter-cancelled="afterCancel" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterLeave" v-on:leave-cancelled="afterCancel">
 
-					<div key="modalFree" v-else class="modal-dialog-content-wrapper">
+					<div key="modalFree" v-if="!currentModal.busy" class="modal-dialog-content-wrapper">
 						<h2 class="modal-dialog-title" v-html="getTitle()"></h2>
 						<div class="modal-dialog-messages">
 							<transition-group name="highlight" tag="div" class="modal-dialog-message-list">
