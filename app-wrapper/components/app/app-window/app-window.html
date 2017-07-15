@@ -4,7 +4,7 @@
             <template v-if="appState.status.appInitialized">
                 <app-header ref="appHeader"></app-header>
                 <template v-if="!isDebug">
-                    <app-main ref="appMain"></app-main>
+                    <component v-bind:is="appState.config.appConfig.mainComponent" ref="mainComponent"></component>
                     <app-debug v-if="appState.config.debug.enabled && !appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
                 </template>
                 <template v-else>

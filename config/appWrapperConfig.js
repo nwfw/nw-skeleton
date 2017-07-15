@@ -62,6 +62,7 @@ exports.config = {
     cancelOperationTimeout: 30000,
 
     appConfig: {
+        mainComponent: 'app-main',
         tmpDataDir: './app/var',
         showInitializationStatus: true,
         showInitializationProgress: true,
