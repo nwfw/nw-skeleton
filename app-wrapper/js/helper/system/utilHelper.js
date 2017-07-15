@@ -362,11 +362,8 @@ class UtilHelper extends BaseClass {
 
             let modalOptions = {
                 title: this.translate('Log viewer'),
-                confirmButtonText: this.translate('Load'),
-                cancelButtonText: this.translate('Cancel'),
-                confirmDisabled: true,
+                confirmButtonText: this.translate('Close'),
                 busy: true,
-                busyText: this.translate('Please wait...'),
                 file: fileName,
                 fileMessages: _.map(messages, (msg) => {
                     if (msg.type == 'group' || msg.type == 'groupend' || msg.type == 'groupcollapsed'){
@@ -384,7 +381,7 @@ class UtilHelper extends BaseClass {
     }
 
     confirmLogViewerModalAction () {
-        console.log('confirmLogViewerModalAction');
+        _appWrapper.cancelModalAction();
     }
 
     getMessageStacksCount (messages) {
