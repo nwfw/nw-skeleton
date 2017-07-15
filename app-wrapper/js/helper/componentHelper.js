@@ -337,7 +337,7 @@ class ComponentHelper extends BaseClass {
             overrideDirs = [];
         } else {
             componentOverrideDirs = _.map(overrideDirs, (dir) => {
-                return path.join(dir, componentName);
+                return path.join(path.resolve(dir), componentName);
             });
         }
 
