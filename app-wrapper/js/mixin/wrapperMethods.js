@@ -51,7 +51,7 @@ var MixinWrapperMethods  = {
             return value;
         },
         onUpdateModel: function(e) {
-            console.log('nwModel onUpdateModel', e.target);
+            // console.log('nwModel onUpdateModel', e.target);
             if (e && e.target && e.target.triggerCustomEvent && _.isFunction(e.target.triggerCustomEvent)) {
                 e.target.triggerCustomEvent('input');
                 e.target.triggerCustomEvent('change');
@@ -76,7 +76,18 @@ var MixinWrapperMethods  = {
             } else {
                 context[binding.expression] = value;
             }
-
+        },
+        decToHex: function(decimalValue){
+            return _appWrapper.getHelper('format').decToHex(decimalValue);
+        },
+        hexToDec: function(hexadecimalValue){
+            return _appWrapper.getHelper('format').hexToDec(hexadecimalValue);
+        },
+        hexToDecColor: function(hexColor){
+            return _appWrapper.getHelper('format').hexToDecColor(hexColor);
+        },
+        decToHexColor: function(decColorArray){
+            return _appWrapper.getHelper('format').decToHexColor(decColorArray);
         },
     }
 };
