@@ -329,6 +329,22 @@ class AppOperationHelper extends BaseClass {
         return appState.appOperation.operationActive && !appState.appOperation.cancelled && !appState.appOperation.cancelling;
     }
 
+    isOperationActive (operationId) {
+        let active = appState.appOperation.operationActive || appState.appOperation.cancelling;
+        if (operationId){
+            active = active && operationId == appState.appOperation.operationId;
+        }
+        return active;
+    }
+
+    isOperationTextActive (operationText) {
+        let active = appState.appOperation.operationActive || appState.appOperation.cancelling;
+        if (operationText){
+            active = active && operationText == appState.appOperation.operationText;
+        }
+        return active;
+    }
+
     isOperationCancelled () {
         return !appState.appOperation.operationActive || appState.appOperation.cancelled;
     }
