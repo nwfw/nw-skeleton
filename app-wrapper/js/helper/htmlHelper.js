@@ -132,6 +132,51 @@ class HtmlHelper extends BaseClass {
     }
 
     getRealDimensions (element, selector){
+        let dimensions = {
+            width: 0,
+            height: 0
+        };
+
+        if (this instanceof Element){
+            element = this;
+        }
+
+        if (element){
+            var dimsElement = element;
+            if (selector && dimsElement.querySelector(selector)){
+                dimsElement = dimsElement.querySelector(selector);
+            }
+
+            var dimsElementStyles = dimsElement.getComputedStyles();
+            dimensions.height = parseFloat(dimsElementStyles.height, 10);
+            dimensions.width = parseFloat(dimsElementStyles.width, 10);
+
+            let widthOffset = 0;
+            let heightOffset = 0;
+
+            let widthOffsetProperties = ['padding-left', 'padding-right', 'border-left-width', 'border-right-width'];
+            let heightOffsetProperties = ['padding-top', 'padding-bottom', 'border-top-width', 'border-bottom-width'];
+
+            for (let i=0; i<widthOffsetProperties.length; i++){
+                if (dimsElementStyles[widthOffsetProperties[i]] && parseFloat(dimsElementStyles[widthOffsetProperties[i]], 10)){
+                    widthOffset -= parseFloat(dimsElementStyles[widthOffsetProperties[i]], 10);
+                }
+            }
+
+            for (let i=0; i<heightOffsetProperties.length; i++){
+                if (dimsElementStyles[heightOffsetProperties[i]] && parseFloat(dimsElementStyles[heightOffsetProperties[i]], 10)){
+                    heightOffset -= parseFloat(dimsElementStyles[heightOffsetProperties[i]], 10);
+                }
+            }
+
+            dimensions.width += widthOffset;
+            dimensions.height += heightOffset;
+        }
+
+        return dimensions;
+    }
+
+    _getRealDimensions (element, selector){
         var dimensions = {
             width: 0,
             height: 0

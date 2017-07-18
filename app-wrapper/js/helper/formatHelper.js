@@ -483,6 +483,53 @@ class FormatHelper extends BaseClass {
         return value.replace(/\r?\n/g, '<br />');
     }
 
+    decToHex (hexadecimalValue){
+        return (+hexadecimalValue).toString(16);
+    }
+
+    hexToDec (decimalValue){
+        return parseInt(decimalValue, 16);
+    }
+
+    hexToDecColor (hexColor){
+        let hexColorValue = hexColor.replace(/^#/, '');
+        let hexColorChunks;
+        let decColorChunks = [];
+        if (hexColorValue.length == 6){
+            hexColorChunks = hexColorValue.replace(/^#/, '').match(/.{1,2}/g);
+        } else if (hexColorValue.length == 3){
+            hexColorChunks = hexColorValue.replace(/^#/, '').match(/.{1}/g);
+            for (let i=0; i<hexColorChunks.length; i++){
+                hexColorChunks[i] += '' + hexColorChunks[i];
+            }
+        }
+
+        for (let i=0; i<hexColorChunks.length; i++){
+            decColorChunks.push(this.hexToDec(hexColorChunks[i]));
+        }
+        return decColorChunks;
+    }
+
+    decToHexColor (decColorArray){
+        let hexColor = '';
+        if (decColorArray.length < 3){
+            for (let i=0; i<3 - decColorArray.length; i++){
+                decColorArray.push(0);
+            }
+        }
+        for (let i=0; i<decColorArray.length; i++){
+            let hexColorChunk = this.decToHex(decColorArray[i]);
+            if (hexColorChunk.length < 2){
+                hexColorChunk = '0' + hexColorChunk;
+            }
+            hexColor += hexColorChunk;
+        }
+        if (hexColor){
+            hexColor = '#' + hexColor.toUpperCase();
+        }
+        return hexColor;
+    }
+
 
 
 }
