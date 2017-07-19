@@ -310,7 +310,7 @@ class ComponentHelper extends BaseClass {
 
         let appDirs = this.getConfig('wrapper.componentDirectories.component');
         overrideDirs = this.getConfig('appConfig.componentDirectories.component');
-        let appMapping = this.getConfig('appConfig.appComponentMapping');
+        let appMapping = this.getConfig('appConfig.componentMapping');
         let appliedData = await this.applyComponentModuleData(componentModuleData, overrideDirs, appMapping, 'component');
         if (appliedData){
             if (appliedData.dirs){
@@ -524,7 +524,6 @@ class ComponentHelper extends BaseClass {
                     }
                 }
             }
-
             let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
             if (componentStateFile){
                 if (await _appWrapper.fileManager.isFile(componentStateFile)){

@@ -91,7 +91,7 @@ exports.config = {
 
         debugJsFiles: [],
 
-        appComponentMapping: {},
+        componentMapping: {},
         componentModules: {
             component: [
                 // {
