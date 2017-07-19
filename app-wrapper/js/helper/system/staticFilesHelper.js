@@ -37,19 +37,22 @@ class StaticFilesHelper extends BaseClass {
     }
 
     async loadCss (href, noWatch) {
-        let utilHelper = _appWrapper.getHelper('util');
+        // let utilHelper = _appWrapper.getHelper('util');
 
         let cssFilePath = href;
         let cssContents = '';
         let compiledCssPath = this.getConfig('appConfig.cssCompiledFile');
 
-        let processDir = process.cwd();
-        let processDirRegex = new RegExp('^' + utilHelper.quoteRegex(processDir));
+        // let processDir = process.cwd();
+        // let processDirRegex = new RegExp('^' + utilHelper.quoteRegex(processDir));
 
-        if (!href.match(processDirRegex)){
+        // if (!href.match(processDirRegex)){
+        //     cssFilePath  = path.resolve(path.join('.' + href));
+        // }
+
+        if (!await _appWrapper.fileManager.isFile(cssFilePath)){
             cssFilePath  = path.resolve(path.join('.' + href));
         }
-
         if (await _appWrapper.fileManager.isFile(cssFilePath)){
             cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
             if (cssContents){

@@ -205,10 +205,91 @@ class ComponentHelper extends BaseClass {
         return components;
     }
 
+    async getComponentModuleData () {
+        let componentModulesConfig = this.getConfig('appConfig.componentModules');
+        let componentModulesConfigTypes = [];
+        let componentModuleData = {};
+        let componentModules = {};
+
+        if (componentModulesConfig && _.isObject(componentModulesConfig)){
+            componentModulesConfigTypes = Object.keys(componentModulesConfig);
+        }
+
+        for (let i=0; i<componentModulesConfigTypes.length;i++){
+            componentModules[componentModulesConfigTypes[i]] = {};
+            componentModuleData[componentModulesConfigTypes[i]] = [];
+            for (let j=0; j<componentModulesConfig[componentModulesConfigTypes[i]].length; j++){
+                let moduleConfig = componentModulesConfig[componentModulesConfigTypes[i]][j];
+                if (moduleConfig){
+                    if (moduleConfig.moduleName){
+                        let moduleName = moduleConfig.moduleName;
+                        let moduleData;
+                        try {
+                            moduleData = _appWrapper.app.localRequire(moduleName);
+                            if (moduleData && moduleData.componentDir){
+                                if (moduleConfig.parentComponent){
+                                    moduleData.parentComponent = moduleConfig.parentComponent;
+                                }
+                                componentModuleData[componentModulesConfigTypes[i]].push(moduleData);
+                            }
+                        } catch (ex){
+                            this.addUserMessage('Problem loading component module "{1}"', 'error', [moduleName]);
+                            appState.appError.text = 'Problem loading component module "' + moduleName + '"';
+                            appState.appError.error = true;
+                        }
+                    } else {
+                        this.addUserMessage('Problem loading component module of type "{1}" - no "moduleName" config property', 'error', [componentModulesConfigTypes[i]]);
+                        appState.appError.text = 'Problem loading component module of type "' + componentModulesConfigTypes[i] + '" - no "moduleName" config property';
+                        appState.appError.error = true;
+                    }
+                }
+            }
+        }
+        return componentModuleData;
+    }
+
+    async applyComponentModuleData(componentModuleData, dirs, mapping, type) {
+        if (componentModuleData && componentModuleData[type] && componentModuleData[type].length){
+            for (let i=0; i<componentModuleData[type].length; i++){
+                if (componentModuleData[type][i]) {
+                    if (componentModuleData[type][i].componentDir){
+                        dirs = _.uniq(_.concat(dirs, componentModuleData[type][i].componentDir));
+                    }
+                    if (componentModuleData[type][i].componentMapping && componentModuleData[type][i].componentMapping.length){
+                        for (let j=0; j<componentModuleData[type][i].componentMapping.length; j++){
+                            let currentMappingData = componentModuleData[type][i].componentMapping[j];
+
+                            for (let currentMappingName in currentMappingData){
+                                let currentMapping = currentMappingData[currentMappingName];
+                                if (type == 'component' && componentModuleData[type][i].parentComponent){
+                                    let parentMapping = this.getComponentMapping(mapping, componentModuleData[type][i].parentComponent);
+                                    if (parentMapping && _.isObject(parentMapping)){
+                                        if (!parentMapping.components){
+                                            parentMapping.components = {};
+                                        }
+                                        parentMapping.components[currentMapping.name] = currentMapping;
+                                    }
+                                } else {
+                                    if (!mapping.components){
+                                        mapping.components = {};
+                                    }
+                                    mapping.components[currentMapping.name] = currentMapping;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return {dirs: dirs, mapping: mapping};
+    }
+
     async initializeComponents(){
         this.vueComponents = {};
         this.vueGlobalComponents = {};
         this.vueModalComponents = {};
+
+        let componentModuleData = await this.getComponentModuleData();
 
         let wrapperDirs = this.getConfig('wrapper.componentDirectories.component');
         let overrideDirs = this.getConfig('appConfig.componentDirectories.component');
@@ -219,7 +300,6 @@ class ComponentHelper extends BaseClass {
         } else {
             overrideDirs = [];
         }
-
         this.log('Initializing components...', 'group', []);
 
         let wrapperMapping = this.getConfig('wrapper.componentMapping');
@@ -230,7 +310,18 @@ class ComponentHelper extends BaseClass {
 
         let appDirs = this.getConfig('wrapper.componentDirectories.component');
         overrideDirs = this.getConfig('appConfig.componentDirectories.component');
-        let appMapping = this.getConfig('appConfig.componentMapping');
+        let appMapping = this.getConfig('appConfig.appComponentMapping');
+        let appliedData = await this.applyComponentModuleData(componentModuleData, overrideDirs, appMapping, 'component');
+        if (appliedData){
+            if (appliedData.dirs){
+                overrideDirs = appliedData.dirs;
+            }
+            if (appliedData.mapping){
+                appMapping = appliedData.mapping;
+            }
+        }
+
+
         for(let i=0; i<appDirs.length; i++){
             let appDir = path.resolve(appDirs[i]);
             this.vueComponents = _.merge(this.vueComponents, await this.processComponents(appDir, appMapping, overrideDirs, 'app'));
@@ -252,6 +343,12 @@ class ComponentHelper extends BaseClass {
 
 
         modalDirs = this.getConfig('appConfig.componentDirectories.modalComponent');
+        appliedData = await this.applyComponentModuleData(componentModuleData, modalDirs, {}, 'modalComponent');
+        if (appliedData){
+            if (appliedData.dirs){
+                modalDirs = appliedData.dirs;
+            }
+        }
         for(let i=0; i<modalDirs.length; i++){
             let modalDir = path.resolve(modalDirs[i]);
             let modalMapping = {};
@@ -282,6 +379,13 @@ class ComponentHelper extends BaseClass {
         }
 
         globalDirs = this.getConfig('appConfig.componentDirectories.globalComponent');
+        appliedData = await this.applyComponentModuleData(componentModuleData, globalDirs, {}, 'globalComponent');
+        if (appliedData){
+            if (appliedData.dirs){
+                globalDirs = appliedData.dirs;
+            }
+        }
+
         for(let i=0; i<globalDirs.length; i++){
             let globalDir = path.resolve(globalDirs[i]);
             let globalMapping = {};
@@ -292,7 +396,7 @@ class ComponentHelper extends BaseClass {
                     globalMapping[files[j]] = {name: files[j]};
                 }
             }
-            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping, 'app global'));
+            this.vueGlobalComponents = _.merge(this.vueGlobalComponents, await this.processComponents(globalDir, globalMapping, null, 'app global'));
         }
 
         this.allComponents = _.merge(this.vueComponents, this.vueGlobalComponents, this.vueModalComponents);
@@ -305,7 +409,6 @@ class ComponentHelper extends BaseClass {
     }
 
     async processComponents(componentBaseDir, componentMapping, overrideDirs, type){
-
         let componentNames = _.keys(componentMapping);
         let componentCount = componentNames.length;
         let additionalSubComponents;
@@ -332,6 +435,7 @@ class ComponentHelper extends BaseClass {
     }
 
     async initializeComponent(componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs){
+
         let componentOverrideDirs = [];
         if (!overrideDirs){
             overrideDirs = [];
@@ -371,6 +475,7 @@ class ComponentHelper extends BaseClass {
         this.log(message, type, data);
 
         let loadDirs = _.union(componentOverrideDirs, [path.join(componentBaseDir, componentName)]);
+
         let component = await _appWrapper.fileManager.loadFileFromDirs(componentName + '.js', loadDirs, true);
         if (!component){
             this.log('Problem loading component "{1}"', 'error', [componentName]);
@@ -387,6 +492,7 @@ class ComponentHelper extends BaseClass {
         }
         if (componentMapping){
             if (childCount){
+
                 for (let i in componentMapping.components){
                     let childComponent = await this.initializeComponent(componentBaseDir, i, componentMapping.components[i], componentName, [], overrideDirs);
                     component.components[i] = childComponent;
@@ -456,6 +562,23 @@ class ComponentHelper extends BaseClass {
             this.log('Problem loading template for component "{1}".', 'error', [component.name]);
         }
         return component;
+    }
+
+    getComponentMapping(mapping, componentName){
+        let returnValue = false;
+        if (mapping[componentName]){
+            returnValue = mapping[componentName];
+        } else {
+            for (let name in mapping){
+                if (mapping[name] && mapping[name].components){
+                    returnValue = this.getComponentMapping(mapping[name].components, componentName);
+                    if (returnValue){
+                        break;
+                    }
+                }
+            }
+        }
+        return returnValue;
     }
 
 }

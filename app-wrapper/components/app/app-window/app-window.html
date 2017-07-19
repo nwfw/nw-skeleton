@@ -1,23 +1,30 @@
 <transition name="fade">
     <div v-show="appState.status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': appState.status.movingWindow, 'debug-enabled': appState.config.debug.enabled, 'debug-visible': appState.config.debug.enabled && !appState.config.debug.hideDebug, 'has-debug-window': !appState.isDebugWindow && appState.hasDebugWindow, 'modal-visible': appState.modalData.modalVisible, 'app-loaded': appState.status.appLoaded, 'has-app-operation': appState.appOperation.operationVisible, 'has-active-app-operation': appState.appOperation.operationVisible && appState.appOperation.operationActive && appState.appOperation.useProgress }]">
         <div class="app-content">
-            <template v-if="appState.status.appInitialized">
-                <app-header ref="appHeader"></app-header>
-                <template v-if="!isDebug">
-                    <component v-bind:is="appState.config.appConfig.mainComponent" ref="mainComponent"></component>
-                    <app-debug v-if="appState.config.debug.enabled && !appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
-                </template>
-                <template v-else>
-                    <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
-                </template>
-                <app-footer ref="appFooter"></app-footer>
+            <app-header ref="appHeader"></app-header>
+            <template v-if="!isDebug">
+                <div class="main">
+                    <template v-if="appState.status.appShuttingDown">
+                        <app-loader ref="appShutdownLoader"></app-loader>
+                    </template>
+                    <template v-else-if="appState.appError.error">
+                        <app-error ref="appError"></app-error>
+                    </template>
+                    <template v-else-if="appState.status.appInitialized">
+                        <component v-bind:is="appState.config.appConfig.mainComponent" ref="mainComponent"></component>
+                    </template>
+                    <template v-else>
+                        <app-loader ref="appMainLoader"></app-loader>
+                    </template>
+                </div>
+                <app-debug v-if="appState.config.debug.enabled && !appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
             <template v-else>
-                <app-header ref="appHeader"></app-header>
-                <app-loader ref="appWindowLoader"></app-loader>
-                <app-footer ref="appFooter"></app-footer>
+                <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
-        </div>
-        <app-notifications v-if="!appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
+            <app-footer ref="appFooter"></app-footer>
+        </template>
     </div>
+    <app-notifications v-if="!appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
+</div>
 </transition>

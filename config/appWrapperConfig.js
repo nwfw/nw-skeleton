@@ -91,6 +91,18 @@ exports.config = {
 
         debugJsFiles: [],
 
+        appComponentMapping: {},
+        componentModules: {
+            component: [
+                // {
+                //     moduleName: 'canvas-playground',
+                //     parentComponent: 'app-window'
+                // }
+            ],
+            globalComponent: [],
+            modalComponent: []
+        },
+
         mixinRoot: './app/js/mixin/',
 
         directiveRoot: './app/js/directive/',
@@ -204,7 +216,7 @@ exports.config = {
         editableConfig: [],
         noReloadConfig: [],
         reloadConfig: [],
-        ignoreUserConfig: ['appConfig.menuData'],
+        ignoreUserConfig: ['appConfig.menuData,appConfig.appComponentMapping'],
         defaultVar: {
             editable: true,
             reload: true,

@@ -121,6 +121,10 @@ class AppWrapper extends BaseClass {
 
         this.setDynamicAppStateValues();
 
+        App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
+
+        this.app = new App();
+
         this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
 
         appState.platformData = this.getHelper('util').getPlatformData();
@@ -130,7 +134,7 @@ class AppWrapper extends BaseClass {
 
         this.getHelper('menu').initializeAppMenu();
 
-        App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
+
 
         await this.helpers.staticFilesHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
@@ -155,13 +159,14 @@ class AppWrapper extends BaseClass {
         }
 
         await this.initializeLanguage();
-
-        appState.appError.title = this.appTranslations.translate(appState.appError.defaultTitle);
-        appState.appError.text = this.appTranslations.translate(appState.appError.defaultText);
+        if (!appState.appError.title){
+            appState.appError.title = this.appTranslations.translate(appState.appError.defaultTitle);
+        }
+        if (!appState.appError.text){
+            appState.appError.text = this.appTranslations.translate(appState.appError.defaultText);
+        }
 
         this.getHelper('menu').initializeTrayIcon();
-
-        this.app = new App();
 
         if (this.getConfig('debug.devTools')){
             this.windowManager.winState.devTools = true;
@@ -737,13 +742,17 @@ class AppWrapper extends BaseClass {
     }
 
     async wait(duration){
-        this.log('Waiting {1} ms', 'debug', [duration]);
-        var returnPromise = new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(true);
-            }, duration);
-        });
-        return returnPromise;
+        if (this.getConfig('debug.enabled')){
+            this.log('Waiting {1} ms', 'debug', [duration]);
+            var returnPromise = new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(true);
+                }, duration);
+            });
+            return returnPromise;
+        } else {
+            return true;
+        }
     }
 
     async nextTick (){
