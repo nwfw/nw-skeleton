@@ -76,6 +76,10 @@ class DebugHelper extends BaseClass {
         } else {
             appState.allDebugMessages = [];
             appState.debugMessages = [];
+            if (appState.hasDebugWindow){
+                _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
+                _appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
+            }
         }
         this.addUserMessage('Debug messages cleared', 'debug', []);
     }

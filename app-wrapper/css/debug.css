@@ -56,3 +56,11 @@
 .debug-window footer {
 	flex: 0 1 auto;
 }
+
+.debug-window .app-debug-wrapper .app-debug-header a.toggle-message-stacks {
+    visibility: visible;
+}
+
+.debug-window .message-list-collapsed .message-list-wrapper .message-list li.message-list-item .message .message-stack-toggle-link {
+    visibility: visible;
+}
