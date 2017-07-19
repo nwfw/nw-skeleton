@@ -226,14 +226,20 @@ class ComponentHelper extends BaseClass {
                         let moduleData;
                         try {
                             moduleData = _appWrapper.app.localRequire(moduleName);
-                            if (moduleData && moduleData.componentDir){
-                                if (moduleConfig.parentComponent){
-                                    moduleData.parentComponent = moduleConfig.parentComponent;
+                            if (moduleData){
+                                if (moduleData.componentDir){
+                                    if (moduleConfig.parentComponent){
+                                        moduleData.parentComponent = moduleConfig.parentComponent;
+                                    }
+                                    componentModuleData[componentModulesConfigTypes[i]].push(moduleData);
                                 }
-                                componentModuleData[componentModulesConfigTypes[i]].push(moduleData);
+                                if (moduleData.config){
+                                    appState.config = _appWrapper.mergeDeep(appState.config, moduleData.config);
+                                }
                             }
                         } catch (ex){
                             this.addUserMessage('Problem loading component module "{1}"', 'error', [moduleName]);
+                            this.log(ex, 'error');
                             appState.appError.text = 'Problem loading component module "' + moduleName + '"';
                             appState.appError.error = true;
                         }

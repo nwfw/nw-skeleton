@@ -62,6 +62,7 @@ exports.config = {
     cancelOperationTimeout: 30000,
 
     appConfig: {
+        appSubFiles: [],
         mainComponent: 'app-main',
         tmpDataDir: './app/var',
         showInitializationStatus: true,
@@ -216,7 +217,14 @@ exports.config = {
         editableConfig: [],
         noReloadConfig: [],
         reloadConfig: [],
-        ignoreUserConfig: ['appConfig.menuData,appConfig.appComponentMapping'],
+        ignoreUserConfig: [
+            'appConfig.menuData',
+            'appConfig.componentMapping',
+            'appConfig.appSubFiles',
+            'userMessages.forceUserMessages',
+            'debug.forceDebug',
+            'appInfo',
+        ],
         defaultVar: {
             editable: true,
             reload: true,
