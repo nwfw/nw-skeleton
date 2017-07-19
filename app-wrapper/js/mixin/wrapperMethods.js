@@ -89,6 +89,9 @@ var MixinWrapperMethods  = {
         decToHexColor: function(decColorArray){
             return _appWrapper.getHelper('format').decToHexColor(decColorArray);
         },
+        formatFileSize: function(bytes){
+            return _appWrapper.getHelper('format').formatFileSize(bytes);
+        },
     }
 };
 exports.mixin = MixinWrapperMethods;

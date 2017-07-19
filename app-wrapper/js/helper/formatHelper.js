@@ -530,8 +530,14 @@ class FormatHelper extends BaseClass {
         return hexColor;
     }
 
-
-
+    formatFileSize (bytes) {
+        let sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) {
+            return '0 B';
+        }
+        let size = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];
+    }
 }
 
 exports.FormatHelper = FormatHelper;

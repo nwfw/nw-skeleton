@@ -374,6 +374,7 @@ exports.config = {
     allowLanguageChange: true,
     autoAddLabels: true,
 
+    themeModules: [],
     theme: 'dark',
     allowThemeChange: true,
 
@@ -440,7 +441,7 @@ exports.config = {
         alwaysTrace: false,
         debugLevel: 3,
         maxDebugMessages: 200,
-        debugGroupsCollapsed: true,
+        debugGroupsCollapsed: false,
         debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
         forceDebug: {
             AppWrapper: false,
