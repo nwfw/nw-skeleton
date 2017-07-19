@@ -14,7 +14,7 @@ exports.component = {
     updated: function(){
         if (!this.notificationExpired){
             let element = this.$el.querySelector('.app-notification-contents');
-            let dimensions = this.$el.getRealDimensions('.app-notification-contents');
+            let dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
             if (element && dimensions && dimensions.width && dimensions.height){
                 element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
             }
@@ -30,7 +30,7 @@ exports.component = {
         },
         enter: function (element, done) {
             var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10) + 100;
-            var dimensions = this.$el.getRealDimensions('.app-notification-contents');
+            var dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
 
             setTimeout( () => {
@@ -39,7 +39,7 @@ exports.component = {
         },
         beforeLeave: function (element) {
             element.addClass('transition-wh2');
-            var dimensions = this.$el.getRealDimensions('.app-notification-contents');
+            var dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
         },
         leave: function (element, done) {

@@ -176,7 +176,7 @@ class HtmlHelper extends BaseClass {
         return dimensions;
     }
 
-    _getRealDimensions (element, selector){
+    getCloneRealDimensions (element, selector){
         var dimensions = {
             width: 0,
             height: 0
