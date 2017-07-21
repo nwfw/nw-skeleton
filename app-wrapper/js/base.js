@@ -1,3 +1,9 @@
+/**
+ * @fileOverview Base class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 const _ = require('lodash');
 const path = require('path');
 const eventEmitter = require('events');
@@ -5,8 +11,26 @@ const eventEmitter = require('events');
 let _appWrapper;
 let appState;
 
+/**
+ * Base class for extending when creating other app classes
+ *
+ * @class
+ * @memberOf appWrapper
+ * @property {boolean}  forceUserMessages   Flag to force user message output
+ * @property {boolean}  forceDebug          Flag to force debug message output
+ * @property {Object}   boundMethods        Object to hold bound method references for event listeners
+ * @property {Object}   timeouts            Object that holds references to this class instance timeouts
+ * @property {Object}   intervals           Object that holds references to this class instance intervals
+ * @property {boolean}  needsConfig         Flag to indicate whether class instance needs config, triggering warnings if config is not available for the class
+ */
 class BaseClass extends eventEmitter {
 
+    /**
+     * Creates class instance, setting basic properties, and returning the instance itself
+     *
+     * @constructor
+     * @return {BaseClass} Instance of current class
+     */
     constructor () {
         super();
 
@@ -14,21 +38,52 @@ class BaseClass extends eventEmitter {
             _appWrapper = window.getAppWrapper();
             appState = _appWrapper.getAppState();
         }
-
         this.forceUserMessages = false;
         this.forceDebug = false;
         this.boundMethods = {};
         this.needsConfig = true;
+        this.timeouts = {};
+        this.intervals = {};
 
         return this;
     }
 
+    /**
+     * Initializes current class instance, setting up logging and
+     * bound methods to be used in event listeners
+     *
+     * @method
+     * @async
+     * @return {BaseClass} Instance of current class
+     */
     async initialize (options) {
         await this.initializeLogging(options);
         this.addBoundMethods();
         return this;
     }
 
+    /**
+     * Finalizes current class instance, setting up any additional properties
+     * etc. Entire app structure, including frontend app is available here
+     *
+     * @method
+     * @async
+     * @return {boolean} Finalizing result
+     */
+    async finalize () {
+        return true;
+    }
+
+    /**
+     * Determines whether logging for this class is regulated through
+     * configuration, setting the logging by it (or warning if there
+     * are no configuration settings for this class)
+     *
+     * @method
+     * @async
+     * @param  {object} options Options for logging initialization (currently only 'silent' property is used, determining whether warnings should be printed if no config found)
+     * @return {BaseClass}      Instance of the current class
+     */
     async initializeLogging(options) {
         let className = this.constructor.name;
         if (appState && appState.config){
@@ -58,14 +113,32 @@ class BaseClass extends eventEmitter {
         return this;
     }
 
+    /**
+     * Helper method to get appWrapper instance
+     *
+     * @method
+     * @return {AppWrapper} An instance of AppWrapper class
+     */
     getAppWrapper () {
         return _appWrapper;
     }
 
+    /**
+     * Helper method to get appState object
+     *
+     * @method
+     * @return {object} Current appState object
+     */
     getAppState () {
         return appState;
     }
 
+    /**
+     * Method that sets up this.boundMethods property by binding this objects
+     * functions to itself to be used as event listener handlers
+     *
+     * @method
+     */
     addBoundMethods () {
         if (this.boundMethods){
             var keys = _.keys(this.boundMethods);
@@ -77,6 +150,12 @@ class BaseClass extends eventEmitter {
         }
     }
 
+    /**
+     * Method that cleans up this.boundMethods property
+     * set in this.addBoundMethods method
+     *
+     * @method
+     */
     removeBoundMethods () {
         var keys = _.keys(this.boundMethods);
         for (let i=0; i<keys.length; i++){
@@ -85,11 +164,29 @@ class BaseClass extends eventEmitter {
         this.boundMethods = {};
     }
 
+    /**
+     * Destructor method - cleans up references for this instance
+     * freeing memory upon object destruction
+     *
+     * @method
+     */
     destroy () {
         this.removeBoundMethods();
     }
 
-
+    /**
+     * Logs debug message if conditions are met
+     *
+     * Message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param  {sting} message  Message to be logged
+     * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
+     * @param  {array} data     An array of data strings that are to be applied to logging message
+     * @param  {boolean} force  Flag to force logging output even if config does not allow it
+     */
     async log(message, type, data, force){
 
         if (!data){
@@ -135,6 +232,12 @@ class BaseClass extends eventEmitter {
         }
     }
 
+    /**
+     * Does actual logging to console (and log file is file logging is enabled)
+     *
+     * @method
+     * @param  {object} debugMessage Message object to be logged (returned by this.getMessageObject method)
+     */
     _doLog (debugMessage){
         if (debugMessage.type == 'group'){
             if (this.getConfig('debug.debugGroupsCollapsed')){
@@ -174,6 +277,15 @@ class BaseClass extends eventEmitter {
         }
     }
 
+    /**
+     * Gets JSON represenation of message object for saving into log file,
+     * removing unneccessary properties and adding necessary ones
+     *
+     * @method
+     * @async
+     * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
+     * @return {string}      JSON encoded representation of message object
+     */
     async getMessageFileLine(message){
         let msg = _.cloneDeep(message);
         if (!msg.timestamp){
@@ -193,6 +305,15 @@ class BaseClass extends eventEmitter {
         return JSON.stringify(msg);
     }
 
+    /**
+     * Returns string representing log line for appending
+     * to user message log file
+     *
+     * @method
+     * @async
+     * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
+     * @return {string}      String representing log line for appending to user message log file
+     */
     async getUserMessageFileLine (message){
         var line = '';
         if (appState.userMessagesToFileStarted){
@@ -205,6 +326,15 @@ class BaseClass extends eventEmitter {
         return line;
     }
 
+    /**
+     * Returns string representing log line for appending
+     * to debug log file
+     *
+     * @method
+     * @async
+     * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
+     * @return {string}      String representing log line for appending to debug log file
+     */
     async getDebugMessageFileLine (message){
         var line = '';
 
@@ -225,6 +355,22 @@ class BaseClass extends eventEmitter {
         return line;
     }
 
+    /**
+     * Logs user message if conditions are met
+     *
+     * Message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param {sting}   message         Message to be logged
+     * @param {string}  type            Type of log message (debug, info, warning, error)
+     * @param {array}   data            An array of data strings that are to be applied to logging message
+     * @param {boolean} important       Flag to indicate message importance
+     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     */
     async addUserMessage (message, type, data, important, dontTranslate, force, passToDebug){
         if (!type){
             type = 'info';
@@ -281,6 +427,23 @@ class BaseClass extends eventEmitter {
         umHelper.processUserMessageQueue();
     }
 
+    /**
+     * Returns prepared message object based on passed arguments.
+     *
+     * Message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param  {int}    messageLevel    Number representing current message level (0=debug, 1=info, 2=warning, 3=error)
+     * @param {sting}   message         Message to be logged
+     * @param {string}  type            Type of log message (debug, info, warning, error)
+     * @param {array}   data            An array of data strings that are to be applied to logging message
+     * @param {boolean} important       Flag to indicate message importance
+     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @return {object}                 Object that represents log message
+     */
     async getMessageObject (messageLevel, message, type, data, important, dontTranslate, force){
 
         var userMessage = {};
@@ -334,6 +497,22 @@ class BaseClass extends eventEmitter {
         return userMessage;
     }
 
+    /**
+     * Adds modal message to currently open modal dialog
+     *
+     * Message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param {sting}   message         Message to be logged
+     * @param {string}  type            Type of log message (debug, info, warning, error)
+     * @param {array}   data            An array of data strings that are to be applied to logging message
+     * @param {boolean} important       Flag to indicate message importance
+     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     */
     async addModalMessage (message, type, data, important, dontTranslate, force, passToDebug){
         if (!type){
             type = 'info';
@@ -357,28 +536,80 @@ class BaseClass extends eventEmitter {
         _appWrapper.getHelper('modal').addModalMessage(userMessage);
     }
 
+    /**
+     * Displays app notification
+     *
+     * Notification message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param {sting}   message         Notification message
+     * @param {array}   data            An array of data strings that are to be applied to notification
+     * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
+     */
     async addNotification (message, data, dontTranslate){
         let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
         _appWrapper.getHelper('appNotifications').addNotification(notification);
     }
 
+    /**
+     * Displays desktop notification
+     *
+     * Notification message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @async
+     * @param {sting}   message         Notification message
+     * @param {array}   data            An array of data strings that are to be applied to notification
+     * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @param {object} options          Desktop notification options (passed to HTML5 Notification object constructor)
+     * @param {object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
+     */
     async addDesktopNotification (message, data, dontTranslate, options, callbacks){
         let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
         return await _appWrapper.getHelper('appNotifications').addDesktopNotification(notification, options, callbacks);
     }
 
+    /**
+     * Returns appState var value
+     *
+     * @method
+     * @param  {string} varPath      String representing path to requested var (i.e. 'appData.appMainData.cancelable')
+     * @param  {mixed} defaultValue  Default value to be returned if appState var is not found
+     * @return {mixed}               appState var value
+     */
     getStateVar (varPath, defaultValue){
         var varValue;
         if (appState){
             varValue = _.get(appState, varPath, defaultValue);
         }
+        if (_.isUndefined(varValue) && !_.isUndefined(defaultValue)){
+            varValue = defaultValue;
+        }
         return varValue;
     }
 
+    /**
+     * Returns instance of helper object based on passed parameter (or false if helper can't be found)
+     *
+     * @method
+     * @param  {string} helperName Name of the helper
+     * @return {object}            Instance of the helper object (or false if helper can't be found)
+     */
     getHelper(name){
         return _appWrapper.getHelper(name);
     }
 
+    /**
+     * Returns configuration var value
+     *
+     * @method
+     * @param  {string} varPath      String representing path to requested var (i.e. 'appConfig.appInfo.name')
+     * @param  {mixed} defaultValue  Default value to be returned if configuration var is not found
+     * @return {mixed}               configuration var value
+     */
     getConfig (name, defaultValue){
         var path = name;
         var value;
@@ -406,6 +637,12 @@ class BaseClass extends eventEmitter {
         return value;
     }
 
+    /**
+     * Helper method for getting call stack array for debug or user message objects
+     *
+     * @method
+     * @return {array} An array of objects with properties 'function', 'file', 'line' and 'column', representing stack calls.
+     */
     _getStack () {
         let stackArray;
         try {
@@ -461,8 +698,42 @@ class BaseClass extends eventEmitter {
         return stackArray;
     }
 
+    /**
+     * Returns translated value for passed arguments
+     *
+     * Translation is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @param  {string} text            Text to be translated
+     * @param  {string} currentLanguage Curent language code
+     * @param  {array} data             An array of data strings that are to be applied to translated message
+     * @return {string}                 Translated message with interpolated data
+     */
     translate (text, currentLanguage, data) {
         return _appWrapper.appTranslations.translate(text, currentLanguage, data);
+    }
+
+    /**
+     * Clears all timeouts bound to this AppWrapper instance
+     *
+     * @method
+     */
+    clearTimeouts (){
+        for (let name in this.timeouts){
+            clearTimeout(this.timeouts[name]);
+        }
+    }
+
+    /**
+     * Clears all intervals bound to this AppWrapper instance
+     *
+     * @method
+     */
+    clearIntervals (){
+        for (let name in this.intervals){
+            clearInterval(this.intervals[name]);
+        }
     }
 }
 exports.BaseClass = BaseClass;

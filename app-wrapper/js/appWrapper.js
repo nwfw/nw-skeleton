@@ -1,3 +1,33 @@
+/**
+ * @fileOverview AppWrapper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
+/**
+ * @namespace
+ * @name appWrapper
+ * @description appWrapper appWrapper namespace
+ */
+
+/**
+ * @namespace
+ * @name appWrapper.helpers
+ * @description appWrapper.helpers appWrapper.helpers namespace
+ */
+
+/**
+ * @namespace
+ * @name appWrapper.helpers.systemHelpers
+ * @description appWrapper.helpers.systemHelpers appWrapper.helpers.systemHelpers namespace
+ */
+
+/**
+ * @namespace
+ * @name components
+ * @description components components namespace
+ */
+
 const _ = require('lodash');
 const path = require('path');
 
@@ -10,21 +40,39 @@ var FileManager = require('./lib/fileManager').FileManager;
 
 var AppConfig = require('./lib/appConfig').AppConfig;
 
+/**
+ * A "wrapper" object for nw-skeleton based apps
+ *
+ * @class
+ * @extends BaseClass
+ * @memberOf appWrapper
+ *
+ * @property {App}              app                 Property that holds reference to App class instance
+ * @property {Object}           helpers             Object that contains helper instances by helper names
+ * @property {WindowManager}    windowManager       Instance of WindowManager class
+ * @property {FileManager}      fileManager         Instance of FileManager class
+ * @property {AppConfig}        appConfig           Instance of AppConfig class
+ * @property {AppTranslations}  appTranslations     Instance of AppTranslations class
+ * @property {window}           debugWindow         Reference to debug window 'window' object (for main app window)
+ * @property {window}           mainWindow          Reference to main window 'window' object (for debug app window)
+ * @property {Object}           initialAppConfig    Object that stores initial app config that wrapper was initialized with
+ * @property {Function}         noop                Reference to empty function (_.noop)
+ */
 class AppWrapper extends BaseClass {
 
+    /**
+     * Creates appWrapper instance using initial config object
+     *
+     * @constructor
+     * @param  {Object} initialAppConfig Initial config object
+     * @return {AppWrapper}              Instance of AppWrapper class
+     */
     constructor (initialAppConfig) {
         super();
 
         this.needsConfig = false;
-
         this.app = null;
-
-        this.templateContents = null;
-        this.translations = null;
-
-        this.helperData = {};
         this.helpers = {};
-
         this.windowManager = null;
         this.fileManager = null;
         this.appConfig = null;
@@ -53,8 +101,6 @@ class AppWrapper extends BaseClass {
         this.debugWindow = null;
         this.mainWindow = null;
 
-        this.cleanupCancelled = false;
-
         this.initialAppConfig = initialAppConfig;
 
         window.getAppWrapper = () => {
@@ -70,6 +116,14 @@ class AppWrapper extends BaseClass {
         return this;
     }
 
+    /**
+     * Initializes appWrapper and its dependencies, preparing the wrapper
+     * to start the application itself
+     *
+     * @method
+     * @async
+     * @return {AppWrapper} Instance of AppWrapper class
+     */
     async initialize(){
         let isDebugWindow = false;
         if (this.initialAppConfig.isDebugWindow){
@@ -206,6 +260,15 @@ class AppWrapper extends BaseClass {
         return this;
     }
 
+    /**
+     * Finalizes appWrapper and its dependencies. This method is called once
+     * frontend application is created, so code here has all references that
+     * are available to the application
+     *
+     * @method
+     * @async
+     * @return {booelan} Result of the wrapper and its dependencies finalization
+     */
     async finalize () {
         appState.status.appLoaded = true;
         await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
@@ -220,6 +283,11 @@ class AppWrapper extends BaseClass {
         return retValue;
     }
 
+    /**
+     * Adds event listeners for the AppWrapper instance
+     *
+     * @method
+     */
     addEventListeners() {
         if (!appState.isDebugWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
@@ -228,21 +296,41 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Removes event listeners for the AppWrapper instance
+     *
+     * @method
+     */
     removeEventListeners() {
         if (!appState.isDebugWindow){
             this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
         } else {
             this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
         }
-
     }
 
+    /**
+     * Loads language and translation data and initializes language and
+     * translation systems used in the app
+     *
+     * @method
+     * @async
+     * @return {Object} Translation data, containing available languages and translations in those langauges
+     */
     async initializeLanguage () {
         this.appTranslations = new AppTranslations();
         await this.appTranslations.initialize();
         return await this.appTranslations.initializeLanguage();
     }
 
+    /**
+     * Loads and initializes helpers from directories passed in argument
+     *
+     * @method
+     * @async
+     * @param  {string[]} helperDirs An array of absolute paths where helper files are located
+     * @return {Object} An object with all initialized helper instances
+     */
     async initializeHelpers(helperDirs){
         var helpers = {};
         var classHelpers = await this.loadHelpers(helperDirs);
@@ -257,6 +345,14 @@ class AppWrapper extends BaseClass {
         return helpers;
     }
 
+    /**
+     * Loads and helpers from directories passed in argument
+     *
+     * @method
+     * @async
+     * @param  {string[]} helperDirs An array of absolute paths where helper files are located
+     * @return {Object} An object with all helper classes
+     */
     async loadHelpers (helperDirs) {
         var helpers = {};
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
@@ -279,6 +375,13 @@ class AppWrapper extends BaseClass {
         return helpers;
     }
 
+    /**
+     * Initializes frontend part of the app, creating Vue instance
+     *
+     * @method
+     * @async
+     * @return {Vue} An object representing Vue app instance
+     */
     async initializeFeApp(){
         this.log('Initializing Vue app...', 'debug', []);
         let utilHelper = this.getHelper('util');
@@ -310,11 +413,25 @@ class AppWrapper extends BaseClass {
         return window.feApp;
     }
 
+    /**
+     * Reinitializes frontend app by destroying it and initializing it again
+     *
+     * @method
+     * @async
+     * @return {Vue} An object representing Vue app instance
+     */
     async reinitializeFeApp(){
         window.getFeApp().$destroy();
         return await this.initializeFeApp();
     }
 
+    /**
+     * Generic frontend event listener for calling methods within app scope (but not within current Vue cmponent scope)
+     *
+     * @method
+     * @async
+     * @param  {Event} e  Event that triggered the handler
+     */
     async callViewHandler (e) {
         var target = e.target;
         var eventType = e.type;
@@ -354,6 +471,12 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that performs necessary operations when application window gets closed
+     *
+     * @method
+     * @async
+     */
     async onWindowClose () {
         let modalHelper = this.getHelper('modal');
         let appOperationHelper = this.getHelper('appOperation');
@@ -374,6 +497,14 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Cleanup method - calls cleanup/shutdown methods for all eligible dependencies, cleaning
+     * the app state so it can be safely closed
+     *
+     * @method
+     * @async
+     * @return {boolean} Cleanup result
+     */
     async cleanup(){
         let utilHelper = this.getHelper('util');
         var returnPromise;
@@ -396,6 +527,14 @@ class AppWrapper extends BaseClass {
         return returnPromise;
     }
 
+    /**
+     * Shuts down application, removing menus, tray icons and eventual other functionalities
+     * that were initializes upon application start
+     *
+     * @method
+     * @async
+     * @return {boolean} Shutdown result
+     */
     async shutdownApp () {
         this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
         this.log('Shutting down...', 'group', []);
@@ -420,15 +559,36 @@ class AppWrapper extends BaseClass {
         return true;
     }
 
+    /**
+     * Handler that performs necessary operations before application window gets closed
+     *
+     * @method
+     */
     beforeWindowClose () {
         this.removeEventListeners();
         this.removeBoundMethods();
     }
 
+    /**
+     * Handler for changing current application language
+     *
+     * @method
+     * @param  {string} selectedLanguageName Name of new app language
+     * @param  {Object} selectedLanguage     Object representing new app language
+     * @param  {string} selectedLocale       Locale of new app language
+     * @param  {boolean} skipOtherWindow     Flag that triggers language change in other app windows (if any)
+     * @return {boolean}                     Result of app language change
+     */
     changeLanguage (selectedLanguageName, selectedLanguage, selectedLocale, skipOtherWindow) {
         return this.appTranslations.changeLanguage(selectedLanguageName, selectedLanguage, selectedLocale, skipOtherWindow);
     }
 
+    /**
+     * Handler that is triggered before application window is reloaded (available only with debug enabled)
+     *
+     * @method
+     * @async
+     */
     async beforeUnload () {
         let modalHelper = this.getHelper('modal');
         let appOperationHelper = this.getHelper('appOperation');
@@ -449,10 +609,22 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that is triggered before application debug window is reloaded (available only with debug enabled)
+     *
+     * @method
+     * @async
+     */
     async onDebugWindowUnload (){
         this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
     }
 
+    /**
+     * Handler that is triggered before application window is closed (available only with debug enabled)
+     *
+     * @method
+     * @async
+     */
     async onDebugWindowClose (){
         this.log('Closing standalone debug window', 'info', []);
         if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
@@ -465,6 +637,13 @@ class AppWrapper extends BaseClass {
         this.addUserMessage('Debug window closed', 'info', [], false,  false);
     }
 
+    /**
+     * Helper function to set app status variables in app state
+     *
+     * @method
+     * @param {boolean} appBusy  Flag that indicates whether entire app should be considered as 'busy'
+     * @param {string} appStatus String that indicates current app status (for display in app header live info component)
+     */
     setAppStatus (appBusy, appStatus){
         if (!appStatus){
             if (appBusy){
@@ -477,6 +656,9 @@ class AppWrapper extends BaseClass {
         appState.status.appStatus = appStatus;
     }
 
+    /**
+     * Resets app status to not busy/idle state
+     */
     resetAppStatus (){
         this.setAppStatus(false);
     }
@@ -484,6 +666,7 @@ class AppWrapper extends BaseClass {
     /**
      * Placeholder method that handles modal confirm action
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
@@ -495,6 +678,7 @@ class AppWrapper extends BaseClass {
     /**
      * Placeholder method that handles modal cancel/close action
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
@@ -507,6 +691,7 @@ class AppWrapper extends BaseClass {
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal confirmation
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
@@ -519,6 +704,7 @@ class AppWrapper extends BaseClass {
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal cancelling or closing
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
@@ -531,6 +717,7 @@ class AppWrapper extends BaseClass {
     /**
      * Default confirm modal action - do not change
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {void}
      */
@@ -545,6 +732,7 @@ class AppWrapper extends BaseClass {
     /**
      * Default cancel/close modal action - do not change
      *
+     * @method
      * @param  {Event} Optional event passed to method
      * @return {void}
      */
@@ -556,23 +744,23 @@ class AppWrapper extends BaseClass {
         this.getHelper('modal').closeCurrentModal();
     }
 
+    /**
+     * Sets dynamic (calculated) appState values (mainly language related)
+     *
+     * @method
+     */
     setDynamicAppStateValues () {
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
     }
 
-    clearTimeouts (){
-        for (let name in this.timeouts){
-            clearTimeout(this.timeouts[name]);
-        }
-    }
-
-    clearIntervals (){
-        for (let name in this.intervals){
-            clearInterval(this.intervals[name]);
-        }
-    }
-
+    /**
+     * Returns instance of helper object based on passed parameter (or false if helper can't be found)
+     *
+     * @method
+     * @param  {string} helperName Name of the helper
+     * @return {Object}            Instance of the helper object (or false if helper can't be found)
+     */
     getHelper(helperName){
         var helper = false;
         if (this.app && this.app.helpers){
@@ -592,6 +780,17 @@ class AppWrapper extends BaseClass {
         return helper;
     }
 
+    /**
+     * Finds and returns method of the object based on passed parameters
+     *
+     * @method
+     * @async
+     * @param  {string} methodString String that represents method path (i.e. 'app.appObject.method')
+     * @param  {array}  methodArgs   An array of arguments to be applied to the returned method reference
+     * @param  {Object} context      Context that will be applied as 'this' to returned method reference
+     * @param  {boolean} silent      Flag to control logging output
+     * @return {Function}            Reference to required method with context and arguments applied (or false if no method is found)
+     */
     async getObjMethod(methodString, methodArgs, context, silent){
         var methodChunks = methodString.split('.');
         var targetMethod;
@@ -644,6 +843,16 @@ class AppWrapper extends BaseClass {
         return objMethod;
     }
 
+    /**
+     * Finds and calls method of the object based on passed parameters
+     *
+     * @method
+     * @async
+     * @param  {string} methodString String that represents method path (i.e. 'app.appObject.method')
+     * @param  {array}  methodArgs   An array of arguments to be applied to the returned method reference
+     * @param  {Object} context      Context that will be applied as 'this' to returned method reference
+     * @return {mixed}               Method return value or false if no method found
+     */
     async callObjMethod(methodString, methodArgs, context){
         var objMethod = await this.getObjMethod(methodString, methodArgs, context);
         if (objMethod && _.isFunction(objMethod)){
@@ -653,16 +862,35 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Exits the app, closing app window
+     *
+     * @method
+     */
     exitApp(){
         this.windowManager.closeWindow();
     }
 
+    /**
+     * Finalizes log files if logging to file is enabled
+     *
+     * @method
+     * @async
+     * @return {boolean} Result of log finalizing
+     */
     async finalizeLogs(){
         await this.finalizeUserMessageLog();
         await this.finalizeDebugMessageLog();
         return true;
     }
 
+    /**
+     * Finalizes user message log file if user message logging to file is enabled
+     *
+     * @method
+     * @async
+     * @return {boolean} Result of log finalizing
+     */
     async finalizeUserMessageLog(){
         if (this.getConfig('debug.debugToFile')){
             let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
@@ -674,6 +902,13 @@ class AppWrapper extends BaseClass {
         return true;
     }
 
+    /**
+     * Finalizes debug log file if debug logging to file is enabled
+     *
+     * @method
+     * @async
+     * @return {boolean} Result of log finalizing
+     */
     async finalizeDebugMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
             let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
@@ -685,6 +920,12 @@ class AppWrapper extends BaseClass {
         return true;
     }
 
+    /**
+     * Returns appState object if exists, initializing it and returning it if it doesn't
+     *
+     * @method
+     * @return {Object} appState object
+     */
     getAppState () {
         var win = nw.Window.get().window;
         var appStateFile;
@@ -709,6 +950,16 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Helper method for deep object merging
+     *
+     * First passed parameter is destination object, all other parameters are source
+     * objects that will be merged with destination clone.
+     * This method does NOT mutate original object.
+     *
+     * @method
+     * @return {Object} Result destination object with all source object values merged
+     */
     mergeDeep (){
         var destination = arguments[0];
         var sources = Array.prototype.slice.call(arguments, 1);
@@ -741,6 +992,14 @@ class AppWrapper extends BaseClass {
         return result;
     }
 
+    /**
+     * Helper method that stops execution for time determined by passed parameter
+     *
+     * @method
+     * @async
+     * @param  {Integer} duration Pause duration in milliseconds
+     * @return {boolean}      Result of waiting (always true)
+     */
     async wait(duration){
         if (this.getConfig('debug.enabled')){
             this.log('Waiting {1} ms', 'debug', [duration]);
@@ -755,6 +1014,14 @@ class AppWrapper extends BaseClass {
         }
     }
 
+    /**
+     * Helper methods that waits for process.nexTick to happen before allowing
+     * code execution
+     *
+     * @method
+     * @async
+     * @return {boolean} Result of waiting for nextTick (always true)
+     */
     async nextTick (){
         var returnPromise = new Promise((resolve) => {
             setTimeout(() => {
@@ -764,11 +1031,28 @@ class AppWrapper extends BaseClass {
         return returnPromise;
     }
 
+    /**
+     * Helper methods that calls function passed in argument upon process.nextTick
+     *
+     * @method
+     * @async
+     * @param  {function} callable Function that will be called after nextTick
+     * @return {mixed}             Value that called function returns
+     */
     async onNextTick(callable){
         await this.nextTick();
-        callable();
+        return callable();
     }
 
+    /**
+     * Determines and returns absolute path to app directory.
+     * Takes into consideration OS platform and way that app is
+     * being run (whether by calling nwjs or running finished packaged app)
+     *
+     * @method
+     * @async
+     * @return {string} Absolute path to app directory
+     */
     async getAppDir(){
         let utilHelper = this.getHelper('util');
         let appDir;

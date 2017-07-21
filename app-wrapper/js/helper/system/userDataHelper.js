@@ -1,3 +1,9 @@
+/**
+ * @fileOverview UserDataHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
 
 const _ = require('lodash');
 const BaseClass = require('../../base').BaseClass;
@@ -5,8 +11,23 @@ const BaseClass = require('../../base').BaseClass;
 var _appWrapper;
 var appState;
 
+/**
+ * UserDataHelper class - handles and manages user data operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ * @property {Object} previousUserData  Object storing previous user data
+ */
 
 class UserDataHelper extends BaseClass {
+
+    /**
+     * Creates UserDataHelper instance
+     *
+     * @constructor
+     * @return {UserDataHelper}              Instance of UserDataHelper class
+     */
     constructor() {
         super();
 
@@ -20,16 +41,24 @@ class UserDataHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Returns user data var name for localStorage
+     *
+     * @return {string} User data var name for localStorage
+     */
     getUserDataStorageName(){
         let userDataName = this.getConfig('appInfo.name') + '_userData';
         userDataName = userDataName.replace(/[^A-Za-z0-9]+/g, '_');
         return userDataName;
     }
 
+    /**
+     * Saves user data to local storage (if data was changed)
+     *
+     * @async
+     * @param  {Object} userData User data object
+     * @return {boolean}         Saving result
+     */
     async saveUserData (userData) {
         let saved = false;
         if (this.userDataChanged(userData)){
@@ -50,6 +79,13 @@ class UserDataHelper extends BaseClass {
         return saved;
     }
 
+    /**
+     * Loads user data from localStorage
+     *
+     * @async
+     * @param  {boolean} omitSettingAppState    Flag to prevent setting userData in appState
+     * @return {(Object|boolean)}               Object containing userData or false on failure
+     */
     async loadUserData (omitSettingAppState) {
         this.log('Loading user data', 'group', []);
         let userDataName = this.getUserDataStorageName();
@@ -73,6 +109,12 @@ class UserDataHelper extends BaseClass {
         return userData;
     }
 
+    /**
+     * Clears user data in localStorage
+     *
+     * @async
+     * @return {boolean} Operation result
+     */
     async clearUserData () {
         this.log('Clearing user data', 'info', []);
         let userDataName = this.getUserDataStorageName();
@@ -85,6 +127,12 @@ class UserDataHelper extends BaseClass {
         return deleted;
     }
 
+    /**
+     * Checks whether user data has been changed compared to this.previousUserData
+     *
+     * @param  {Object} userData Object containing userData
+     * @return {Number}          Number of changed variables
+     */
     userDataChanged (userData) {
         if (!userData){
             userData = appState.userData;

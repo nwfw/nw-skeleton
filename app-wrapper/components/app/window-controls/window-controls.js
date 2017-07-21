@@ -1,11 +1,30 @@
-// const _ = require('lodash');
+/**
+ * @fileOverview window-controls component file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf components
+ */
 
 var _appWrapper = window.getAppWrapper();
 var appState = _appWrapper.getAppState();
-
+/**
+ * Window controls component
+ *
+ * @name window-controls
+ * @memberOf components
+ * @property {string}   name        Name of the component
+ * @property {string}   template    Component template contents
+ * @property {string[]} props       Component properties
+ * @property {Function} data        Data function
+ * @property {Object}   methods     Component methods
+ * @property {Object}   watch       Component watchers
+ * @property {Object}   computed    Computed properties
+ * @property {Object}   components  Child components
+ */
 exports.component = {
     name: 'window-controls',
     template: '',
+    props: [],
     data: function () {
         return {
             timeouts: {}
@@ -81,6 +100,7 @@ exports.component = {
             appState.status.appShuttingDown = !appState.status.appShuttingDown;
         }
     },
+    watch: {},
     computed: {
         appState: function() {
             return appState;

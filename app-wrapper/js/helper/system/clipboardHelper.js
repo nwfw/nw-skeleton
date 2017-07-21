@@ -1,16 +1,40 @@
+/**
+ * @fileOverview ClipboardHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
+
 const _ = require('lodash');
 const BaseClass = require('../../base').BaseClass;
 
+/**
+ * ClipboardHelper class - handles clipboard operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ */
 class ClipboardHelper extends BaseClass {
+
+    /**
+     * Creates ClipboardHelper instance
+     *
+     * @constructor
+     * @return {ClipboardHelper}              Instance of ClipboardHelper class
+     */
     constructor() {
         super();
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Sets clipboard contents
+     *
+     * @see {@link http://docs.nwjs.io/en/latest/References/Clipboard/#clipsetdata-type-raw}
+     * @param {mixed} data Data to put to clipboard
+     * @param {string} type Data type - one of text, png, jpeg, html and rtf (text is default)
+     */
     set (data, type){
         let clipboard = nw.Clipboard.get();
         if (!type){
@@ -19,6 +43,13 @@ class ClipboardHelper extends BaseClass {
         clipboard.set(data, type);
     }
 
+    /**
+     * Gets clipboard contents by type
+     *
+     * @see {@link http://docs.nwjs.io/en/latest/References/Clipboard/#clipgettype-raw}
+     * @param {string} type Data type - one of text, png, jpeg, html and rtf (text is default)
+     * @return {mixed}      Clipboard contents
+     */
     get (type){
         let clipboard = nw.Clipboard.get();
         if (!type){
@@ -27,6 +58,11 @@ class ClipboardHelper extends BaseClass {
         return clipboard.get(type, true);
     }
 
+    /**
+     * Gets currently selected text in the window
+     *
+     * @return {string} Selected text
+     */
     getSelected () {
         let selectedText = '';
         let activeElement = document.activeElement;
@@ -45,6 +81,9 @@ class ClipboardHelper extends BaseClass {
         return selectedText;
     }
 
+    /**
+     * Cuts currently selected text to clipboard
+     */
     cut () {
         let selectedText = this.getSelected();
         this.log('Cutting {1} characters to clipboard.', 'debug', [selectedText.length || '0']);
@@ -64,12 +103,18 @@ class ClipboardHelper extends BaseClass {
         }
     }
 
+    /**
+     * Copies currently selected text to clipboard
+     */
     copy () {
         let selectedText = this.getSelected();
         this.log('Copying {1} characters to clipboard.', 'debug', [selectedText.length || '0']);
         this.set(selectedText);
     }
 
+    /**
+     * Pastes text from clipboard to currently active (focused) DOM element
+     */
     paste () {
         let activeElement = document.activeElement;
         if (activeElement && activeElement.canPasteText()){
@@ -90,6 +135,9 @@ class ClipboardHelper extends BaseClass {
         }
     }
 
+    /**
+     * Selects all text in current form element or entire window
+     */
     selectAll () {
         let activeElement = document.activeElement;
         if (activeElement && activeElement.isTextSelectable() && !_.isUndefined(activeElement.select) && _.isFunction(activeElement.select)){
@@ -105,10 +153,18 @@ class ClipboardHelper extends BaseClass {
         }
     }
 
+    /**
+     * Undoes previous operation
+     * @todo implement this
+     */
     undo () {
         document.execCommand('undo');
     }
 
+    /**
+     * Redoes previous operation
+     * @todo implement this
+     */
     redo () {
         document.execCommand('redo');
     }

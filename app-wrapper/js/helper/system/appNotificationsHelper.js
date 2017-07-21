@@ -1,3 +1,9 @@
+/**
+ * @fileOverview AppNotificationsHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
 
 const _ = require('lodash');
 const path = require('path');
@@ -6,8 +12,21 @@ const BaseClass = require('../../base').BaseClass;
 var _appWrapper;
 var appState;
 
-
+/**
+ * AppNotificationsHelper class - handles and manages app and desktop notifications
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ */
 class AppNotificationsHelper extends BaseClass {
+
+    /**
+     * Creates AppNotificationsHelper instance
+     *
+     * @constructor
+     * @return {AppNotificationsHelper}              Instance of AppNotificationsHelper class
+     */
     constructor() {
         super();
 
@@ -20,17 +39,14 @@ class AppNotificationsHelper extends BaseClass {
             notificationQueue: null
         };
 
-        this.notificationExpired = true;
-
-        this.currentDesktopNotification = false;
-
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Adds app notification
+     *
+     * @param {Object} notification Notification object
+     */
     addNotification(notification){
         if (appState.appNotificationsData.currentNotification && appState.appNotificationsData.currentNotification.message == notification.message){
             appState.appNotificationsData.currentNotification.count++;
@@ -49,6 +65,15 @@ class AppNotificationsHelper extends BaseClass {
         }
     }
 
+    /**
+     * Adds chrome desktop notification
+     *
+     * @async
+     * @param {Object}  notification    Notification object
+     * @param {Object}  options         Notification options
+     * @param {Object}  callbacks       Object with onButtonClicked, onClicked, onClosed notification handlers
+     * @return {string}                 Chrome notification id
+     */
     async addChromeNotification (notification, options, callbacks){
         if (!options){
             options = {};
@@ -82,6 +107,14 @@ class AppNotificationsHelper extends BaseClass {
         return await this.showChromeNotification(options, callbacks);
     }
 
+    /**
+     * Shows chrome notification
+     *
+     * @async
+     * @param  {Object} options     Chrome notification options
+     * @param {Object}  callbacks   Object with onButtonClicked, onClicked, onClosed notification handlers
+     * @return {string}             Chrome notification id
+     */
     async showChromeNotification (options, callbacks) {
         this.log('Showing desktop notification "{1}"', 'info', [options.title]);
 
@@ -132,10 +165,26 @@ class AppNotificationsHelper extends BaseClass {
         return returnPromise;
     }
 
+    /**
+     * Update chrome desktop notification
+     *
+     * @async
+     * @param  {string} notificationId Chrome notification id
+     * @param  {Object} options        Chrome notification options
+     */
     async updateDesktopNotification (notificationId, options) {
         chrome.notifications.update(notificationId, options);
     }
 
+    /**
+     * Adds desktop notification
+     *
+     * @async
+     * @param {Object} notification     Notification object
+     * @param {Objcet} options          Notification options
+     * @param {object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
+     * @return {Notification}           Desktop notification instance
+     */
     async addDesktopNotification (notification, options, callbacks){
         if (!options){
             options = {};
@@ -174,7 +223,14 @@ class AppNotificationsHelper extends BaseClass {
         }
     }
 
-
+    /**
+     * Shows desktop notification
+     *
+     * @param {Object} notification     Notification object
+     * @param {Objcet} options          Notification options
+     * @param {object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
+     * @return {Notification}           Desktop notification instance
+     */
     showDesktopNotification (notification, options, callbacks) {
         this.log('Showing desktop notification "{1}"', 'info', [notification.message]);
         let desktopNotification = new Notification(notification.message, options);
@@ -201,7 +257,6 @@ class AppNotificationsHelper extends BaseClass {
         }
         return desktopNotification;
     }
-
 }
 
 exports.AppNotificationsHelper = AppNotificationsHelper;

@@ -8,6 +8,7 @@
     "url": "git@bitbucket.org:jazziebgd/nw-skeleton.git"
   },
   "scripts": {
+    "doc": "rm -rf doc && jsdoc -c jsDocConfig.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dino Ivankov <dinoivankov@gmail.com>",

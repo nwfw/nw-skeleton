@@ -1,10 +1,40 @@
+/**
+ * @fileOverview AppConfig class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appState;
 
+/**
+ * A class for app config operations and manipulation
+ *
+ * @class
+ * @extends BaseClass
+ * @memberOf appWrapper
+ *
+ * @property {Object}           initialAppConfig    Object that stores initial app config that wrapper was initialized with
+ * @property {Object}           baseConfig          Object that stores base app config
+ * @property {Object}           appStateConfig      Object that stores app state config
+ * @property {Object}           defaultConfig       Object that stores default config
+ * @property {Object}           config              Object that stores app config
+ * @property {Object}           userConfig          Object that stores user config
+ * @property {Object}           previousConfig      Object that stores previous app config
+ * @property {boolean}          watchConfig         Flag to indicate whether to watch for config changes
+ */
 class AppConfig extends BaseClass {
+
+    /**
+     * Creates AppConfig instance using initial app config object
+     *
+     * @constructor
+     * @param  {Object} initialAppConfig Initial app config object
+     * @return {AppConfig}              Instance of AppConfig class
+     */
     constructor(initialAppConfig) {
         super();
 
@@ -34,14 +64,13 @@ class AppConfig extends BaseClass {
         return this;
     }
 
-    async initialize (options) {
-        await super.initialize(options);
-    }
-
-    async _loadConfig () {
-        return this.initialAppConfig;
-    }
-
+    /**
+     * Initializes application configuration
+     *
+     * @method
+     * @async
+     * @return {Object} Application configuration object
+     */
     async initializeConfig () {
 
         this.appStateConfig = require('../../../config/appWrapperConfig').config;
@@ -61,32 +90,28 @@ class AppConfig extends BaseClass {
         });
         this.config = _.cloneDeep(theConfig);
         this.baseConfig = _.cloneDeep(theConfig);
-        // let className = this.constructor.name;
-        // if (this.config.debug && this.config.debug.forceDebug){
-        //     if (_.isUndefined(this.config.debug.forceDebug[className])){
-        //         console.error('Class "' + className + '" has no forceDebug config set!');
-        //     } else {
-        //         this.forceDebug = _.get(this.config.debug.forceDebug, className);
-        //     }
-        // }
-
-        // if (this.config.userMessages && this.config.userMessages.forceUserMessages){
-        //     if (_.isUndefined(this.config.userMessages.forceUserMessages[className])){
-        //         console.error('Class "' + className + '" has no forceUserMessages config set!');
-        //     } else {
-        //         this.forceUserMessages = _.get(this.config.userMessages.forceUserMessages, className);
-        //     }
-        // }
         this.defaultConfig = _.cloneDeep(theConfig);
         return theConfig;
     }
 
+    /**
+     * Returns localStorage variable name under which user config for this app is stored
+     *
+     * @method
+     * @return {string} localStorage config variable name
+     */
     getConfigStorageName(){
         let configName = this.getConfig('appInfo.name') + '_config';
         configName = configName.replace(/[^A-Za-z0-9]+/g, '_');
         return configName;
     }
 
+    /**
+     * Loads user config from localStorage
+     *
+     * @method
+     * @return {Object} Application config with user config data (if found)
+     */
     loadUserConfig () {
         let configName = this.getConfigStorageName();
         this.log('Loading user config...', 'group', []);
@@ -122,6 +147,12 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Saves user config data to localStorage
+     *
+     * @async
+     * @method
+     */
     async saveUserConfig () {
         let configName = this.getConfigStorageName();
         if (localStorage){
@@ -194,6 +225,13 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Clears user config data from localStorage
+     *
+     * @method
+     * @async
+     * @param  {boolean} noReload Flag to indicate whether to prevent app window reload
+     */
     async clearUserConfig (noReload) {
         let configName = this.getConfigStorageName();
         if (localStorage){
@@ -228,6 +266,12 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Handler for clearUserConfig method
+     *
+     * @method
+     * @param  {Event} e    Event that triggered the handler
+     */
     clearUserConfigHandler (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -235,10 +279,26 @@ class AppConfig extends BaseClass {
         _appWrapper.getHelper('modal').confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved configuration data.'), '', '', this.boundMethods.clearUserConfig);
     }
 
+    /**
+     * Checks whether given config var exists and returns true or false
+     *
+     * @method
+     * @param  {string}  name Name of config var
+     * @return {Boolean}      True if var exists, false otherwise
+     */
     hasConfigVar(name){
         return !_.isUndefined(appState.config[name]);
     }
 
+    /**
+     * Sets config var
+     *
+     * @method
+     * @async
+     * @param {string}  name   Name of config variable
+     * @param {mixed}   value  Value of config variable
+     * @param {boolean} noSave Prevents auto-saving of user config
+     */
     async setConfigVar(name, value, noSave){
         this.watchConfig = false;
         _.set(appState.config, name, value);
@@ -249,6 +309,14 @@ class AppConfig extends BaseClass {
         this.watchConfig = true;
     }
 
+    /**
+     * Sets entire app configuration to value from argument
+     *
+     * @method
+     * @async
+     * @param {Object} data   New app configuration object
+     * @param {boolean} noSave Prevents auto-saving of user config
+     */
     async setConfig(data, noSave){
         if (data && _.isObject(data)){
             this.watchConfig = false;
@@ -260,6 +328,13 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Event handler for opening config editor
+     *
+     * @method
+     * @async
+     * @param  {Event} e    Event that triggered the method
+     */
     async openConfigEditorHandler (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -267,6 +342,13 @@ class AppConfig extends BaseClass {
         this.openConfigEditor();
     }
 
+    /**
+     * Prepares config editor data object to be used in config-editor component
+     *
+     * @method
+     * @async
+     * @return {Object} Config editor data
+     */
     async prepareConfigEditorData () {
         var self = this;
         appState.configEditorData = {};
@@ -282,6 +364,15 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Prepares single config editor data value for passing to config-editor component
+     * Used recursively for config variables of type object or array
+     *
+     * @method
+     * @async
+     * @param  {(array|Object)} value   Config var value
+     * @return {(array|Object)}         Prepared config editor data value
+     */
     async prepareConfigEditorDataItem (value) {
         var self = this;
         if (_.isArray(value)){
@@ -301,6 +392,12 @@ class AppConfig extends BaseClass {
         return value;
     }
 
+    /**
+     * Opens config editor modal
+     *
+     * @method
+     * @async
+     */
     async openConfigEditor () {
         // appState.status.noHandlingKeys = true;
 
@@ -328,6 +425,13 @@ class AppConfig extends BaseClass {
         _appWrapper.getHelper('modal').openCurrentModal();
     }
 
+    /**
+     * Saves current user config (if it has changed) to localStorage
+     *
+     * @method
+     * @async
+     * @param  {Event} e  Event that triggered the method
+     */
     async saveConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -375,6 +479,14 @@ class AppConfig extends BaseClass {
         }
     }
 
+    /**
+     * Watcher for config variable changes
+     *
+     * @method
+     * @async
+     * @param  {mixed} oldValue     Old config var value
+     * @param  {mixed} newValue     New config var value
+     */
     async configChanged (oldValue, newValue){
         if (this.watchConfig){
             let utilHelper = _appWrapper.getHelper('util');
@@ -386,9 +498,7 @@ class AppConfig extends BaseClass {
             }
         }
         this.previousConfig = _.cloneDeep(appState.config);
-
     }
-
 }
 
 exports.AppConfig = AppConfig;

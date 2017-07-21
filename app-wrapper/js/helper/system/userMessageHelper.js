@@ -1,3 +1,10 @@
+/**
+ * @fileOverview UserMessageHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
+
 var _ = require('lodash');
 var BaseClass = require('../../base').BaseClass;
 const path = require('path');
@@ -5,8 +12,22 @@ const path = require('path');
 var _appWrapper;
 var appState;
 
+/**
+ * UserMessageHelper class - handles and manages user message operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ */
 
 class UserMessageHelper extends BaseClass {
+
+    /**
+     * Creates UserMessageHelper instance
+     *
+     * @constructor
+     * @return {UserMessageHelper}              Instance of UserMessageHelper class
+     */
     constructor() {
         super();
 
@@ -27,10 +48,9 @@ class UserMessageHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Processes user message queue, displaying any pending messages
+     */
     processUserMessageQueue (){
         let intervalDuration = 1;
 
@@ -58,6 +78,9 @@ class UserMessageHelper extends BaseClass {
         }
     }
 
+    /**
+     * Removes first user message from the queue and displays it
+     */
     unQueueUserMessage (){
         if (appState && appState.userMessageQueue && appState.userMessageQueue.length){
             if (appState.userMessageQueue.length > 10){
@@ -87,6 +110,11 @@ class UserMessageHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handler for expanding/contracting user-messages conponent
+     *
+     * @param  {Event} e Event that triggered the method
+     */
     toggleUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -94,14 +122,25 @@ class UserMessageHelper extends BaseClass {
         _appWrapper.appConfig.setConfigVar('userMessages.messagesExpanded', !this.getConfig('userMessages.messagesExpanded'));
     }
 
+    /**
+     * Handler for user message level select 'focus' event
+     */
     userMessageLevelSelectFocus () {
         appState.userMessagesData.selectFocused = true;
     }
 
+    /**
+     * Handler for user message level select 'blur' event
+     */
     userMessageLevelSelectBlur () {
         appState.userMessagesData.selectFocused = false;
     }
 
+    /**
+     * Gets stack counts for visible user messages
+     *
+     * @return {Number} Number of visible messages with stack data
+     */
     getUserMessageStacksCount () {
         let stackCount = 0;
         for(let i=0; i<appState.userMessages.length; i++){
@@ -112,6 +151,11 @@ class UserMessageHelper extends BaseClass {
         return stackCount;
     }
 
+    /**
+     * Gets current stack state for user-messages component (expanded/contracted)
+     *
+     * @return {Number} Number of unopened stack messages in user-messages message-list component
+     */
     getUserMessageStacksState () {
         let stacksCount = this.getUserMessageStacksCount();
         let stacksOpen = 0;
@@ -125,6 +169,9 @@ class UserMessageHelper extends BaseClass {
         return stacksOpen >= stacksCount;
     }
 
+    /**
+     * Toggles all user message stacks in user-messages message-list component
+     */
     toggleUserMessageStacks () {
         let currentState = !this.getUserMessageStacksState();
         for(let i=0; i<appState.userMessages.length; i++){
@@ -134,6 +181,12 @@ class UserMessageHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that triggers opening message saving modal dialog
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async saveMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -141,6 +194,11 @@ class UserMessageHelper extends BaseClass {
         this.showSaveMessagesModal();
     }
 
+    /**
+     * Opens message saving modal dialog
+     *
+     * @async
+     */
     async showSaveMessagesModal () {
         let modalHelper = _appWrapper.getHelper('modal');
         let modalOptions = {
@@ -166,12 +224,20 @@ class UserMessageHelper extends BaseClass {
         modalHelper.openModal('saveUserMessagesModal', modalOptions);
     }
 
+    /**
+     * Handler for file input click event for saving user messages
+     *
+     * @param  {Event} e Event that triggered the method
+     */
     saveUserMessagesFileClick (e){
         let fileEl = e.target.parentNode.querySelector('.file-picker');
         fileEl.setAttribute('nwsaveas', 'user-messages-' + _appWrapper.getHelper('format').formatDateNormalize(new Date(), false, true) + '.json');
         fileEl.click();
     }
 
+    /**
+     * Handler for file input change event for saving user messages - saves user messages to selected file
+     */
     saveUserMessagesFileChange () {
         let modalHelper = _appWrapper.getHelper('modal');
         modalHelper.setModalVar('saveFileError', false);
@@ -241,6 +307,9 @@ class UserMessageHelper extends BaseClass {
         }
     }
 
+    /**
+     * Opens user message config editor modal
+     */
     openUserMessageConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
         let modalOptions = {
@@ -255,6 +324,12 @@ class UserMessageHelper extends BaseClass {
         modalHelper.openModal('userMessagesConfigEditorModal', modalOptions);
     }
 
+    /**
+     * Save user message config link click handler
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async saveUserMessageConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -267,6 +342,12 @@ class UserMessageHelper extends BaseClass {
         modalHelper.closeCurrentModal();
     }
 
+    /**
+     * Closes user messages config editor modal
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async closeUserMessageConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();

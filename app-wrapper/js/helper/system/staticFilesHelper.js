@@ -1,15 +1,38 @@
-var _ = require('lodash');
-var fs = require('fs');
-var path = require('path');
-var postcss = require('postcss');
+/**
+ * @fileOverview StaticFilesHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
 
-var BaseClass = require('../../base').BaseClass;
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const postcss = require('postcss');
+
+const BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
 var appState;
 
-
+/**
+ * StaticFilesHelper class - handles and manages static (js and css) file operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ * @property {Object}   jsFileLoadResolves    Object containing promises for added js files (each file resolves promise on load)
+ * @property {Object}   cssFileLoadResolves   Object containing promises for added css files (each file resolves promise on load)
+ * @property {string[]} watchedFiles          Array of watched file paths
+ */
 class StaticFilesHelper extends BaseClass {
+
+    /**
+     * Creates StaticFilesHelper instance
+     *
+     * @constructor
+     * @return {StaticFilesHelper}              Instance of StaticFilesHelper class
+     */
     constructor() {
         super();
 
@@ -32,31 +55,37 @@ class StaticFilesHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Loads css file, returning its contents
+     *
+     * @async
+     * @param  {string}     href    Relative or absolute path to css file
+     * @param  {boolean}    noWatch Flag that prevents file watching
+     * @return {string}             Css file contents
+     */
     async loadCss (href, noWatch) {
-        // let utilHelper = _appWrapper.getHelper('util');
-
         let cssFilePath = href;
         let cssContents = '';
         let compiledCssPath = this.getConfig('appConfig.cssCompiledFile');
 
-        // let processDir = process.cwd();
-        // let processDirRegex = new RegExp('^' + utilHelper.quoteRegex(processDir));
 
-        // if (!href.match(processDirRegex)){
-        //     cssFilePath  = path.resolve(path.join('.' + href));
-        // }
 
         if (!await _appWrapper.fileManager.isFile(cssFilePath)){
             cssFilePath  = path.resolve(path.join('.' + href));
         }
         if (await _appWrapper.fileManager.isFile(cssFilePath)){
+
             cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
+
+            let rootAppDir = path.join(appState.appDir, '..');
+            let rootAppDirRegex = _appWrapper.getHelper('util').quoteRegex(rootAppDir);
+            if (!cssFilePath.match(rootAppDirRegex)){
+                cssContents = cssContents.replace(/\.\//g, 'file://' + path.dirname(cssFilePath) + '/');
+            }
             if (cssContents){
-                cssContents = postcss().process(cssContents, { from: href, to: compiledCssPath });
+                cssContents = await postcss().process(cssContents, { from: href, to: compiledCssPath });
+
+
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
@@ -66,10 +95,17 @@ class StaticFilesHelper extends BaseClass {
         } else {
             this.log('Problem loading CSS file "{1}" - file does not exist', 'error', [cssFilePath]);
         }
-
         return cssContents;
     }
 
+    /**
+     * Add css files to current page <head>
+     *
+     * @async
+     * @param {string}  href    Path to css file
+     * @param {boolean} noWatch Flag that prevents file watching
+     * @param {boolean} silent  Flag that prevents logging
+     */
     async addCss (href, noWatch, silent) {
         let utilHelper = _appWrapper.getHelper('util');
 
@@ -118,6 +154,11 @@ class StaticFilesHelper extends BaseClass {
         return returnPromise;
     }
 
+    /**
+     * Refreshes css loaded on page by adding random query selector to file url
+     *
+     * @async
+     */
     async refreshCss () {
         var links = window.document.querySelectorAll('link');
         if (links && links.length){
@@ -127,6 +168,12 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Refreshses css files upon css file change on disk
+     *
+     * @async
+     * @param  {string[]}   changedFiles  Array of changed css file paths
+     */
     async refreshCssFiles (changedFiles) {
         let processDir = process.cwd();
         let processDirRegex = new RegExp('^' + processDir);
@@ -148,6 +195,11 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Refreshes selected <link> tags on page by adding (or replacing) random query string to their urls
+     *
+     * @param  {DOMElement[]} links Array of <link> elements to refresh
+     */
     refreshLinkTags(links){
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
         let headEl = document.querySelector('head');
@@ -183,13 +235,17 @@ class StaticFilesHelper extends BaseClass {
                 newLinks[i].setAttribute('type', 'text/css');
                 newLinks[i].setAttribute('href', newHref);
                 headEl.appendChild(newLinks[i]);
-
             }
         }
-
     }
 
-
+    /**
+     * Adds js file <script> tag to document <head> element
+     *
+     * @async
+     * @param  {string} href Path to js file
+     * @return {boolean}     Js file loading result
+     */
     async loadJs (href) {
 
         var parentEl = document.getElementsByTagName('head')[0];
@@ -221,7 +277,12 @@ class StaticFilesHelper extends BaseClass {
         return returnPromise;
     }
 
-
+    /**
+     * Prepares and loads css files using appState and config data
+     *
+     * @async
+     * @param  {boolean} silent Flag that prevents logging
+     */
     async loadCssFiles(silent) {
         this.log('Preparing css files...', 'group', []);
         await this.generateCss(false, silent);
@@ -231,6 +292,13 @@ class StaticFilesHelper extends BaseClass {
         this.log('Preparing css files...', 'groupend', []);
     }
 
+    /**
+     * Generates css by compiling all files or adding all files to <head> tag based on configuration
+     *
+     * @async
+     * @param {boolean} noWatch Flag that prevents file watching
+     * @param {boolean} silent  Flag that prevents logging
+     */
     async generateCss(noWatch, silent) {
         if (this.getConfig('compileCss')){
             let compiledCss = await this.compileCss(noWatch, silent);
@@ -296,11 +364,24 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Writes css contents to file from argument
+     *
+     * @async
+     * @param  {string} filePath    Absolute css file path
+     * @param  {string} cssContents CSS contents to write
+     */
     async writeCss(filePath, cssContents){
         await _appWrapper.fileManager.createDirRecursive(path.dirname(filePath));
         fs.writeFileSync(filePath, cssContents, {flag: 'w'});
     }
 
+    /**
+     * Returns prepared css data object, getting info from appState and configuration
+     *
+     * @async
+     * @return {Object} Css files data object
+     */
     async getCssFileData () {
         let cssFiles = this.getConfig('appConfig.initCssFiles') || [];
         let appCssFiles = this.getConfig('appConfig.cssFiles') || [];
@@ -415,6 +496,12 @@ class StaticFilesHelper extends BaseClass {
         return cssFileData;
     }
 
+    /**
+     * Returns list of css files to be loaded, using appState and configuration
+     *
+     * @async
+     * @return {string[]} An array of CSS file paths
+     */
     async getCssFiles () {
         let cssFiles = [];
         let fileData = await this.getCssFileData();
@@ -428,6 +515,13 @@ class StaticFilesHelper extends BaseClass {
         return cssFiles;
     }
 
+    /**
+     * Gets theme config for given theme
+     *
+     * @async
+     * @param  {string} themeName Name of the theme
+     * @return {Object}           Theme configuration
+     */
     async getThemeConfig (themeName) {
         let foundThemeDir = true;
         let themeConfigFile = 'theme';
@@ -459,11 +553,17 @@ class StaticFilesHelper extends BaseClass {
         return themeConfig;
     }
 
+    /**
+     * Compiles all css file contents to minified css, based on configuration
+     *
+     * @async
+     * @param {boolean} noWatch Flag that prevents file watching
+     * @param {boolean} silent  Flag that prevents logging
+     * @return {string}         Minified and compiled CSS contents
+     */
     async compileCss (noWatch, silent) {
         let compiledCss = '';
         let cssFileData = await this.getCssFileData();
-        let themeName = this.getConfig('theme');
-        let themeConfig = await this.getThemeConfig(themeName);
 
         if (cssFileData.counts.totalCssFileCount){
             if (!silent){
@@ -478,9 +578,6 @@ class StaticFilesHelper extends BaseClass {
                     let cssResult = await this.loadCss(cssFileData.files.themeInitCssFiles[i], noWatch);
                     if (cssResult && cssResult.css){
                         let cssContents = cssResult.css;
-                        if (themeConfig && themeConfig.path){
-                            cssContents = cssContents.replace(/\.\/fonts\//g, 'file://' + themeConfig.path + '/fonts/');
-                        }
                         compiledCss += cssContents;
                     }
                 }
@@ -514,9 +611,6 @@ class StaticFilesHelper extends BaseClass {
                     let cssResult = await this.loadCss(cssFileData.files.themeCssFiles[i], noWatch);
                     if (cssResult && cssResult.css){
                         let cssContents = cssResult.css;
-                        if (themeConfig && themeConfig.path){
-                            cssContents = cssContents.replace(/\.\/fonts\//g, 'file://' + themeConfig.path + '/fonts/');
-                        }
                         compiledCss += cssContents;
                     }
                 }
@@ -582,9 +676,6 @@ class StaticFilesHelper extends BaseClass {
                     let cssResult = await this.loadCss(cssFileData.files.themeOverrideCssFiles[i], noWatch);
                     if (cssResult && cssResult.css){
                         let cssContents = cssResult.css;
-                        if (themeConfig && themeConfig.path){
-                            cssContents = cssContents.replace(/\.\/fonts\//g, 'file://' + themeConfig.path + '/fonts/');
-                        }
                         compiledCss += cssContents;
                     }
                 }
@@ -601,6 +692,11 @@ class StaticFilesHelper extends BaseClass {
         return compiledCss;
     }
 
+    /**
+     * Loads all js files using configuration
+     *
+     * @async
+     */
     async loadJsFiles() {
         let jsFiles = this.getConfig('appConfig.initJsFiles');
         let appJsFiles = this.getConfig('appConfig.jsFiles');
@@ -702,6 +798,13 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that gets triggered when css file is changed on disk
+     *
+     * @async
+     * @param  {Event}  e           Event that triggered the method
+     * @param  {string} filename    Path to changed file
+     */
     async cssFileChanged (e, filename) {
         this.log('Css file "{1}" fired event "{2}"', 'debug', [filename, e]);
         if (this.getConfig('compileCss')){
@@ -721,6 +824,12 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that reloads all css on page
+     *
+     * @async
+     * @param  {Event}  e           Event that triggered the method
+     */
     async reloadCss (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -732,6 +841,11 @@ class StaticFilesHelper extends BaseClass {
         await this.refreshCss();
     }
 
+    /**
+     * Reads and initializes theme files based on configuration.
+     *
+     * @async
+     */
     async initializeThemes () {
         appState.availableThemes = [];
         let appWrapperBaseThemeDir = path.resolve('./node_modules/nw-skeleton/app-wrapper/css/themes');
@@ -763,6 +877,12 @@ class StaticFilesHelper extends BaseClass {
         this.log('Initializing themes...', 'groupend', []);
     }
 
+    /**
+     * Loads and initializes themes configured as node modules
+     *
+     * @async
+     * @return {boolean} False on failure
+     */
     async initializeThemeModules () {
         let themeModules = this.getConfig('themeModules');
         if (themeModules && themeModules.length){
@@ -794,6 +914,13 @@ class StaticFilesHelper extends BaseClass {
         return false;
     }
 
+    /**
+     * Registers theme in the system, adding it to appState
+     *
+     * @async
+     * @param  {string} themeName Name of the theme
+     * @param  {string} themeDir  Path to theme directory
+     */
     async registerTheme(themeName, themeDir){
         if (themeName && themeDir){
             _.remove(appState.availableThemes, { name: themeName });
@@ -809,6 +936,11 @@ class StaticFilesHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handler that changes current app theme
+     *
+     * @async
+     */
     async changeTheme () {
         await this.reloadCss();
     }

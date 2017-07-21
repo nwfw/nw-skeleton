@@ -1,3 +1,10 @@
+/**
+ * @fileOverview UtilHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
+
 const _ = require('lodash');
 const os = require('os');
 
@@ -6,7 +13,21 @@ const BaseClass = require('../../base').BaseClass;
 var _appWrapper;
 var appState;
 
+/**
+ * UtilHelper class - contains various utility methods
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ */
 class UtilHelper extends BaseClass {
+
+    /**
+     * Creates UtilHelper instance
+     *
+     * @constructor
+     * @return {UtilHelper}              Instance of UtilHelper class
+     */
     constructor() {
         super();
 
@@ -23,15 +44,24 @@ class UtilHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Returns random number between min and max
+     *
+     * @param  {Number} min Minimum value for random number
+     * @param  {Number} max Maximum value for random number
+     * @return {Number}     Random number
+     */
     getRandom (min, max){
         var random = Math.floor(Math.random() * (max - min + 1)) + min;
         return random;
     }
 
+    /**
+     * Returns random string
+     *
+     * @param  {Number} size Size of the string (default is 4)
+     * @return {string}      Random string
+     */
     getRandomString (size) {
         if (!size){
             size = 4;
@@ -44,6 +74,13 @@ class UtilHelper extends BaseClass {
         return randomString.substr(0, size);
     }
 
+    /**
+     * Converts object to JSON and returns it
+     *
+     * @param  {mixed} value        Value to convert
+     * @param  {boolean} minified   Flag to minify JSON output
+     * @return {string}             JSON representation of value from the argument
+     */
     toJson (value, minified){
         if (!value){
             return '';
@@ -68,6 +105,12 @@ class UtilHelper extends BaseClass {
         return value;
     }
 
+    /**
+     * Preloads image on page and calls callback when finished
+     *
+     * @param  {string}   imgSrc   Image URL
+     * @param  {Function} callback Callback function
+     */
     preloadImageCallback (imgSrc, callback){
         var imgEl = document.createElement('img');
         if (callback && _.isFunction(callback)){
@@ -80,6 +123,12 @@ class UtilHelper extends BaseClass {
         imgEl.src = imgSrc;
     }
 
+    /**
+     * Finds duplicates in array and returns them
+     *
+     * @param  {array} arr Array to search
+     * @return {array}     Array of duplicate values
+     */
     getArrayDuplicates (arr){
         var sorted_arr = arr.slice().sort();
         var results = [];
@@ -91,16 +140,15 @@ class UtilHelper extends BaseClass {
         return results;
     }
 
-    copyToClipboard (text) {
-        var clipboard = nw.Clipboard.get();
-        clipboard.set(text, 'text');
-    }
-
-    pasteFromClipboard () {
-        var clipboard = nw.Clipboard.get();
-        return clipboard.get();
-    }
-
+    /**
+     * Returns control object to be used in form-control component
+     *
+     * @param  {mixed}  configValue     Value of variable
+     * @param  {string}  configName     Name of variable
+     * @param  {string}  path           Path to variable in configuration
+     * @param  {Boolean} isInner        Flag to indicate whether method called itself for complex vars
+     * @return {Object}                 Form control object for the var
+     */
     getControlObject (configValue, configName, path, isInner){
         if (!path){
             path = configName;
@@ -168,6 +216,11 @@ class UtilHelper extends BaseClass {
         return configVar;
     }
 
+    /**
+     * Returns platform data for current platform
+     *
+     * @return {Object} Platform data
+     */
     getPlatformData (){
         var name = os.platform();
         var platform = {
@@ -197,18 +250,40 @@ class UtilHelper extends BaseClass {
         };
     }
 
+    /**
+     * Checks whether current platform is mac
+     *
+     * @return {Boolean} True if mac, false otherwise
+     */
     isMac (){
         return this.getPlatformData().platform.isMac;
     }
 
+    /**
+     * Checks whether current platform is windows
+     *
+     * @return {Boolean} True if windows, false otherwise
+     */
     isWindows (){
         return this.getPlatformData().platform.isWindows;
     }
 
+    /**
+     * Checks whether current platform is linux
+     *
+     * @return {Boolean} True if linux, false otherwise
+     */
     isLinux (){
         return this.getPlatformData().platform.isLinux;
     }
 
+    /**
+     * Calculates deep difference between objects or arrays
+     *
+     * @param  {(Object|array)} original Original array or object
+     * @param  {(Object|array)} modified Modified array or object
+     * @return {(Object|array)}          Differences in arrays or objects
+     */
     difference (original, modified) {
         var ret = {};
         var diff;
@@ -234,6 +309,13 @@ class UtilHelper extends BaseClass {
         return ret;
     }
 
+    /**
+     * Returns var value using path and context from arguments
+     *
+     * @param  {string}     varPath     Path to the var (i.e. 'appConfig.theme')
+     * @param  {Object}     context     Object that is base context for search (default: global)
+     * @return {mixed}                  Found var value or undefined if no var found
+     */
     getVarParent(varPath, context){
         if (!context){
             context = global;
@@ -255,6 +337,13 @@ class UtilHelper extends BaseClass {
         return currentVar;
     }
 
+    /**
+     * Returns var value using path and context from arguments
+     *
+     * @param  {string}     varPath     Path to the var (i.e. 'appConfig.theme')
+     * @param  {Object}     context     Object that is base context for search (default: global)
+     * @return {mixed}                  Found var value or undefined if no var found
+     */
     getVar(varPath, context){
         if (!context){
             context = global;
@@ -276,6 +365,13 @@ class UtilHelper extends BaseClass {
         return currentVar;
     }
 
+    /**
+     * Sets var value based on path and context
+     *
+     * @param  {string}     varPath     Path to the var (i.e. 'appConfig.theme')
+     * @param  {mixed}      value       New var value
+     * @param  {Object}     context     Object that is base context for search (default: global)
+     */
     setVar(varPath, value, context){
         if (!context){
             context = global;
@@ -306,25 +402,53 @@ class UtilHelper extends BaseClass {
         return false;
     }
 
+    /**
+     * Prevents default for passed event
+     * @param  {Event} e Event that should be prevented
+     */
     prevent (e){
         e.preventDefault();
     }
 
+    /**
+     * Quotes string so it can be used in regex safely
+     *
+     * @param  {string} string String to quote
+     * @return {string}        Save regex-quoted string
+     */
     quoteRegex (string) {
         return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&').replace(/\s/g, '\\s');
     }
 
+    /**
+     * Handler for opening log file for log-viewer component picking dialog
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async pickLogFile (e) {
         let fileEl = e.target.parentNode.querySelector('.log-file-picker-input');
         fileEl.click();
     }
 
+    /**
+     * Handler for loading log file for log-viewer component
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async pickLogViewerFile (e) {
         let fileName = e.target.value;
         e.target.value = '';
         return await this.loadLogViewerFile(fileName);
     }
 
+    /**
+     * Loads log viewer file and displays it in modal log-viewer component
+     *
+     * @async
+     * @param  {string} fileName Absolute path to log file
+     */
     async loadLogViewerFile (fileName) {
         let fileValid = true;
         let messages;
@@ -380,10 +504,18 @@ class UtilHelper extends BaseClass {
         }
     }
 
+    /**
+     * Log viewer modal action confirm
+     */
     confirmLogViewerModalAction () {
         _appWrapper.cancelModalAction();
     }
 
+    /**
+     * Gets stack counts for messages
+     *
+     * @return {Number} Number of messages with stack data
+     */
     getMessageStacksCount (messages) {
         let stackCount = 0;
         for(let i=0; i<messages.length; i++){
@@ -394,6 +526,11 @@ class UtilHelper extends BaseClass {
         return stackCount;
     }
 
+    /**
+     * Gets current stack state for messages
+     *
+     * @return {Number} Number of unopened stack messages
+     */
     getMessageStacksState (messages) {
         let stacksCount = this.getMessageStacksCount(messages);
         let stacksOpen = 0;
@@ -407,6 +544,13 @@ class UtilHelper extends BaseClass {
         return stacksOpen >= stacksCount;
     }
 
+    /**
+     * Returns deep property map for object
+     *
+     * @param  {Object} obj     Object for mapping
+     * @param  {string} prepend String to prepend for property map items
+     * @return {string[]}       An array of property paths (i.e. ['a','a.b','a.c'])
+     */
     propertyMap (obj, prepend){
         let keyMap = [];
         let objKeys = Object.keys(obj);
@@ -425,6 +569,13 @@ class UtilHelper extends BaseClass {
         return keyMap;
     }
 
+    /**
+     * Gets deep property map with values
+     *
+     * @param  {Object} obj     Object for mapping
+     * @param  {string} prepend String to prepend for property map items
+     * @return {Object}         Property map with values (i.e {'a.b': 'c','d':'e'})
+     */
     propertyValuesMap (obj, prepend){
         let keyMap = [];
         let objKeys = Object.keys(obj);
@@ -443,10 +594,24 @@ class UtilHelper extends BaseClass {
         return keyMap;
     }
 
+    /**
+     * Empty method placeholder
+     *
+     * @return {string} Empty string
+     */
     noop () {
         return '';
     }
 
+    /**
+     * Sets object values using form data from passed form element
+     *
+     * @async
+     * @param {HTMLElement} form            Form element
+     * @param {Object}      source          Source object to use for final data
+     * @param {boolean}     keepFirstChunk  Flag to indicate whether to keep first chunk from form elements data-path attributes
+     * @return {Object}                     Object with populated data from form
+     */
     async setObjectValuesFromForm (form, source, keepFirstChunk) {
         if (!source){
             source = {};
@@ -494,6 +659,12 @@ class UtilHelper extends BaseClass {
         return finalObject;
     }
 
+    /**
+     * Handler that saves user message or debug logs
+     *
+     * @async
+     * @param  {Event} e Event that triggered the method
+     */
     async confirmSaveLogAction (e){
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -609,6 +780,10 @@ class UtilHelper extends BaseClass {
         }
     }
 
+    /**
+     * Returns UUID string
+     * @return {string} UUID string
+     */
     uuid () {
         return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
     }

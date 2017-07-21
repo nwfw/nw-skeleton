@@ -1,14 +1,44 @@
-var fs = require('fs');
-var path = require('path');
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+/**
+ * @fileOverview ComponentHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers
+ */
+
+const fs = require('fs');
+const path = require('path');
+const _ = require('lodash');
+const BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appState;
 var BaseComponent;
 
-
+/**
+ * ComponentHelper class - handles and manages app and desktop notifications
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ * @property {Object} allComponents         Object holding all components
+ * @property {Object} vueComponents         Object holding "regular" app components
+ * @property {Object} vueGlobalComponents   Object holding global components
+ * @property {Object} vueModalComponents    Object holding modal components
+ * @property {Object} vueMixins             Object holding wrapper mixins
+ * @property {Object} appVueMixins          Object holding app mixins
+ * @property {Object} vueDirectives         Object holding wrapper directives
+ * @property {Object} appVueDirectives      Object holding app directives
+ * @property {Object} vueFilters            Object holding wrapper filters
+ * @property {Object} appVueFilters         Object holding app filters
+ */
 class ComponentHelper extends BaseClass {
+
+    /**
+     * Creates ComponentHelper instance
+     *
+     * @constructor
+     * @return {ComponentHelper}              Instance of ComponentHelper class
+     */
     constructor() {
         super();
 
@@ -17,10 +47,8 @@ class ComponentHelper extends BaseClass {
 
         this.allComponents = {};
         this.vueComponents = {};
-        this.vueAppComponents = {};
         this.vueGlobalComponents = {};
         this.vueModalComponents = {};
-        this.debugVueComponents = {};
 
         this.vueMixins = null;
         this.appVueMixins = null;
@@ -36,8 +64,13 @@ class ComponentHelper extends BaseClass {
         return this;
     }
 
+    /**
+     * Initializes ComponentHelper, loading and initializing components, mixins, filters and directives
+     *
+     * @async
+     * @return {ComponentHelper} Instance of ComponentHelper
+     */
     async initialize () {
-        _.noop(_appWrapper);
         await super.initialize();
         this.vueFilters = await this.initFilters();
         this.vueMixins = await this.loadMixins();
@@ -46,10 +79,12 @@ class ComponentHelper extends BaseClass {
         return this;
     }
 
-    async finalize () {
-        return true;
-    }
-
+    /**
+     * Loads and initializes directives for Vue app
+     *
+     * @async
+     * @return {array} An array of Vue directives
+     */
     async loadDirectives(){
         var vueDirectives = [];
         var appVueDirectives = [];
@@ -90,6 +125,13 @@ class ComponentHelper extends BaseClass {
         return vueDirectives;
     }
 
+    /**
+     * Initializes vue directives
+     *
+     * @async
+     * @param  {Object} vueDirectiveData Vue directives data object
+     * @return {array} An array of Vue directives
+     */
     async initDirectives (vueDirectiveData){
         var vueDirectives = [];
         for (let directiveName in vueDirectiveData){
@@ -100,6 +142,12 @@ class ComponentHelper extends BaseClass {
         return vueDirectives;
     }
 
+    /**
+     * Loads and initializes vue mixins
+     *
+     * @async
+     * @return {array} An array of Vue mixins
+     */
     async loadMixins(){
         var vueMixins = [];
         var appVueMixins = [];
@@ -140,6 +188,13 @@ class ComponentHelper extends BaseClass {
         return vueMixins;
     }
 
+    /**
+     * Initializes Vue mixins
+     *
+     * @async
+     * @param  {Object} vueMixinData Vue mixin data object
+     * @return {array} An array of Vue mixins
+     */
     async initMixins (vueMixinData){
         var vueMixins = [];
         for (let mixinName in vueMixinData){
@@ -150,6 +205,12 @@ class ComponentHelper extends BaseClass {
         return vueMixins;
     }
 
+    /**
+     * Initializes Vue filters
+     *
+     * @async
+     * @return {array} An array of Vue filters
+     */
     async initFilters(){
         var vueFilters = [];
         var appVueFilters = [];
@@ -188,6 +249,13 @@ class ComponentHelper extends BaseClass {
         return vueFilters;
     }
 
+    /**
+     * Loads components from passed directories
+     *
+     * @async
+     * @param  {string[]} componentDirs Component directory path array
+     * @return {Object}                 Map of loaded components by name
+     */
     async loadDirComponents(componentDirs){
         var components = {};
         var componentCodeRegex = this.getConfig('wrapper.componentCodeRegex');
@@ -205,6 +273,12 @@ class ComponentHelper extends BaseClass {
         return components;
     }
 
+    /**
+     * Gets data for components configured as node modules
+     *
+     * @async
+     * @return {Object} Data on components configured as node modules
+     */
     async getComponentModuleData () {
         let componentModulesConfig = this.getConfig('appConfig.componentModules');
         let componentModulesConfigTypes = [];
@@ -254,6 +328,16 @@ class ComponentHelper extends BaseClass {
         return componentModuleData;
     }
 
+    /**
+     * Applies component module data to passed parameters
+     *
+     * @async
+     * @param  {Object} componentModuleData Components module data
+     * @param  {string[]} dirs              Directories to load components from
+     * @param  {Object} mapping             Component mapping
+     * @param  {string} type                Component type ('component', 'globalComponent', 'modalComponent')
+     * @return {Object}                     Object with properties 'dirs' with all dirs, including module component dirs added and 'mapping' with all mapping, including module components mapping applied
+     */
     async applyComponentModuleData(componentModuleData, dirs, mapping, type) {
         if (componentModuleData && componentModuleData[type] && componentModuleData[type].length){
             for (let i=0; i<componentModuleData[type].length; i++){
@@ -290,6 +374,11 @@ class ComponentHelper extends BaseClass {
         return {dirs: dirs, mapping: mapping};
     }
 
+    /**
+     * Initializes components
+     *
+     * @async
+     */
     async initializeComponents(){
         this.vueComponents = {};
         this.vueGlobalComponents = {};
@@ -414,6 +503,16 @@ class ComponentHelper extends BaseClass {
         this.log('Initializing components...', 'groupend', []);
     }
 
+    /**
+     * Processes components, loading their templates, css, and states
+     *
+     * @async
+     * @param  {string} componentBaseDir    Base directory path
+     * @param  {Object} componentMapping    Component mapping from configuration
+     * @param  {string[]} overrideDirs      Override dirs to look for when loading components
+     * @param  {string} type                Component type ('component', 'globalComponent', 'modalComponent')
+     * @return {array}                      An array of processed component objects
+     */
     async processComponents(componentBaseDir, componentMapping, overrideDirs, type){
         let componentNames = _.keys(componentMapping);
         let componentCount = componentNames.length;
@@ -440,6 +539,18 @@ class ComponentHelper extends BaseClass {
         return components;
     }
 
+    /**
+     * Iniitalizes single component
+     *
+     * @async
+     * @param  {string} componentBaseDir            Base directory path
+     * @param  {string} componentName               Name of the component
+     * @param  {Object} componentMapping            Component mapping from configuration
+     * @param  {string} parentName                  Name of the parent component
+     * @param  {array} additionalSubComponents      An array of eventual additional child components
+     * @param  {string[]} overrideDirs              Override dirs to look for when loading components
+     * @return {Object}                             Initialized component
+     */
     async initializeComponent(componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs){
 
         let componentOverrideDirs = [];
@@ -558,6 +669,14 @@ class ComponentHelper extends BaseClass {
         return component;
     }
 
+    /**
+     * Loads component template
+     *
+     * @async
+     * @param  {Object} component Component object
+     * @param  {string[]} loadDirs  An array of dirs to load template from
+     * @return {Object}           Component with applied template
+     */
     async loadComponentTemplate (component, loadDirs) {
         let templateContents = await _appWrapper.fileManager.loadFileFromDirs(component.name + '.html', loadDirs);
         if (templateContents){
@@ -569,6 +688,13 @@ class ComponentHelper extends BaseClass {
         return component;
     }
 
+    /**
+     * Find component mapping by its name
+     *
+     * @param  {Object} mapping         Component mapping from configuration
+     * @param  {string} componentName   Component name
+     * @return {(Object|boolean)}       Component mapping for given component or false if component not found
+     */
     getComponentMapping(mapping, componentName){
         let returnValue = false;
         if (mapping[componentName]){

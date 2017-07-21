@@ -1,0 +1,19 @@
+.author a,
+.author a:visited {
+    color: #5BA7F2;
+}
+
+.ancestors a,
+.ancestors a:visited {
+    color: #5BA7F2;
+}
+
+#content .doclet .location:before {
+    content: "\01F4C1";
+}
+
+#content .doclet .location a,
+#content .doclet .location a:visited {
+    color: #1670C8;
+    font-weight: 600;
+}

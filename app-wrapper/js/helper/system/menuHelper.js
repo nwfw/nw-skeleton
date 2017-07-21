@@ -1,3 +1,10 @@
+/**
+ * @fileOverview MenuHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers.systemHelpers
+ */
+
 const _ = require('lodash');
 
 const BaseClass = require('../../base').BaseClass;
@@ -5,7 +12,29 @@ const BaseClass = require('../../base').BaseClass;
 var _appWrapper;
 var appState;
 
+/**
+ * MenuHelper class - handles and manages app menus and tray
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers.systemHelpers
+ * @property {boolean}  hasMacBuiltin   Flag to indicate whether the app has mac builtin menu
+ * @property {boolean}  hasEditMenu     Flag to indicate whether the app has "Edit" menu
+ * @property {Object}  tray             Object containing nw.tray instance - see {@link http://docs.nwjs.io/en/latest/References/Tray/}
+ * @property {Object}  trayMenu         Object containing tray menu data - see {@link http://docs.nwjs.io/en/latest/References/Tray/#traymenu}
+ * @property {Object}  menu             Object containing nw.menu instance - see {@link http://docs.nwjs.io/en/latest/References/Menu/}
+ * @property {array}   menuMethodMap    Array containing map of handlers by menu position
+ * @property {array}   menuShortcutMap  Array containing map of key shortcuts by menu position
+ * @property {array}   userShortcuts    Array with all used shortcuts so far (used to warn about duplicate shortcuts)
+ */
 class MenuHelper extends BaseClass {
+
+    /**
+     * Creates MenuHelper instance
+     *
+     * @constructor
+     * @return {MenuHelper}              Instance of MenuHelper class
+     */
     constructor() {
         super();
 
@@ -31,10 +60,10 @@ class MenuHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        return await super.initialize();
-    }
-
+    /**
+     * Initializes app menu using data from config
+     *
+     */
     initializeAppMenu() {
         let utilHelper = _appWrapper.getHelper('util');
         if (!(!_.isUndefined(this.menu) && this.menu)){
@@ -62,6 +91,11 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Sets up app menu using configuration data
+     *
+     * @async
+     */
     async setupAppMenu() {
         let utilHelper = _appWrapper.getHelper('util');
         let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
@@ -87,6 +121,14 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Initializes single app menu item
+     *
+     * @async
+     * @param  {Object} menuItemData Menu item data
+     * @param  {string} menuIndex    Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {Object}              Instance of nw.menuItem - see {@link http://docs.nwjs.io/en/latest/References/MenuItem/}
+     */
     async initializeAppMenuItem (menuItemData, menuIndex) {
         var menuItem;
         var menuItemObj = _.extend(menuItemData.menuItem, {
@@ -135,6 +177,14 @@ class MenuHelper extends BaseClass {
         return menuItem;
     }
 
+    /**
+     * Initializes single app menu item data using configuration data
+     *
+     * @async
+     * @param  {Object} menuItemData Menu item data from configuration
+     * @param  {string} menuIndex    Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {Object[]}            Array with single member - menuItemData object
+     */
     async initializeAppMenuItemData (menuItemData, menuIndex) {
         var menuData = [];
         menuIndex = menuIndex + '';
@@ -169,6 +219,12 @@ class MenuHelper extends BaseClass {
         return menuData;
     }
 
+    /**
+     * Gets menu item by its index
+     *
+     * @param  {string} menuItemIndex   Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {Object}                 Menu item information from this.menuMethodMap
+     */
     getMenuItem (menuItemIndex){
         menuItemIndex = menuItemIndex + '';
         let menuItem = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
@@ -178,7 +234,13 @@ class MenuHelper extends BaseClass {
         return menuItem;
     }
 
-
+    /**
+     * Gets menu item by its parent index, returning children as well
+     *
+     * @param  {string} menuItemIndex   Menu item index
+     * @param  {string} parentIndex     Menu item parent index
+     * @return {Object}                 Menu item information from this.menuMethodMap
+     */
     getMenuItemChain (menuItemIndex, parentIndex){
         menuItemIndex = menuItemIndex + '';
         let menuItemIndices = menuItemIndex.split('_');
@@ -197,11 +259,25 @@ class MenuHelper extends BaseClass {
         return currentItem;
     }
 
+    /**
+     * Returns array of labels containing all parent labels up to current menu item label
+     *
+     * @param  {string} menuItemIndex   Menu item index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {string[]}               Array of menu labels
+     */
     getMenuItemLabelPaths (menuItemIndex){
         let itemChain = this.getMenuItemChain(menuItemIndex);
-        return this.getChainLabelPath(itemChain);
+        let paths = this.getChainLabelPath(itemChain);
+        return paths;
     }
 
+    /**
+     * Returns array of labels containing all parent labels up to current menu item label
+     *
+     * @param  {array} itemChain        Menu item chain, containing all parent items up to current menu item
+     * @param  {string[]} labelPaths    Array of menu labels
+     * @return {string[]}               Array of menu labels
+     */
     getChainLabelPath (itemChain, labelPaths) {
         if (!labelPaths){
             labelPaths = [];
@@ -215,6 +291,12 @@ class MenuHelper extends BaseClass {
         return labelPaths;
     }
 
+    /**
+     * Returns listener method name for current menu item
+     *
+     * @param  {string} menuItemIndex   Menu item index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {string}                 Listener method name
+     */
     getMenuItemMethodName (menuItemIndex){
         menuItemIndex = menuItemIndex + '';
         let method;
@@ -227,6 +309,9 @@ class MenuHelper extends BaseClass {
         return method;
     }
 
+    /**
+     * Removes app menu
+     */
     removeAppMenu (){
         if (this.menu && this.menu.items){
             for(let i=1; i<this.menu.items.length;i++){
@@ -235,6 +320,12 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handles click on menu items
+     *
+     * @param  {string} menuIndex   Menu item index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {mixed}              Listener return value or false if no listener found
+     */
     handleMenuClick (menuIndex) {
         let originalMenuIndex = menuIndex;
         let methodIdentifier = this.getMenuItemMethodName(menuIndex);
@@ -269,6 +360,12 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Handles click on tray menu items
+     *
+     * @param  {string} trayMenuItem    Tray menu item index in format parentIndex_menuIndex (i.e '1_2')
+     * @return {mixed}                  Listener return value or false if no listener found
+     */
     handleTrayClick (trayMenuItem) {
         let methodIdentifier = trayMenuItem.method;
         let objectIdentifier;
@@ -303,6 +400,13 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Initializes single tray menu item
+     *
+     * @async
+     * @param  {Object} menuItemData Menu item data
+     * @return {Object}              Instance of nw.menuItem - see {@link http://docs.nwjs.io/en/latest/References/MenuItem/}
+     */
     async initializeTrayMenuItem (menuItemData) {
         var menuItem;
         if (menuItemData.type != 'separator'){
@@ -328,6 +432,11 @@ class MenuHelper extends BaseClass {
         return menuItem;
     }
 
+    /**
+     * Initializes app tray icon
+     *
+     * @async
+     */
     async initializeTrayIcon(){
         let hasTrayIcon = this.getConfig('appConfig.hasTrayIcon');
         if (hasTrayIcon){
@@ -351,6 +460,11 @@ class MenuHelper extends BaseClass {
         }
     }
 
+    /**
+     * Removes app tray icon
+     *
+     * @async
+     */
     async removeTrayIcon(){
         if (this.tray && this.tray.remove && _.isFunction(this.tray.remove)){
             this.tray.remove();

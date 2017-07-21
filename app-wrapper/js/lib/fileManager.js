@@ -1,3 +1,9 @@
+/**
+ * @fileOverview FileManager class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
@@ -5,24 +11,49 @@ const archiver = require('archiver');
 
 const BaseClass = require('../base').BaseClass;
 
+/**
+ * A class for file operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberOf appWrapper
+ *
+ * @property {array}            watchedFiles        An array with absolute watched file paths
+ * @property {Object}           watched             Object that stores references to unwatch methods for watched files
+ */
 class FileManager extends BaseClass {
 
+    /**
+     * Creates FileManager instance
+     *
+     * @constructor
+     * @return {FileManager}              Instance of FileManager class
+     */
     constructor(){
         super();
-    }
-
-    async initialize () {
-        await super.initialize();
 
         this.watchedFiles = [];
         this.watched = {};
-        return this;
     }
 
+    /**
+     * Shuts down file manager, unwatching all files and removing leftover references
+     *
+     * @method
+     * @async
+     * @return {boolean} Shutdown result
+     */
     async shutdown () {
-        await this.unwatchAllFiles();
+        return await this.unwatchAllFiles();
     }
 
+    /**
+     * Checks whether given file exists
+     *
+     * @method
+     * @param  {string} file Absolute file path
+     * @return {boolean}     True if file exists, false otherwise
+     */
     fileExists(file){
         var fileExists = true;
         var filePath = path.resolve(file);
@@ -34,6 +65,14 @@ class FileManager extends BaseClass {
         return fileExists;
     }
 
+    /**
+     * Checks whether given path is a file
+     *
+     * @method
+     * @async
+     * @param  {string} file Absolute file path
+     * @return {boolean}     True if file is file, false otherwise
+     */
     async isFile(file){
         if (!file){
             return false;
@@ -52,6 +91,13 @@ class FileManager extends BaseClass {
         return isFile;
     }
 
+    /**
+     * Checks whether given path is a directory
+     *
+     * @method
+     * @param  {string} dir Absolute directory path
+     * @return {boolean}     True if file is a directory, false otherwise
+     */
     isDir(dir){
         var dirPath = path.resolve(dir);
         var isDir = true;
@@ -67,6 +113,13 @@ class FileManager extends BaseClass {
         return isDir;
     }
 
+    /**
+     * Checks whether given dir is writable by current user
+     *
+     * @method
+     * @param  {string} dir Absolute directory path
+     * @return {boolean}     True if directory is writable, false otherwise
+     */
     isDirWritable(dir){
         var dirValid = true;
         var dirPath = path.resolve(dir);
@@ -100,6 +153,13 @@ class FileManager extends BaseClass {
         return dirValid;
     }
 
+    /**
+     * Checks whether given file is writable by current user
+     *
+     * @method
+     * @param  {string} file Absolute file path
+     * @return {boolean}     True if file is writable, false otherwise
+     */
     isFileWritable (file){
         var fileValid = true;
         if (!file){
@@ -152,6 +212,12 @@ class FileManager extends BaseClass {
         return fileValid;
     }
 
+    /**
+     * Returns absolute path to app root directory
+     *
+     * @method
+     * @return {string} App directory absolute path
+     */
     getAppRoot () {
         var appRoot = path.dirname(process.execPath);
         if (!fs.existsSync(path.resolve(appRoot + '/package.json'))){
@@ -160,6 +226,15 @@ class FileManager extends BaseClass {
         return appRoot;
     }
 
+    /**
+     * Compresses files into zip archive
+     *
+     * @method
+     * @async
+     * @param  {string} archivePath Absolute path to zip archive
+     * @param  {string[]} files     An array of file paths to compress
+     * @return {(string|boolean)}     Zip archive path or false if compression failed
+     */
     async zipFiles(archivePath, files){
 
         var resolveReference;
@@ -195,6 +270,15 @@ class FileManager extends BaseClass {
         return returnPromise;
     }
 
+    /**
+     * Creates directory recursively
+     *
+     * @method
+     * @async
+     * @param  {string} directory Absolute directory path
+     * @param  {Number} mode      Octal mode definition (i.e. 0o775)
+     * @return {boolean}          Result of directory creation
+     */
     async createDirRecursive(directory, mode){
         var dirName = path.resolve(directory);
         var dirChunks = dirName.split(path.sep);
@@ -219,6 +303,17 @@ class FileManager extends BaseClass {
         return fs.existsSync(dirName);
     }
 
+    /**
+     * Creates directory (recursive) and writes file to it
+     *
+     * @method
+     * @async
+     * @param  {string} fileName Absolute path to file
+     * @param  {Number} mode     Octal mode definition (i.e. 0o775)
+     * @param  {Object} options  Options object for fs.writeFileSync
+     * @param  {string} data     Data to write to file
+     * @return {boolean}         True if operation succeeded, false otherwise
+     */
     async createDirFileRecursive(fileName, mode, options, data){
         if (!options){
             options = {flag: 'w'};
@@ -246,16 +341,35 @@ class FileManager extends BaseClass {
         }
     }
 
-    async writeFileSync(file, data, flags){
+    /**
+     * Writes file to disk
+     *
+     * @method
+     * @async
+     * @param  {string} file  Absolute path to file
+     * @param  {string} data  Data to write
+     * @param  {Object} options  Options object for fs.writeFileSync
+     * @return {boolean}         True if operation succeeded, false otherwise
+     */
+    async writeFileSync(file, data, options){
         var saved = false;
         try {
-            saved = fs.writeFileSync(file, data, flags);
+            saved = fs.writeFileSync(file, data, options);
         } catch (ex) {
             console.log(ex);
         }
         return saved;
     }
 
+    /**
+     * Reads file from disk
+     *
+     * @method
+     * @async
+     * @param  {string} file  Absolute path to file
+     * @param  {Object} options  Options object for fs.writeFileSync
+     * @return {(string|null)}   File contents if operation succeeded, null otherwise
+     */
     async readFileSync(file, options){
         var data = null;
         try {
@@ -266,12 +380,28 @@ class FileManager extends BaseClass {
         return data;
     }
 
-
+    /**
+     * Add listener that gets called when file changes on disk
+     *
+     * @method
+     * @async
+     * @param  {string}     filePath Absolute path to file
+     * @param  {Object}     options  Options object for fs.watchFile
+     * @param  {Function}   listener Method to call when file changes
+     */
     async watchFile(filePath, options, listener){
         this.watchedFiles.push(filePath);
         fs.watchFile(filePath, options, listener);
     }
 
+    /**
+     * Removes listener that is bound to be called when file changes on disk
+     *
+     * @method
+     * @async
+     * @param  {string}     filePath Absolute path to file
+     * @param  {Function}   listener Method to call when file changes
+     */
     async unWatchFile(filePath, listener){
         var watchIndex = _.indexOf(this.watchedFiles, filePath);
         if (watchIndex != -1){
@@ -280,6 +410,12 @@ class FileManager extends BaseClass {
         }
     }
 
+    /**
+     * Removes listeners for all watched files
+     *
+     * @method
+     * @async
+     */
     async unwatchAllFiles () {
         let watchedFiles = _.clone(this.watchedFiles);
         for (let i=0; i<watchedFiles.length; i++){
@@ -288,11 +424,28 @@ class FileManager extends BaseClass {
         this.watchedFiles = [];
     }
 
+    /**
+     * Add listener that gets called when file changes on disk
+     *
+     * @method
+     * @async
+     * @param  {string}     filePath Absolute path to file
+     * @param  {Object}     options  Options object for fs.watchFile
+     * @param  {Function}   listener Method to call when file changes
+     */
     async watch(filePath, options, listener){
         var listenerName = listener.name ? listener.name : listener;
         this.watched[filePath + ':' + listenerName] = fs.watch(filePath, options, listener);
     }
 
+    /**
+     * Removes listener that is bound to be called when file changes on disk
+     *
+     * @method
+     * @async
+     * @param  {string}     filePath Absolute path to file
+     * @param  {Function}   listener Method to call when file changes
+     */
     async unwatch(filePath, listener){
         var listenerName = listener.name ? listener.name : listener;
         if (this.watched && this.watched[filePath + ':' + listenerName] && this.watched[filePath + ':' + listenerName].close && _.isFunction(this.watched[filePath + ':' + listenerName].close)){
@@ -301,6 +454,12 @@ class FileManager extends BaseClass {
         }
     }
 
+    /**
+     * Removes listeners for all watched files
+     *
+     * @method
+     * @async
+     */
     async unwatchAll () {
         for (let name in this.watched){
             this.watched[name].close();
@@ -309,6 +468,16 @@ class FileManager extends BaseClass {
         this.watched = [];
     }
 
+    /**
+     * Loads all files from given directory that match extension regex from argument
+     *
+     * @method
+     * @async
+     * @param  {string}     directory      Absolute path to directory
+     * @param  {string}     extensionMatch Regex string for extension matching
+     * @param  {boolean}    requireFiles   Flag to indicate whether to require() files or return their contents as strings
+     * @return {Object}                    File contents (or required object) by file name
+     */
     async loadFilesFromDir (directory, extensionMatch, requireFiles) {
         var filesData = {};
         var extRegex;
@@ -388,6 +557,15 @@ class FileManager extends BaseClass {
         return filesData;
     }
 
+    /**
+     * Loads file from argument
+     *
+     * @method
+     * @async
+     * @param  {string} filePath        Absolute path to file
+     * @param  {boolean} requireFile    Flag to indicate whether to require() file or return its contents as string
+     * @return {(string|Object)}        File contents, exported object or null on failure.
+     */
     async loadFile (filePath, requireFile){
         var fileData = null;
         // var fileName = path.basename(filePath);
@@ -428,6 +606,16 @@ class FileManager extends BaseClass {
         return fileData;
     }
 
+    /**
+     * Scans given dirs for file and returns first file found
+     *
+     * @method
+     * @async
+     * @param  {string} fileName            File name (basename)
+     * @param  {string[]} dirs              An array of absolute directory paths to search
+     * @param  {boolean} requireFile        Flag to indicate whether to require() file or return its contents as string
+     * @return {(string|Object|boolean)}    File contents, exported object or false on failure.
+     */
     async loadFileFromDirs (fileName, dirs, requireFile){
         let currentFile = await this.getFirstFileFromDirs(fileName, dirs);
         if (await this.isFile(currentFile)){
@@ -439,6 +627,14 @@ class FileManager extends BaseClass {
         return false;
     }
 
+    /**
+     * Reads file list from dir and returns it, excluding '.' and '..'
+     *
+     * @method
+     * @async
+     * @param  {string} path Absolute directory path
+     * @return {string[]}  An array of entries from directory
+     */
     async readDir(path){
         let files = [];
         if (await this.isDir(path)){
@@ -447,6 +643,14 @@ class FileManager extends BaseClass {
         return files;
     }
 
+    /**
+     * Reads recursive file list from dir and returns it, excluding all '.' and '..' entries
+     *
+     * @method
+     * @async
+     * @param  {string} dirPath Absolute directory path
+     * @return {string[]}  An array of entries from directory and its subdirectories
+     */
     async readDirRecursive(dirPath, extensionRegex){
         let files = [];
         let rootFiles = await this.readDir(dirPath);
@@ -467,6 +671,15 @@ class FileManager extends BaseClass {
         return files;
     }
 
+    /**
+     * Scans given directories for file, returning path to first one found
+     *
+     * @method
+     * @async
+     * @param  {string} fileName File name (basename)
+     * @param  {string[]} dirs   An array of absolute directory paths
+     * @return {(string|null)}          Path to found file or null if no file was found
+     */
     async getFirstFileFromDirs(fileName, dirs){
         for(let i=0; i<dirs.length; i++){
             let currentFile = path.join(dirs[i], fileName);

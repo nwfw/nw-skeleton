@@ -1,11 +1,40 @@
+/**
+ * @fileOverview AppOperationHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers
+ */
+
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appState;
 
-
+/**
+ * AppOperationHelper class - handles and manages app and desktop notifications
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ * @property {Number}   operationStartTime              Timestamp of last operation start
+ * @property {Number}   lastTimeCalculation             Timestamp of last time calculation
+ * @property {Number}   lastTimeValue                   Last time value
+ * @property {Number}   timeCalculationDelay            Minimum delay between calculations
+ * @property {Number}   minPercentComplete              Minimum percent complete before time calculation
+ * @property {Number}   lastCalculationPercent          Last calculated percent value
+ * @property {string}   progressNotificationId          Id of progress desktop notification
+ * @property {boolean}  progressNotificationCreated     Flag to indicate whether progress notification was created
+ * @property {boolean}  progressNotificationProgress    Percent complete of progress desktop notification
+ */
 class AppOperationHelper extends BaseClass {
+
+    /**
+     * Creates AppOperationHelper instance
+     *
+     * @constructor
+     * @return {AppOperationHelper}              Instance of AppOperationHelper class
+     */
     constructor() {
         super();
 
@@ -46,16 +75,18 @@ class AppOperationHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        await super.initialize();
-        return this;
-    }
-
-    async finalize () {
-        return true;
-    }
-
-
+    /**
+     * Starts the operation
+     *
+     * @param  {string}     operationText       Operation text
+     * @param  {boolean}    cancelable          Flag to indicate whether operation is cancelable
+     * @param  {boolean}    appBusy             Flag to indicate whether to set appBusy status
+     * @param  {boolean}    useProgress         Flag to indicate whether to use progress bar
+     * @param  {string}     progressText        Progress bar tet
+     * @param  {boolean}    preventAnimation    Flag to indicate whether to prevent animations
+     * @param  {boolean}    notify              Flag to indicate whether to notify user when operation is finished
+     * @return {string}                         App operation ID
+     */
     operationStart(operationText, cancelable, appBusy, useProgress, progressText, preventAnimation, notify){
         if (appState.appOperation.operationActive){
             this.log('Can\'t start another operation, one is already in progress', 'warning', []);
@@ -113,6 +144,13 @@ class AppOperationHelper extends BaseClass {
         return operationId;
     }
 
+    /**
+     * Updates current operation
+     *
+     * @param  {Number} completed    Number of sub-operations completed
+     * @param  {Number} total        Total number of sub-operations
+     * @param  {string} progressText Progress bar text
+     */
     operationUpdate(completed, total, progressText){
         if (!progressText){
             progressText = appState.appOperation.progressText;
@@ -122,6 +160,12 @@ class AppOperationHelper extends BaseClass {
         }
     }
 
+    /**
+     * Finishes current operation
+     *
+     * @param  {string} operationText   Operation text to display
+     * @param  {Number} timeoutDuration Duration in milliseconds until hiding appOperation text
+     */
     operationFinish(operationText, timeoutDuration){
         let originalText = appState.appOperation.operationText;
         if (operationText){
@@ -172,6 +216,13 @@ class AppOperationHelper extends BaseClass {
         appState.progressData.animated = true;
     }
 
+    /**
+     * Cancels current operation
+     *
+     * @async
+     * @param  {Event} e    Event that triggered the method
+     * @return {boolean}    Cancelling result
+     */
     async operationCancel (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -205,13 +256,26 @@ class AppOperationHelper extends BaseClass {
         return returnPromise;
     }
 
-
-    startProgress (total, operationText) {
+    /**
+     * Start operation progress
+     *
+     * @param  {Number} total           Total number of sub-operations
+     * @param  {string} progressText    Progress text
+     */
+    startProgress (total, progressText) {
         appState.progressData.inProgress = true;
-        this.updateProgress(0, total, operationText);
+        this.updateProgress(0, total, progressText);
     }
 
-    async updateProgress (completed, total, operationText) {
+    /**
+     * Update operation progress
+     *
+     * @async
+     * @param  {Number} completed       Number of sub-operations completed
+     * @param  {Number} total           Total number of sub-operations
+     * @param  {string} progressText    Progress bar text
+     */
+    async updateProgress (completed, total, progressText) {
         if (!appState.progressData.inProgress){
             this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', []);
             return;
@@ -253,8 +317,8 @@ class AppOperationHelper extends BaseClass {
         // }
         var remainingTime = this.calculateTime(percentComplete);
         percentComplete = parseInt(percentComplete);
-        if (operationText){
-            appState.progressData.operationText = operationText;
+        if (progressText){
+            appState.progressData.operationText = progressText;
         }
         appState.progressData.detailText = completed + ' / ' + total;
         var formattedDuration = _appWrapper.appTranslations.translate('calculating');
@@ -268,6 +332,9 @@ class AppOperationHelper extends BaseClass {
         };
     }
 
+    /**
+     * Clears operation progress
+     */
     clearProgress () {
         appState.progressData = {
             animated: true,
@@ -287,6 +354,12 @@ class AppOperationHelper extends BaseClass {
         this.lastCalculationPercent = 0;
     }
 
+    /**
+     * Old method to calculate remaining time
+     *
+     * @param  {Number} percent Current percent
+     * @return {Number}         Remaining seconds
+     */
     calculateTimeOld(percent){
         var currentTime = (+ new Date()) / 1000;
         var remainingTime = null;
@@ -303,6 +376,12 @@ class AppOperationHelper extends BaseClass {
         return remainingTime;
     }
 
+    /**
+     * Method to calculate remaining time
+     *
+     * @param  {Number} percent Current percent
+     * @return {Number}         Remaining seconds
+     */
     calculateTime(percent){
         var currentTime = (+ new Date()) / 1000;
         var remainingTime = null;
@@ -325,10 +404,21 @@ class AppOperationHelper extends BaseClass {
         return remainingTime;
     }
 
+    /**
+     * Checks whether operation can continue
+     *
+     * @return {boolean} True if operation can continue, false otherwise
+     */
     canOperationContinue () {
         return appState.appOperation.operationActive && !appState.appOperation.cancelled && !appState.appOperation.cancelling;
     }
 
+    /**
+     * Checks whether operation is active by its ID
+     *
+     * @param {string}  operationId     Operation ID to check for
+     * @return {boolean}                True if operation is active, false otherwise
+     */
     isOperationActive (operationId) {
         let active = appState.appOperation.operationActive || appState.appOperation.cancelling;
         if (operationId){
@@ -337,6 +427,12 @@ class AppOperationHelper extends BaseClass {
         return active;
     }
 
+    /**
+     * Checks whether operation is active by its text
+     *
+     * @param {string}  operationText   Operation text to check for
+     * @return {boolean}                True if operation is active, false otherwise
+     */
     isOperationTextActive (operationText) {
         let active = appState.appOperation.operationActive || appState.appOperation.cancelling;
         if (operationText){
@@ -345,10 +441,20 @@ class AppOperationHelper extends BaseClass {
         return active;
     }
 
+    /**
+     * Checks whether operation is cancelled
+     *
+     * @return {boolean} True if operation is cancelled, false otherwise
+     */
     isOperationCancelled () {
         return !appState.appOperation.operationActive || appState.appOperation.cancelled;
     }
 
+    /**
+     * Resets all operation data
+     *
+     * @param  {Object} data Operation data to set
+     */
     resetOperationData (data) {
         if (!data){
             data = {};
@@ -369,6 +475,12 @@ class AppOperationHelper extends BaseClass {
         }, data);
     }
 
+    /**
+     * Shows cancel operation modal for reload or close events
+     *
+     * @async
+     * @param  {boolean} reloading Flag to indicate whether window is reloading or closing
+     */
     async showCancelModal (reloading) {
         let modalHelper = _appWrapper.getHelper('modal');
         let modalOptions = {};
@@ -399,6 +511,11 @@ class AppOperationHelper extends BaseClass {
         }
     }
 
+    /**
+     * Triggered when progress is done while cancel modal is opened
+     *
+     * @async
+     */
     async cancelProgressDone () {
         let cm = appState.modalData.currentModal;
         cm.showCancelButton = false;
@@ -408,6 +525,11 @@ class AppOperationHelper extends BaseClass {
         cm.title = _appWrapper.appTranslations.translate('Operation finished');
     }
 
+    /**
+     * Triggered when operation is finished while cancel modal is opened
+     *
+     * @async
+     */
     async cancelOperationComplete () {
         let cm = _.cloneDeep(appState.modalData.currentModal);
         _appWrapper.getHelper('modal').closeCurrentModal();
@@ -418,14 +540,33 @@ class AppOperationHelper extends BaseClass {
         }
     }
 
+    /**
+     * Cancels current action and closes window
+     *
+     * @async
+     * @param  {boolean} result Operation result
+     */
     async cancelAndClose (result) {
         await this.cancelAndExit(result, () => {_appWrapper.windowManager.closeWindowForce();});
     }
 
+    /**
+     * Cancels current action and reloads window
+     *
+     * @async
+     * @param  {boolean} result Operation result
+     */
     async cancelAndReload (result) {
         await this.cancelAndExit(result, () => {_appWrapper.windowManager.reloadWindow(null, true);});
     }
 
+    /**
+     * Shows modal for cancelling and exits if operation finishes while modal is opened
+     *
+     * @async
+     * @param  {boolean} result Operation result
+     * @param  {Function} callback Eventual callback to call
+     */
     async cancelAndExit (result, callback) {
         _appWrapper.removeAllListeners('appOperation:finish');
         let modalHelper = _appWrapper.getHelper('modal');
@@ -470,6 +611,11 @@ class AppOperationHelper extends BaseClass {
         }
     }
 
+    /**
+     * Clears timeouts and intervals used by cancelAndExit method
+     *
+     * @async
+     */
     async stopCancelAndExit(){
         appState.headerData.hideLiveInfo = false;
         appState.headerData.hideProgressBar = false;

@@ -1,3 +1,10 @@
+/**
+ * @fileOverview AppTranslations class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
+
 var _ = require('lodash');
 var path = require('path');
 var fs = require('fs');
@@ -6,6 +13,16 @@ var BaseClass = require('../base').BaseClass;
 var _appWrapper;
 var appState;
 
+/**
+ * A class for app translations/languages operations and manipulation
+ *
+ * @class
+ * @extends BaseClass
+ * @memberOf appWrapper
+ *
+ * @property {Object}           addingLabels        Object that stores labels that are currently being added (prevents double adding)
+ * @property {boolean}          translationsLoaded  Flag to indicate whether translation data is loaded
+ */
 class AppTranslations extends BaseClass {
     constructor() {
         super();
@@ -22,9 +39,13 @@ class AppTranslations extends BaseClass {
         return this;
     }
 
-    async initialize(){
-        return await super.initialize();
-    }
+    /**
+     * Initializes language data, loading available languages and their translations
+     *
+     * @method
+     * @async
+     * @return {Object} Translation data with populated languages and translations
+     */
     async initializeLanguage(){
         this.log('Initializing languages...', 'group', []);
         this.translationData = await this.loadTranslations();
@@ -49,6 +70,13 @@ class AppTranslations extends BaseClass {
         return this.translationData;
     }
 
+    /**
+     * Loads translations from translation files
+     *
+     * @method
+     * @async
+     * @return {Object} Translation data with populated languages and translations
+     */
     async loadTranslations () {
         this.log('Loading translations.', 'info', []);
         var translationData = await this.loadTranslationsFromDir(path.resolve(this.getConfig('wrapper.translationsRoot')), this.getConfig('wrapper.translationExtensionRegex'));
@@ -58,6 +86,12 @@ class AppTranslations extends BaseClass {
         return translationData;
     }
 
+    /**
+     * Prepares config editor data object for config-editor component
+     *
+     * @method
+     * @return {Object} Config editor data object for config-editor component
+     */
     getTranslationEditorData (){
         var translations = _.cloneDeep(appState.languageData.translations);
         var translationObject = {};
@@ -84,6 +118,12 @@ class AppTranslations extends BaseClass {
         return translationObject;
     }
 
+    /**
+     * Opens translation editor modal
+     *
+     * @method
+     * @param  {Event} e Event that triggered the method
+     */
     openTranslationEditor (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -119,6 +159,13 @@ class AppTranslations extends BaseClass {
         _appWrapper.helpers.modalHelper.openCurrentModal();
     }
 
+    /**
+     * Saves translations to translation files
+     *
+     * @method
+     * @async
+     * @param  {Event} e  Event that triggered the method
+     */
     async saveTranslations (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -186,10 +233,27 @@ class AppTranslations extends BaseClass {
 
     }
 
+    /**
+     * Returns default value for untranslated labels
+     *
+     * @method
+     * @param  {string} label Label name
+     * @return {string}       Default value for untranslated label
+     */
     getNewLabel (label){
         return '--' + label + '--';
     }
 
+    /**
+     * Loads all translation data from directory passed in argument
+     *
+     * @method
+     * @async
+     * @param  {string} translationsPath          Absolute path to directory containing translation files
+     * @param  {RegExp} translationExtensionRegex Regular expression for matching file names containing translation data
+     * @param  {boolean} asString                 Flag to indicate whether to return file contents as string or require() it
+     * @return {Object}                           Object containing loaded translation data
+     */
     async loadTranslationsFromDir (translationsPath, translationExtensionRegex, asString){
         var translations = {};
         var availableLanguages = [];
@@ -247,6 +311,18 @@ class AppTranslations extends BaseClass {
         }
     }
 
+    /**
+     * Returns translated value for passed label
+     *
+     * Translation is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @method
+     * @param  {string} label           Label for translation
+     * @param  {string} currentLanguage Current language code
+     * @param  {array} data             An array of data strings to be used for interpolation
+     * @return {string}                 Translated label with interpolated data
+     */
     translate (label, currentLanguage, data){
         var languageData = appState.languageData;
         if (!currentLanguage){
@@ -285,6 +361,13 @@ class AppTranslations extends BaseClass {
         return translation;
     }
 
+    /**
+     * Returns absolute path to translations data file for given langauge code
+     *
+     * @method
+     * @param  {string} languageCode Language code to get path for
+     * @return {string}              Absolute path to translation data file
+     */
     getLanguageFilePath(languageCode){
         var translationFileName = (this.getConfig('wrapper.translationExtensionRegex') + '');
         translationFileName = translationFileName.replace(/\\./g, '.').replace(/\$/, '').replace(/^\//, '').replace(/\/$/, '');
@@ -293,6 +376,13 @@ class AppTranslations extends BaseClass {
         return translationFilePath;
     }
 
+    /**
+     * Adds label to translation data (for all languages)
+     *
+     * @method
+     * @async
+     * @param {string} label Label to add
+     */
     async addLabel (label) {
         if (this.addingLabels[label]){
             return;
@@ -334,6 +424,14 @@ class AppTranslations extends BaseClass {
         this.addingLabels[label] = false;
     }
 
+    /**
+     * Add all labels from argument to given language
+     *
+     * @method
+     * @async
+     * @param {Object} language  Language data object with properties code, name and locale
+     * @param {Object} labelData Labels to be added in format { labelText: translationText }
+     */
     async addLabels (language, labelData) {
         var translationData = {};
         var translationFilePath = this.getLanguageFilePath(language.code);
@@ -372,40 +470,56 @@ class AppTranslations extends BaseClass {
         return saved;
     }
 
+    /**
+     * Handler method for changing app language
+     *
+     * @method
+     * @param  {Event} e Event that triggered the method
+     */
     changeLanguage (e){
         var target = e.target;
-        var selectedLanguage = false;
-        var selectedLanguageName = '';
+        var selectedCode = false;
+        var selectedName = '';
         var selectedLocale = '';
         var options = target.querySelectorAll('option');
         _.each(options, (option) => {
             if (option.selected){
-                selectedLanguage = option.getAttribute('value');
+                selectedCode = option.getAttribute('value');
                 selectedLocale = option.getAttribute('data-locale');
-                selectedLanguageName = option.innerHTML;
+                selectedName = option.innerHTML;
             }
         });
-        this.doChangeLanguage(selectedLanguageName, selectedLanguage, selectedLocale);
+        this.doChangeLanguage(selectedName, selectedCode, selectedLocale);
     }
 
-    doChangeLanguage (selectedLanguageName, selectedLanguage, selectedLocale, skipOtherWindow) {
-        if (selectedLanguage){
-            this.addUserMessage('Changing language to "{1}".', 'info', [selectedLanguageName], false, false, true);
+    /**
+     * Method that changes current app language
+     *
+     * @method
+     * @param  {string}     selectedName        New app language name
+     * @param  {string}     selectedCode        New app language code
+     * @param  {string}     selectedLocale      New app language locale
+     * @param  {boolean}    skipOtherWindow     Flag to indicate whether to skip changing languages in other windows
+     * @return {boolean}                        Result of language changing
+     */
+    doChangeLanguage (selectedName, selectedCode, selectedLocale, skipOtherWindow) {
+        if (selectedCode){
+            this.addUserMessage('Changing language to "{1}".', 'info', [selectedName], false, false, true);
 
-            appState.languageData.currentLanguage = selectedLanguage;
+            appState.languageData.currentLanguage = selectedCode;
             appState.languageData.currentLocale = selectedLocale;
 
             _appWrapper.appConfig.setConfig({
-                currentLanguage: selectedLanguage,
+                currentLanguage: selectedCode,
                 currentLocale: selectedLocale
             });
 
             if (!skipOtherWindow && appState.isDebugWindow){
-                this.addUserMessage('Changing language in main window to "{1}".', 'info', [selectedLanguageName], false, false, true);
-                _appWrapper.mainWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.mainWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
+                this.addUserMessage('Changing language in main window to "{1}".', 'info', [selectedName], false, false, true);
+                _appWrapper.mainWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.mainWindow.app, selectedName, selectedCode, selectedLocale, true);
             } else if (!skipOtherWindow && appState.hasDebugWindow){
-                this.addUserMessage('Changing language in debug window to "{1}".', 'info', [selectedLanguageName], false, false, true);
-                _appWrapper.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.debugWindow.app, selectedLanguageName, selectedLanguage, selectedLocale, true);
+                this.addUserMessage('Changing language in debug window to "{1}".', 'info', [selectedName], false, false, true);
+                _appWrapper.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.debugWindow.app, selectedName, selectedCode, selectedLocale, true);
             }
             return true;
         } else {
@@ -414,6 +528,13 @@ class AppTranslations extends BaseClass {
         }
     }
 
+    /**
+     * Prepares and returns translation data string for saving in translation file
+     *
+     * @method
+     * @param  {Object} translationData Object with translation data
+     * @return {string}                 String for writing to translation data file
+     */
     getTranslationDataString (translationData) {
         let tab = '    ';
         var newTranslationDataString = 'exports.data = {\n';
@@ -431,6 +552,13 @@ class AppTranslations extends BaseClass {
 
     }
 
+    /**
+     * Detects and returns unused labels in the app
+     *
+     * @method
+     * @async
+     * @return {array} An array of unused labels
+     */
     async getExcessLabels () {
         let scannedTranslations = await this.scanAppTranslations();
         let excessLabels = _.difference(Object.keys(appState.languageData.translations[appState.languageData.currentLanguage]), scannedTranslations);
@@ -444,6 +572,12 @@ class AppTranslations extends BaseClass {
         return labelDiffs;
     }
 
+    /**
+     * Detects unused labels in app and removes them from translation files automatically
+     *
+     * @method
+     * @async
+     */
     async autoTrimTranslations () {
         let scannedTranslations = await this.scanAppTranslations();
         let excessTranslations = _.difference(Object.keys(appState.languageData.translations[appState.languageData.currentLanguage]), scannedTranslations);
@@ -463,6 +597,13 @@ class AppTranslations extends BaseClass {
         }
     }
 
+    /**
+     * Scans app files labels and returns them
+     *
+     * @method
+     * @async
+     * @return {array} An array of found labels
+     */
     async scanAppTranslations() {
         let appDir = appState.appDir;
         let wrapperDir = path.resolve(path.join(appDir, '../node_modules/nw-skeleton/app-wrapper'));
