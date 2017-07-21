@@ -79,13 +79,13 @@ class StaticFilesHelper extends BaseClass {
 
             let rootAppDir = path.join(appState.appDir, '..');
             let rootAppDirRegex = _appWrapper.getHelper('util').quoteRegex(rootAppDir);
-            if (!cssFilePath.match(rootAppDirRegex)){
-                cssContents = cssContents.replace(/\.\//g, 'file://' + path.dirname(cssFilePath) + '/');
+            if (!cssFilePath.match(rootAppDirRegex) || cssFilePath.match(/node_modules/)){
+                let relativePath = path.resolve(path.relative(rootAppDir, path.dirname(cssFilePath)));
+                relativePath = relativePath.replace(/\s/g, '\\ ');
+                cssContents = cssContents.replace(/\.\//g, 'file://' + relativePath + '/');
             }
             if (cssContents){
                 cssContents = await postcss().process(cssContents, { from: href, to: compiledCssPath });
-
-
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
