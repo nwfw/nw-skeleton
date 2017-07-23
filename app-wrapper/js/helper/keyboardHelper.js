@@ -1,11 +1,49 @@
+/**
+ * @fileOverview KeyboardHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers
+ */
+
+/**
+ * Object that contains key codes for keyboardHelper
+ * @typedef  {Object}    KeyboardHelperKeyCodes
+ *
+ * @property {Number[]} debugKeys           An array of key codes for turning debug off or on
+ * @property {Number[]} commandKeyCodes     An array of key codes for setting ctrlPressed
+ * @property {Number[]} shiftKeyCodes       An array of key codes for setting shiftPressed
+ * @property {Number[]} altKeyCodes         An array of key codes for setting altPressed
+ * @property {Number[]} reloadKeyCodes      An array of key codes for window reloading
+ * @property {Number[]} closeKeyCodes       An array of key codes for window closing
+ * @property {Number[]} escKeyCodes         An array of key codes for "ESC" key
+ * @property {Number[]} reloadCssKeyCodes   An array of key codes for CSS reloading
+ */
+
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appState;
 
-
+/**
+ * KeyboardHelper class - handles and manages keyboard events and operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ * @property {KeyboardHelperKeyCodes}   keyCodes        Key code definitions for keyboard helper
+ * @property {Object}                   keyCodeNames    Hash for detecting 'ctrl', 'alt' and 'shift' buttons, mapping them to this.keyCodes members
+ * @property {Object}                   globalKeyData   Data from configuration for global key handlers
+ * @property {Number[]}                 pressedKeys     An array of previously pressed keys
+ */
 class KeyboardHelper extends BaseClass {
+
+    /**
+     * Creates KeyboardHelper instance
+     *
+     * @constructor
+     * @return {KeyboardHelper}              Instance of KeyboardHelper class
+     */
     constructor() {
         super();
 
@@ -40,25 +78,49 @@ class KeyboardHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        await super.initialize();
+    /**
+     * Initializes keyboardHelper, adding event listeners
+     *
+     * @async
+     * @param {Object} options  Initialization options
+     * @return {KeyboardHelper} Instance of KeyboardHelper class
+     */
+    async initialize (options) {
+        await super.initialize(options);
         this.addEventListeners();
+        return this;
     }
 
+    /**
+     * Adds keyboard helper event listeners
+     */
     addEventListeners (){
         window.addEventListener('keydown', this.boundMethods.handleKeyDown);
         window.addEventListener('keyup', this.boundMethods.handleKeyDown);
     }
 
+    /**
+     * Removes keyboard helper event listeners
+     */
     removeEventListeners (){
         window.removeEventListener('keydown', this.boundMethods.handleKeyDown);
         window.removeEventListener('keyup', this.boundMethods.handleKeyDown);
     }
 
+    /**
+     * Registers global shortcut from global keys configuration
+     *
+     * @param  {Object} keyHandler Shortcut configuration
+     */
     registerGlobalShortcut (keyHandler){
         this.globalKeyData.push(keyHandler);
     }
 
+    /**
+     * Unregisters global shortcut from global keys configuration
+     *
+     * @param  {Object} keyHandler Shortcut configuration
+     */
     unRegisterGlobalShortcut (keyHandler){
         this.globalKeyData = _.filter(this.globalKeyData, {
             keyCode: keyHandler.keyCode,
@@ -66,12 +128,23 @@ class KeyboardHelper extends BaseClass {
         });
     }
 
+    /**
+     * Handles key down (and up) events
+     *
+     * @param  {Event} e Event that triggered the method
+     */
     handleKeyDown (e){
         if (!this.handleAppKeyDown(e)){
             this.handleGlobalKeyDown(e);
         }
     }
 
+    /**
+     * Handles key down (and up) events for app shortcuts
+     *
+     * @param  {Event} e    Event that triggered the method
+     * @return {Boolean}    True if event handler is found, false otherwise
+     */
     handleAppKeyDown(e){
         var fulfilled = false;
         var keyCode = e.keyCode;
@@ -150,6 +223,12 @@ class KeyboardHelper extends BaseClass {
         return fulfilled;
     }
 
+    /**
+     * Handles key down (and up) events for global shortcuts
+     *
+     * @param  {Event} e    Event that triggered the method
+     * @return {Boolean}    True if event handler is found, false otherwise
+     */
     handleGlobalKeyDown (e) {
         var keyCode = e.keyCode;
         var key = e.key;
@@ -206,11 +285,13 @@ class KeyboardHelper extends BaseClass {
         }
     }
 
+    /**
+     * Destroys this KeyboardHelper instance, removing its event listeners
+     */
     destroy () {
         super.destroy();
         this.removeEventListeners();
     }
-
 }
 
 exports.KeyboardHelper = KeyboardHelper;

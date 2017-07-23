@@ -52,7 +52,6 @@ class BaseClass extends eventEmitter {
      * Initializes current class instance, setting up logging and
      * bound methods to be used in event listeners
      *
-     * @method
      * @async
      * @return {BaseClass} Instance of current class
      */
@@ -70,7 +69,6 @@ class BaseClass extends eventEmitter {
      * Finalizes current class instance, setting up any additional properties
      * etc. Entire app structure, including frontend app is available here
      *
-     * @method
      * @async
      * @return {boolean} Finalizing result
      */
@@ -83,7 +81,6 @@ class BaseClass extends eventEmitter {
      * configuration, setting the logging by it (or warning if there
      * are no configuration settings for this class)
      *
-     * @method
      * @async
      * @param  {object} options Options for logging initialization (currently only 'silent' property is used, determining whether warnings should be printed if no config found)
      * @return {BaseClass}      Instance of the current class
@@ -117,7 +114,6 @@ class BaseClass extends eventEmitter {
     /**
      * Helper method to get appWrapper instance
      *
-     * @method
      * @return {AppWrapper} An instance of AppWrapper class
      */
     getAppWrapper () {
@@ -127,7 +123,6 @@ class BaseClass extends eventEmitter {
     /**
      * Helper method to get appState object
      *
-     * @method
      * @return {object} Current appState object
      */
     getAppState () {
@@ -137,8 +132,6 @@ class BaseClass extends eventEmitter {
     /**
      * Method that sets up this.boundMethods property by binding this objects
      * functions to itself to be used as event listener handlers
-     *
-     * @method
      */
     addBoundMethods () {
         if (this.boundMethods){
@@ -154,8 +147,6 @@ class BaseClass extends eventEmitter {
     /**
      * Method that cleans up this.boundMethods property
      * set in this.addBoundMethods method
-     *
-     * @method
      */
     removeBoundMethods () {
         var keys = _.keys(this.boundMethods);
@@ -168,8 +159,6 @@ class BaseClass extends eventEmitter {
     /**
      * Destructor method - cleans up references for this instance
      * freeing memory upon object destruction
-     *
-     * @method
      */
     destroy () {
         this.removeBoundMethods();
@@ -181,7 +170,6 @@ class BaseClass extends eventEmitter {
      * Message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param  {sting} message  Message to be logged
      * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
@@ -236,7 +224,6 @@ class BaseClass extends eventEmitter {
     /**
      * Does actual logging to console (and log file is file logging is enabled)
      *
-     * @method
      * @param  {object} debugMessage Message object to be logged (returned by this.getMessageObject method)
      */
     _doLog (debugMessage){
@@ -282,7 +269,6 @@ class BaseClass extends eventEmitter {
      * Gets JSON represenation of message object for saving into log file,
      * removing unneccessary properties and adding necessary ones
      *
-     * @method
      * @async
      * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
      * @return {string}      JSON encoded representation of message object
@@ -310,7 +296,6 @@ class BaseClass extends eventEmitter {
      * Returns string representing log line for appending
      * to user message log file
      *
-     * @method
      * @async
      * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
      * @return {string}      String representing log line for appending to user message log file
@@ -331,7 +316,6 @@ class BaseClass extends eventEmitter {
      * Returns string representing log line for appending
      * to debug log file
      *
-     * @method
      * @async
      * @param  {obj} message Message object to be logged (returned by this.getMessageObject method)
      * @return {string}      String representing log line for appending to debug log file
@@ -362,7 +346,6 @@ class BaseClass extends eventEmitter {
      * Message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param {sting}   message         Message to be logged
      * @param {string}  type            Type of log message (debug, info, warning, error)
@@ -434,7 +417,6 @@ class BaseClass extends eventEmitter {
      * Message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param  {int}    messageLevel    Number representing current message level (0=debug, 1=info, 2=warning, 3=error)
      * @param {sting}   message         Message to be logged
@@ -504,7 +486,6 @@ class BaseClass extends eventEmitter {
      * Message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param {sting}   message         Message to be logged
      * @param {string}  type            Type of log message (debug, info, warning, error)
@@ -543,7 +524,6 @@ class BaseClass extends eventEmitter {
      * Notification message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param {sting}   message         Notification message
      * @param {array}   data            An array of data strings that are to be applied to notification
@@ -560,7 +540,6 @@ class BaseClass extends eventEmitter {
      * Notification message is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @async
      * @param {sting}   message         Notification message
      * @param {array}   data            An array of data strings that are to be applied to notification
@@ -576,7 +555,6 @@ class BaseClass extends eventEmitter {
     /**
      * Returns appState var value
      *
-     * @method
      * @param  {string} varPath      String representing path to requested var (i.e. 'appData.appMainData.cancelable')
      * @param  {mixed} defaultValue  Default value to be returned if appState var is not found
      * @return {mixed}               appState var value
@@ -595,7 +573,6 @@ class BaseClass extends eventEmitter {
     /**
      * Returns instance of helper object based on passed parameter (or false if helper can't be found)
      *
-     * @method
      * @param  {string} helperName Name of the helper
      * @return {object}            Instance of the helper object (or false if helper can't be found)
      */
@@ -606,7 +583,6 @@ class BaseClass extends eventEmitter {
     /**
      * Returns configuration var value
      *
-     * @method
      * @param  {string} varPath      String representing path to requested var (i.e. 'appConfig.appInfo.name')
      * @param  {mixed} defaultValue  Default value to be returned if configuration var is not found
      * @return {mixed}               configuration var value
@@ -641,7 +617,6 @@ class BaseClass extends eventEmitter {
     /**
      * Helper method for getting call stack array for debug or user message objects
      *
-     * @method
      * @return {array} An array of objects with properties 'function', 'file', 'line' and 'column', representing stack calls.
      */
     _getStack () {
@@ -705,7 +680,6 @@ class BaseClass extends eventEmitter {
      * Translation is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @param  {string} text            Text to be translated
      * @param  {string} currentLanguage Curent language code
      * @param  {array} data             An array of data strings that are to be applied to translated message
@@ -717,8 +691,6 @@ class BaseClass extends eventEmitter {
 
     /**
      * Clears all timeouts bound to this AppWrapper instance
-     *
-     * @method
      */
     clearTimeouts (){
         for (let name in this.timeouts){
@@ -728,8 +700,6 @@ class BaseClass extends eventEmitter {
 
     /**
      * Clears all intervals bound to this AppWrapper instance
-     *
-     * @method
      */
     clearIntervals (){
         for (let name in this.intervals){

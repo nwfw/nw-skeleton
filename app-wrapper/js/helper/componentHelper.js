@@ -15,7 +15,7 @@ var appState;
 var BaseComponent;
 
 /**
- * ComponentHelper class - handles and manages app and desktop notifications
+ * ComponentHelper class - handles and manages app component operations
  *
  * @class
  * @extends BaseClass

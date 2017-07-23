@@ -12,7 +12,7 @@ var _appWrapper;
 var appState;
 
 /**
- * AppOperationHelper class - handles and manages app and desktop notifications
+ * AppOperationHelper class - handles and manages app operations
  *
  * @class
  * @extends BaseClass

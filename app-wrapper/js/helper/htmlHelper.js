@@ -1,11 +1,31 @@
+/**
+ * @fileOverview HtmlHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers
+ */
+
 const _ = require('lodash');
 const BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 // var appState;
+/**
+ * HtmlHelper class - manages HTML element operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ */
 
 class HtmlHelper extends BaseClass {
 
+    /**
+     * Creates HtmlHelper instance
+     *
+     * @constructor
+     * @return {HtmlHelper}              Instance of HtmlHelper class
+     */
     constructor(){
         super();
 
@@ -17,16 +37,20 @@ class HtmlHelper extends BaseClass {
         };
     }
 
+    /**
+     * Initializes htmlHelper and extends HTMLElement prototype with its methods
+     *
+     * @return {HtmlHelper} Instance of HtmlHelper class
+     */
     async initialize () {
         await super.initialize();
         this.extendElementProto();
         return this;
     }
 
-    async finalize () {
-        return true;
-    }
-
+    /**
+     * Extends HTMLElement prototype with methods from htmlHelper
+     */
     extendElementProto () {
         var self = this;
 
@@ -56,6 +80,13 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Sets element CSS styles
+     *
+     * @param {HTMLElement} element Html element for style manipulation
+     * @param {array}       styles  An array of objects representing style properties to set
+     * @param {Boolean}     merge   Flag to indicate merging existing styles with new ones instead of rewriting entire style attribute
+     */
     setElementStyles (element, styles, merge){
         if (element && element.setAttribute && _.isFunction(element.setAttribute) && styles && _.isObject(styles)){
             var newStyles;
@@ -75,6 +106,12 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Returns current element style values from style attribute
+     *
+     * @param  {HTMLElement}    element Element to get styles for
+     * @return {Object}                 An array of objects representing style properties
+     */
     getElementStyles (element){
         var styles = {};
         if (element && element.getAttribute && _.isFunction(element.getAttribute)){
@@ -92,6 +129,12 @@ class HtmlHelper extends BaseClass {
         return styles;
     }
 
+    /**
+     * Removes style properties from element style attribute
+     *
+     * @param  {HTMLElement}    element Element to remove styles from
+     * @param  {string[]} propertyNames An array of style property names to remove
+     */
     removeElementStyles (element, propertyNames){
         if (propertyNames && propertyNames.length && element && element.getAttribute && _.isFunction(element.getAttribute)){
             if (_.isString(propertyNames)){
@@ -107,6 +150,13 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Sets element width and height to current values, forcing its size to be fixed
+     *
+     * @param {HTMLElement}    element  Element to set fixed size on
+     * @param {Number} elementHeight    Optional height value to force element size
+     * @param {Number} elementWidth     Optional width value to force element size
+     */
     setFixedSize (element, elementHeight, elementWidth) {
         if (element && element.offsetHeight){
             if (_.isUndefined(elementHeight)){
@@ -126,11 +176,23 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Removes fixed size set by this.setFixedSize method
+     *
+     * @param {HTMLElement}    element  Element to unset fixed size on
+     */
     unsetFixedSize (element) {
         var propertiesToRemove = ['width', 'height', 'overflow'];
         this.removeElementStyles(element, propertiesToRemove);
     }
 
+    /**
+     * Gets element "real" dimensions, taking paddings, borders etc. into consideration
+     *
+     * @param {HTMLElement} element     Element to get dimensions (or parent in which selector argument will be applied)
+     * @param  {string}     selector    Optional selector to filter children in 'element' argument
+     * @return {Object}                 Object with width and height properties
+     */
     getRealDimensions (element, selector){
         let dimensions = {
             width: 0,
@@ -176,6 +238,13 @@ class HtmlHelper extends BaseClass {
         return dimensions;
     }
 
+    /**
+     * Gets element "real" dimensions, by cloning given element
+     *
+     * @param {HTMLElement} element     Element to get dimensions (or parent in which selector argument will be applied)
+     * @param  {string}     selector    Optional selector to filter children in 'element' argument
+     * @return {Object}                 Object with width and height properties
+     */
     getCloneRealDimensions (element, selector){
         var dimensions = {
             width: 0,
@@ -219,6 +288,13 @@ class HtmlHelper extends BaseClass {
         return dimensions;
     }
 
+    /**
+     * Sets or returns elements unique identifier
+     *
+     * @param {HTMLElement} element Element to set identifier on
+     * @param  {Boolean}    setAttr Flag to indicate whether to set 'data-identifier' attribute on element
+     * @return {string}             Element unique identifier
+     */
     getUniqueElementIdentifier (element, setAttr){
         var identifier = '';
 
@@ -237,6 +313,13 @@ class HtmlHelper extends BaseClass {
         return identifier;
     }
 
+    /**
+     * Adds css class to element
+     *
+     * @param {HTMLElement} element Element to add class to
+     * @param {string} className    Class name to add
+     * @return {HTMLElement}        Same element for chaining
+     */
     addClass (element, className){
         var classes = element.getAttribute('class');
         if (classes && classes.split && _.isFunction(classes.split)){
@@ -249,6 +332,13 @@ class HtmlHelper extends BaseClass {
         return element;
     }
 
+    /**
+     * Removes css class from element
+     *
+     * @param {HTMLElement} element Element to remove class from
+     * @param {string} className    Class name to remove
+     * @return {HTMLElement}        Same element for chaining
+     */
     removeClass (element, className){
         var classes = element.getAttribute('class');
         if (classes && classes.split && _.isFunction(classes.split)){
@@ -259,6 +349,13 @@ class HtmlHelper extends BaseClass {
         return element;
     }
 
+    /**
+     * Checks whether given element has certain className
+     *
+     * @param {HTMLElement} element Element to check
+     * @param {string} className    Class name to check
+     * @return {Boolean}            True if element has class, false otherwise
+     */
     hasClass (element, className){
         var hasClass = false;
         var classes = element.getAttribute('class');
@@ -269,6 +366,13 @@ class HtmlHelper extends BaseClass {
         return hasClass;
     }
 
+    /**
+     * Toggles css class on element
+     *
+     * @param {HTMLElement} element Element to toggle class on
+     * @param {string} className    Class name to toggle
+     * @return {HTMLElement}        Same element for chaining
+     */
     toggleClass (element, className){
         let hasClass = this.hasClass(element, className);
         if (hasClass){
@@ -278,18 +382,33 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Shows hidden element
+     *
+     * @param {HTMLElement} element Element to show
+     */
     show (element) {
         if (element){
             this.removeElementStyles(element, 'display');
         }
     }
 
+    /**
+     * Hides the element
+     *
+     * @param {HTMLElement} element Element to hide
+     */
     hide (element) {
         if (element){
             this.setElementStyles(element, {display: 'none'}, true);
         }
     }
 
+    /**
+     * Shows or hides an element
+     *
+     * @param {HTMLElement} element Element to show or hide
+     */
     toggle (element) {
         if (element){
             if (!element.clientHeight && !element.clientWidth){
@@ -301,6 +420,11 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Hides hidden element by setting 'visibility' css property
+     *
+     * @param {HTMLElement} element Element to hide
+     */
     makeInvisible (element) {
         if (this instanceof Element){
             element = this;
@@ -310,6 +434,11 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Shows hidden element by setting 'visibility' css property
+     *
+     * @param {HTMLElement} element Element to show
+     */
     makeVisible (element) {
         if (this instanceof Element){
             element = this;
@@ -319,6 +448,11 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Toggles 'visibility' css property, showing or hiding the element
+     *
+     * @param {HTMLElement} element Element to toggle visibility on
+     */
     toggleVisibility (element) {
         if (this instanceof Element){
             element = this;
@@ -335,6 +469,12 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Gets default 'display' css property value for given element
+     *
+     * @param {HTMLElement} element Element to get value for
+     * @return {string}             Default 'display' value for element
+     */
     getElementDefaultDisplay(element) {
         var tag = element.tagName;
         var cStyle;
@@ -348,6 +488,13 @@ class HtmlHelper extends BaseClass {
         return cStyle;
     }
 
+    /**
+     * Scrolls element to given value
+     *
+     * @param {HTMLElement} element Element to scroll
+     * @param  {Number} to          Value to scroll to
+     * @param  {Number} duration    Duration for animated scrolls
+     */
     scrollElementTo (element, to, duration) {
         var identifier = this.getUniqueElementIdentifier(element, true);
         var frameDuration = parseInt(1000/60, 10);
@@ -384,6 +531,13 @@ class HtmlHelper extends BaseClass {
         }, frameDuration);
     }
 
+    /**
+     * Helper method for animated element scrolling, used by this.scrollElementTo
+     *
+     * @param {HTMLElement} element    Element to scroll
+     * @param {Number} stepIncrease    Value for each scrolling step
+     * @param {Number} finalValue      Final element scroll value
+     */
     scrollElementStep (element, stepIncrease, finalValue){
         var currentValue = element.scrollTop;
         var nextValue = currentValue + stepIncrease;
@@ -410,6 +564,12 @@ class HtmlHelper extends BaseClass {
         }
     }
 
+    /**
+     * Scrolls parent until its child element is visible
+     *
+     * @param {HTMLElement} element    Element whose parent will be scrolled
+     * @param {Number}      duration   Duration for animated scrolls
+     */
     scrollParentToElement (element, duration) {
         let parentElement = element.parentNode;
         let currentParentScrollTop = parentElement.scrollTop;
@@ -419,6 +579,13 @@ class HtmlHelper extends BaseClass {
         return this.scrollElementTo(parentElement, newParentScrollTop, duration);
     }
 
+    /**
+     * Returns first element in parent tree that has given class name
+     *
+     * @param {HTMLElement} element     Element whose parents will be searched
+     * @param  {string} targetClass     Class name for searching
+     * @return {HTMLElement}            Parent element that matches given criteria
+     */
     getParentByClass(element, targetClass){
         var parent;
         if (element && element.parentNode){
@@ -430,6 +597,11 @@ class HtmlHelper extends BaseClass {
         return parent;
     }
 
+    /**
+     * Selects all text in element
+     *
+     * @param {HTMLElement} element     Element to select
+     */
     selectAll (element){
         var selection = window.getSelection();
         selection.removeAllRanges();
@@ -438,6 +610,12 @@ class HtmlHelper extends BaseClass {
         selection.addRange(range);
     }
 
+    /**
+     * Returns all computed styles for given element
+     *
+     * @param {HTMLElement} element     Element to get styles for
+     * @return {Object}                 An array of objects representing style properties
+     */
     getComputedStyles (element) {
         var style;
         var returns = {};
@@ -452,6 +630,13 @@ class HtmlHelper extends BaseClass {
         return returns;
     }
 
+    /**
+     * Returns single computed style property for given element
+     *
+     * @param  {HTMLElement} element     Element to get style for
+     * @param  {string}      propName    Style property to get
+     * @return {mixed}                 Style property value
+     */
     getComputedStyle (element, propName) {
         let style;
         let val = '';
@@ -467,6 +652,12 @@ class HtmlHelper extends BaseClass {
         return val;
     }
 
+    /**
+     * Gets absolute position for element
+     *
+     * @param  {HTMLElement} element     Element to get position for
+     * @return {Object}                  Object with 'offsetTop' and 'offsetLeft' numeric values
+     */
     getAbsolutePosition (element){
         var offsetLeft = element.offsetLeft;
         var offsetTop = element.offsetTop;
@@ -484,6 +675,13 @@ class HtmlHelper extends BaseClass {
         };
     }
 
+    /**
+     * Returns first parent element that has children matching selector
+     *
+     * @param  {HTMLElement} element    Element to search
+     * @param  {String}      selector   Selector to search
+     * @return {(Boolean|HTMLElement)}  Parent element or false if none found
+     */
     parentQuerySelector (element, selector){
         let parent = element;
         let parentFound = false;
@@ -504,14 +702,33 @@ class HtmlHelper extends BaseClass {
         return parent;
     }
 
+    /**
+     * Checks whether text can be pasted into given element
+     *
+     * @param  {HTMLElement} element    Element to check
+     * @return {Boolean}                True if text can be pasted, false otherwise
+     */
     canPasteText (element) {
         return (element && !_.isUndefined(element.selectionStart) && !_.isUndefined(element.selectionEnd) && !_.isUndefined(element.value));
     }
 
+    /**
+     * Checks whether text in given element can be selected
+     *
+     * @param  {HTMLElement} element    Element to check
+     * @return {Boolean}                True if text can be selected, false otherwise
+     */
     isTextSelectable (element) {
         return (element && !_.isUndefined(element.selectionStart) && !_.isNull(element.selectionStart) && !_.isUndefined(element.selectionEnd) && !_.isNull(element.selectionEnd) && !_.isUndefined(element.value));
     }
 
+    /**
+     * Triggers custom event on the element
+     *
+     * @param  {HTMLElement}    element      Element to trigger event on
+     * @param  {string}         eventName    Name of the event
+     * @param  {Object}         eventOptions Object with event options
+     */
     triggerCustomEvent (element, eventName, eventOptions){
         if (this instanceof Element){
             element = this;
@@ -531,6 +748,12 @@ class HtmlHelper extends BaseClass {
         element.dispatchEvent(event);
     }
 
+    /**
+     * Gets input value for input elements
+     *
+     * @param  {HTMLElement}    element  Element to get value from
+     * @return {string}                  Input element value
+     */
     getInputValue (element){
         if (this instanceof Element){
             element = this;
@@ -544,6 +767,12 @@ class HtmlHelper extends BaseClass {
         return value;
     }
 
+    /**
+     * Sets input element value
+     *
+     * @param {HTMLElement}    element  Element to set value for
+     * @param {mixed} value             Value to set
+     */
     setInputValue (element, value){
         if (this instanceof Element){
             element = this;

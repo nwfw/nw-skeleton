@@ -1,11 +1,31 @@
+/**
+ * @fileOverview FormatHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ * @memberOf appWrapper.helpers
+ */
+
 var _ = require('lodash');
 var BaseClass = require('../base').BaseClass;
 
 var _appWrapper;
 var appState;
 
-
+/**
+ * FormatHelper class - handles and manages formatting tasks
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ */
 class FormatHelper extends BaseClass {
+
+    /**
+     * Creates FormatHelper instance
+     *
+     * @constructor
+     * @return {FormatHelper}              Instance of FormatHelper class
+     */
     constructor() {
         super();
 
@@ -15,24 +35,24 @@ class FormatHelper extends BaseClass {
         return this;
     }
 
-    async initialize () {
-        await super.initialize();
-        return this;
-    }
-
-    async finalize () {
-        return true;
-    }
-
-    formatDuration (time, omitEmpty, omitZeros, secondFractions) {
-        if (isNaN(time)){
-            time = 0;
+    /**
+     * Formats duration to human-readable format
+     *
+     * @param  {Number}  duration        Duration in milliseconds
+     * @param  {Boolean} omitEmpty       Flag to indicate whether to omit empty values
+     * @param  {Boolean} omitZeros       Flag to indicate whether to omit zeros in one-digit values
+     * @param  {Boolean} secondFractions Flag to indicate whether to display second fractions
+     * @return {string}                  Formatted duration
+     */
+    formatDuration (duration, omitEmpty, omitZeros, secondFractions) {
+        if (isNaN(duration)){
+            duration = 0;
         }
         var sec_num;
         if (!secondFractions){
-            sec_num = parseInt(time, 10);
+            sec_num = parseInt(duration, 10);
         } else {
-            sec_num = time;
+            sec_num = duration;
         }
         var days   = Math.floor(sec_num / 86400);
         var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
@@ -40,7 +60,7 @@ class FormatHelper extends BaseClass {
         var seconds = Math.floor(sec_num - (days * 86400) - (hours * 3600) - (minutes * 60));
         var milliseconds = (sec_num - (days * 86400) - (hours * 3600) - (minutes * 60) - seconds) * 1000;
 
-        if (!time){
+        if (!duration){
             // var num = parseInt(Math.random() * 100 / 33, 10);
             var val = '';
             // for (var i = 0; i<num; i++){
@@ -108,6 +128,14 @@ class FormatHelper extends BaseClass {
         return formattedTime;
     }
 
+    /**
+     * Formats date based on options
+     *
+     * @param  {Date}       date            Date value to format
+     * @param  {Object}     options         Date format options
+     * @param  {Boolean}    includeTime     Flag to indicate whether to include time
+     * @return {string}                     Formatted date string
+     */
     formatDate  (date, options, includeTime) {
 
         var defaultOptions = {
@@ -136,6 +164,14 @@ class FormatHelper extends BaseClass {
         return formattedDate;
     }
 
+    /**
+     * Formats time based on options
+     *
+     * @param  {Date}       date            Date value to format
+     * @param  {Object}     options         Date format options
+     * @param  {Boolean}    includeDate     Flag to indicate whether to include date
+     * @return {string}                     Formatted time string
+     */
     formatTime  (date, options, includeDate) {
 
         if (_.isString(date)){
@@ -170,6 +206,15 @@ class FormatHelper extends BaseClass {
         return formattedDate;
     }
 
+    /**
+     * Format date normalized (Y-m-d H:i:s format)
+     *
+     * @param  {Date}       date            Date value to format
+     * @param  {Object}     options         Date format options
+     * @param  {Boolean}    includeTime     Flag to indicate whether to include time
+     * @param  {Boolean}    omitSeconds     Flag to indicate whether to omit seconds
+     * @return {string}                     Formatted date string
+     */
     formatDateNormalize (date, options, includeTime, omitSeconds){
 
         if (_.isString(date)){
@@ -218,6 +263,15 @@ class FormatHelper extends BaseClass {
 
     }
 
+    /**
+     * Format time normalized (Y-m-d H:i:s format)
+     *
+     * @param  {Date}       date            Date value to format
+     * @param  {Object}     options         Date format options
+     * @param  {Boolean}    includeTime     Flag to indicate whether to include date
+     * @param  {Boolean}    omitSeconds     Flag to indicate whether to omit seconds
+     * @return {string}                     Formatted time string
+     */
     formatTimeNormalize (date, options, includeDate, omitSeconds){
 
         if (_.isString(date)){
@@ -268,6 +322,14 @@ class FormatHelper extends BaseClass {
 
     }
 
+    /**
+     * Formats duration to custom format based on 'format' argument
+     *
+     * @param  {(Date|Float)}       time      Date or number representing number of seconds
+     * @param  {string}             format    String for formatting duration
+     * @param  {Boolean}            returnObj Flag to indicate that method should return object with formatted values instead of formatted duration as string
+     * @return {(string|Object)}    Formatted duration or object with formatted duration values
+     */
     formatDurationCustom (time, format, returnObj) {
         if (isNaN(time)){
             time = 0;
@@ -463,12 +525,23 @@ class FormatHelper extends BaseClass {
         }
         return formattedTime;
     }
-
+    /**
+     * Formats currency based on current language locale
+     *
+     * @param  {Number} value Numeric price
+     * @return {string}       Formatted currency value
+     */
     formatCurrency (value){
         var returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
     }
 
+    /**
+     * Adds zeros until value length is equal to maxLength
+     *
+     * @param {mixed}  value      Starting value
+     * @param {string} maxLength  Value with added zeros
+     */
     addZeros (value, maxLength){
         let _value = value + '';
         if (_value.length < maxLength){
@@ -479,18 +552,42 @@ class FormatHelper extends BaseClass {
         return _value;
     }
 
+    /**
+     * Converts newline characters (with line feeds) to HTML '<br />' tags
+     *
+     * @param  {string} value Text for conversion
+     * @return {string}       Text with replaced line breaks
+     */
     nl2br (value) {
         return value.replace(/\r?\n/g, '<br />');
     }
 
-    decToHex (hexadecimalValue){
-        return (+hexadecimalValue).toString(16);
+    /**
+     * Converts decimal value to its hexadecimal representation
+     *
+     * @param  {Number} decimalValue    Decimal value
+     * @return {string}                 Hexadecimal value representation
+     */
+    decToHex (decimalValue){
+        return (+decimalValue).toString(16);
     }
 
-    hexToDec (decimalValue){
-        return parseInt(decimalValue, 16);
+    /**
+     * Converts hexadecimal value to its decimal representation
+     *
+     * @param  {string} hexadecimalValue    Hexadecimal value
+     * @return {Number}                     Converted decimal value
+     */
+    hexToDec (hexadecimalValue){
+        return parseInt(hexadecimalValue, 16);
     }
 
+    /**
+     * Converts hexadecimal color values to their RGB representations
+     *
+     * @param  {string}     hexColor Hexadecimal color value
+     * @return {Number[]}            Array with three members, corresponding to R, G and B color values
+     */
     hexToDecColor (hexColor){
         let hexColorValue = hexColor.replace(/^#/, '');
         let hexColorChunks;
@@ -510,6 +607,12 @@ class FormatHelper extends BaseClass {
         return decColorChunks;
     }
 
+    /**
+     * Converts decimal RGB color array to hexadecimal color representation
+     *
+     * @param  {Number[]} decColorArray Array with three members, corresponding to R, G and B color values
+     * @return {string}                 Hexadecimal color value
+     */
     decToHexColor (decColorArray){
         let hexColor = '';
         if (decColorArray.length < 3){
@@ -530,6 +633,12 @@ class FormatHelper extends BaseClass {
         return hexColor;
     }
 
+    /**
+     * Formats raw file size in bytes to human-readable format
+     *
+     * @param  {Integer} bytes  File size in bytes
+     * @return {string}         Human-readable file size representation
+     */
     formatFileSize (bytes) {
         let sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
         if (bytes == 0) {
