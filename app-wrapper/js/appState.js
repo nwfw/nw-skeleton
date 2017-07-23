@@ -7,7 +7,8 @@
 
 /**
  * WindowState Object that contains current window state variables
- * @typedef {Object}    WindowState
+ * @typedef  {Object}    WindowState
+ *
  * @property {string}   title           Window title
  * @property {string}   position        Window position ('center')
  * @property {Integer}  x               Window x coordinate
@@ -29,7 +30,8 @@
 
 /**
  * StatusData Object that contains current app status variables
- * @typedef {Object}    StatusData
+ * @typedef  {Object}   StatusData
+ *
  * @property {boolean}  appLoaded           Flag to indicate whether app has been loaded
  * @property {boolean}  appReady            Flag to indicate whether app is ready
  * @property {boolean}  appInitialized      Flag to indicate whether app has been initialized
@@ -50,7 +52,8 @@
 
 /**
  * ErrorData Object that contains app error data
- * @typedef {Object}    ErrorData
+ * @typedef  {Object}   ErrorData
+ *
  * @property {boolean}  error           Flag to indicate whether app has error
  * @property {boolean}  userMessages    Flag to indicate whether app-error component should display user messages
  * @property {string}   defaultTitle    Default app-error component title
@@ -62,7 +65,8 @@
 
 /**
  * OperationData Object that contains app operation data
- * @typedef {Object}    OperationData
+ * @typedef  {Object}   OperationData
+ *
  * @property {boolean}  cancelable                  Flag to indicate whether operation is cancelable
  * @property {boolean}  cancelling                  Flag to indicate whether operation is being cancelled
  * @property {boolean}  cancelled                   Flag to indicate whether operation is cancelled
@@ -79,7 +83,8 @@
 
 /**
  * LanguageData Object that contains languages data
- * @typedef {Object}    LanguageData
+ * @typedef  {Object}   LanguageData
+ *
  * @property {string}   currentLanguage         Code of current language
  * @property {string}   currentLocale           Current locale
  * @property {array}    availableLanguages      An array containing available language objects
@@ -88,7 +93,8 @@
 
 /**
  * ProgressData Object that contains app error data
- * @typedef {Object}    ProgressData
+ * @typedef  {Object}   ProgressData
+ *
  * @property {boolean}  animated            Flag to indicate whether progress bar is animated
  * @property {boolean}  inProgress          Flag to indicate whether progress has started
  * @property {string}   percentComplete     Current progress text displayed in progress-bar component
@@ -101,43 +107,44 @@
 
 /**
  * AppState Object that contains appState (store) for current app instance
- * @typedef {Object}    AppState
- * @property {Object}   platformData                Object for storing platform data variables
- * @property {Object}   appData                     Object for storing app data variables
- * @property {Object}   userData                    Object for storing user data variables
- * @property {Object}   config                      Object for storing config variables
- * @property {Object}   userConfig                  Object for storing user config variables
- * @property {array}    componentCssFiles           An array of css files added by Vue components
- * @property {WindowState}   windowState                 Object holding current window state variables
- * @property {StatusData}   status                      Object holding current app status variables
- * @property {ErrorData}   appError                    Object holding current app error variables
- * @property {OperationData}   appOperation                Object holding current app operation variables
- * @property {string}   mainLoaderTitle             App main loader title
- * @property {boolean}  preventClose                Flag to indicate whether closing app window is permitted
- * @property {boolean}  preventReload               Flag to indicate whether reloading app window is permitted
- * @property {boolean}  hasUserConfig               Flag to indicate whether app has saved user config
- * @property {array}    allDebugMessages            An array holding all debug messages
- * @property {array}    debugMessages               An array holding displayed debug messages
- * @property {boolean}  hasDebugWindow              Flag to indicate whether current window has debug window
- * @property {boolean}  isDebugWindow               Flag to indicate whether current window is debug window
- * @property {boolean}  debugToFileStarted          Flag to indicate whether debugging to file has already started
- * @property {array}    allUserMessages             An array holding all user messages
- * @property {array}    userMessages                An array holding displayed user messages
- * @property {array}    userMessageQueue            An array holding pending user messages
- * @property {boolean}  userMessagesToFileStarted   Flag to indicate whether
- * @property {LanguageData}   languageData                Object containing language data and translations
- * @property {array}    availableThemes             An array holding available theme names
- * @property {Object}   appInfo                     Object containing app info variables
- * @property {ProgressData}   progressData                Object containing progress bar data
- * @property {Object}   headerData                  Object for app-header component data
- * @property {Object}   debugData                   Object for app-debug component data
- * @property {Object}   footerData                  Object for app-footer component data
- * @property {Object}   mainData                    Object for app-main component data
- * @property {Object}   userMessagesData            Object for user-messages component data
- * @property {Object}   appNotificationsData        Object for app-notifications component data
- * @property {Object}   modalStatus                 Object for storing modal status data
- * @property {Object}   modalData                   Object for modal-dialog component data
- * @property {Object}   appModals                   Object containing modal dialog definitions
+ * @typedef  {Object}           AppState
+ *
+ * @property {Object}           platformData                Object for storing platform data variables
+ * @property {Object}           appData                     Object for storing app data variables
+ * @property {Object}           userData                    Object for storing user data variables
+ * @property {Object}           config                      Object for storing config variables
+ * @property {Object}           userConfig                  Object for storing user config variables
+ * @property {Object}           componentCssFiles           Object with css data on files added by Vue components
+ * @property {WindowState}      windowState                 Object holding current window state variables
+ * @property {StatusData}       status                      Object holding current app status variables
+ * @property {ErrorData}        appError                    Object holding current app error variables
+ * @property {OperationData}    appOperation                Object holding current app operation variables
+ * @property {string}           mainLoaderTitle             App main loader title
+ * @property {boolean}          preventClose                Flag to indicate whether closing app window is permitted
+ * @property {boolean}          preventReload               Flag to indicate whether reloading app window is permitted
+ * @property {boolean}          hasUserConfig               Flag to indicate whether app has saved user config
+ * @property {array}            allDebugMessages            An array holding all debug messages
+ * @property {array}            debugMessages               An array holding displayed debug messages
+ * @property {boolean}          hasDebugWindow              Flag to indicate whether current window has debug window
+ * @property {boolean}          isDebugWindow               Flag to indicate whether current window is debug window
+ * @property {boolean}          debugToFileStarted          Flag to indicate whether debugging to file has already started
+ * @property {array}            allUserMessages             An array holding all user messages
+ * @property {array}            userMessages                An array holding displayed user messages
+ * @property {array}            userMessageQueue            An array holding pending user messages
+ * @property {boolean}          userMessagesToFileStarted   Flag to indicate whether
+ * @property {LanguageData}     languageData                Object containing language data and translations
+ * @property {array}            availableThemes             An array holding available theme names
+ * @property {Object}           appInfo                     Object containing app info variables
+ * @property {ProgressData}     progressData                Object containing progress bar data
+ * @property {Object}           headerData                  Object for app-header component data
+ * @property {Object}           debugData                   Object for app-debug component data
+ * @property {Object}           footerData                  Object for app-footer component data
+ * @property {Object}           mainData                    Object for app-main component data
+ * @property {Object}           userMessagesData            Object for user-messages component data
+ * @property {Object}           appNotificationsData        Object for app-notifications component data
+ * @property {Object}           modalStatus                 Object for storing modal status data
+ * @property {Object}           modalData                   Object for modal-dialog component data
+ * @property {Object}           appModals                   Object containing modal dialog definitions
  */
 
 /**

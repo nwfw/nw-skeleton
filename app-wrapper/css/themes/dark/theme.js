@@ -1,6 +1,7 @@
 exports.theme = {
     path: '',
     name: 'dark',
+    extends: '',
     initCssFiles: [
         './css/config.css',
     ],

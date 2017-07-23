@@ -1,19 +1,480 @@
 :root {
+
+    /* basic variables */
+
+    --font-smoothing: subpixel-antialiased;
+
+    --input-base-background: #FFFFFF;
+    --input-base-color: #333333;
+    --input-base-border: 1px solid #CCCCCC;
+    --input-base-padding: 2px 6px 3px 6px;
+
+    --input-highlight-background: #FFFFCC;
+    --input-highlight-color: #333333;
+    --input-highlight-border: 1px solid #CCCCCC;
+
+    /* selection styles */
+    --no-selection-background: transparent;
+    --no-selection-color: inherit;
+
+    --selection-background: #999999;
+    --selection-color: #DDDDDD;
+
+    /* transition durations */
+    --short-animation-duration: 0.2s;
+    --medium-animation-duration: 0.4s;
+    --long-animation-duration: 0.6s;
+
+    /* links */
+
+    --link-base-color: #3333CC;
+    --link-base-cursor: pointer;
+    --link-base-text-decoration: none;
+
+    --link-base-color-hovered: #000066;
+    --link-base-cursor-hovered: var(--link-base-cursor);
+    --link-base-text-decoration-hovered: var(--link-base-text-decoration);
+
+    --link-base-color-active: #9999FF;
+    --link-base-cursor-active: var(--link-base-cursor);
+    --link-base-text-decoration-active: var(--link-base-text-decoration);
+
+    --link-base-color-visited: #3333CC;
+    --link-base-cursor-visited: var(--link-base-cursor);
+    --link-base-text-decoration-visited: var(--link-base-text-decoration);
+
+    /* app header */
+    --app-header-height: auto;
+    --app-header-background-color-top: #EEEEEE;
+    --app-header-background-color-bottom: #CCCCCC;
+    --app-header-text-color: #333333;
+    --app-header-border-base-color: #000000;
+
+    --app-main-border-radius: none;
+    --app-main-border-width: 1px;
+    --app-main-border-color: #333333;
+    --app-main-border-style: solid;
+
+    --app-main-border-base-color: #333333;
+
+    --app-main-bg-color: #FFFFFF;
+
+
+    --app-footer-text-color: #333333;
+    --app-footer-height: auto;
+
+    --app-progress-bar-wrapper-border-color: #999999;
+    --app-progress-bar-wrapper-box-shadow: 0 0 20px #999999;
+    --app-progress-bar-wrapper-clip-offset: 25px;
+    --app-progress-bar-wrapper-border-radius: 4px;
+    --app-progress-bar-font-size: 0.7rem;
+
+    --app-progress-bar-wrapper-background-color-top: var(--app-header-background-color-bottom);
+    --app-progress-bar-wrapper-background-color-bottom: var(--app-header-background-color-top);
+
+    --app-progress-bar-width: 160px;
+    --app-progress-bar-background: -webkit-linear-gradient(top, #BBBBBB 0%, #DDDDDD 100%);
+    --app-progress-bar-border-color: #999999;
+    --app-progress-bar-border-radius: 5px;
+
+    --app-progress-bar-inner-background-fill: rgba(0, 153, 0, 1);
+    --app-progress-bar-inner-background-highlight: rgba(0, 238, 0, 1);
+    --app-progress-bar-inner-background: linear-gradient(to right, var(--app-progress-bar-inner-background-fill) 47%, var(--app-progress-bar-inner-background-highlight) 50%, var(--app-progress-bar-inner-background-fill) 53%);
+    --app-progress-bar-inner-color: #FFFFFF;
+
+    --app-progress-bar-inner-below-color: #009900;
+
+    --app-progress-bar-cancel-link-color: #DD0000;
+    --app-progress-bar-cancel-link-text-shadow: none;
+
+    --app-progress-bar-cancel-link-color-hovered: #FF6666;
+    --app-progress-bar-cancel-link-text-shadow-hovered: 0 0 2px #990000;
+
+    /* app notifications */
+
+    --app-notification-font-size: 0.9rem;
+    --app-notification-background: #88BBDD;
+    --app-notification-color: #000033;
+    --app-notification-border-radius: 4px;
+
+    --app-notification-count-font-size: 0.8rem;
+    --app-notification-count-background: #FFFFFF;
+    --app-notification-count-color: #000033;
+    --app-notification-count-border: 1px solid #000000;
+    --app-notification-count-border-radius: 50%;
+
+
+
+    --app-error-text-color: #DD0000;
+    --app-error-background-color: #EEEEEE;
+
+    --app-loader-text-color: #666666;
+    --app-loader-background-color: #EEEEEE;
+    --app-loader-spinner-text-color: #333333;
+    --app-loader-user-message-list-border: 1px solid #CCCCCC;
+
+
+    --app-debug-wrapper-background-color: #EEEEEE;
+    --app-debug-wrapper-border-base-color: #333333;
+
+
+
+    --app-debug-header-background-color-top: #FF3019;
+    --app-debug-header-background-color-bottom: #CF0404;
+    --app-debug-header-text-color: #FFFFFF;
+    --app-debug-header-title-color: #FFFFFF;
+
+    --app-debug-header-tool-link-color: #FFFFFF;
+    --app-debug-header-tool-text-shadow: none;
+
+    --app-debug-header-tool-link-color-hovered: #FFFFFF;
+    --app-debug-header-tool-text-shadow-hovered: 0 0 4px #000000;
+
+    --app-debug-message-even-background: #FFFFFF;
+    --app-debug-message-odd-background: #DDDDDD;
+
+    --app-debug-message-border-even: 1px solid #333333;
+    --app-debug-message-border-odd: var(--app-message-list-message-border-even);
+
+    /* message lists */
+    --app-message-list-stack-table-heading-color: #F0F0F0;
+    --app-message-list-stack-table-heading-background: #999999;
+
+    --app-message-list-stack-table-cell-color: #333333;
+    --app-message-list-stack-table-cell-background: none;
+
+    /* user messages */
+    --app-user-messages-header-background-color-top: #999999;
+    --app-user-messages-header-background-color-bottom: #CCCCCC;
+    --app-user-messages-header-text-color: #333333;
+    --app-user-messages-header-title-color: #333333;
+
+    --app-user-messages-tool-link-color: #333333;
+    --app-user-messages-tool-link-color-hovered: #000000;
+
+    --app-user-messages-clear-messages-link-color: #FF3333;
+    --app-user-messages-clear-messages-link-color-hovered: #FF6666;
+
+    --app-message-list-border: 1px solid #666666;
+    --app-message-list-background: #EEEEEE;
+
+    --app-message-no-messages-border: none;
+    --app-message-no-messages-background: none;
+
+    --app-message-list-message-border-even: 1px solid #666666;
+    --app-message-list-message-border-odd: var(--app-message-list-message-border-even);
+
+    --app-message-list-message-highlight-color: #000000;
+    --app-message-list-message-highlight-background: #FFCC33;
+
+    --app-message-list-message-debug-highlight-color: #000000;
+    --app-message-list-message-debug-highlight-background: #EEEEEE;
+
+    --app-message-list-message-info-color: #006600;
+    --app-message-list-message-info-highlight-background: #66FF66;
+
+    --app-message-list-message-warning-highlight-color: #666600;
+    --app-message-list-message-warning-highlight-background: #FFCC00;
+
+    --app-message-list-message-error-highlight-color: #660000;
+    --app-message-list-message-error-highlight-background: #FFCCCC;
+
+
+
+    /* message type definitions */
+    --app-message-list-message-text-color: #999999;
+    --app-message-list-message-background-color: #333333;
+    --app-message-list-message-text-text-shadow: 0 0 1px #999999;
+    --app-message-list-message-highlight-background-color: var(--lightest-orange-color) !important;
+    --app-message-list-message-highlight-text-color: #000000 !important;
+
+    --app-message-list-message-debug-text-color: #999999;
+    --app-message-list-message-debug-background-color: none;
+    --app-message-list-message-debug-highlight-background-color: #EEEEEE !important;
+    --app-message-list-message-debug-highlight-text-color: #000000 !important;
+
+    --app-message-list-message-info-text-color: #009900;
+    --app-message-list-message-info-background-color: none;
+    --app-message-list-message-info-highlight-background-color: #66FF66 !important;
+    --app-message-list-message-info-highlight-text-color: #006600 !important;
+
+    --app-message-list-message-warning-text-color: #CC9900;
+    --app-message-list-message-warning-background-color: none;
+    --app-message-list-message-warning-highlight-background-color: #FFCC00 !important;
+    --app-message-list-message-warning-highlight-text-color: #666600 !important;
+
+    --app-message-list-message-error-text-color: #CC0000;
+    --app-message-list-message-error-background-color: none;
+    --app-message-list-message-error-highlight-background-color: #FFCCCC !important;
+    --app-message-list-message-error-highlight-text-color: #660000 !important;
+
+
+    --app-message-list-message-delimiter-text-color: #999999;
+    --app-message-list-message-delimiter-background-color: none;
+    --app-message-list-message-delimiter-highlight-background-color: #EEEEEE !important;
+    --app-message-list-message-delimiter-highlight-text-color: #000000 !important;
+
+    --app-message-list-message-delimiter-stroke-color: #000000;
+    --app-message-list-message-delimiter-stroke-width: 1;
+    --app-message-list-message-delimiter-center-fill: #FFFFFF;
+
+    --app-message-list-message-delimiter-fill-color-0: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-10: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-30: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-70: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-90: #CCCCCC;
+    --app-message-list-message-delimiter-fill-color-100: #CCCCCC;
+
+    /* window controls */
+    --window-control-link-color: #666666;
+    --window-control-link-color-hovered: #333333;
+
+    --window-control-link-text-stroke-width: 0px;
+    --window-control-link-text-stroke-color: #585858;
+    --window-control-link-text-shadow: 0 0 0px #444444;
+
+    --window-control-link-text-stroke-width-hovered: 0px;
+    --window-control-link-text-stroke-color-hovered: #999999;
+    --window-control-link-text-shadow-hovered: 0 0 0px #666666;
+
+    --window-control-link-text-stroke-width-active: 0px;
+    --window-control-link-text-stroke-color-active: #333333;
+    --window-control-link-text-shadow-active: 0 0 0px #333333;
+
+    --window-control-submenu-background-color: #CCCCCC;
+    --window-control-submenu-background-color-hover: #BBBBBB;
+    --window-control-submenu-background-color-active: #999999;
+
+    --window-control-submenu-text-color: #666666;
+    --window-control-submenu-text-color-hover: #333333;
+    --window-control-submenu-text-color-active: #000000;
+
+    --window-control-submenu-border-color: #999999;
+    --window-control-submenu-border-radius: 3px;
+
+    --window-control-submenu-shadow-size: 15px;
+    --window-control-submenu-box-shadow: 0 0 var(--window-control-submenu-shadow-size) #333333;
+
+    --window-control-submenu-arrow-color: #666666;
+    --window-control-submenu-separator-background: #666666;
+
+    /* live info */
+
+    --app-live-info-background-color-top: var(--app-header-background-color-top);
+    --app-live-info-background-color-bottom: var(--app-header-background-color-bottom);
+    --app-live-info-background: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-clip-offset: 25px;
+
+    --app-live-info-border: 1px solid #999999;
+    --app-live-info-border-radius: 4px;
+
+    --app-live-info-box-shadow-offline: 0 0 20px #CCCCCC;
+    --app-live-info-background-offline: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-offline: 1px solid #999999;
+
+    --app-live-info-box-shadow-busy: 0 0 20px #FFCC33;
+    --app-live-info-background-busy: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-busy: 1px solid #AA8800;
+
+    --app-live-info-box-shadow-error: 0 0 20px #FF0000;
+    --app-live-info-background-error: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-error: 1px solid #660000;
+
+    --app-live-info-box-shadow-working: 0 0 0px #FFCC33;
+    --app-live-info-background-working: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-working: 1px solid #AA8800;
+
+    --app-live-info-box-shadow-not-busy: 0 0 20px #999999;
+    --app-live-info-background-not-busy: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-not-busy: 1px solid #999999;
+
+    /* app live info item */
+    --app-live-info-item-background: rgba(255, 255, 255, 0.7);
+    --app-live-info-item-box-shadow: 0 0 8px #FFFFFF;
+
+    --app-live-info-item-offline-background: var(--app-live-info-item-background);
+    --app-live-info-item-offline-box-shadow: var(--app-live-info-item-box-shadow);
+
+    --app-live-info-item-not-busy-background: var(--app-live-info-item-background);
+    --app-live-info-item-not-busy-box-shadow: var(--app-live-info-item-box-shadow);
+
+    --app-live-info-item-error-background: var(--app-live-info-item-background);
+    --app-live-info-item-error-box-shadow: var(--app-live-info-item-box-shadow);
+
+    --app-live-info-item-working-background: var(--app-live-info-item-background);
+    --app-live-info-item-working-box-shadow: var(--app-live-info-item-box-shadow);
+
+    --app-live-info-item-busy-background: var(--app-live-info-item-background);
+    --app-live-info-item-busy-box-shadow: var(--app-live-info-item-box-shadow);
+
+
+    /* live info operation text */
+    --app-live-info-operation-text-color: #333333;
+    --app-live-info-operation-text-text-stroke-width: 0.2px;
+    --app-live-info-operation-text-text-stroke-color: #000000;
+    --app-live-info-operation-text-text-shadow: none;
+    --app-live-info-operation-text-font-size: 0.8rem;
+
+    --app-live-info-offline-operation-text-color: #666666;
+    --app-live-info-offline-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-offline-operation-text-text-stroke-color: #999999;
+    --app-live-info-offline-operation-text-text-shadow: 0 0 1px #999999;
+    --app-live-info-offline-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    --app-live-info-not-busy-operation-text-color: #009900;
+    --app-live-info-not-busy-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-not-busy-operation-text-text-stroke-color: #003300;
+    --app-live-info-not-busy-operation-text-text-shadow: 0 0 2px #00FF00;
+    --app-live-info-not-busy-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    --app-live-info-error-operation-text-color: #FF0000;
+    --app-live-info-error-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-error-operation-text-text-stroke-color: #990000;
+    --app-live-info-error-operation-text-text-shadow: 0 0 1px #FF0000;
+    --app-live-info-error-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    --app-live-info-working-operation-text-color: #CC9900;
+    --app-live-info-working-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-working-operation-text-text-stroke-color: #996600;
+    --app-live-info-working-operation-text-text-shadow: 0 0 0px #CCCC00;
+    --app-live-info-working-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    --app-live-info-busy-operation-text-color: #CC9900;
+    --app-live-info-busy-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-busy-operation-text-text-stroke-color: #000000;
+    --app-live-info-busy-operation-text-text-shadow: 0 0 0px #CCCC00;
+    --app-live-info-busy-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    /* live info status icon */
+    --app-live-info-status-color: #CCCCCC;
+
+    --app-live-info-status-text-stroke-width: 0.4px;
+    --app-live-info-status-text-stroke-color: #000000;
+    --app-live-info-status-text-shadow: none;
+    --app-live-info-status-font-size: 1rem;
+
+
+    --app-live-info-offline-status-color: #CCCCCC;
+    --app-live-info-offline-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-offline-status-text-stroke-color: #000000;
+    --app-live-info-offline-status-text-shadow: none;
+    --app-live-info-offline-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-online-status-color: #00CC00;
+    --app-live-info-online-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-online-status-text-stroke-color: #006600;
+    --app-live-info-online-status-text-shadow: none;
+    --app-live-info-online-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-not-busy-status-color: #00CC00;
+    --app-live-info-not-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-not-status-text-stroke-color: #006600;
+    --app-live-info-not-status-text-shadow: none;
+    --app-live-info-not-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-error-status-color: #FF0000;
+    --app-live-info-error-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-error-status-text-stroke-color: #660000;
+    --app-live-info-error-status-text-shadow: none;
+    --app-live-info-error-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-working-status-color: #CC9900;
+    --app-live-info-working-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-working-status-text-stroke-color: #996600;
+    --app-live-info-working-status-text-shadow: none;
+    --app-live-info-working-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-busy-status-color: #CC9900;
+    --app-live-info-busy-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-busy-status-text-stroke-color: #996600;
+    --app-live-info-busy-status-text-shadow: none;
+    --app-live-info-busy-status-font-size: var(--app-live-info-status-font-size);
+
+    --modal-dialog-backdrop-background: #FFFFFF;
+    --modal-dialog-backdrop-opacity: 0.7;
+
+    --modal-dialog-background: #FFFFFF;
+    --modal-dialog-border: 1px solid #666666;
+    --modal-dialog-box-shadow: 0 0 50px #333333;
+
+    --modal-dialog-body-background: #EEEEEE;
+    --modal-dialog-body-padding: 5px;
+
+    --modal-dialog-title-text-color: #333333;
+    --modal-dialog-title-font-size: 1.2rem;
+
+    --modal-dialog-close-background: #FFFFFF;
+    --modal-dialog-close-border: 1px solid #999999;
+    --modal-dialog-close-color: #666666;
+    --modal-dialog-close-border-radius: 20px;
+    --modal-dialog-close-box-shadow: 12px -10px 40px #999999;
+
+    --modal-dialog-close-highlighted-background: #333333;
+    --modal-dialog-close-highlighted-color: #FFFFFF;
+
+    --modal-dialog-close-highlighted-expiring-background: #FF3333;
+    --modal-dialog-close-highlighted-expiring-color: #FFFFFF;
+
+
+    --modal-dialog-close-background-hovered: #999999;
+    --modal-dialog-close-color-hovered: #FFFFFF;
+    --modal-dialog-close-text-shadow-hovered: 0 0 2px #000000;
+
+    --modal-dialog-error-text-color: #990000;
+    --modal-dialog-busy-text-color: #666666;
+
+    --modal-dialog-button-background: #FFFFFF;
+    --modal-dialog-button-border: 1px solid #999999;
+    --modal-dialog-button-color: #666666;
+    --modal-dialog-button-border-radius: 3px;
+
+    --modal-dialog-button-background-hovered: #EEEEEE;
+    --modal-dialog-button-color-hovered: #666666;
+
+    --modal-dialog-button-cancel-border: 1px solid #993333;
+    --modal-dialog-button-cancel-color: #993333;
+
+    --modal-dialog-button-cancel-background-hovered: #FFEEEE;
+    --modal-dialog-button-cancel-color-hovered: #990000;
+
+    --modal-button-confirm-border: 1px solid #339933;
+    --modal-button-confirm-color: #339933;
+
+    --modal-dialog-button-confirm-background-hovered: #EEFFEE;
+    --modal-dialog-button-confirm-color-hovered: #009900;
+
+    --modal-dialog-button-confirm-disabled-background: #CCC;
+    --modal-dialog-button-confirm-disabled-border: 1px solid #EEE;
+    --modal-dialog-button-confirm-disabled-color: #EEE;
+
+    --modal-dialog-button-cancel-disabled-background: #CCC;
+    --modal-dialog-button-cancel-disabled-border: 1px solid #EEE;
+    --modal-dialog-button-cancel-disabled-color: #EEE;
+
+    --modal-dialog-confirm-modal-border-color: #FF9999;
+    --modal-dialog-confirm-modal-box-shadow: 0 0 50px #CC9999;
+
+    --modal-dialog-confirm-modal-title-color: #990000;
+
+
     --link-color: var(--link-base-color);
-    --link-cursor: pointer;
-    --link-text-decoration: none;
+    --link-cursor-visited: var(--link-base-cursor);
+    --link-text-decoration-visited: var(--link-base-text-decoration);
 
     --link-color-hovered: var(--link-base-color-hovered);
-    --link-cursor-hovered: var(--link-cursor);
-    --link-text-decoration-hovered: var(--link-text-decoration);
+    --link-cursor-hovered: var(--link-base-cursor-hovered);
+    --link-text-decoration-hovered: var(--link-base-text-decoration-hovered);
 
     --link-color-active: var(--link-base-color-active);
-    --link-cursor-active: var(--link-cursor);
-    --link-text-decoration-active: var(--link-text-decoration);
+    --link-cursor-active: var(--link-base-cursor-active);
+    --link-text-decoration-active: var(--link-base-text-decoration-active);
 
     --link-color-visited: var(--link-base-color-visited);
-    --link-cursor-visited: var(--link-cursor);
-    --link-text-decoration-visited: var(--link-text-decoration);
+    --link-cursor-visited: var(--link-base-cursor-visited);
+    --link-text-decoration-visited: var(--link-base-text-decoration-visited);
+
+
+    /* derived variables */
 
     /* app header */
     --app-header-background: -webkit-linear-gradient(top, var(--app-header-background-color-top) 0%, var(--app-header-background-color-bottom) 80%);

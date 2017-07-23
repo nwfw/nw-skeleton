@@ -59,6 +59,10 @@ class BaseClass extends eventEmitter {
     async initialize (options) {
         await this.initializeLogging(options);
         this.addBoundMethods();
+        if (!(options && options.silent)){
+            let className = this.constructor.name;
+            this.log('Initialized object "{1}"', 'debug', [className]);
+        }
         return this;
     }
 
@@ -88,7 +92,7 @@ class BaseClass extends eventEmitter {
         let className = this.constructor.name;
         if (appState && appState.config){
             if (appState.config.debug && appState.config.debug.forceDebug){
-                if (_.isUndefined(appState.config.debug.forceDebug[className])){
+                if (_.isUndefined(appState.config.debug.forceDebug[className]) && !(options && options.silent)){
                     console.error('Class "' + className + '" has no forceDebug config set!');
                 } else {
                     this.forceDebug = _.get(appState.config.debug.forceDebug, className);
@@ -96,19 +100,16 @@ class BaseClass extends eventEmitter {
             }
 
             if (appState.config.userMessages && appState.config.userMessages.forceUserMessages){
-                if (_.isUndefined(appState.config.userMessages.forceUserMessages[className])){
+                if (_.isUndefined(appState.config.userMessages.forceUserMessages[className]) && !(options && options.silent)){
                     console.error('Class "' + className + '" has no forceUserMessages config set!');
                 } else {
                     this.forceUserMessages = _.get(appState.config.userMessages.forceUserMessages, className);
                 }
             }
         } else {
-            if (this.needsConfig){
+            if (this.needsConfig && !(options && options.silent)){
                 console.warn('Could not get config object (class "' + className + '").');
             }
-        }
-        if (!(options && options.silent)){
-            this.log('Initialized object "{1}"', 'debug', [className]);
         }
         return this;
     }

@@ -53,6 +53,12 @@ button {
 	background: var(--input-base-background);
 	color: var(--input-base-color);
 	border: var(--input-base-border);
+	padding: var(--input-base-padding);
+}
+
+input[type=range] {
+    position: relative;
+    top: 0.4rem;
 }
 
 h1, h2 {

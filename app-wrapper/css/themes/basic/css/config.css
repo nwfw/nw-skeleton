@@ -6,6 +6,7 @@
     --input-base-background: #FFFFFF;
     --input-base-color: #333333;
     --input-base-border: 1px solid #CCCCCC;
+    --input-base-padding: 2px 6px 3px 6px;
 
     --input-highlight-background: #FFFFCC;
     --input-highlight-color: #333333;

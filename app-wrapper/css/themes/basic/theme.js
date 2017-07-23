@@ -1,5 +1,6 @@
 exports.theme = {
     path: '',
+    extends: '',
     name: 'basic',
     initCssFiles: [
         './css/config.css',

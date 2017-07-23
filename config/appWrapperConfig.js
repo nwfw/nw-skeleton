@@ -2,6 +2,8 @@ exports.config = {
     wrapper : {
         appFile: '../../app/js/app',
 
+        themeBaseDir: './node_modules/nw-skeleton/app-wrapper/css/themes',
+
         componentCodeRegex: /\.js$/,
         componentDirectories: {
             component: ['./node_modules/nw-skeleton/app-wrapper/components/app/'],
@@ -67,10 +69,13 @@ exports.config = {
         tmpDataDir: './app/var',
         showInitializationStatus: true,
         showInitializationProgress: true,
+
+        themeBaseDir: './app/css/themes',
+
+        cssCompiledFile: '/app/var/css/dist.css',
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
-        cssCompiledFile: '/app/var/css/dist.css',
         cssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
             '/node_modules/nw-skeleton/app-wrapper/css/header.css',
@@ -83,7 +88,7 @@ exports.config = {
 
         initJsFiles: [],
         jsFiles: [
-            '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.js'
+            '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.min.js'
         ],
 
         debugCssFiles: [
@@ -403,28 +408,29 @@ exports.config = {
         messagesExpanded: false,
         displayTimestamps: true,
         forceUserMessages: {
-            AppWrapper: false,
             AppConfig: false,
+            AppNotificationsHelper: false,
+            AppOperationHelper: false,
             AppTemplates: false,
             AppTranslations: false,
-            ComponentHelper: false,
-            KeyboardHelper: false,
-            DebugHelper: false,
-            HtmlHelper: false,
-            StyleHelper: false,
-            ModalHelper: false,
-            StorageHelper: false,
-            StaticFilesHelper: false,
-            UserMessageHelper: false,
-            UserDataHelper: false,
+            AppWrapper: false,
             ClipboardHelper: false,
-            AppOperationHelper: false,
-            UtilHelper: false,
-            AppNotificationsHelper: false,
-            MenuHelper: false,
+            ComponentHelper: false,
+            DebugHelper: false,
+            FileManager: false,
             FormatHelper: false,
-            WindowManager: false,
-            FileManager: false
+            HtmlHelper: false,
+            KeyboardHelper: false,
+            MenuHelper: false,
+            ModalHelper: false,
+            StaticFilesHelper: false,
+            StorageHelper: false,
+            StyleHelper: false,
+            ThemeHelper: false,
+            UserDataHelper: false,
+            UserMessageHelper: false,
+            UtilHelper: false,
+            WindowManager: false
         }
     },
     debug: {
@@ -444,28 +450,29 @@ exports.config = {
         debugGroupsCollapsed: false,
         debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
         forceDebug: {
-            AppWrapper: false,
             AppConfig: false,
+            AppNotificationsHelper: false,
+            AppOperationHelper: false,
             AppTemplates: false,
             AppTranslations: false,
-            ComponentHelper: false,
-            KeyboardHelper: false,
-            DebugHelper: false,
-            HtmlHelper: false,
-            StyleHelper: false,
-            ModalHelper: false,
-            StorageHelper: false,
-            StaticFilesHelper: false,
-            UserMessageHelper: false,
-            UserDataHelper: false,
+            AppWrapper: false,
             ClipboardHelper: false,
-            AppOperationHelper: false,
-            UtilHelper: false,
-            AppNotificationsHelper: false,
-            MenuHelper: false,
+            ComponentHelper: false,
+            DebugHelper: false,
+            FileManager: false,
             FormatHelper: false,
-            WindowManager: false,
-            FileManager: false
+            HtmlHelper: false,
+            KeyboardHelper: false,
+            MenuHelper: false,
+            ModalHelper: false,
+            StaticFilesHelper: false,
+            StorageHelper: false,
+            StyleHelper: false,
+            ThemeHelper: false,
+            UserDataHelper: false,
+            UserMessageHelper: false,
+            UtilHelper: false,
+            WindowManager: false
         },
     },
 

@@ -590,81 +590,88 @@ class ComponentHelper extends BaseClass {
         }
 
         this.log(message, type, data);
+        let component = false;
 
         let loadDirs = _.union(componentOverrideDirs, [path.join(componentBaseDir, componentName)]);
 
-        let component = await _appWrapper.fileManager.loadFileFromDirs(componentName + '.js', loadDirs, true);
-        if (!component){
-            this.log('Problem loading component "{1}"', 'error', [componentName]);
-            return false;
-        } else {
-            this.log('Loaded component "{1}"', 'info', [componentName]);
-        }
-
-        await this.loadComponentTemplate(component, loadDirs);
-        component.components = {};
-
-        if (additionalSubComponents && _.keys(additionalSubComponents).length){
-            component.components = _.merge(component.components, additionalSubComponents);
-        }
-        if (componentMapping){
-            if (childCount){
-
-                for (let i in componentMapping.components){
-                    let childComponent = await this.initializeComponent(componentBaseDir, i, componentMapping.components[i], componentName, [], overrideDirs);
-                    component.components[i] = childComponent;
-                }
-            }
-
-            if (componentMapping.dataName){
-                component.data = () => {
-                    let componentData = _.get(this.appData, componentMapping.dataName, {noData: true});
-                    return componentData;
-                };
-            }
-            if (componentMapping.data){
-                component.data = () => {
-                    return componentMapping.data;
-                };
-            }
-            if (componentMapping.componentCssFiles){
-                for(let i=0; i<componentMapping.componentCssFiles.length; i++){
-                    let cssFile = path.join(componentBaseDir , componentName, componentMapping.componentCssFiles[i]);
-                    appState.componentCssFiles.push(cssFile);
-                }
+        let componentFile = await _appWrapper.fileManager.getFirstFileFromDirs(componentName + '.js', loadDirs);
+        if (componentFile){
+            // let componentDir = path.dirname(componentFile);
+            component = await _appWrapper.fileManager.loadFile(componentFile, true);
+            if (!component){
+                this.log('Problem loading component "{1}"', 'error', [componentName]);
+                return false;
             } else {
-                let cssFileName = componentName + '.css';
-                let cssFile = await _appWrapper.fileManager.getFirstFileFromDirs(cssFileName, loadDirs);
-                if (cssFile){
-                    if (await _appWrapper.fileManager.isFile(cssFile)){
+                this.log('Loaded component "{1}"', 'info', [componentName]);
+            }
+
+            await this.loadComponentTemplate(component, loadDirs);
+            component.components = {};
+
+            if (additionalSubComponents && _.keys(additionalSubComponents).length){
+                component.components = _.merge(component.components, additionalSubComponents);
+            }
+            if (componentMapping){
+                if (childCount){
+
+                    for (let i in componentMapping.components){
+                        let childComponent = await this.initializeComponent(componentBaseDir, i, componentMapping.components[i], componentName, [], overrideDirs);
+                        component.components[i] = childComponent;
+                    }
+                }
+
+                if (componentMapping.dataName){
+                    component.data = () => {
+                        let componentData = _.get(this.appData, componentMapping.dataName, {noData: true});
+                        return componentData;
+                    };
+                }
+                if (componentMapping.data){
+                    component.data = () => {
+                        return componentMapping.data;
+                    };
+                }
+                if (componentMapping.componentCssFiles){
+                    for(let i=0; i<componentMapping.componentCssFiles.length; i++){
+                        let cssFile = path.join(componentBaseDir , componentName, componentMapping.componentCssFiles[i]);
                         appState.componentCssFiles.push(cssFile);
                     }
-                }
-            }
-            let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
-            if (componentStateFile){
-                if (await _appWrapper.fileManager.isFile(componentStateFile)){
-                    let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
-                    if (componentState && _.isObject(componentState)) {
-                        _.merge(appState, componentState);
+                } else {
+                    let cssFileName = componentName + '.css';
+                    let cssFile = await _appWrapper.fileManager.getFirstFileFromDirs(cssFileName, loadDirs);
+                    if (cssFile){
+                        if (await _appWrapper.fileManager.isFile(cssFile)){
+                            appState.componentCssFiles.push(cssFile);
+                        }
                     }
                 }
-            }
+                let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
+                if (componentStateFile){
+                    if (await _appWrapper.fileManager.isFile(componentStateFile)){
+                        let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
+                        if (componentState && _.isObject(componentState)) {
+                            _.merge(appState, componentState);
+                        }
+                    }
+                }
 
-            if (component.mixins){
-                component.mixins.push(BaseComponent);
-            } else {
-                component.mixins = [BaseComponent];
-            }
+                if (component.mixins){
+                    component.mixins.push(BaseComponent);
+                } else {
+                    component.mixins = [BaseComponent];
+                }
 
-            if (component.filters){
-                component.filters = _.union(component.filters, this.vueFilters);
-            } else {
-                component.filters = this.vueFilters;
+                if (component.filters){
+                    component.filters = _.union(component.filters, this.vueFilters);
+                } else {
+                    component.filters = this.vueFilters;
+                }
             }
-        }
-        if (type == 'group'){
-            this.log(message, 'groupend', data);
+            if (type == 'group'){
+                this.log(message, 'groupend', data);
+            }
+        } else {
+            this.log('Problem loading component "{1}" - component file not found!', 'error', [componentName]);
         }
         return component;
     }

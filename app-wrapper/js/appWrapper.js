@@ -188,9 +188,7 @@ class AppWrapper extends BaseClass {
 
         this.getHelper('menu').initializeAppMenu();
 
-
-
-        await this.helpers.staticFilesHelper.initializeThemes();
+        await this.helpers.themeHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));

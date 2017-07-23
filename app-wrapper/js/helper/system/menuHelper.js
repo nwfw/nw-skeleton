@@ -392,7 +392,7 @@ class MenuHelper extends BaseClass {
 
             if (object && method && _.isFunction(method)){
                 this.log('Calling tray menu click handler "{1}" for menuItem "{2}"', 'info', [methodIdentifier, trayMenuItem.label]);
-                return method.call(object);
+                return method.call(object, trayMenuItem);
             } else {
                 this.log('Can\'t call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label]);
                 return false;

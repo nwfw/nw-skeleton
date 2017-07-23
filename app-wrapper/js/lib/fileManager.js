@@ -39,7 +39,6 @@ class FileManager extends BaseClass {
     /**
      * Shuts down file manager, unwatching all files and removing leftover references
      *
-     * @method
      * @async
      * @return {boolean} Shutdown result
      */
@@ -50,7 +49,6 @@ class FileManager extends BaseClass {
     /**
      * Checks whether given file exists
      *
-     * @method
      * @param  {string} file Absolute file path
      * @return {boolean}     True if file exists, false otherwise
      */
@@ -68,7 +66,6 @@ class FileManager extends BaseClass {
     /**
      * Checks whether given path is a file
      *
-     * @method
      * @async
      * @param  {string} file Absolute file path
      * @return {boolean}     True if file is file, false otherwise
@@ -94,7 +91,6 @@ class FileManager extends BaseClass {
     /**
      * Checks whether given path is a directory
      *
-     * @method
      * @param  {string} dir Absolute directory path
      * @return {boolean}     True if file is a directory, false otherwise
      */
@@ -116,7 +112,6 @@ class FileManager extends BaseClass {
     /**
      * Checks whether given dir is writable by current user
      *
-     * @method
      * @param  {string} dir Absolute directory path
      * @return {boolean}     True if directory is writable, false otherwise
      */
@@ -156,7 +151,6 @@ class FileManager extends BaseClass {
     /**
      * Checks whether given file is writable by current user
      *
-     * @method
      * @param  {string} file Absolute file path
      * @return {boolean}     True if file is writable, false otherwise
      */
@@ -215,7 +209,6 @@ class FileManager extends BaseClass {
     /**
      * Returns absolute path to app root directory
      *
-     * @method
      * @return {string} App directory absolute path
      */
     getAppRoot () {
@@ -229,7 +222,6 @@ class FileManager extends BaseClass {
     /**
      * Compresses files into zip archive
      *
-     * @method
      * @async
      * @param  {string} archivePath Absolute path to zip archive
      * @param  {string[]} files     An array of file paths to compress
@@ -273,7 +265,6 @@ class FileManager extends BaseClass {
     /**
      * Creates directory recursively
      *
-     * @method
      * @async
      * @param  {string} directory Absolute directory path
      * @param  {Number} mode      Octal mode definition (i.e. 0o775)
@@ -306,7 +297,6 @@ class FileManager extends BaseClass {
     /**
      * Creates directory (recursive) and writes file to it
      *
-     * @method
      * @async
      * @param  {string} fileName Absolute path to file
      * @param  {Number} mode     Octal mode definition (i.e. 0o775)
@@ -344,7 +334,6 @@ class FileManager extends BaseClass {
     /**
      * Writes file to disk
      *
-     * @method
      * @async
      * @param  {string} file  Absolute path to file
      * @param  {string} data  Data to write
@@ -364,7 +353,6 @@ class FileManager extends BaseClass {
     /**
      * Reads file from disk
      *
-     * @method
      * @async
      * @param  {string} file  Absolute path to file
      * @param  {Object} options  Options object for fs.writeFileSync
@@ -383,21 +371,21 @@ class FileManager extends BaseClass {
     /**
      * Add listener that gets called when file changes on disk
      *
-     * @method
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Object}     options  Options object for fs.watchFile
      * @param  {Function}   listener Method to call when file changes
      */
     async watchFile(filePath, options, listener){
-        this.watchedFiles.push(filePath);
-        fs.watchFile(filePath, options, listener);
+        if (await this.isFile(filePath)){
+            this.watchedFiles.push(filePath);
+            fs.watchFile(filePath, options, listener);
+        }
     }
 
     /**
      * Removes listener that is bound to be called when file changes on disk
      *
-     * @method
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Function}   listener Method to call when file changes
@@ -413,7 +401,6 @@ class FileManager extends BaseClass {
     /**
      * Removes listeners for all watched files
      *
-     * @method
      * @async
      */
     async unwatchAllFiles () {
@@ -427,21 +414,21 @@ class FileManager extends BaseClass {
     /**
      * Add listener that gets called when file changes on disk
      *
-     * @method
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Object}     options  Options object for fs.watchFile
      * @param  {Function}   listener Method to call when file changes
      */
     async watch(filePath, options, listener){
-        var listenerName = listener.name ? listener.name : listener;
-        this.watched[filePath + ':' + listenerName] = fs.watch(filePath, options, listener);
+        if (await this.isFile(filePath)){
+            var listenerName = listener.name ? listener.name : listener;
+            this.watched[filePath + ':' + listenerName] = fs.watch(filePath, options, listener);
+        }
     }
 
     /**
      * Removes listener that is bound to be called when file changes on disk
      *
-     * @method
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Function}   listener Method to call when file changes
@@ -457,7 +444,6 @@ class FileManager extends BaseClass {
     /**
      * Removes listeners for all watched files
      *
-     * @method
      * @async
      */
     async unwatchAll () {
@@ -471,14 +457,13 @@ class FileManager extends BaseClass {
     /**
      * Loads all files from given directory that match extension regex from argument
      *
-     * @method
      * @async
      * @param  {string}     directory      Absolute path to directory
      * @param  {string}     extensionMatch Regex string for extension matching
      * @param  {boolean}    requireFiles   Flag to indicate whether to require() files or return their contents as strings
      * @return {Object}                    File contents (or required object) by file name
      */
-    async loadFilesFromDir (directory, extensionMatch, requireFiles) {
+    async loadFilesFromDir (directory, extensionMatch, requireFiles, notSilent) {
         var filesData = {};
         var extRegex;
 
@@ -541,7 +526,7 @@ class FileManager extends BaseClass {
                         if (extensionMatch){
                             fileIdentifier = fileIdentifier.replace(new RegExp(extensionMatch), '');
                         }
-                        filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles);
+                        filesData[fileIdentifier] = await this.loadFile(fullPath, requireFiles, notSilent);
                     }
                 } else {
                     // this.log('No eligible files found in "{1}"...', 'debug', [directory]);
@@ -560,48 +545,70 @@ class FileManager extends BaseClass {
     /**
      * Loads file from argument
      *
-     * @method
      * @async
-     * @param  {string} filePath        Absolute path to file
-     * @param  {boolean} requireFile    Flag to indicate whether to require() file or return its contents as string
+     * @param  {string}     filePath    Absolute path to file
+     * @param  {boolean}    requireFile Flag to indicate whether to require() file or return its contents as string
+     * @param  {boolean}    notSilent   Flag to force logging output
      * @return {(string|Object)}        File contents, exported object or null on failure.
      */
-    async loadFile (filePath, requireFile){
+    async loadFile (filePath, requireFile, notSilent){
         var fileData = null;
-        // var fileName = path.basename(filePath);
-        // var directory = path.dirname(filePath);
-
-        // this.log('* Loading file "{1}" from "{2}"...', 'debug', [fileName, directory]);
+        var fileName = path.basename(filePath);
+        var directory = path.dirname(filePath);
+        if (notSilent) {
+            this.log('Loading file "{1}" from "{2}"...', 'group', [fileName, directory]);
+        }
         if (!requireFile){
             if (fs.existsSync(filePath)){
                 let fStats = fs.statSync(filePath);
                 if (fStats.isFile()){
                     fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
                 } else {
-                    // this.log('Can\'t load file (not a file) "{1}" from "{2}".', 'error', [fileName, directory]);
+                    if (notSilent) {
+                        this.log('Problem loading file (not a file) "{1}" from "{2}".', 'error', [fileName, directory]);
+                    }
                 }
             } else {
-                // this.log('Can\'t load file (doesn\'t exist) "{1}" from "{2}".', 'error', [fileName, directory]);
+                if (notSilent) {
+                    this.log('Problem loading file (does not exist) "{1}" from "{2}".', 'error', [fileName, directory]);
+                }
             }
         } else {
-            fileData = require(path.resolve(filePath));
-            if (fileData.exported){
-                fileData = require(filePath).exported;
-            } else {
-                var fileKeys = _.keys(fileData);
-                if (fileKeys && fileKeys.length && fileKeys[0] && fileData[fileKeys[0]]){
-                    // this.log('* While requiring file "{1}" from "{2}", \'exported\' key was not found, using "{3}" instead.', 'debug', [fileName, directory, fileKeys[0]]);
-                    fileData = fileData[fileKeys[0]];
+            try {
+                fileData = require(path.resolve(filePath));
+                if (fileData.exported){
+                    fileData = require(filePath).exported;
                 } else {
-                    fileData = null;
-                    // this.log('* Problem Loading file "{1}" from "{2}", in order to require file, it has to export value \'exported\'!', 'error', [fileName, directory]);
+                    var fileKeys = _.keys(fileData);
+                    if (fileKeys && fileKeys.length && fileKeys[0] && fileData[fileKeys[0]]){
+                        if (notSilent) {
+                            this.log('While requiring file "{1}" from "{2}", "exported" key was not found, using "{3}" key instead.', 'warning', [fileName, directory, fileKeys[0]]);
+                        }
+                        fileData = fileData[fileKeys[0]];
+                    } else {
+                        fileData = null;
+                        if (notSilent) {
+                            this.log('Problem Loading file "{1}" from "{2}", in order to require file, it has to export value "exported"!', 'error', [fileName, directory]);
+                        }
+                    }
+                }
+            } catch (ex) {
+                if (notSilent) {
+                    this.log('Problem requiring file "{1}" - "{2}"', 'error', [filePath, ex.message]);
                 }
             }
         }
         if (fileData){
-            // this.log('* Successfully loaded file "{1}" from "{2}"...', 'debug', [fileName, directory]);
+            if (notSilent) {
+                this.log('Successfully loaded file "{1}" from "{2}"...', 'info', [fileName, directory]);
+            }
         } else {
-            // this.log('* Failed loading file "{1}" from "{2}"...', 'error', [fileName, directory]);
+            if (notSilent) {
+                this.log('Failed loading file "{1}" from "{2}"...', 'error', [fileName, directory]);
+            }
+        }
+        if (notSilent){
+            this.log('Loading file "{1}" from "{2}"...', 'groupend', [fileName, directory]);
         }
         return fileData;
     }
@@ -609,17 +616,17 @@ class FileManager extends BaseClass {
     /**
      * Scans given dirs for file and returns first file found
      *
-     * @method
      * @async
-     * @param  {string} fileName            File name (basename)
-     * @param  {string[]} dirs              An array of absolute directory paths to search
-     * @param  {boolean} requireFile        Flag to indicate whether to require() file or return its contents as string
+     * @param  {string}     fileName        File name (basename)
+     * @param  {string[]}   dirs            An array of absolute directory paths to search
+     * @param  {boolean}    requireFile     Flag to indicate whether to require() file or return its contents as string
+     * @param  {boolean}    notSilent       Flag to force logging output
      * @return {(string|Object|boolean)}    File contents, exported object or false on failure.
      */
-    async loadFileFromDirs (fileName, dirs, requireFile){
+    async loadFileFromDirs (fileName, dirs, requireFile, notSilent){
         let currentFile = await this.getFirstFileFromDirs(fileName, dirs);
         if (await this.isFile(currentFile)){
-            let fileData = await this.loadFile(currentFile, requireFile);
+            let fileData = await this.loadFile(currentFile, requireFile, notSilent);
             if (fileData){
                 return fileData;
             }
@@ -630,7 +637,6 @@ class FileManager extends BaseClass {
     /**
      * Reads file list from dir and returns it, excluding '.' and '..'
      *
-     * @method
      * @async
      * @param  {string} path Absolute directory path
      * @return {string[]}  An array of entries from directory
@@ -646,7 +652,6 @@ class FileManager extends BaseClass {
     /**
      * Reads recursive file list from dir and returns it, excluding all '.' and '..' entries
      *
-     * @method
      * @async
      * @param  {string} dirPath Absolute directory path
      * @return {string[]}  An array of entries from directory and its subdirectories
@@ -674,7 +679,6 @@ class FileManager extends BaseClass {
     /**
      * Scans given directories for file, returning path to first one found
      *
-     * @method
      * @async
      * @param  {string} fileName File name (basename)
      * @param  {string[]} dirs   An array of absolute directory paths
