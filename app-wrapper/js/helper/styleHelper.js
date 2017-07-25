@@ -1,20 +1,38 @@
+/**
+ * @fileOverview StyleHelper class file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 const BaseClass = require('../base').BaseClass;
 
+/**
+ * StyleHelper class - handles and manages html element style operations
+ *
+ * @class
+ * @extends BaseClass
+ * @memberof appWrapper.helpers
+ */
 class StyleHelper extends BaseClass {
 
+    /**
+     * Creates StyleHelper instance
+     *
+     * @constructor
+     * @return {StyleHelper}              Instance of StyleHelper class
+     */
     constructor(){
         super();
     }
 
-    async initialize () {
-        await super.initialize();
-        return this;
-    }
-
-    async finalize () {
-        return true;
-    }
-
+    /**
+     * Gets CSS variable value by its name
+     *
+     * @param  {string}         name         Name of CSS variable
+     * @param  {string}         defaultValue Default value to return if var not found
+     * @param  {HTMLElement}    element      HTML element for which to return variable value (windwo by default)
+     * @return {string}                      CSS variable value
+     */
     getCssVarValue (name, defaultValue, element) {
         if (!element){
             element = document.body;

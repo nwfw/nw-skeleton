@@ -2,7 +2,6 @@
  * @fileOverview AppState app wrapper file
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.1.0
- * @memberOf appWrapper
  */
 
 /**

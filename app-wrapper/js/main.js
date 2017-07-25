@@ -1,3 +1,9 @@
+/**
+ * @fileOverview main script file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 const _ = require('lodash');
 const nwSkeleton = require('nw-skeleton');
 const MainScript = nwSkeleton.MainScript;
@@ -7,6 +13,12 @@ const appConfig = require('./config/config');
 var config = _.extend(appWrapperConfig, appConfig);
 var mainScript;
 
+/**
+ * Starts the application
+ *
+ * @async
+ * @memberOf mainScript
+ */
 async function main(){
     try {
         mainScript = new MainScript();

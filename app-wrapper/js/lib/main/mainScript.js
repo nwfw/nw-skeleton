@@ -15,7 +15,15 @@ const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsync
  * A Utility class for handling main script (nwjs bg-script) tasks
  *
  * @class
- * @memberOf MainScript
+ * @memberOf mainScript
+ *
+ * @property {Object}                   config                  App configuration
+ * @property {Object}                   inspectOptions          Util.inspect default options
+ * @property {Window}                   mainWindow              Reference to main nw.Window
+ * @property {Object}                   manifest                Manifest file data
+ * @property {MainMessageHandlers}      messageHandlers         Object that handles messages
+ * @property {MainAsyncMessageHandlers} asyncMessageHandlers    Object that handles async messages
+ * @property {Object}                   boundMethods            Wrapper object for bound method references
  */
 class MainScript {
 
@@ -35,7 +43,6 @@ class MainScript {
             colors: true
         };
         this.mainWindow = null;
-        this.mainState = {};
         this.manifest = null;
         this.messageHandlers = null;
         this.asyncMessageHandlers = null;
@@ -54,23 +61,31 @@ class MainScript {
 
     }
 
+    /**
+     * Initializes MainScript using manifest and app config data
+     *
+     * @async
+     * @param  {Object}     manifest Manifest file data
+     * @param  {Object}     config   App config data
+     * @return {MainScript}          Instance of MainScript class
+     */
     async initialize (manifest, config){
-        // process.stdin.resume();
-
         this.manifest = manifest;
         this.config = config;
 
         this.messageHandlers = new MainMessageHandlers();
-        await this.messageHandlers.initialize();
-
         this.asyncMessageHandlers = new MainAsyncMessageHandlers();
-        await this.asyncMessageHandlers.initialize();
 
         this.addBoundMethods();
         this.addEventListeners();
         return this;
     }
 
+    /**
+     * Destroys current MainScript class instance
+     *
+     * @async
+     */
     async destroy () {
         this.removeEventListeners();
         this.removeMainWindowEventListeners();
@@ -78,6 +93,11 @@ class MainScript {
         this.removeBoundMethods();
     }
 
+    /**
+     * Starts the application
+     *
+     * @async
+     */
     async start () {
         var returnPromise;
         var resolveReference;
@@ -93,6 +113,11 @@ class MainScript {
         return returnPromise;
     }
 
+    /**
+     * Initializes globalEmitter object for communication with the app
+     *
+     * @async
+     */
     async initializeGlobalEmitter () {
         this.mainWindow.globalEmitter = new EventEmitter();
         this.addGlobalEmitterEventListeners();
@@ -172,15 +197,20 @@ class MainScript {
         this.mainWindow.globalEmitter.removeListener('asyncMessage', this.boundMethods.asyncMessageReceived);
     }
 
+    /**
+     * Handles messages received from the app
+     *
+     * @param  {Object} data    Data passed with message
+     * @return {mixed}          Result of message execution
+     */
     messageReceived (data){
         if (data && data.instruction){
-            this.log('Message received');
+            // this.log('Message received');
             let instruction = data.instruction;
             let messageData = {};
             if (data.data){
                 messageData = data.data;
             } else {
-                // messageData = _.omit(data, 'instruction');
                 messageData = data;
             }
             return this.messageHandlers.execute(instruction, messageData);
@@ -189,9 +219,15 @@ class MainScript {
         }
     }
 
+    /**
+     * Handles async messages received from the app
+     *
+     * @param  {Object} data    Data passed with message
+     * @return {mixed}          Result of message execution
+     */
     asyncMessageReceived (data){
         if (data && data.instruction && data.uuid){
-            this.log('Async message received, uuid: ' + data.uuid);
+            // this.log('Async message received, uuid: ' + data.uuid);
             let instruction = data.instruction;
             let uuid = data.uuid;
             let messageData = {};
@@ -208,12 +244,18 @@ class MainScript {
         }
     }
 
+    /**
+     * Logs data to console if debug is enabled
+     */
     log () {
         if (this.config && this.config.main && this.config.main.debug){
             this.doLog(arguments);
         }
     }
 
+    /**
+     * Logs data to console
+     */
     doLog () {
         let params = [];
         for (let i=0; i<arguments.length; i++){
@@ -247,7 +289,7 @@ class MainScript {
             logMethod = this.boundMethods.printLog;
         }
         logMethod(formattedParams);
-        if (this.mainWindow && this.mainWindow.window && this.mainWindow.window.console){
+        if (this.config && this.config.main && this.config.main.debugToWindow && this.mainWindow && this.mainWindow.window && this.mainWindow.window.console){
             setTimeout( () => {
                 if (clearLastLine){
                     process.stdout.write('\x1B[s');
@@ -261,18 +303,39 @@ class MainScript {
         }
     }
 
+    /**
+     * Prints message to stdout
+     *
+     * @param  {string} message Message to print
+     */
     print (message){
         process.stdout.write(message);
     }
 
+    /**
+     * Prints message to stdout with newline appended
+     *
+     * @param  {string} message Message to print
+     */
     printLn (message){
         process.stdout.write(message.replace(/\r?\n?$/, '\n'));
     }
 
+    /**
+     * Logs message to console
+     *
+     * @param  {mixed} message Message to log
+     */
     printLog(message){
         console.log(message);
     }
 
+    /**
+     * Handler for mainWindow 'closed' event
+     *
+     * @param  {Event} e        Event that triggered the method
+     * @param  {Boolean} noExit Flag to prevent exiting main process
+     */
     windowClosed (e, noExit) {
         _.noop(e);
         if (!noExit){
@@ -280,10 +343,18 @@ class MainScript {
         }
     }
 
+    /**
+     * Handler for main window 'loaded' event
+     */
     windowLoaded () {
         this.log('Main window loaded');
     }
 
+    /**
+     * Handler for uncaught exceptions
+     *
+     * @param  {Error} err  Uncaught exception
+     */
     uncaughtException (err) {
         this.doLog('EXCEPTION');
         if (err.message){
@@ -313,6 +384,11 @@ class MainScript {
         }, timeoutDuration);
     }
 
+    /**
+     * Handler for SIGINT signal
+     *
+     * @param  {Integer} code Optional exit code for the app
+     */
     sigInt (code) {
         if (_.isUndefined(code)){
             code = 4;

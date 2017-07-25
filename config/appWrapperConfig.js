@@ -1,6 +1,7 @@
 exports.config = {
     main : {
         debug: true,
+        debugToWindow: false,
     },
     wrapper : {
         appFile: '../../app/js/app',

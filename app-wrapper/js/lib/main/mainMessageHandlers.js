@@ -10,7 +10,7 @@ const _ = require('lodash');
  * A Utility class for handling main script messages
  *
  * @class
- * @memberOf MainScript
+ * @memberOf mainScript
  */
 class MainMessageHandlers {
 
@@ -24,19 +24,28 @@ class MainMessageHandlers {
         return this;
     }
 
-    async initialize () {
-        return this;
-    }
-
+    /**
+     * Executes received message based on message data
+     *
+     * @param  {string} instruction Message instruction
+     * @param  {Object} data        Data passed with message
+     * @return {Boolean}            True if handler is found, false otherwise
+     */
     execute (instruction, data){
         let methodName = instruction + 'Handler';
         if (this[methodName] && _.isFunction(this[methodName])){
-            return this[methodName](data);
+            this[methodName](data);
+            return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Simple ping handler - responds with 'pong' instruction
+     *
+     * @param  {Object} data        Data passed with message
+     */
     pingHandler (data) {
         let duration = 500;
         if (data.duration && _.isInteger(data.duration)){
@@ -50,6 +59,11 @@ class MainMessageHandlers {
         }, duration);
     }
 
+    /**
+     * Logging handler - logs message data to console
+     *
+     * @param  {Object} data        Data passed with message
+     */
     logHandler (data) {
         if (data && data.message){
             if (data.force){
@@ -60,6 +74,11 @@ class MainMessageHandlers {
         }
     }
 
+    /**
+     * Property logging handler - logs mainScript property from message data to console
+     *
+     * @param  {Object} data        Data passed with message
+     */
     logMainScriptPropertyHandler (data) {
         if (data && data.property && mainScript[data.property]){
             if (data.force){
@@ -70,6 +89,11 @@ class MainMessageHandlers {
         }
     }
 
+    /**
+     * Configuration setting handler - sets current config to data from message
+     *
+     * @param  {Object} data        Data passed with message
+     */
     setConfigHandler(data){
         if (data && data.config){
             mainScript.config = data.config;

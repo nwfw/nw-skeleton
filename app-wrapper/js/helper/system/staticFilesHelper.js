@@ -2,7 +2,6 @@
  * @fileOverview StaticFilesHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.1.0
- * @memberOf appWrapper.helpers.systemHelpers
  */
 
 const _ = require('lodash');
@@ -696,7 +695,6 @@ class StaticFilesHelper extends BaseClass {
      * @param  {string} filename    Path to changed file
      */
     async cssFileChanged (e, filename) {
-        console.log('changed', filename);
         this.log('Css file "{1}" fired event "{2}"', 'debug', [filename, e]);
         if (this.getConfig('compileCss')){
             await this.reloadCss();

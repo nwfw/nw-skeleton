@@ -1,8 +1,26 @@
+/**
+ * @fileOverview inspector-json component file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.1.0
+ */
+
 const _ = require('lodash');
-
-let _appWrapper = window.getAppWrapper();
-let appState = _appWrapper.getAppState();
-
+var _appWrapper = window.getAppWrapper();
+var appState = _appWrapper.getAppState();
+/**
+ * Inspector json component
+ *
+ * @name inspector-json
+ * @memberOf components
+ * @property {string}   name        Name of the component
+ * @property {string}   template    Component template contents
+ * @property {string[]} props       Component properties
+ * @property {Function} data        Data function
+ * @property {Object}   methods     Component methods
+ * @property {Object}   watch       Component watchers
+ * @property {Object}   computed    Computed properties
+ * @property {Object}   components  Child components
+ */
 let inspectorJson = require('../../../js/lib/ext/inspector-json');
 
 exports.component = {
