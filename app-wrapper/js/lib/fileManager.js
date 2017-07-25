@@ -353,12 +353,11 @@ class FileManager extends BaseClass {
     /**
      * Reads file from disk
      *
-     * @async
      * @param  {string} file  Absolute path to file
      * @param  {Object} options  Options object for fs.writeFileSync
      * @return {(string|null)}   File contents if operation succeeded, null otherwise
      */
-    async readFileSync(file, options){
+    readFileSync(file, options){
         var data = null;
         try {
             data = fs.readFileSync(file, options);
@@ -562,7 +561,7 @@ class FileManager extends BaseClass {
             if (fs.existsSync(filePath)){
                 let fStats = fs.statSync(filePath);
                 if (fStats.isFile()){
-                    fileData = fs.readFileSync(filePath, {encoding: 'utf8'}).toString();
+                    fileData = fs.readFileSync(filePath, {encoding: 'utf8', flag: 'rs+'}).toString();
                 } else {
                     if (notSilent) {
                         this.log('Problem loading file (not a file) "{1}" from "{2}".', 'error', [fileName, directory]);
@@ -575,6 +574,7 @@ class FileManager extends BaseClass {
             }
         } else {
             try {
+                delete require.cache[require.resolve(path.resolve(filePath))];
                 fileData = require(path.resolve(filePath));
                 if (fileData.exported){
                     fileData = require(filePath).exported;

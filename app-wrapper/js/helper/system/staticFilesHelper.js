@@ -9,6 +9,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
+const postcssUrl = require('postcss-url');
 
 const BaseClass = require('../../base').BaseClass;
 
@@ -56,6 +57,18 @@ class StaticFilesHelper extends BaseClass {
     }
 
     /**
+     * Postcss-url [custom rebase function]{@link https://github.com/postcss/postcss-url#url-function}
+     *
+     * @param  {Object} asset Asset data
+     * @param  {Object} dir   Directories data
+     * @return {string}       Absolute path to asset
+     */
+    rebaseAsset(asset, dir){
+        _.noop(dir);
+        return 'file://' + asset.absolutePath;
+    }
+
+    /**
      * Loads css file, returning its contents
      *
      * @async
@@ -66,9 +79,8 @@ class StaticFilesHelper extends BaseClass {
     async loadCss (href, noWatch) {
         let cssFilePath = href;
         let cssContents = '';
-        let compiledCssPath = this.getConfig('appConfig.cssCompiledFile');
-
-
+        let compiledCssFile = this.getConfig('appConfig.cssCompiledFile');
+        let compiledCssPath = path.resolve(path.join('.', compiledCssFile));
 
         if (!await _appWrapper.fileManager.isFile(cssFilePath)){
             cssFilePath  = path.resolve(path.join('.' + href));
@@ -77,15 +89,8 @@ class StaticFilesHelper extends BaseClass {
 
             cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
 
-            let rootAppDir = path.join(appState.appDir, '..');
-            let rootAppDirRegex = _appWrapper.getHelper('util').quoteRegex(rootAppDir);
-            if (!cssFilePath.match(rootAppDirRegex) || cssFilePath.match(/node_modules/)){
-                let relativePath = path.resolve(path.relative(rootAppDir, path.dirname(cssFilePath)));
-                relativePath = relativePath.replace(/\s/g, '\\ ');
-                cssContents = cssContents.replace(/\.\//g, 'file://' + relativePath + '/');
-            }
             if (cssContents){
-                cssContents = await postcss().process(cssContents, { from: href, to: compiledCssPath });
+                cssContents = await postcss().use(postcssUrl({url: this.rebaseAsset})).process(cssContents, { from: href, to: compiledCssPath });
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
@@ -99,7 +104,7 @@ class StaticFilesHelper extends BaseClass {
     }
 
     /**
-     * Add css files to current page <head>
+     * Add css files to current page head tag
      *
      * @async
      * @param {string}  href    Path to css file
@@ -224,17 +229,17 @@ class StaticFilesHelper extends BaseClass {
                     loadedLinks++;
                     this.log('Reloaded CSS file "{1}"', 'info', [newLink.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
                     if (loadedLinks >= linkCount){
-                        clearTimeout(this.timeouts.removeOldCssTags);
-                        this.timeouts.removeOldCssTags = setTimeout( () => {
-                            clearTimeout(this.timeouts.removeOldCssTags);
-                            this.log('Removing {1} old CSS tags', 'group', [linkCount]);
-                            for (let j=0; j<links.length;j++){
-                                this.log('Removing old CSS file "{1}" tag', 'info', [links[j].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
-                                headEl.removeChild(links[j]);
-                            }
-                            this.log('Removing {1} old CSS tags', 'groupend', [linkCount]);
-                            this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
-                        }, 100);
+                        // clearTimeout(this.timeouts.removeOldCssTags);
+                        // this.timeouts.removeOldCssTags = setTimeout( () => {
+                        //     clearTimeout(this.timeouts.removeOldCssTags);
+                        //     this.log('Removing {1} old CSS tags', 'group', [linkCount]);
+                        //     for (let j=0; j<links.length;j++){
+                        //         this.log('Removing old CSS file "{1}" tag', 'info', [links[j].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
+                        //         headEl.removeChild(links[j]);
+                        //     }
+                        //     this.log('Removing {1} old CSS tags', 'groupend', [linkCount]);
+                        //     this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
+                        // }, 100);
                     }
                 };
 
@@ -242,6 +247,7 @@ class StaticFilesHelper extends BaseClass {
                 newLinks[i].setAttribute('type', 'text/css');
                 newLinks[i].setAttribute('href', newHref);
                 headEl.appendChild(newLinks[i]);
+                links[i].parentNode.removeChild(links[i]);
             }
         }
     }
@@ -268,7 +274,7 @@ class StaticFilesHelper extends BaseClass {
     }
 
     /**
-     * Generates css by compiling all files or adding all files to <head> tag based on configuration
+     * Generates css by compiling all files or adding all files to head tag based on configuration
      *
      * @async
      * @param {boolean} noWatch Flag that prevents file watching
@@ -327,7 +333,7 @@ class StaticFilesHelper extends BaseClass {
     }
 
     /**
-     * Adds css files to <head>
+     * Adds css files to head
      *
      * @async
      * @param {string[]}    cssFiles An array of css files to add
@@ -541,18 +547,18 @@ class StaticFilesHelper extends BaseClass {
                 this.log('Compiling {1} CSS files', 'group', [cssFileData.counts.totalCssFileCount]);
             }
 
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.initCssFiles, 'init', silent, noWatch);
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeInitCssFiles, 'theme init', silent, noWatch);
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.appCssFiles, 'app', silent, noWatch);
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeCssFiles, 'theme', silent, noWatch);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.initCssFiles, 'init', noWatch, silent);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeInitCssFiles, 'theme init', noWatch, silent);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.appCssFiles, 'app', noWatch, silent);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeCssFiles, 'theme', noWatch, silent);
 
             if (appState.isDebugWindow){
-                compiledCss += await this.compileCssTypeGroup(cssFileData.files.debugCssFiles, 'app-debug', silent, noWatch);
-                compiledCss += await this.compileCssTypeGroup(cssFileData.files.appDebugCssFiles, 'debug', silent, noWatch);
+                compiledCss += await this.compileCssTypeGroup(cssFileData.files.debugCssFiles, 'app-debug', noWatch, silent);
+                compiledCss += await this.compileCssTypeGroup(cssFileData.files.appDebugCssFiles, 'debug', noWatch, silent);
             }
 
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.componentCssFiles, 'component', silent, noWatch);
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeOverrideCssFiles, 'theme override', silent, noWatch);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.componentCssFiles, 'component', noWatch, silent);
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeOverrideCssFiles, 'theme override', noWatch, silent);
 
             if (!silent){
                 this.log('{1} CSS files compiled, total size: {2}', 'info', [cssFileData.counts.totalCssFileCount, _appWrapper.getHelper('format').formatFileSize(compiledCss.length)]);
@@ -563,7 +569,7 @@ class StaticFilesHelper extends BaseClass {
     }
 
     /**
-     * Adds js file <script> tag to document <head> element
+     * Adds js file script tag to document head element
      *
      * @async
      * @param  {string} href Path to js file
@@ -679,6 +685,7 @@ class StaticFilesHelper extends BaseClass {
      * @param  {string} filename    Path to changed file
      */
     async cssFileChanged (e, filename) {
+        console.log('changed', filename);
         this.log('Css file "{1}" fired event "{2}"', 'debug', [filename, e]);
         if (this.getConfig('compileCss')){
             await this.reloadCss();
@@ -707,11 +714,16 @@ class StaticFilesHelper extends BaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        await this.unwatchFiles();
+        await this.generateCss(false, true);
+        await this.refreshCss();
+    }
+
+    async unwatchFiles () {
         for (let i=0; i<this.watchedFiles.length; i++){
             await _appWrapper.fileManager.unwatch(this.watchedFiles[i], this.boundMethods.cssFileChanged);
         }
-        await this.generateCss(false, true);
-        await this.refreshCss();
+        this.watchedFiles = [];
     }
 }
 

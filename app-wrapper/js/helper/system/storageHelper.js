@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+var BaseClass = require('../../base').BaseClass;
 
 var _appWrapper;
 var appState;
@@ -12,7 +12,6 @@ class StorageHelper extends BaseClass {
         _appWrapper = window.getAppWrapper();
         appState = _appWrapper.getAppState();
 
-        _.noop(_appWrapper);
         _.noop(appState);
 
         return this;

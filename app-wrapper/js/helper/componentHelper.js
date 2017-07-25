@@ -499,7 +499,6 @@ class ComponentHelper extends BaseClass {
         for(let globalComponentName in this.vueGlobalComponents){
             Vue.component(globalComponentName, this.vueGlobalComponents[globalComponentName]);
         }
-
         this.log('Initializing components...', 'groupend', []);
     }
 
@@ -604,74 +603,120 @@ class ComponentHelper extends BaseClass {
             } else {
                 this.log('Loaded component "{1}"', 'info', [componentName]);
             }
-
-            await this.loadComponentTemplate(component, loadDirs);
-            component.components = {};
-
-            if (additionalSubComponents && _.keys(additionalSubComponents).length){
-                component.components = _.merge(component.components, additionalSubComponents);
-            }
-            if (componentMapping){
-                if (childCount){
-
-                    for (let i in componentMapping.components){
-                        let childComponent = await this.initializeComponent(componentBaseDir, i, componentMapping.components[i], componentName, [], overrideDirs);
-                        component.components[i] = childComponent;
-                    }
-                }
-
-                if (componentMapping.dataName){
-                    component.data = () => {
-                        let componentData = _.get(this.appData, componentMapping.dataName, {noData: true});
-                        return componentData;
-                    };
-                }
-                if (componentMapping.data){
-                    component.data = () => {
-                        return componentMapping.data;
-                    };
-                }
-                if (componentMapping.componentCssFiles){
-                    for(let i=0; i<componentMapping.componentCssFiles.length; i++){
-                        let cssFile = path.join(componentBaseDir , componentName, componentMapping.componentCssFiles[i]);
-                        appState.componentCssFiles.push(cssFile);
-                    }
-                } else {
-                    let cssFileName = componentName + '.css';
-                    let cssFile = await _appWrapper.fileManager.getFirstFileFromDirs(cssFileName, loadDirs);
-                    if (cssFile){
-                        if (await _appWrapper.fileManager.isFile(cssFile)){
-                            appState.componentCssFiles.push(cssFile);
-                        }
-                    }
-                }
-                let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
-                if (componentStateFile){
-                    if (await _appWrapper.fileManager.isFile(componentStateFile)){
-                        let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
-                        if (componentState && _.isObject(componentState)) {
-                            _.merge(appState, componentState);
-                        }
-                    }
-                }
-
-                if (component.mixins){
-                    component.mixins.push(BaseComponent);
-                } else {
-                    component.mixins = [BaseComponent];
-                }
-
-                if (component.filters){
-                    component.filters = _.union(component.filters, this.vueFilters);
-                } else {
-                    component.filters = this.vueFilters;
-                }
+            if (!_.isFunction(component)){
+                component = await this.prepareComponent(component, componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs, loadDirs);
+            } else {
+                component._prepareParams = [componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs, loadDirs];
             }
             if (type == 'group'){
                 this.log(message, 'groupend', data);
             }
         } else {
             this.log('Problem loading component "{1}" - component file not found!', 'error', [componentName]);
+        }
+        return component;
+    }
+
+    /**
+     * Prepares single component
+     *
+     * @see {@link ComponentHelper#prepareComponent}
+     * @param  {array}  params  Array with component parameters
+     * @return {Object}         Prepared component
+     */
+    async prepareComponentArray(params) {
+        let component = await this.prepareComponent(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
+        await _appWrapper.getHelper('staticFiles').reloadCss();
+        return component;
+
+    }
+
+    /**
+     * Prepares single component
+     *
+     * Loads component template, initializes its children using componentMapping argument, injects additional sub components if available, sets data if available,
+     * prepares component css files if any, merges componentState with appState (if available), adds eventual filters, mixins and directives
+     * This methods returns completely prepared component, ready to be used in the app
+     *
+     * @async
+     * @param  {Object} component                   Unprepared component object
+     * @param  {string} componentBaseDir            Base directory path
+     * @param  {string} componentName               Name of the component
+     * @param  {Object} componentMapping            Component mapping from configuration
+     * @param  {string} parentName                  Name of the parent component
+     * @param  {array} additionalSubComponents      An array of eventual additional child components
+     * @param  {string[]} overrideDirs              Override dirs to look for when loading components
+     * @return {Object}                             Prepared component
+     */
+    async prepareComponent(component, componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs, loadDirs) {
+
+        await this.loadComponentTemplate(component, loadDirs);
+
+        let childCount = 0;
+        if (componentMapping && componentMapping.components){
+            childCount = _.keys(componentMapping.components).length;
+        }
+
+        component.components = {};
+
+        if (additionalSubComponents && _.keys(additionalSubComponents).length){
+            component.components = _.merge(component.components, additionalSubComponents);
+        }
+        if (componentMapping){
+            if (childCount){
+
+                for (let i in componentMapping.components){
+                    let childComponent = await this.initializeComponent(componentBaseDir, i, componentMapping.components[i], componentName, [], overrideDirs);
+                    component.components[i] = childComponent;
+                }
+            }
+
+            if (componentMapping.dataName){
+                component.data = () => {
+                    let componentData = _.get(this.appData, componentMapping.dataName, {noData: true});
+                    return componentData;
+                };
+            }
+            if (componentMapping.data){
+                component.data = () => {
+                    return componentMapping.data;
+                };
+            }
+            if (componentMapping.componentCssFiles){
+                for(let i=0; i<componentMapping.componentCssFiles.length; i++){
+                    let cssFile = path.join(componentBaseDir , componentName, componentMapping.componentCssFiles[i]);
+                    appState.componentCssFiles.push(cssFile);
+                }
+            } else {
+                let cssFileName = componentName + '.css';
+                let cssFile = await _appWrapper.fileManager.getFirstFileFromDirs(cssFileName, loadDirs);
+                if (cssFile){
+                    if (await _appWrapper.fileManager.isFile(cssFile)){
+                        appState.componentCssFiles.push(cssFile);
+                    }
+                }
+            }
+            let componentStateFile = await _appWrapper.fileManager.getFirstFileFromDirs('componentState.js', loadDirs);
+            if (componentStateFile){
+                if (await _appWrapper.fileManager.isFile(componentStateFile)){
+                    let componentState = await _appWrapper.fileManager.loadFile(componentStateFile, true);
+                    if (componentState && _.isObject(componentState)) {
+                        _.merge(appState, componentState);
+                    }
+                }
+            }
+
+            if (component.mixins){
+                component.mixins.push(BaseComponent);
+            } else {
+                component.mixins = [BaseComponent];
+            }
+
+            if (component.filters){
+                component.filters = _.union(component.filters, this.vueFilters);
+            } else {
+                component.filters = this.vueFilters;
+            }
         }
         return component;
     }

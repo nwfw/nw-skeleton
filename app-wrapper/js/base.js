@@ -706,5 +706,34 @@ class BaseClass extends eventEmitter {
             clearInterval(this.intervals[name]);
         }
     }
+
+    globalEmit (eventName, data){
+        _appWrapper.windowManager.win.globalEmitter.emit(eventName, data);
+    }
+
+    message (data){
+        _appWrapper.windowManager.win.globalEmitter.emit('message', data);
+    }
+
+    async asyncMessage (data){
+        var returnPromise;
+        var resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+        if (!data.uuid){
+            data.uuid = this.getHelper('util').uuid();
+        }
+        let listener;
+        listener = (returnData) => {
+            if (data.uuid == returnData.uuid){
+                _appWrapper.windowManager.win.globalEmitter.removeListener('asyncMessageResponse', listener);
+                resolveReference(returnData);
+            }
+        };
+        _appWrapper.windowManager.win.globalEmitter.on('asyncMessageResponse', listener);
+        _appWrapper.windowManager.win.globalEmitter.emit('asyncMessage', data);
+        return returnPromise;
+    }
 }
 exports.BaseClass = BaseClass;
