@@ -44,11 +44,7 @@ class StaticFilesHelper extends BaseClass {
         this.cssFileLoadResolves = {};
 
         this.boundMethods = {
-            cssFileChanged: null
-        };
-
-        this.timeouts = {
-            removeOldCssTags: null
+            cssFileChanged: null,
         };
 
         this.watchedFiles = [];
@@ -221,35 +217,49 @@ class StaticFilesHelper extends BaseClass {
         for (let i=0; i<links.length; i++) {
             if (links[i].type && links[i].type == 'text/css'){
                 this.log('Reloading CSS file "{1}"', 'info', [links[i].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
-                let newHref = links[i].href.replace(/\?rand=.*$/, '') + '?rand=' + (Math.random() * 100);
+                let newHref = links[i].href + '';
                 newLinks[i] = document.createElement('link');
 
-                newLinks[i].onload = (e) => {
+                newLinks[i].onload = async (e) => {
                     let newLink = e.target;
+                    newLink.onload = null;
                     loadedLinks++;
                     this.log('Reloaded CSS file "{1}"', 'info', [newLink.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
                     if (loadedLinks >= linkCount){
-                        // clearTimeout(this.timeouts.removeOldCssTags);
-                        // this.timeouts.removeOldCssTags = setTimeout( () => {
-                        //     clearTimeout(this.timeouts.removeOldCssTags);
-                        //     this.log('Removing {1} old CSS tags', 'group', [linkCount]);
-                        //     for (let j=0; j<links.length;j++){
-                        //         this.log('Removing old CSS file "{1}" tag', 'info', [links[j].href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
-                        //         headEl.removeChild(links[j]);
-                        //     }
-                        //     this.log('Removing {1} old CSS tags', 'groupend', [linkCount]);
-                        //     this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
-                        // }, 100);
+                        await this.removeOldCssTags();
+                        this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
                     }
                 };
 
                 newLinks[i].setAttribute('rel', 'stylesheet');
                 newLinks[i].setAttribute('type', 'text/css');
                 newLinks[i].setAttribute('href', newHref);
+                newLinks[i].setAttribute('data-new', 'true');
                 headEl.appendChild(newLinks[i]);
-                links[i].parentNode.removeChild(links[i]);
             }
         }
+    }
+
+    /**
+     * Removes old CSS tags from head element
+     *
+     * @async
+     */
+    async removeOldCssTags () {
+        await _appWrapper.wait(1);
+        this.log('Removing old CSS tags', 'group');
+        let links = document.querySelectorAll('link');
+        for (let i=0; i<links.length;i++){
+            if (!links[i].hasAttribute('data-new')){
+                this.log('Removing old CSS file "{1}" tag', 'info', [links[i].href]);
+                links[i].parentNode.removeChild(links[i]);
+            } else {
+                links[i].removeAttribute('data-new');
+            }
+        }
+        this.detectMissingVariables();
+        this.log('Removing old CSS tags', 'groupend', []);
+
     }
 
     /**
@@ -270,6 +280,7 @@ class StaticFilesHelper extends BaseClass {
             this.cssFileLoadResolves[cssFile] = null;
             delete this.cssFileLoadResolves[cssFile];
         }
+        this.detectMissingVariables();
         this.log('Preparing css files...', 'groupend', []);
     }
 
@@ -719,11 +730,61 @@ class StaticFilesHelper extends BaseClass {
         await this.refreshCss();
     }
 
+    /**
+     * Removes watchers from all watched files
+     *
+     * @async
+     */
     async unwatchFiles () {
         for (let i=0; i<this.watchedFiles.length; i++){
             await _appWrapper.fileManager.unwatch(this.watchedFiles[i], this.boundMethods.cssFileChanged);
         }
         this.watchedFiles = [];
+    }
+
+    /**
+     * Detects eventual missing css variables
+     *
+     * @param  {Boolean} silent Flag to prevent logging
+     * @return {string[]}       All missing css variable names
+     */
+    detectMissingVariables (silent){
+        let allVariables = [];
+        let missingVariables = [];
+        let styleHelper = _appWrapper.getHelper('style');
+        for (let i=0; i<document.styleSheets.length; i++){
+            let currentStyleSheet = document.styleSheets[i];
+            for (let j=0; j<currentStyleSheet.cssRules.length; j++){
+                let currentRule = currentStyleSheet.cssRules[j];
+                if (!_.isUndefined(currentRule.style)){
+                    for (let k=0; k<currentRule.style.length; k++){
+                        let name = currentRule.style.item(k);
+                        let value = currentRule.style[name];
+                        if (value && value.match(/var\(/)){
+                            let matches = value.match(/var\(([^)]+)/);
+                            if (matches && matches.length > 1){
+                                allVariables.push(matches[1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        allVariables = _.uniq(allVariables);
+        for (let i=0; i<allVariables.length; i++){
+            let value = styleHelper.getCssVarValue(allVariables[i]);
+            if (!value){
+                missingVariables.push(allVariables[i]);
+            }
+        }
+        if (!silent){
+            if (missingVariables && missingVariables.length){
+                this.log('Missing css variables found - "{1}"', 'warning', [missingVariables.join('", "')]);
+            } else {
+                this.log('No missing css variables found', 'info', []);
+            }
+        }
+        return missingVariables;
     }
 }
 

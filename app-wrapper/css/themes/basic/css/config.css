@@ -157,7 +157,7 @@
     --app-message-list-message-debug-highlight-color: #000000;
     --app-message-list-message-debug-highlight-background: #EEEEEE;
 
-    --app-message-list-message-info-color: #006600;
+    --app-message-list-message-info-highlight-color: #006600;
     --app-message-list-message-info-highlight-background: #66FF66;
 
     --app-message-list-message-warning-highlight-color: #666600;
@@ -166,6 +166,8 @@
     --app-message-list-message-error-highlight-color: #660000;
     --app-message-list-message-error-highlight-background: #FFCCCC;
 
+    --app-message-list-message-delimiter-highlight-color: #000000;
+    --app-message-list-message-delimiter-highlight-background: #EEEEEE;
 
 
     /* message type definitions */
@@ -215,6 +217,7 @@
     /* window controls */
     --window-control-link-color: #666666;
     --window-control-link-color-hovered: #333333;
+    --window-control-link-color-active: #333333;
 
     --window-control-link-text-stroke-width: 0px;
     --window-control-link-text-stroke-color: #585858;
@@ -354,10 +357,10 @@
     --app-live-info-online-status-font-size: var(--app-live-info-status-font-size);
 
     --app-live-info-not-busy-status-color: #00CC00;
-    --app-live-info-not-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
-    --app-live-info-not-status-text-stroke-color: #006600;
-    --app-live-info-not-status-text-shadow: none;
-    --app-live-info-not-status-font-size: var(--app-live-info-status-font-size);
+    --app-live-info-not-busy-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-not-busy-status-text-stroke-color: #006600;
+    --app-live-info-not-busy-status-text-shadow: none;
+    --app-live-info-not-busy-status-font-size: var(--app-live-info-status-font-size);
 
     --app-live-info-error-status-color: #FF0000;
     --app-live-info-error-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);

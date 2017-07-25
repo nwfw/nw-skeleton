@@ -45,7 +45,13 @@
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
-							<a class="window-control window-control-reload " @click.prevent="callViewHandler" data-click-handler="windowManager.reloadWindow">
+							<a class="window-control window-control-destructive window-control-reinitialize-fe-app " @click.prevent="callViewHandler" data-click-handler="reinitializeFeApp">
+								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-repeat"></span>
+								<span v-html="translate('Reinitialize app')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-destructive window-control-reload " @click.prevent="callViewHandler" data-click-handler="windowManager.reloadWindow">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-refresh"></span>
 								<span v-html="translate('Reload window')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
@@ -141,7 +147,7 @@
 			</a>
 		</span>
 		<span class="window-control-wrapper" v-bind:class="{'window-control-hidden': appState.preventClose}">
-			<a :title="translate('Close window')" class="window-control window-control-close " @click.prevent="callViewHandler" data-click-handler="windowManager.closeWindow">
+			<a :title="translate('Close window')" class="window-control window-control-destructive window-control-close " @click.prevent="callViewHandler" data-click-handler="windowManager.closeWindow">
 				<span data-event-target="parent" class="fa fa-remove"></span>
 			</a>
 		</span>

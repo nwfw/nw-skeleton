@@ -170,7 +170,7 @@
     --app-message-list-message-debug-highlight-color: #000000;
     --app-message-list-message-debug-highlight-background: #EEEEEE;
 
-    --app-message-list-message-info-color: #006600;
+    --app-message-list-message-info-highlight-color: #006600;
     --app-message-list-message-info-highlight-background: #66FF66;
 
     --app-message-list-message-warning-highlight-color: #666600;
@@ -178,6 +178,9 @@
 
     --app-message-list-message-error-highlight-color: #660000;
     --app-message-list-message-error-highlight-background: #FFCCCC;
+
+    --app-message-list-message-delimiter-highlight-color: #000000;
+    --app-message-list-message-delimiter-highlight-background: #EEEEEE;
 
 
 
@@ -228,6 +231,8 @@
     /* window controls */
     --window-control-link-color: #666666;
     --window-control-link-color-hovered: #333333;
+    --window-control-link-color-active: #333333;
+    --window-control-link-destructive-color-hovered: #CC0000;
 
     --window-control-link-text-stroke-width: 0px;
     --window-control-link-text-stroke-color: #585858;
@@ -236,6 +241,7 @@
     --window-control-link-text-stroke-width-hovered: 0px;
     --window-control-link-text-stroke-color-hovered: #999999;
     --window-control-link-text-shadow-hovered: 0 0 0px #666666;
+    --window-control-link-destructive-text-shadow-hovered: 0 0 0px #FF0000;
 
     --window-control-link-text-stroke-width-active: 0px;
     --window-control-link-text-stroke-color-active: #333333;
@@ -248,6 +254,9 @@
     --window-control-submenu-text-color: #666666;
     --window-control-submenu-text-color-hover: #333333;
     --window-control-submenu-text-color-active: #000000;
+
+    --window-control-submenu-destructive-background-color-hover: #FFCCCC;
+    --window-control-submenu-destructive-text-color-hover: #990000;
 
     --window-control-submenu-border-color: #999999;
     --window-control-submenu-border-radius: 3px;
@@ -367,10 +376,10 @@
     --app-live-info-online-status-font-size: var(--app-live-info-status-font-size);
 
     --app-live-info-not-busy-status-color: #00CC00;
-    --app-live-info-not-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
-    --app-live-info-not-status-text-stroke-color: #006600;
-    --app-live-info-not-status-text-shadow: none;
-    --app-live-info-not-status-font-size: var(--app-live-info-status-font-size);
+    --app-live-info-not-busy-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-not-busy-status-text-stroke-color: #006600;
+    --app-live-info-not-busy-status-text-shadow: none;
+    --app-live-info-not-busy-status-font-size: var(--app-live-info-status-font-size);
 
     --app-live-info-error-status-color: #FF0000;
     --app-live-info-error-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
@@ -458,7 +467,7 @@
 
 
     --link-color: var(--link-base-color);
-    --link-cursor-visited: var(--link-base-cursor);
+    --link-cursor: var(--link-base-cursor);
     --link-text-decoration-visited: var(--link-base-text-decoration);
 
     --link-color-hovered: var(--link-base-color-hovered);

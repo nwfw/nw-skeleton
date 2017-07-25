@@ -62,6 +62,11 @@
     text-shadow: var(--window-control-link-text-shadow-active);
 }
 
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-destructive:hover {
+    color: var(--window-control-link-destructive-color-hovered);
+    text-shadow: var(--window-control-link-destructive-text-shadow-hovered);
+}
+
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-active,
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving,
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-moving:hover {
@@ -136,6 +141,12 @@
     color: var(--window-control-submenu-text-color-hover);
     background-color: var(--window-control-submenu-background-color-hover);
 }
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control.window-control-destructive:hover {
+    color: var(--window-control-submenu-destructive-text-color-hover);
+    background-color: var(--window-control-submenu-destructive-background-color-hover);
+}
+
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control-active {
     color: var(--window-control-submenu-text-color-active);

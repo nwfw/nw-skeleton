@@ -59,12 +59,12 @@
 
 .live-info.offline .live-info-item {
     background: var(--app-live-info-item-offline-background);
-    box-shadow: var(--app-live-info-item-offlin-box-shadow);
+    box-shadow: var(--app-live-info-item-offline-box-shadow);
 }
 
 .live-info.not-busy .live-info-item {
     background: var(--app-live-info-item-not-busy-background);
-    box-shadow: var(--app-live-info-item-not-bus-box-shadow);
+    box-shadow: var(--app-live-info-item-not-busy-box-shadow);
 }
 
 .live-info.error  .live-info-item {
