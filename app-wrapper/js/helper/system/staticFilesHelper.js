@@ -60,7 +60,11 @@ class StaticFilesHelper extends BaseClass {
      */
     rebaseAsset(asset, dir){
         _.noop(dir);
-        return 'file://' + asset.absolutePath;
+        if (asset.url && asset.url.match(/^#/)){
+            return asset.url;
+        } else {
+            return 'file://' + asset.absolutePath;
+        }
     }
 
     /**
