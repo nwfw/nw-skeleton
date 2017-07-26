@@ -238,11 +238,20 @@ class AppWrapper extends BaseClass {
                 await this.appConfig.clearUserConfig(true);
                 await this.getHelper('userData').clearUserData();
                 appState.userData = {};
+                this.log('All data reset', 'info', [], true);
+                this.exitApp();
+                return;
             } else if (_.includes(nw.App.argv, 'resetData')){
                 await this.getHelper('userData').clearUserData();
                 appState.userData = {};
+                this.log('User data reset', 'info', [], true);
+                this.exitApp();
+                return;
             } else if (_.includes(nw.App.argv, 'resetConfig')){
                 await this.appConfig.clearUserConfig(true);
+                this.log('Config data reset', 'info', [], true);
+                this.exitApp();
+                return;
             }
         }
 

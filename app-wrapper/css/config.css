@@ -2,6 +2,7 @@
 
     /* basic variables */
 
+    --app-base-text-color: #333333;
     --font-smoothing: subpixel-antialiased;
 
     --input-base-background: #FFFFFF;

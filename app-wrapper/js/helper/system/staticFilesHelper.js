@@ -44,6 +44,11 @@ class StaticFilesHelper extends BaseClass {
 
         this.boundMethods = {
             cssFileChanged: null,
+            doReloadCss: null,
+        };
+
+        this.timeouts = {
+            reloadCss: null
         };
 
         this.watchedFiles = [];
@@ -701,7 +706,7 @@ class StaticFilesHelper extends BaseClass {
     async cssFileChanged (e, filename) {
         this.log('Css file "{1}" fired event "{2}"', 'debug', [filename, e]);
         if (this.getConfig('compileCss')){
-            await this.reloadCss();
+            await this.doReloadCss();
         } else {
             let filenameRegex = new RegExp(filename);
             let cssFiles = await this.getCssFiles();
@@ -720,17 +725,28 @@ class StaticFilesHelper extends BaseClass {
     /**
      * Handler that reloads all css on page
      *
-     * @async
      * @param  {Event}  e           Event that triggered the method
      */
-    async reloadCss (e) {
+    reloadCss (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        clearTimeout(this.timeouts.reloadCss);
+        this.timeouts.reloadCss = setTimeout(this.boundMethods.doReloadCss, 100);
+    }
+
+    /**
+     * Handler that reloads all css on page
+     *
+     * @async
+     */
+    async doReloadCss () {
+        clearTimeout(this.timeouts.reloadCss);
         await this.unwatchFiles();
         await this.generateCss(false, true);
         await this.refreshCss();
     }
+
 
     /**
      * Removes watchers from all watched files

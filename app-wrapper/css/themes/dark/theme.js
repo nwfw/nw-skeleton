@@ -5,12 +5,8 @@ exports.theme = {
     initCssFiles: [
         './css/config.css',
     ],
-    cssFiles: [
-        './css/theme.css'
-    ],
-    overrideCssFiles: [
-        './css/style.css'
-    ],
+    cssFiles: [],
+    overrideCssFiles: [],
     initJsFiles: [],
     jsFiles: []
 };

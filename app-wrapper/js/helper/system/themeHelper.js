@@ -199,19 +199,15 @@ class ThemeHelper extends BaseClass {
     async registerTheme(themeDefinition){
         let result = false;
         if (themeDefinition.name && themeDefinition.path){
-            if (await _appWrapper.fileManager.isFile(path.join(themeDefinition.path, 'css', 'config.css' ))){
-                let oldThemesFound = _.filter(appState.availableThemes, { name: themeDefinition.name }).length;
-                if (oldThemesFound){
-                    this.log('Registering theme override "{1}"...', 'debug', [themeDefinition.name]);
-                    _.remove(appState.availableThemes, { name: themeDefinition.name });
-                } else {
-                    this.log('Registering theme "{1}"...', 'debug', [themeDefinition.name]);
-                }
-                appState.availableThemes.push(themeDefinition);
-                result = true;
+            let oldThemesFound = _.filter(appState.availableThemes, { name: themeDefinition.name }).length;
+            if (oldThemesFound){
+                this.log('Registering theme override "{1}"...', 'debug', [themeDefinition.name]);
+                _.remove(appState.availableThemes, { name: themeDefinition.name });
             } else {
-                this.log('Problem registering theme "{1}" - no config.css file!', 'error', [themeDefinition.name]);
+                this.log('Registering theme "{1}"...', 'debug', [themeDefinition.name]);
             }
+            appState.availableThemes.push(themeDefinition);
+            result = true;
         }
         return result;
     }
