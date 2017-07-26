@@ -42,7 +42,6 @@ class AppTranslations extends BaseClass {
     /**
      * Initializes language data, loading available languages and their translations
      *
-     * @method
      * @async
      * @return {Object} Translation data with populated languages and translations
      */
@@ -73,7 +72,6 @@ class AppTranslations extends BaseClass {
     /**
      * Loads translations from translation files
      *
-     * @method
      * @async
      * @return {Object} Translation data with populated languages and translations
      */
@@ -89,7 +87,6 @@ class AppTranslations extends BaseClass {
     /**
      * Prepares config editor data object for config-editor component
      *
-     * @method
      * @return {Object} Config editor data object for config-editor component
      */
     getTranslationEditorData (){
@@ -121,8 +118,8 @@ class AppTranslations extends BaseClass {
     /**
      * Opens translation editor modal
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     openTranslationEditor (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -162,9 +159,9 @@ class AppTranslations extends BaseClass {
     /**
      * Saves translations to translation files
      *
-     * @method
      * @async
      * @param  {Event} e  Event that triggered the method
+     * @return {undefined}
      */
     async saveTranslations (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -236,7 +233,6 @@ class AppTranslations extends BaseClass {
     /**
      * Returns default value for untranslated labels
      *
-     * @method
      * @param  {string} label Label name
      * @return {string}       Default value for untranslated label
      */
@@ -247,7 +243,6 @@ class AppTranslations extends BaseClass {
     /**
      * Loads all translation data from directory passed in argument
      *
-     * @method
      * @async
      * @param  {string} translationsPath          Absolute path to directory containing translation files
      * @param  {RegExp} translationExtensionRegex Regular expression for matching file names containing translation data
@@ -317,7 +312,6 @@ class AppTranslations extends BaseClass {
      * Translation is being interpolated by replacing placeholders
      * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
      *
-     * @method
      * @param  {string} label           Label for translation
      * @param  {string} currentLanguage Current language code
      * @param  {array} data             An array of data strings to be used for interpolation
@@ -364,7 +358,6 @@ class AppTranslations extends BaseClass {
     /**
      * Returns absolute path to translations data file for given langauge code
      *
-     * @method
      * @param  {string} languageCode Language code to get path for
      * @return {string}              Absolute path to translation data file
      */
@@ -379,9 +372,9 @@ class AppTranslations extends BaseClass {
     /**
      * Adds label to translation data (for all languages)
      *
-     * @method
      * @async
      * @param {string} label Label to add
+     * @return {undefined}
      */
     async addLabel (label) {
         if (this.addingLabels[label]){
@@ -427,10 +420,10 @@ class AppTranslations extends BaseClass {
     /**
      * Add all labels from argument to given language
      *
-     * @method
      * @async
      * @param {Object} language  Language data object with properties code, name and locale
      * @param {Object} labelData Labels to be added in format { labelText: translationText }
+     * @return {undefined}
      */
     async addLabels (language, labelData) {
         var translationData = {};
@@ -473,8 +466,8 @@ class AppTranslations extends BaseClass {
     /**
      * Handler method for changing app language
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     changeLanguage (e){
         var target = e.target;
@@ -495,7 +488,6 @@ class AppTranslations extends BaseClass {
     /**
      * Method that changes current app language
      *
-     * @method
      * @param  {string}     selectedName        New app language name
      * @param  {string}     selectedCode        New app language code
      * @param  {string}     selectedLocale      New app language locale
@@ -533,7 +525,6 @@ class AppTranslations extends BaseClass {
     /**
      * Prepares and returns translation data string for saving in translation file
      *
-     * @method
      * @param  {Object} translationData Object with translation data
      * @return {string}                 String for writing to translation data file
      */
@@ -557,7 +548,6 @@ class AppTranslations extends BaseClass {
     /**
      * Detects and returns unused labels in the app
      *
-     * @method
      * @async
      * @return {array} An array of unused labels
      */
@@ -577,8 +567,8 @@ class AppTranslations extends BaseClass {
     /**
      * Detects unused labels in app and removes them from translation files automatically
      *
-     * @method
      * @async
+     * @return {undefined}
      */
     async autoTrimTranslations () {
         let scannedTranslations = await this.scanAppTranslations();
@@ -602,7 +592,6 @@ class AppTranslations extends BaseClass {
     /**
      * Scans app files labels and returns them
      *
-     * @method
      * @async
      * @return {array} An array of found labels
      */

@@ -45,6 +45,7 @@ class MainMessageHandlers {
      * Simple ping handler - responds with 'pong' instruction
      *
      * @param  {Object} data        Data passed with message
+     * @return {undefined}
      */
     pingHandler (data) {
         let duration = 500;
@@ -63,6 +64,7 @@ class MainMessageHandlers {
      * Logging handler - logs message data to console
      *
      * @param  {Object} data        Data passed with message
+     * @return {undefined}
      */
     logHandler (data) {
         if (data && data.message){
@@ -78,6 +80,7 @@ class MainMessageHandlers {
      * Property logging handler - logs mainScript property from message data to console
      *
      * @param  {Object} data        Data passed with message
+     * @return {undefined}
      */
     logMainScriptPropertyHandler (data) {
         if (data && data.property && mainScript[data.property]){
@@ -93,6 +96,7 @@ class MainMessageHandlers {
      * Configuration setting handler - sets current config to data from message
      *
      * @param  {Object} data        Data passed with message
+     * @return {undefined}
      */
     setConfigHandler(data){
         if (data && data.config){

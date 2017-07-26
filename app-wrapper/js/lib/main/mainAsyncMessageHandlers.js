@@ -48,6 +48,7 @@ class MainAsyncMessageHandlers {
      *
      * @param  {string} uuid    UUID of the message
      * @param  {Object} data    Data passed with message
+     * @return {undefined}
      */
     testHandler (uuid, data) {
         let responseData = _.extend({uuid: uuid}, data);

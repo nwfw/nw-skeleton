@@ -92,6 +92,8 @@ class KeyboardHelper extends BaseClass {
 
     /**
      * Adds keyboard helper event listeners
+     *
+     * @return {undefined}
      */
     addEventListeners (){
         window.addEventListener('keydown', this.boundMethods.handleKeyDown);
@@ -100,6 +102,8 @@ class KeyboardHelper extends BaseClass {
 
     /**
      * Removes keyboard helper event listeners
+     *
+     * @return {undefined}
      */
     removeEventListeners (){
         window.removeEventListener('keydown', this.boundMethods.handleKeyDown);
@@ -110,6 +114,7 @@ class KeyboardHelper extends BaseClass {
      * Registers global shortcut from global keys configuration
      *
      * @param  {Object} keyHandler Shortcut configuration
+     * @return {undefined}
      */
     registerGlobalShortcut (keyHandler){
         this.globalKeyData.push(keyHandler);
@@ -119,6 +124,7 @@ class KeyboardHelper extends BaseClass {
      * Unregisters global shortcut from global keys configuration
      *
      * @param  {Object} keyHandler Shortcut configuration
+     * @return {undefined}
      */
     unRegisterGlobalShortcut (keyHandler){
         this.globalKeyData = _.filter(this.globalKeyData, {
@@ -131,6 +137,7 @@ class KeyboardHelper extends BaseClass {
      * Handles key down (and up) events
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     handleKeyDown (e){
         if (!this.handleAppKeyDown(e)){
@@ -286,6 +293,8 @@ class KeyboardHelper extends BaseClass {
 
     /**
      * Destroys this KeyboardHelper instance, removing its event listeners
+     *
+     * @return {undefined}
      */
     destroy () {
         super.destroy();

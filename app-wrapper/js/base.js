@@ -53,6 +53,7 @@ class BaseClass extends eventEmitter {
      * bound methods to be used in event listeners
      *
      * @async
+     * @param {Object} options Initialization options
      * @return {BaseClass} Instance of current class
      */
     async initialize (options) {
@@ -132,6 +133,8 @@ class BaseClass extends eventEmitter {
     /**
      * Method that sets up this.boundMethods property by binding this objects
      * functions to itself to be used as event listener handlers
+     *
+     * @return {undefined}
      */
     addBoundMethods () {
         if (this.boundMethods){
@@ -147,6 +150,8 @@ class BaseClass extends eventEmitter {
     /**
      * Method that cleans up this.boundMethods property
      * set in this.addBoundMethods method
+     *
+     * @return {undefined}
      */
     removeBoundMethods () {
         var keys = _.keys(this.boundMethods);
@@ -159,6 +164,8 @@ class BaseClass extends eventEmitter {
     /**
      * Destructor method - cleans up references for this instance
      * freeing memory upon object destruction
+     *
+     * @return {undefined}
      */
     destroy () {
         this.removeBoundMethods();
@@ -175,6 +182,7 @@ class BaseClass extends eventEmitter {
      * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
      * @param  {array} data     An array of data strings that are to be applied to logging message
      * @param  {boolean} force  Flag to force logging output even if config does not allow it
+     * @return {undefined}
      */
     async log(message, type, data, force){
 
@@ -225,6 +233,7 @@ class BaseClass extends eventEmitter {
      * Does actual logging to console (and log file is file logging is enabled)
      *
      * @param  {object} debugMessage Message object to be logged (returned by this.getMessageObject method)
+     * @return {undefined}
      */
     _doLog (debugMessage){
         if (debugMessage.type == 'group'){
@@ -354,6 +363,7 @@ class BaseClass extends eventEmitter {
      * @param {boolean} dontTranslate   Flag to prevent automatic message translation
      * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
      * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     * @return {undefined}
      */
     async addUserMessage (message, type, data, important, dontTranslate, force, passToDebug){
         if (!type){
@@ -494,6 +504,7 @@ class BaseClass extends eventEmitter {
      * @param {boolean} dontTranslate   Flag to prevent automatic message translation
      * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
      * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     * @return {undefined}
      */
     async addModalMessage (message, type, data, important, dontTranslate, force, passToDebug){
         if (!type){
@@ -528,6 +539,7 @@ class BaseClass extends eventEmitter {
      * @param {sting}   message         Notification message
      * @param {array}   data            An array of data strings that are to be applied to notification
      * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @return {undefined}
      */
     async addNotification (message, data, dontTranslate){
         let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
@@ -546,6 +558,7 @@ class BaseClass extends eventEmitter {
      * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
      * @param {object} options          Desktop notification options (passed to HTML5 Notification object constructor)
      * @param {object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
+     * @return {undefined}
      */
     async addDesktopNotification (message, data, dontTranslate, options, callbacks){
         let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
@@ -573,7 +586,7 @@ class BaseClass extends eventEmitter {
     /**
      * Returns instance of helper object based on passed parameter (or false if helper can't be found)
      *
-     * @param  {string} helperName Name of the helper
+     * @param  {string} name       Name of the helper
      * @return {object}            Instance of the helper object (or false if helper can't be found)
      */
     getHelper(name){
@@ -583,7 +596,7 @@ class BaseClass extends eventEmitter {
     /**
      * Returns configuration var value
      *
-     * @param  {string} varPath      String representing path to requested var (i.e. 'appConfig.appInfo.name')
+     * @param  {string} name         String representing path to requested var (i.e. 'appConfig.appInfo.name')
      * @param  {mixed} defaultValue  Default value to be returned if configuration var is not found
      * @return {mixed}               configuration var value
      */
@@ -691,6 +704,8 @@ class BaseClass extends eventEmitter {
 
     /**
      * Clears all timeouts bound to this AppWrapper instance
+     *
+     * @return {undefined}
      */
     clearTimeouts (){
         for (let name in this.timeouts){
@@ -700,6 +715,8 @@ class BaseClass extends eventEmitter {
 
     /**
      * Clears all intervals bound to this AppWrapper instance
+     *
+     * @return {undefined}
      */
     clearIntervals (){
         for (let name in this.intervals){

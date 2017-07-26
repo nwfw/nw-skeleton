@@ -149,6 +149,7 @@ class AppOperationHelper extends BaseClass {
      * @param  {Number} completed    Number of sub-operations completed
      * @param  {Number} total        Total number of sub-operations
      * @param  {string} progressText Progress bar text
+     * @return {undefined}
      */
     operationUpdate(completed, total, progressText){
         if (!progressText){
@@ -164,6 +165,7 @@ class AppOperationHelper extends BaseClass {
      *
      * @param  {string} operationText   Operation text to display
      * @param  {Number} timeoutDuration Duration in milliseconds until hiding appOperation text
+     * @return {undefined}
      */
     operationFinish(operationText, timeoutDuration){
         let originalText = appState.appOperation.operationText;
@@ -260,6 +262,7 @@ class AppOperationHelper extends BaseClass {
      *
      * @param  {Number} total           Total number of sub-operations
      * @param  {string} progressText    Progress text
+     * @return {undefined}
      */
     startProgress (total, progressText) {
         appState.progressData.inProgress = true;
@@ -273,6 +276,7 @@ class AppOperationHelper extends BaseClass {
      * @param  {Number} completed       Number of sub-operations completed
      * @param  {Number} total           Total number of sub-operations
      * @param  {string} progressText    Progress bar text
+     * @return {undefined}
      */
     async updateProgress (completed, total, progressText) {
         if (!appState.progressData.inProgress){
@@ -333,6 +337,8 @@ class AppOperationHelper extends BaseClass {
 
     /**
      * Clears operation progress
+     *
+     * @return {undefined}
      */
     clearProgress () {
         appState.progressData = {
@@ -453,6 +459,7 @@ class AppOperationHelper extends BaseClass {
      * Resets all operation data
      *
      * @param  {Object} data Operation data to set
+     * @return {undefined}
      */
     resetOperationData (data) {
         if (!data){
@@ -479,6 +486,7 @@ class AppOperationHelper extends BaseClass {
      *
      * @async
      * @param  {boolean} reloading Flag to indicate whether window is reloading or closing
+     * @return {undefined}
      */
     async showCancelModal (reloading) {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -514,6 +522,7 @@ class AppOperationHelper extends BaseClass {
      * Triggered when progress is done while cancel modal is opened
      *
      * @async
+     * @return {undefined}
      */
     async cancelProgressDone () {
         let cm = appState.modalData.currentModal;
@@ -528,6 +537,7 @@ class AppOperationHelper extends BaseClass {
      * Triggered when operation is finished while cancel modal is opened
      *
      * @async
+     * @return {undefined}
      */
     async cancelOperationComplete () {
         let cm = _.cloneDeep(appState.modalData.currentModal);
@@ -544,6 +554,7 @@ class AppOperationHelper extends BaseClass {
      *
      * @async
      * @param  {boolean} result Operation result
+     * @return {undefined}
      */
     async cancelAndClose (result) {
         await this.cancelAndExit(result, () => {_appWrapper.windowManager.closeWindowForce();});
@@ -554,6 +565,7 @@ class AppOperationHelper extends BaseClass {
      *
      * @async
      * @param  {boolean} result Operation result
+     * @return {undefined}
      */
     async cancelAndReload (result) {
         await this.cancelAndExit(result, () => {_appWrapper.windowManager.reloadWindow(null, true);});
@@ -565,6 +577,7 @@ class AppOperationHelper extends BaseClass {
      * @async
      * @param  {boolean} result Operation result
      * @param  {Function} callback Eventual callback to call
+     * @return {undefined}
      */
     async cancelAndExit (result, callback) {
         _appWrapper.removeAllListeners('appOperation:finish');
@@ -614,6 +627,7 @@ class AppOperationHelper extends BaseClass {
      * Clears timeouts and intervals used by cancelAndExit method
      *
      * @async
+     * @return {undefined}
      */
     async stopCancelAndExit(){
         appState.headerData.hideLiveInfo = false;

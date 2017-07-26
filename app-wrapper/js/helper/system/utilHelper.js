@@ -109,6 +109,7 @@ class UtilHelper extends BaseClass {
      *
      * @param  {string}   imgSrc   Image URL
      * @param  {Function} callback Callback function
+     * @return {undefined}
      */
     preloadImageCallback (imgSrc, callback){
         var imgEl = document.createElement('img');
@@ -370,6 +371,7 @@ class UtilHelper extends BaseClass {
      * @param  {string}     varPath     Path to the var (i.e. 'appConfig.theme')
      * @param  {mixed}      value       New var value
      * @param  {Object}     context     Object that is base context for search (default: global)
+     * @return {undefined}
      */
     setVar(varPath, value, context){
         if (!context){
@@ -403,7 +405,9 @@ class UtilHelper extends BaseClass {
 
     /**
      * Prevents default for passed event
+     *
      * @param  {Event} e Event that should be prevented
+     * @return {undefined}
      */
     prevent (e){
         e.preventDefault();
@@ -424,6 +428,7 @@ class UtilHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async pickLogFile (e) {
         let fileEl = e.target.parentNode.querySelector('.log-file-picker-input');
@@ -435,6 +440,7 @@ class UtilHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async pickLogViewerFile (e) {
         let fileName = e.target.value;
@@ -447,6 +453,7 @@ class UtilHelper extends BaseClass {
      *
      * @async
      * @param  {string} fileName Absolute path to log file
+     * @return {undefined}
      */
     async loadLogViewerFile (fileName) {
         let fileValid = true;
@@ -505,6 +512,8 @@ class UtilHelper extends BaseClass {
 
     /**
      * Log viewer modal action confirm
+     *
+     * @return {undefined}
      */
     confirmLogViewerModalAction () {
         _appWrapper.cancelModalAction();
@@ -513,6 +522,7 @@ class UtilHelper extends BaseClass {
     /**
      * Gets stack counts for messages
      *
+     * @param {Object} messages Message objects to count
      * @return {Number} Number of messages with stack data
      */
     getMessageStacksCount (messages) {
@@ -528,6 +538,7 @@ class UtilHelper extends BaseClass {
     /**
      * Gets current stack state for messages
      *
+     * @param {Object[]} messages Messages to get state for
      * @return {Number} Number of unopened stack messages
      */
     getMessageStacksState (messages) {
@@ -665,6 +676,7 @@ class UtilHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async confirmSaveLogAction (e){
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -783,6 +795,7 @@ class UtilHelper extends BaseClass {
 
     /**
      * Returns UUID string
+     *
      * @return {string} UUID string
      */
     uuid () {
@@ -793,6 +806,7 @@ class UtilHelper extends BaseClass {
      * Opens external url in system default browser
      *
      * @param  {string} url Url to open
+     * @return {undefined}
      */
     openExternalUrl (url){
         nw.Shell.openExternal(url);

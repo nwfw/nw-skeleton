@@ -49,6 +49,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Processes user message queue, displaying any pending messages
+     *
+     * @return {undefined}
      */
     processUserMessageQueue (){
         let intervalDuration = 1;
@@ -79,6 +81,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Removes first user message from the queue and displays it
+     *
+     * @return {undefined}
      */
     unQueueUserMessage (){
         if (appState && appState.userMessageQueue && appState.userMessageQueue.length){
@@ -113,6 +117,7 @@ class UserMessageHelper extends BaseClass {
      * Handler for expanding/contracting user-messages conponent
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     toggleUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -123,6 +128,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Handler for user message level select 'focus' event
+     *
+     * @return {undefined}
      */
     userMessageLevelSelectFocus () {
         appState.userMessagesData.selectFocused = true;
@@ -130,6 +137,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Handler for user message level select 'blur' event
+     *
+     * @return {undefined}
      */
     userMessageLevelSelectBlur () {
         appState.userMessagesData.selectFocused = false;
@@ -170,6 +179,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Toggles all user message stacks in user-messages message-list component
+     *
+     * @return {undefined}
      */
     toggleUserMessageStacks () {
         let currentState = !this.getUserMessageStacksState();
@@ -185,6 +196,7 @@ class UserMessageHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async saveMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -197,6 +209,7 @@ class UserMessageHelper extends BaseClass {
      * Opens message saving modal dialog
      *
      * @async
+     * @return {undefined}
      */
     async showSaveMessagesModal () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -227,6 +240,7 @@ class UserMessageHelper extends BaseClass {
      * Handler for file input click event for saving user messages
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     saveUserMessagesFileClick (e){
         let fileEl = e.target.parentNode.querySelector('.file-picker');
@@ -236,6 +250,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Handler for file input change event for saving user messages - saves user messages to selected file
+     *
+     * @return {undefined}
      */
     saveUserMessagesFileChange () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -308,6 +324,8 @@ class UserMessageHelper extends BaseClass {
 
     /**
      * Opens user message config editor modal
+     *
+     * @return {undefined}
      */
     openUserMessageConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -328,6 +346,7 @@ class UserMessageHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async saveUserMessageConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -346,6 +365,7 @@ class UserMessageHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async closeUserMessageConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){

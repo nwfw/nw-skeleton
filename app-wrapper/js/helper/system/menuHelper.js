@@ -62,6 +62,7 @@ class MenuHelper extends BaseClass {
     /**
      * Initializes app menu using data from config
      *
+     * @return {undefined}
      */
     initializeAppMenu() {
         let utilHelper = _appWrapper.getHelper('util');
@@ -94,6 +95,7 @@ class MenuHelper extends BaseClass {
      * Sets up app menu using configuration data
      *
      * @async
+     * @return {undefined}
      */
     async setupAppMenu() {
         let utilHelper = _appWrapper.getHelper('util');
@@ -310,6 +312,8 @@ class MenuHelper extends BaseClass {
 
     /**
      * Removes app menu
+     *
+     * @return {undefined}
      */
     removeAppMenu (){
         if (this.menu && this.menu.items){
@@ -435,6 +439,7 @@ class MenuHelper extends BaseClass {
      * Initializes app tray icon
      *
      * @async
+     * @return {undefined}
      */
     async initializeTrayIcon(){
         let hasTrayIcon = this.getConfig('appConfig.hasTrayIcon');
@@ -463,6 +468,7 @@ class MenuHelper extends BaseClass {
      * Removes app tray icon
      *
      * @async
+     * @return {undefined}
      */
     async removeTrayIcon(){
         if (this.tray && this.tray.remove && _.isFunction(this.tray.remove)){

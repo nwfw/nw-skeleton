@@ -49,6 +49,8 @@ class HtmlHelper extends BaseClass {
 
     /**
      * Extends HTMLElement prototype with methods from htmlHelper
+     *
+     * @return {undefined}
      */
     extendElementProto () {
         var self = this;
@@ -85,6 +87,7 @@ class HtmlHelper extends BaseClass {
      * @param {HTMLElement} element Html element for style manipulation
      * @param {array}       styles  An array of objects representing style properties to set
      * @param {Boolean}     merge   Flag to indicate merging existing styles with new ones instead of rewriting entire style attribute
+     * @return {undefined}
      */
     setElementStyles (element, styles, merge){
         if (element && element.setAttribute && _.isFunction(element.setAttribute) && styles && _.isObject(styles)){
@@ -133,6 +136,7 @@ class HtmlHelper extends BaseClass {
      *
      * @param  {HTMLElement}    element Element to remove styles from
      * @param  {string[]} propertyNames An array of style property names to remove
+     * @return {undefined}
      */
     removeElementStyles (element, propertyNames){
         if (propertyNames && propertyNames.length && element && element.getAttribute && _.isFunction(element.getAttribute)){
@@ -155,6 +159,7 @@ class HtmlHelper extends BaseClass {
      * @param {HTMLElement}    element  Element to set fixed size on
      * @param {Number} elementHeight    Optional height value to force element size
      * @param {Number} elementWidth     Optional width value to force element size
+     * @return {undefined}
      */
     setFixedSize (element, elementHeight, elementWidth) {
         if (element && element.offsetHeight){
@@ -179,6 +184,7 @@ class HtmlHelper extends BaseClass {
      * Removes fixed size set by this.setFixedSize method
      *
      * @param {HTMLElement}    element  Element to unset fixed size on
+     * @return {undefined}
      */
     unsetFixedSize (element) {
         var propertiesToRemove = ['width', 'height', 'overflow'];
@@ -385,6 +391,7 @@ class HtmlHelper extends BaseClass {
      * Shows hidden element
      *
      * @param {HTMLElement} element Element to show
+     * @return {undefined}
      */
     show (element) {
         if (element){
@@ -396,6 +403,7 @@ class HtmlHelper extends BaseClass {
      * Hides the element
      *
      * @param {HTMLElement} element Element to hide
+     * @return {undefined}
      */
     hide (element) {
         if (element){
@@ -407,6 +415,7 @@ class HtmlHelper extends BaseClass {
      * Shows or hides an element
      *
      * @param {HTMLElement} element Element to show or hide
+     * @return {undefined}
      */
     toggle (element) {
         if (element){
@@ -423,6 +432,7 @@ class HtmlHelper extends BaseClass {
      * Hides hidden element by setting 'visibility' css property
      *
      * @param {HTMLElement} element Element to hide
+     * @return {undefined}
      */
     makeInvisible (element) {
         if (this instanceof Element){
@@ -437,6 +447,7 @@ class HtmlHelper extends BaseClass {
      * Shows hidden element by setting 'visibility' css property
      *
      * @param {HTMLElement} element Element to show
+     * @return {undefined}
      */
     makeVisible (element) {
         if (this instanceof Element){
@@ -451,6 +462,7 @@ class HtmlHelper extends BaseClass {
      * Toggles 'visibility' css property, showing or hiding the element
      *
      * @param {HTMLElement} element Element to toggle visibility on
+     * @return {undefined}
      */
     toggleVisibility (element) {
         if (this instanceof Element){
@@ -493,6 +505,7 @@ class HtmlHelper extends BaseClass {
      * @param {HTMLElement} element Element to scroll
      * @param  {Number} to          Value to scroll to
      * @param  {Number} duration    Duration for animated scrolls
+     * @return {undefined}
      */
     scrollElementTo (element, to, duration) {
         var identifier = this.getUniqueElementIdentifier(element, true);
@@ -536,6 +549,7 @@ class HtmlHelper extends BaseClass {
      * @param {HTMLElement} element    Element to scroll
      * @param {Number} stepIncrease    Value for each scrolling step
      * @param {Number} finalValue      Final element scroll value
+     * @return {undefined}
      */
     scrollElementStep (element, stepIncrease, finalValue){
         var currentValue = element.scrollTop;
@@ -568,6 +582,7 @@ class HtmlHelper extends BaseClass {
      *
      * @param {HTMLElement} element    Element whose parent will be scrolled
      * @param {Number}      duration   Duration for animated scrolls
+     * @return {undefined}
      */
     scrollParentToElement (element, duration) {
         let parentElement = element.parentNode;
@@ -600,6 +615,7 @@ class HtmlHelper extends BaseClass {
      * Selects all text in element
      *
      * @param {HTMLElement} element     Element to select
+     * @return {undefined}
      */
     selectAll (element){
         var selection = window.getSelection();
@@ -727,6 +743,7 @@ class HtmlHelper extends BaseClass {
      * @param  {HTMLElement}    element      Element to trigger event on
      * @param  {string}         eventName    Name of the event
      * @param  {Object}         eventOptions Object with event options
+     * @return {undefined}
      */
     triggerCustomEvent (element, eventName, eventOptions){
         if (this instanceof Element){
@@ -771,6 +788,7 @@ class HtmlHelper extends BaseClass {
      *
      * @param {HTMLElement}    element  Element to set value for
      * @param {mixed} value             Value to set
+     * @return {undefined}
      */
     setInputValue (element, value){
         if (this instanceof Element){

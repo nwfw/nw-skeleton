@@ -267,7 +267,7 @@ class FormatHelper extends BaseClass {
      *
      * @param  {Date}       date            Date value to format
      * @param  {Object}     options         Date format options
-     * @param  {Boolean}    includeTime     Flag to indicate whether to include date
+     * @param  {Boolean}    includeDate     Flag to indicate whether to include date
      * @param  {Boolean}    omitSeconds     Flag to indicate whether to omit seconds
      * @return {string}                     Formatted time string
      */
@@ -540,6 +540,7 @@ class FormatHelper extends BaseClass {
      *
      * @param {mixed}  value      Starting value
      * @param {string} maxLength  Value with added zeros
+     * @return {undefined}
      */
     addZeros (value, maxLength){
         let _value = value + '';

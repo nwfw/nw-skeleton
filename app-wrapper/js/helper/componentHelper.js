@@ -378,6 +378,7 @@ class ComponentHelper extends BaseClass {
      * Initializes components
      *
      * @async
+     * @return {undefined}
      */
     async initializeComponents(){
         this.vueComponents = {};
@@ -646,6 +647,7 @@ class ComponentHelper extends BaseClass {
      * @param  {string} parentName                  Name of the parent component
      * @param  {array} additionalSubComponents      An array of eventual additional child components
      * @param  {string[]} overrideDirs              Override dirs to look for when loading components
+     * @param  {string[]} loadDirs                  LoadDirs for loading components
      * @return {Object}                             Prepared component
      */
     async prepareComponent(component, componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs, loadDirs) {

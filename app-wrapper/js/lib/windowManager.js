@@ -72,7 +72,6 @@ class WindowManager extends BaseClass {
     /**
      * Initializes WindowManager object
      *
-     * @method
      * @async
      * @return {WindowManager} Instance of WindowManager class
      */
@@ -86,7 +85,7 @@ class WindowManager extends BaseClass {
     /**
      * Adds event listeners for the WindowManager instance
      *
-     * @method
+     * @return {undefined}
      */
     addEventListeners () {
         this.on('winStateChange', this.boundMethods.winStateChanged);
@@ -100,7 +99,7 @@ class WindowManager extends BaseClass {
     /**
      * Removes event listeners for the WindowManager instance
      *
-     * @method
+     * @return {undefined}
      */
     removeEventListeners () {
         this.removeListener('winStateChange', this.boundMethods.winStateChanged);
@@ -120,7 +119,6 @@ class WindowManager extends BaseClass {
     /**
      * Gets winState object
      *
-     * @method
      * @return {Object} winState object
      */
     getWinState (){
@@ -130,8 +128,8 @@ class WindowManager extends BaseClass {
     /**
      * Sets winState object
      *
-     * @method
      * @param {Object} winState New winState object
+     * @return {undefined}
      */
     setWinState (winState) {
         this.winState = winState;
@@ -140,8 +138,8 @@ class WindowManager extends BaseClass {
     /**
      * Listener for winState changes
      *
-     * @method
      * @param  {Object} data Changeds in winState object ( properties: name and value )
+     * @return {undefined}
      */
     winStateChanged (data) {
         this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value]);
@@ -151,7 +149,7 @@ class WindowManager extends BaseClass {
     /**
      * Handler for window restored event
      *
-     * @method
+     * @return {undefined}
      */
     windowRestored (){
         if (this.winState && this.winState.length && this.propagateChange && this.propagateChange.length){
@@ -171,7 +169,6 @@ class WindowManager extends BaseClass {
     /**
      * Initializes window for the application
      *
-     * @method
      * @async
      * @return {boolean} Window initialization result
      */
@@ -269,7 +266,7 @@ class WindowManager extends BaseClass {
     /**
      * Initializes winState object
      *
-     * @method
+     * @return {undefined}
      */
     initWinState () {
         var self = this;
@@ -615,8 +612,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for minimize window event
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     minimizeWindow (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -632,8 +629,8 @@ class WindowManager extends BaseClass {
     /**
      * Toggles window maximized state on or off
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     toggleMaximize (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -648,8 +645,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for maximize window event
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     maximizeWindow (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -663,8 +660,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for restore window event
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     restoreWindow (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -677,9 +674,11 @@ class WindowManager extends BaseClass {
 
     /**
      * Reloads application window
+     *
      * @param  {Event} e            Event that triggered the method
      * @param  {boolean} force      Flag to indicate whether to force reload
      * @param  {string} message     Message to display to user
+     * @return {undefined}
      */
     reloadWindow (e, force, message) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -704,8 +703,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for toggleDevTools window event
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     toggleDevTools (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -717,8 +716,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for toggleFullscreen window event
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     toggleFullScreen (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -731,8 +730,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for window closing links
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     closeWindow (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -746,8 +745,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for forced window closing links
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     closeWindowForce (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -761,8 +760,8 @@ class WindowManager extends BaseClass {
     /**
      * Closes window by window reference
      *
-     * @method
      * @param  {window} newWindow Window reference
+     * @return {undefined}
      */
     closeNewWindow(newWindow){
         return nw.Window.get(newWindow).close();
@@ -771,8 +770,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for mousedown event on 'move' window control link
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     moveWindowMousedown (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -786,8 +785,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for mouseup event on 'move' window control link
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     moveWindowMouseup (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -802,8 +801,8 @@ class WindowManager extends BaseClass {
     /**
      * Handler for mousemove event on 'move' window control link
      *
-     * @method
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     dragWindow (e) {
         var link = this.window.document.querySelector('.window-control-move');
@@ -824,7 +823,7 @@ class WindowManager extends BaseClass {
     /**
      * Beforeunload method called before window unloads
      *
-     * @method
+     * @return {undefined}
      */
     beforeUnload (){
         this.document.body.className = this.document.body.className.replace(/nw-body-initialized/, '');
@@ -835,7 +834,6 @@ class WindowManager extends BaseClass {
     /**
      * Opens new window - see {@link http://docs.nwjs.io/en/latest/References/Window/#windowopenurl-options-callback}
      *
-     * @method
      * @param  {string} url     Url to open
      * @param  {Object} options New window options
      * @return {window}         Reference to new window
@@ -848,8 +846,8 @@ class WindowManager extends BaseClass {
     /**
      * Sets window menu
      *
-     * @method
      * @param {Object} menu Menu definition - see {@link http://docs.nwjs.io/en/latest/References/Menu/}
+     * @return {undefined}
      */
     setMenu (menu) {
         nw.Window.get().menu = menu;
@@ -858,7 +856,7 @@ class WindowManager extends BaseClass {
     /**
      * Handler for resize window event
      *
-     * @method
+     * @return {undefined}
      */
     windowResize () {
         clearTimeout(this.timeouts.resize);
@@ -870,7 +868,7 @@ class WindowManager extends BaseClass {
     /**
      * Handler called when window position or size are updated. Saves current position and/or size to userConfig
      *
-     * @method
+     * @return {undefined}
      */
     windowPositionSizeUpdated () {
         clearTimeout(this.timeouts.resize);
@@ -906,7 +904,7 @@ class WindowManager extends BaseClass {
     /**
      * Handler for window blur event
      *
-     * @method
+     * @return {undefined}
      */
     windowBlur (){
         appState.status.windowFocused = false;
@@ -915,7 +913,7 @@ class WindowManager extends BaseClass {
     /**
      * Handler for window focus event
      *
-     * @method
+     * @return {undefined}
      */
     windowFocus (){
         appState.status.windowFocused = true;

@@ -77,7 +77,7 @@ class StaticFilesHelper extends BaseClass {
      *
      * @async
      * @param  {string}     href    Relative or absolute path to css file
-     * @param  {boolean}    noWatch Flag that prevents file watching
+     * @param  {Boolean}    noWatch Flag that prevents file watching
      * @return {string}             Css file contents
      */
     async loadCss (href, noWatch) {
@@ -112,8 +112,9 @@ class StaticFilesHelper extends BaseClass {
      *
      * @async
      * @param {string}  href    Path to css file
-     * @param {boolean} noWatch Flag that prevents file watching
-     * @param {boolean} silent  Flag that prevents logging
+     * @param {Boolean} noWatch Flag that prevents file watching
+     * @param {Boolean} silent  Flag that prevents logging
+     * @return {undefined}
      */
     async addCss (href, noWatch, silent) {
         let utilHelper = _appWrapper.getHelper('util');
@@ -174,6 +175,7 @@ class StaticFilesHelper extends BaseClass {
      * Refreshes css loaded on page by adding random query selector to file url
      *
      * @async
+     * @return {undefined}
      */
     async refreshCss () {
         var links = window.document.querySelectorAll('link');
@@ -189,6 +191,7 @@ class StaticFilesHelper extends BaseClass {
      *
      * @async
      * @param  {string[]}   changedFiles  Array of changed css file paths
+     * @return {undefined}
      */
     async refreshCssFiles (changedFiles) {
         let processDir = process.cwd();
@@ -215,6 +218,7 @@ class StaticFilesHelper extends BaseClass {
      * Refreshes selected <link> tags on page by adding (or replacing) random query string to their urls
      *
      * @param  {DOMElement[]} links Array of <link> elements to refresh
+     * @return {undefined}
      */
     refreshLinkTags(links){
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
@@ -252,6 +256,7 @@ class StaticFilesHelper extends BaseClass {
      * Removes old CSS tags from head element
      *
      * @async
+     * @return {undefined}
      */
     async removeOldCssTags () {
         await _appWrapper.wait(1);
@@ -274,7 +279,8 @@ class StaticFilesHelper extends BaseClass {
      * Prepares and loads css files using appState and config data
      *
      * @async
-     * @param  {boolean} silent Flag that prevents logging
+     * @param  {Boolean} silent Flag that prevents logging
+     * @return {undefined}
      */
     async loadCssFiles(silent) {
         this.log('Preparing css files...', 'group', []);
@@ -296,8 +302,9 @@ class StaticFilesHelper extends BaseClass {
      * Generates css by compiling all files or adding all files to head tag based on configuration
      *
      * @async
-     * @param {boolean} noWatch Flag that prevents file watching
-     * @param {boolean} silent  Flag that prevents logging
+     * @param {Boolean} noWatch Flag that prevents file watching
+     * @param {Boolean} silent  Flag that prevents logging
+     * @return {undefined}
      */
     async generateCss(noWatch, silent) {
         if (this.getConfig('compileCss')){
@@ -358,6 +365,7 @@ class StaticFilesHelper extends BaseClass {
      * @param {string[]}    cssFiles An array of css files to add
      * @param {Boolean}     noWatch  Flag to prevent filesystem watching of compiled files
      * @param {Boolean}     silent   Flag to prevent logging output
+     * @return {undefined}
      */
     async addCssFiles(cssFiles, noWatch, silent){
         if (cssFiles && cssFiles.length){
@@ -373,6 +381,7 @@ class StaticFilesHelper extends BaseClass {
      * @async
      * @param  {string} filePath    Absolute css file path
      * @param  {string} cssContents CSS contents to write
+     * @return {undefined}
      */
     async writeCss(filePath, cssContents){
         await _appWrapper.fileManager.createDirRecursive(path.dirname(filePath));
@@ -519,8 +528,8 @@ class StaticFilesHelper extends BaseClass {
      * @async
      * @param  {string[]}   cssFiles An array of css file paths to load
      * @param  {string}     type     Type of css file paths to load
-     * @param  {boolean}    noWatch  Flag to prevent filesystem watching of compiled files
-     * @param  {boolean}    silent   Flag to prevent logging output
+     * @param  {Boolean}    noWatch  Flag to prevent filesystem watching of compiled files
+     * @param  {Boolean}    silent   Flag to prevent logging output
      * @return {string}              Compiled css contents of all files
      */
     async compileCssTypeGroup (cssFiles, type, noWatch, silent){
@@ -553,8 +562,8 @@ class StaticFilesHelper extends BaseClass {
      * Compiles all css file contents to minified css, based on configuration
      *
      * @async
-     * @param {boolean} noWatch Flag that prevents file watching
-     * @param {boolean} silent  Flag that prevents logging
+     * @param {Boolean} noWatch Flag that prevents file watching
+     * @param {Boolean} silent  Flag that prevents logging
      * @return {string}         Minified and compiled CSS contents
      */
     async compileCss (noWatch, silent) {
@@ -591,8 +600,8 @@ class StaticFilesHelper extends BaseClass {
      * Adds js file script tag to document head element
      *
      * @async
-     * @param  {string} href Path to js file
-     * @return {boolean}     Js file loading result
+     * @param  {string} jsFile Path to js file
+     * @return {Boolean}     Js file loading result
      */
     async loadJs (jsFile) {
         let headEl = document.querySelector('head');
@@ -626,6 +635,7 @@ class StaticFilesHelper extends BaseClass {
      * @async
      * @param  {string[]} jsFiles   An array of js files to load
      * @param  {string} type        Type of js files to load
+     * @return {undefined}
      */
     async loadJsTypeGroup (jsFiles, type){
         if (!type){
@@ -651,6 +661,7 @@ class StaticFilesHelper extends BaseClass {
      * Loads all js files using configuration
      *
      * @async
+     * @return {undefined}
      */
     async loadJsFiles() {
         let themeHelper = _appWrapper.getHelper('theme');
@@ -702,6 +713,7 @@ class StaticFilesHelper extends BaseClass {
      * @async
      * @param  {Event}  e           Event that triggered the method
      * @param  {string} filename    Path to changed file
+     * @return {undefined}
      */
     async cssFileChanged (e, filename) {
         this.log('Css file "{1}" fired event "{2}"', 'debug', [filename, e]);
@@ -726,6 +738,7 @@ class StaticFilesHelper extends BaseClass {
      * Handler that reloads all css on page
      *
      * @param  {Event}  e           Event that triggered the method
+     * @return {undefined}
      */
     reloadCss (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -739,6 +752,7 @@ class StaticFilesHelper extends BaseClass {
      * Handler that reloads all css on page
      *
      * @async
+     * @return {undefined}
      */
     async doReloadCss () {
         clearTimeout(this.timeouts.reloadCss);
@@ -752,6 +766,7 @@ class StaticFilesHelper extends BaseClass {
      * Removes watchers from all watched files
      *
      * @async
+     * @return {undefined}
      */
     async unwatchFiles () {
         for (let i=0; i<this.watchedFiles.length; i++){

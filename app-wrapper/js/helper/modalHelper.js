@@ -64,6 +64,7 @@ class ModalHelper extends BaseClass {
      * Sets modal dialog status to busy using message from argument (or default one if no message is passed)
      *
      * @param  {string} message Optional message to display in modal
+     * @return {undefined}
      */
     modalBusy (message) {
         if (!message){
@@ -75,6 +76,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Sets modal dialog status to not busy
+     *
+     * @return {undefined}
      */
     modalNotBusy () {
         appState.modalData.currentModal.busy = false;
@@ -84,6 +87,7 @@ class ModalHelper extends BaseClass {
      * Closes currently visible modal dialog
      *
      * @param  {Boolean} force Flag to force modal closing even if modal is busy
+     * @return {undefined}
      */
     closeCurrentModal (force){
         let fadeModal = appState.modalData.fadeModal;
@@ -135,6 +139,7 @@ class ModalHelper extends BaseClass {
      * @param  {Integer} delay      Delay in milliseconds
      * @param  {string} busyText    Busy message to show
      * @param  {Boolean} force      Flag to force modal closing even if modal is busy
+     * @return {undefined}
      */
     closeCurrentModalDelayed (delay, busyText, force){
         if (!delay){
@@ -157,6 +162,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Opens current modal dialog
+     *
+     * @return {undefined}
      */
     openCurrentModal () {
         let fadeModal = appState.modalData.fadeModal;
@@ -233,6 +240,7 @@ class ModalHelper extends BaseClass {
      * @param  {Object}     options       Modal option overrides
      * @param  {Function}   confirmAction Confirm modal callback
      * @param  {Function}   cancelAction  Cancel / close modal callback
+     * @return {undefined}
      */
     async openSimpleModal(title, text, options, confirmAction, cancelAction) {
         this.closeCurrentModal(true);
@@ -257,6 +265,7 @@ class ModalHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async confirmResolve (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -274,6 +283,7 @@ class ModalHelper extends BaseClass {
      * @param  {string}     confirmButtonText   Confirm button text
      * @param  {string}     cancelButtonText    Cancel button text
      * @param  {Function}   confirmAction       Modal confirm callback
+     * @return {undefined}
      */
     async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
         this.log('Opening confirm modal.', 'info', []);
@@ -316,6 +326,7 @@ class ModalHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async queryResolve (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -329,6 +340,7 @@ class ModalHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async queryReject (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -343,6 +355,7 @@ class ModalHelper extends BaseClass {
      * @async
      * @param  {Function} confirmAction Modal confirm callback
      * @param  {Function} cancelAction  Modal cancel/close callback
+     * @return {undefined}
      */
     async queryModal (confirmAction, cancelAction) {
         this.log('Opening query modal.', 'info', []);
@@ -364,6 +377,7 @@ class ModalHelper extends BaseClass {
      * Adds modal message to currently visible modal
      *
      * @param {Object} messageObject Message object
+     * @return {undefined}
      */
     addModalMessage (messageObject) {
         if (appState.modalData.currentModal && appState.modalData.modalVisible){
@@ -377,6 +391,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Clears modal messages from currently visible modal
+     *
+     * @return {undefined}
      */
     clearModalMessages () {
         if (appState.modalData.currentModal && _.isObject(appState.modalData.currentModal)){
@@ -411,6 +427,7 @@ class ModalHelper extends BaseClass {
      *
      * @param  {string} modalName Name of modal object
      * @param  {Object} options   Modal option overrides
+     * @return {undefined}
      */
     openModal(modalName, options){
         let modalObj = this.getModalObject(modalName, options);
@@ -422,6 +439,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Automatically closes modal after timeout from modal options
+     *
+     * @return {undefined}
      */
     autoCloseModal () {
         this.log('Setting up modal auto-close.', 'info', []);
@@ -450,6 +469,7 @@ class ModalHelper extends BaseClass {
      * Updates auto close timer in modal dialog (for auto-closing modals)
      *
      * @param  {Integer} seconds Remaining time in seconds
+     * @return {undefined}
      */
     updateAutoCloseTimer (seconds) {
         let md = appState.modalData;
@@ -504,6 +524,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Stops auto closing modal countdown
+     *
+     * @return {undefined}
      */
     stopAutoCloseModal () {
         let cm = appState.modalData.currentModal;
@@ -517,6 +539,9 @@ class ModalHelper extends BaseClass {
 
     /**
      * Resets callbacks for current modal object
+     *
+     *
+     * @return {undefined}
      */
     resetCurrentCallbacks () {
         appState.modalData.currentModal.onBeforeOpen = null;
@@ -527,6 +552,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Empties current modal, reverting it to default values
+     *
+     * @return {undefined}
      */
     emptyModal () {
         appState.modalData.currentModal.title = '';
@@ -538,6 +565,8 @@ class ModalHelper extends BaseClass {
 
     /**
      * Resets modal action listeners to their defaults
+     *
+     * @return {undefined}
      */
     resetModalActions () {
         _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
@@ -549,6 +578,7 @@ class ModalHelper extends BaseClass {
      *
      * @param {string} name  Name of the variable
      * @param {Object} value Value of the variable
+     * @return {undefined}
      */
     setModalVar(name, value){
         appState.modalData.currentModal[name] = value;
@@ -558,6 +588,7 @@ class ModalHelper extends BaseClass {
      * Sets modal variables using data argument
      *
      * @param {Object} data Data with properties and values for variables tos et
+     * @return {undefined}
      */
     setModalVars(data){
         appState.modalData.currentModal = _.merge(appState.modalData.currentModal, data);
@@ -578,6 +609,7 @@ class ModalHelper extends BaseClass {
      *
      * @param {Object}  data      Modal data to set
      * @param {Boolean} overwrite Flag to indicate data overwriting instead of merging with existing data
+     * @return {undefined}
      */
     setModalData(data, overwrite){
         if (!overwrite){

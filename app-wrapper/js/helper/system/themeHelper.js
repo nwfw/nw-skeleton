@@ -56,6 +56,7 @@ class ThemeHelper extends BaseClass {
      * Reads and initializes theme files based on configuration.
      *
      * @async
+     * @return {undefined}
      */
     async initializeThemes () {
         appState.availableThemes = [];
@@ -193,8 +194,8 @@ class ThemeHelper extends BaseClass {
      * Registers theme in the system, adding it to appState
      *
      * @async
-     * @param  {ThemeDefinition}    Theme definition
-     * @return {boolean}            Result of theme initialization
+     * @param  {ThemeDefinition}    themeDefinition     Theme definition
+     * @return {Boolean}                                Result of theme initialization
      */
     async registerTheme(themeDefinition){
         let result = false;
@@ -333,6 +334,8 @@ class ThemeHelper extends BaseClass {
 
     /**
      * Handler that reloads css files after appState.theme has been changed
+     *
+     * @return {undefined}
      */
     changeTheme () {
         _appWrapper.getHelper('staticFiles').reloadCss();

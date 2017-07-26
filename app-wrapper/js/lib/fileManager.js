@@ -40,7 +40,7 @@ class FileManager extends BaseClass {
      * Shuts down file manager, unwatching all files and removing leftover references
      *
      * @async
-     * @return {boolean} Shutdown result
+     * @return {Boolean} Shutdown result
      */
     async shutdown () {
         return await this.unwatchAllFiles();
@@ -50,7 +50,7 @@ class FileManager extends BaseClass {
      * Checks whether given file exists
      *
      * @param  {string} file Absolute file path
-     * @return {boolean}     True if file exists, false otherwise
+     * @return {Boolean}     True if file exists, false otherwise
      */
     fileExists(file){
         var fileExists = true;
@@ -68,7 +68,7 @@ class FileManager extends BaseClass {
      *
      * @async
      * @param  {string} file Absolute file path
-     * @return {boolean}     True if file is file, false otherwise
+     * @return {Boolean}     True if file is file, false otherwise
      */
     async isFile(file){
         if (!file){
@@ -92,7 +92,7 @@ class FileManager extends BaseClass {
      * Checks whether given path is a directory
      *
      * @param  {string} dir Absolute directory path
-     * @return {boolean}     True if file is a directory, false otherwise
+     * @return {Boolean}     True if file is a directory, false otherwise
      */
     isDir(dir){
         var dirPath = path.resolve(dir);
@@ -113,7 +113,7 @@ class FileManager extends BaseClass {
      * Checks whether given dir is writable by current user
      *
      * @param  {string} dir Absolute directory path
-     * @return {boolean}     True if directory is writable, false otherwise
+     * @return {Boolean}     True if directory is writable, false otherwise
      */
     isDirWritable(dir){
         var dirValid = true;
@@ -152,7 +152,7 @@ class FileManager extends BaseClass {
      * Checks whether given file is writable by current user
      *
      * @param  {string} file Absolute file path
-     * @return {boolean}     True if file is writable, false otherwise
+     * @return {Boolean}     True if file is writable, false otherwise
      */
     isFileWritable (file){
         var fileValid = true;
@@ -268,7 +268,7 @@ class FileManager extends BaseClass {
      * @async
      * @param  {string} directory Absolute directory path
      * @param  {Number} mode      Octal mode definition (i.e. 0o775)
-     * @return {boolean}          Result of directory creation
+     * @return {Boolean}          Result of directory creation
      */
     async createDirRecursive(directory, mode){
         var dirName = path.resolve(directory);
@@ -302,7 +302,7 @@ class FileManager extends BaseClass {
      * @param  {Number} mode     Octal mode definition (i.e. 0o775)
      * @param  {Object} options  Options object for fs.writeFileSync
      * @param  {string} data     Data to write to file
-     * @return {boolean}         True if operation succeeded, false otherwise
+     * @return {Boolean}         True if operation succeeded, false otherwise
      */
     async createDirFileRecursive(fileName, mode, options, data){
         if (!options){
@@ -338,7 +338,7 @@ class FileManager extends BaseClass {
      * @param  {string} file  Absolute path to file
      * @param  {string} data  Data to write
      * @param  {Object} options  Options object for fs.writeFileSync
-     * @return {boolean}         True if operation succeeded, false otherwise
+     * @return {Boolean}         True if operation succeeded, false otherwise
      */
     async writeFileSync(file, data, options){
         var saved = false;
@@ -374,6 +374,7 @@ class FileManager extends BaseClass {
      * @param  {string}     filePath Absolute path to file
      * @param  {Object}     options  Options object for fs.watchFile
      * @param  {Function}   listener Method to call when file changes
+     * @return {undefined}
      */
     async watchFile(filePath, options, listener){
         if (await this.isFile(filePath)){
@@ -388,6 +389,7 @@ class FileManager extends BaseClass {
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Function}   listener Method to call when file changes
+     * @return {undefined}
      */
     async unWatchFile(filePath, listener){
         var watchIndex = _.indexOf(this.watchedFiles, filePath);
@@ -401,6 +403,7 @@ class FileManager extends BaseClass {
      * Removes listeners for all watched files
      *
      * @async
+     * @return {undefined}
      */
     async unwatchAllFiles () {
         let watchedFiles = _.clone(this.watchedFiles);
@@ -417,6 +420,7 @@ class FileManager extends BaseClass {
      * @param  {string}     filePath Absolute path to file
      * @param  {Object}     options  Options object for fs.watchFile
      * @param  {Function}   listener Method to call when file changes
+     * @return {undefined}
      */
     async watch(filePath, options, listener){
         if (await this.isFile(filePath)){
@@ -431,6 +435,7 @@ class FileManager extends BaseClass {
      * @async
      * @param  {string}     filePath Absolute path to file
      * @param  {Function}   listener Method to call when file changes
+     * @return {undefined}
      */
     async unwatch(filePath, listener){
         var listenerName = listener.name ? listener.name : listener;
@@ -444,6 +449,7 @@ class FileManager extends BaseClass {
      * Removes listeners for all watched files
      *
      * @async
+     * @return {undefined}
      */
     async unwatchAll () {
         for (let name in this.watched){
@@ -459,7 +465,8 @@ class FileManager extends BaseClass {
      * @async
      * @param  {string}     directory      Absolute path to directory
      * @param  {string}     extensionMatch Regex string for extension matching
-     * @param  {boolean}    requireFiles   Flag to indicate whether to require() files or return their contents as strings
+     * @param  {Boolean}    requireFiles   Flag to indicate whether to require() files or return their contents as strings
+     * @param  {Boolean}    notSilent       Flag to indicate whether to log outout
      * @return {Object}                    File contents (or required object) by file name
      */
     async loadFilesFromDir (directory, extensionMatch, requireFiles, notSilent) {
@@ -546,8 +553,8 @@ class FileManager extends BaseClass {
      *
      * @async
      * @param  {string}     filePath    Absolute path to file
-     * @param  {boolean}    requireFile Flag to indicate whether to require() file or return its contents as string
-     * @param  {boolean}    notSilent   Flag to force logging output
+     * @param  {Boolean}    requireFile Flag to indicate whether to require() file or return its contents as string
+     * @param  {Boolean}    notSilent   Flag to force logging output
      * @return {(string|Object)}        File contents, exported object or null on failure.
      */
     async loadFile (filePath, requireFile, notSilent){
@@ -619,8 +626,8 @@ class FileManager extends BaseClass {
      * @async
      * @param  {string}     fileName        File name (basename)
      * @param  {string[]}   dirs            An array of absolute directory paths to search
-     * @param  {boolean}    requireFile     Flag to indicate whether to require() file or return its contents as string
-     * @param  {boolean}    notSilent       Flag to force logging output
+     * @param  {Boolean}    requireFile     Flag to indicate whether to require() file or return its contents as string
+     * @param  {Boolean}    notSilent       Flag to force logging output
      * @return {(string|Object|boolean)}    File contents, exported object or false on failure.
      */
     async loadFileFromDirs (fileName, dirs, requireFile, notSilent){
@@ -653,7 +660,8 @@ class FileManager extends BaseClass {
      * Reads recursive file list from dir and returns it, excluding all '.' and '..' entries
      *
      * @async
-     * @param  {string} dirPath Absolute directory path
+     * @param  {string} dirPath         Absolute directory path
+     * @param  {string} extensionRegex  Regex for extension matching
      * @return {string[]}  An array of entries from directory and its subdirectories
      */
     async readDirRecursive(dirPath, extensionRegex){

@@ -18,6 +18,7 @@ var mainScript;
  *
  * @async
  * @memberOf mainScript
+ * @return {void}
  */
 async function main(){
     try {

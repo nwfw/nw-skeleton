@@ -45,6 +45,7 @@ class AppNotificationsHelper extends BaseClass {
      * Adds app notification
      *
      * @param {Object} notification Notification object
+     * @return {undefined}
      */
     addNotification(notification){
         if (appState.appNotificationsData.currentNotification && appState.appNotificationsData.currentNotification.message == notification.message){
@@ -170,6 +171,7 @@ class AppNotificationsHelper extends BaseClass {
      * @async
      * @param  {string} notificationId Chrome notification id
      * @param  {Object} options        Chrome notification options
+     * @return {undefined}
      */
     async updateDesktopNotification (notificationId, options) {
         chrome.notifications.update(notificationId, options);

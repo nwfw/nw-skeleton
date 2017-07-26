@@ -85,6 +85,7 @@ class MainScript {
      * Destroys current MainScript class instance
      *
      * @async
+     * @return {undefined}
      */
     async destroy () {
         this.removeEventListeners();
@@ -97,6 +98,7 @@ class MainScript {
      * Starts the application
      *
      * @async
+     * @return {undefined}
      */
     async start () {
         var returnPromise;
@@ -117,6 +119,7 @@ class MainScript {
      * Initializes globalEmitter object for communication with the app
      *
      * @async
+     * @return {undefined}
      */
     async initializeGlobalEmitter () {
         this.mainWindow.globalEmitter = new EventEmitter();
@@ -126,6 +129,8 @@ class MainScript {
     /**
      * Method that sets up this.boundMethods property by binding this objects
      * functions to itself to be used as event listener handlers
+     *
+     * @return {undefined}
      */
     addBoundMethods () {
         if (this.boundMethods){
@@ -141,6 +146,8 @@ class MainScript {
     /**
      * Method that cleans up this.boundMethods property
      * set in this.addBoundMethods method
+     *
+     * @return {undefined}
      */
     removeBoundMethods () {
         var keys = Object.keys(this.boundMethods);
@@ -152,6 +159,12 @@ class MainScript {
 
     /**
      * Adds event listeners
+     *
+     *
+     *
+     *
+     *
+     * @return {undefined}
      */
     addEventListeners() {
         process.once('uncaughtException', this.boundMethods.uncaughtException);
@@ -160,6 +173,8 @@ class MainScript {
 
     /**
      * Removes event listeners
+     *
+     * @return {undefined}
      */
     removeEventListeners() {
         process.removeListener('SIGINT', this.boundMethods.sigInt);
@@ -167,6 +182,8 @@ class MainScript {
 
     /**
      * Adds main window event listeners
+     *
+     * @return {undefined}
      */
     addMainWindowEventListeners() {
         this.mainWindow.on('closed', this.boundMethods.windowClosed);
@@ -175,6 +192,8 @@ class MainScript {
 
     /**
      * Removes main window event listeners
+     *
+     * @return {undefined}
      */
     removeMainWindowEventListeners() {
         this.mainWindow.removeListener('closed', this.boundMethods.windowClosed);
@@ -183,6 +202,8 @@ class MainScript {
 
     /**
      * Adds global emitter event listeners
+     *
+     * @return {undefined}
      */
     addGlobalEmitterEventListeners() {
         this.mainWindow.globalEmitter.on('message', this.boundMethods.messageReceived);
@@ -191,6 +212,8 @@ class MainScript {
 
     /**
      * Removes global emitter window event listeners
+     *
+     * @return {undefined}
      */
     removeGlobalEmitterEventListeners() {
         this.mainWindow.globalEmitter.removeListener('message', this.boundMethods.messageReceived);
@@ -246,6 +269,8 @@ class MainScript {
 
     /**
      * Logs data to console if debug is enabled
+     *
+     * @return {undefined}
      */
     log () {
         if (this.config && this.config.main && this.config.main.debug){
@@ -255,6 +280,8 @@ class MainScript {
 
     /**
      * Logs data to console
+     *
+     * @return {undefined}
      */
     doLog () {
         let params = [];
@@ -307,6 +334,7 @@ class MainScript {
      * Prints message to stdout
      *
      * @param  {string} message Message to print
+     * @return {undefined}
      */
     print (message){
         process.stdout.write(message);
@@ -316,6 +344,7 @@ class MainScript {
      * Prints message to stdout with newline appended
      *
      * @param  {string} message Message to print
+     * @return {undefined}
      */
     printLn (message){
         process.stdout.write(message.replace(/\r?\n?$/, '\n'));
@@ -325,6 +354,7 @@ class MainScript {
      * Logs message to console
      *
      * @param  {mixed} message Message to log
+     * @return {undefined}
      */
     printLog(message){
         console.log(message);
@@ -335,6 +365,7 @@ class MainScript {
      *
      * @param  {Event} e        Event that triggered the method
      * @param  {Boolean} noExit Flag to prevent exiting main process
+     * @return {undefined}
      */
     windowClosed (e, noExit) {
         _.noop(e);
@@ -345,6 +376,8 @@ class MainScript {
 
     /**
      * Handler for main window 'loaded' event
+     *
+     * @return {undefined}
      */
     windowLoaded () {
         this.log('Main window loaded');
@@ -354,6 +387,7 @@ class MainScript {
      * Handler for uncaught exceptions
      *
      * @param  {Error} err  Uncaught exception
+     * @return {undefined}
      */
     uncaughtException (err) {
         this.doLog('EXCEPTION');
@@ -388,6 +422,7 @@ class MainScript {
      * Handler for SIGINT signal
      *
      * @param  {Integer} code Optional exit code for the app
+     * @return {undefined}
      */
     sigInt (code) {
         if (_.isUndefined(code)){

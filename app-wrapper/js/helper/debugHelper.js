@@ -43,6 +43,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Opens standalone debug window
+     *
+     * @return {undefined}
      */
     openDebugWindow (){
         this.log('Opening standalone debug window', 'info', []);
@@ -72,6 +74,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Toggles debug.hideDebug config variable, showing or hiding app-debug component with debug messages
+     *
+     * @return {undefined}
      */
     toggleDebug () {
         _appWrapper.appConfig.setConfigVar('debug.hideDebug', !appState.config.debug.hideDebug);
@@ -81,6 +85,7 @@ class DebugHelper extends BaseClass {
      * Changes minimum debug level for displaying debug messages
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     changeDebugLevel(e){
         var level = e.target.value;
@@ -95,6 +100,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Clears console and all debug messages
+     *
+     * @return {undefined}
      */
     clearDebugMessages () {
         console.clear();
@@ -118,6 +125,7 @@ class DebugHelper extends BaseClass {
      * Handler for save debug button
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     saveDebug (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -130,6 +138,7 @@ class DebugHelper extends BaseClass {
      * Opens modal dialog for saving debug log to file
      *
      * @async
+     * @return {undefined}
      */
     async showSaveDebugModal () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -160,6 +169,7 @@ class DebugHelper extends BaseClass {
      * Handler for opening file dialog for saving debug log to file
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     saveDebugFileClick (e){
         let fileEl = e.target.parentNode.querySelector('.file-picker');
@@ -169,6 +179,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Handler that saves debug log to file when related input value has changed
+     *
+     * @return {undefined}
      */
     saveDebugFileChange () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -242,6 +254,7 @@ class DebugHelper extends BaseClass {
      * Clears all user messages
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     clearUserMessages (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -256,6 +269,7 @@ class DebugHelper extends BaseClass {
      * Changes minimum user message level for displaying user messages
      *
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     changeUserMessageLevel (e) {
         var level = e.target.value;
@@ -265,6 +279,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Opens modal dialog with debugging configuration editor
+     *
+     * @return {undefined}
      */
     openDebugConfigEditor () {
         let modalHelper = _appWrapper.getHelper('modal');
@@ -293,6 +309,7 @@ class DebugHelper extends BaseClass {
      *
      * @async
      * @param  {Event} e Event that triggered the method
+     * @return {undefined}
      */
     async saveDebugConfig (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -341,6 +358,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Shows or hides stack info for all debug messages
+     *
+     * @return {undefined}
      */
     toggleDebugMessageStacks () {
         let currentState = !this.getDebugMessageStacksState();
@@ -353,6 +372,8 @@ class DebugHelper extends BaseClass {
 
     /**
      * Expands or contracts app-debug part of the application
+     *
+     * @return {undefined}
      */
     toggleDebugMessages () {
         _appWrapper.appConfig.setConfigVar('debug.messagesExpanded', !this.getConfig('debug.messagesExpanded'));

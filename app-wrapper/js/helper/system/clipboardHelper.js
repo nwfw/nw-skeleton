@@ -33,6 +33,7 @@ class ClipboardHelper extends BaseClass {
      * @see {@link http://docs.nwjs.io/en/latest/References/Clipboard/#clipsetdata-type-raw}
      * @param {mixed} data Data to put to clipboard
      * @param {string} type Data type - one of text, png, jpeg, html and rtf (text is default)
+     * @return {undefined}
      */
     set (data, type){
         let clipboard = nw.Clipboard.get();
@@ -82,6 +83,8 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Cuts currently selected text to clipboard
+     *
+     * @return {undefined}
      */
     cut () {
         let selectedText = this.getSelected();
@@ -104,6 +107,8 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Copies currently selected text to clipboard
+     *
+     * @return {undefined}
      */
     copy () {
         let selectedText = this.getSelected();
@@ -113,6 +118,8 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Pastes text from clipboard to currently active (focused) DOM element
+     *
+     * @return {undefined}
      */
     paste () {
         let activeElement = document.activeElement;
@@ -136,6 +143,8 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Selects all text in current form element or entire window
+     *
+     * @return {undefined}
      */
     selectAll () {
         let activeElement = document.activeElement;
@@ -154,7 +163,9 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Undoes previous operation
+     *
      * @todo implement this
+     * @return {undefined}
      */
     undo () {
         document.execCommand('undo');
@@ -162,7 +173,9 @@ class ClipboardHelper extends BaseClass {
 
     /**
      * Redoes previous operation
+     *
      * @todo implement this
+     * @return {undefined}
      */
     redo () {
         document.execCommand('redo');

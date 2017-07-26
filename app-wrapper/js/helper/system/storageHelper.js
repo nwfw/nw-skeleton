@@ -42,6 +42,7 @@ class StorageHelper extends BaseClass {
      * @async
      * @param {string}  name  Name of the variable in localStorage
      * @param {mixed}   value Value of the variable
+     * @return {undefined}
      */
     async set (name, value){
         var returnValue = null;

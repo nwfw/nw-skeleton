@@ -304,6 +304,8 @@ class AppWrapper extends BaseClass {
 
     /**
      * Adds event listeners for the AppWrapper instance
+     *
+     * @return {undefined}
      */
     addEventListeners() {
         if (!appState.isDebugWindow){
@@ -317,6 +319,8 @@ class AppWrapper extends BaseClass {
 
     /**
      * Removes event listeners for the AppWrapper instance
+     *
+     * @return {undefined}
      */
     removeEventListeners() {
         if (!appState.isDebugWindow){
@@ -393,6 +397,7 @@ class AppWrapper extends BaseClass {
      * Initializes frontend part of the app, creating Vue instance
      *
      * @async
+     * @param {Boolean} noFinalize Flag to prevent finalization (used when reinitializing)
      * @return {Vue} An object representing Vue app instance
      */
     async initializeFeApp(noFinalize){
@@ -425,6 +430,14 @@ class AppWrapper extends BaseClass {
                 if (!noFinalize){
                     await this.finalize();
                 }
+                if (appState.isDebugWindow){
+                    this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
+                } else {
+                    if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
+                        this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
+                    }
+                    this.addUserMessage('Application initialized', 'info', [], false, false);
+                }
                 resolveReference(window.feApp);
             },
             beforeDestroy: async () => {
@@ -436,14 +449,6 @@ class AppWrapper extends BaseClass {
                 this.emit('feApp:destroyed');
             }
         });
-        if (appState.isDebugWindow){
-            this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
-        } else {
-            if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
-            }
-            this.addUserMessage('Application initialized', 'info', [], false, false);
-        }
 
         return returnPromise;
     }
@@ -473,6 +478,7 @@ class AppWrapper extends BaseClass {
      *
      * @async
      * @param  {Event} e  Event that triggered the handler
+     * @return {undefined}
      */
     async callViewHandler (e) {
         var target = e.target;
@@ -517,6 +523,7 @@ class AppWrapper extends BaseClass {
      * Handler that performs necessary operations when application window gets closed
      *
      * @async
+     * @return {undefined}
      */
     async onWindowClose () {
         let modalHelper = this.getHelper('modal');
@@ -601,6 +608,7 @@ class AppWrapper extends BaseClass {
     /**
      * Handler that performs necessary operations before application window gets closed
      *
+     * @return {undefined}
      */
     beforeWindowClose () {
         this.removeEventListeners();
@@ -624,6 +632,7 @@ class AppWrapper extends BaseClass {
      * Handler that is triggered before application window is reloaded (available only with debug enabled)
      *
      * @async
+     * @return {undefined}
      */
     async beforeUnload () {
         let modalHelper = this.getHelper('modal');
@@ -649,6 +658,7 @@ class AppWrapper extends BaseClass {
      * Handler that is triggered before application debug window is reloaded (available only with debug enabled)
      *
      * @async
+     * @return {undefined}
      */
     async onDebugWindowUnload (){
         this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
@@ -658,6 +668,7 @@ class AppWrapper extends BaseClass {
      * Handler that is triggered before application window is closed (available only with debug enabled)
      *
      * @async
+     * @return {undefined}
      */
     async onDebugWindowClose (){
         this.log('Closing standalone debug window', 'info', []);
@@ -676,6 +687,7 @@ class AppWrapper extends BaseClass {
      *
      * @param {boolean} appBusy  Flag that indicates whether entire app should be considered as 'busy'
      * @param {string} appStatus String that indicates current app status (for display in app header live info component)
+     * @return {undefined}
      */
     setAppStatus (appBusy, appStatus){
         if (!appStatus){
@@ -691,6 +703,8 @@ class AppWrapper extends BaseClass {
 
     /**
      * Resets app status to not busy/idle state
+     *
+     * @return {undefined}
      */
     resetAppStatus (){
         this.setAppStatus(false);
@@ -699,7 +713,7 @@ class AppWrapper extends BaseClass {
     /**
      * Placeholder method that handles modal confirm action
      *
-     * @param  {Event} Optional event passed to method
+     * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
     confirmModalAction (e) {
@@ -710,7 +724,7 @@ class AppWrapper extends BaseClass {
     /**
      * Placeholder method that handles modal cancel/close action
      *
-     * @param  {Event} Optional event passed to method
+     * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
     cancelModalAction (e) {
@@ -722,7 +736,7 @@ class AppWrapper extends BaseClass {
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal confirmation
      *
-     * @param  {Event} Optional event passed to method
+     * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
     _confirmModalAction (e) {
@@ -734,7 +748,7 @@ class AppWrapper extends BaseClass {
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal cancelling or closing
      *
-     * @param  {Event} Optional event passed to method
+     * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
     _cancelModalAction (e) {
@@ -746,8 +760,8 @@ class AppWrapper extends BaseClass {
     /**
      * Default confirm modal action - do not change
      *
-     * @param  {Event} Optional event passed to method
-     * @return {void}
+     * @param  {Event} e Optional event passed to method
+     * @return {undefined}
      */
     __confirmModalAction (e) {
         this.log('Calling appWrapper __confirmModalAction', 'info', []);
@@ -760,8 +774,8 @@ class AppWrapper extends BaseClass {
     /**
      * Default cancel/close modal action - do not change
      *
-     * @param  {Event} Optional event passed to method
-     * @return {void}
+     * @param  {Event} e Optional event passed to method
+     * @return {undefined}
      */
     __cancelModalAction (e) {
         this.log('Calling appWrapper __cancelModalAction', 'info', []);
@@ -774,6 +788,7 @@ class AppWrapper extends BaseClass {
     /**
      * Sets dynamic (calculated) appState values (mainly language related)
      *
+     * @return {undefined}
      */
     setDynamicAppStateValues () {
         appState.languageData.currentLanguageName = this.getConfig('currentLanguageName');
@@ -890,6 +905,7 @@ class AppWrapper extends BaseClass {
      * Exits the app, closing app window
      *
      * @param {Boolean} force Force window closing
+     * @return {undefined}
      */
     exitApp(force){
         if (force){
@@ -1099,6 +1115,7 @@ class AppWrapper extends BaseClass {
      * Handles message responses from main script
      *
      * @param  {Object} data Message response data
+     * @return {undefined}
      */
     handleMessageResponse (data) {
         console.log(data);
@@ -1108,6 +1125,7 @@ class AppWrapper extends BaseClass {
      * Handles messages from main script
      *
      * @param  {Object} data Message data
+     * @return {undefined}
      */
     handleMainMessage (data){
         if (data && data.instruction){
@@ -1123,6 +1141,8 @@ class AppWrapper extends BaseClass {
 
     /**
      * Opens app info modal
+     *
+     * @return {undefined}
      */
     showAppInfo (){
         let modalOptions = {
