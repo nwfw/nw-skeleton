@@ -26,8 +26,8 @@
 }
 
 .message-list-wrapper .message-list {
-    border: var(--app-message-listborder);
-    background: var(--app-message-listbackground);
+    border: var(--app-message-list-border);
+    background: var(--app-message-list-background);
     overflow: auto;
     margin: 0 5px;
     padding: 1px 0px;

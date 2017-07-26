@@ -94,7 +94,7 @@ class StaticFilesHelper extends BaseClass {
             cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
 
             if (cssContents){
-                cssContents = await postcss().use(postcssUrl({url: this.rebaseAsset})).process(cssContents, { from: href, to: compiledCssPath });
+                cssContents = await postcss().use(postcssUrl({url: this.rebaseAsset})).process(cssContents, { from: cssFilePath, to: compiledCssPath });
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
@@ -781,40 +781,36 @@ class StaticFilesHelper extends BaseClass {
      * @param  {Boolean} silent Flag to prevent logging
      * @return {string[]}       All missing css variable names
      */
-    detectMissingVariables (silent){
-        let allVariables = [];
+    async detectMissingVariables (silent){
         let missingVariables = [];
-        let styleHelper = _appWrapper.getHelper('style');
-        for (let i=0; i<document.styleSheets.length; i++){
-            let currentStyleSheet = document.styleSheets[i];
-            for (let j=0; j<currentStyleSheet.cssRules.length; j++){
-                let currentRule = currentStyleSheet.cssRules[j];
-                if (!_.isUndefined(currentRule.style)){
-                    for (let k=0; k<currentRule.style.length; k++){
-                        let name = currentRule.style.item(k);
-                        let value = currentRule.style[name];
-                        if (value && value.match(/var\(/)){
-                            let matches = value.match(/var\(([^)]+)/);
-                            if (matches && matches.length > 1){
-                                allVariables.push(matches[1]);
-                            }
-                        }
-                    }
+        if (!this.getConfig('compileCss')){
+            this.log('Missing css variables detection only works with compiled css', 'info');
+        } else {
+            let styleHelper = _appWrapper.getHelper('style');
+            let allVariables = [];
+            let cssString = await this.compileCss(true, true);
+            let matches = cssString.match(/var\((--[^)]+)/g);
+            if (matches){
+                let fixedMatches = _.map(matches, (item) => {
+                    return item.replace(/var\(/gm, '');
+                });
+                allVariables = _.concat(allVariables, fixedMatches);
+            }
+            allVariables = _.uniq(allVariables);
+            allVariables = allVariables.sort();
+            for (let i=0; i<allVariables.length; i++){
+                let value = styleHelper.getCssVarValue(allVariables[i]);
+                if (!value){
+                    missingVariables.push(allVariables[i]);
                 }
             }
-        }
-        allVariables = _.uniq(allVariables);
-        for (let i=0; i<allVariables.length; i++){
-            let value = styleHelper.getCssVarValue(allVariables[i]);
-            if (!value){
-                missingVariables.push(allVariables[i]);
-            }
-        }
-        if (!silent){
-            if (missingVariables && missingVariables.length){
-                this.log('Missing css variables found - "{1}"', 'warning', [missingVariables.join('", "')]);
-            } else {
-                this.log('No missing css variables found', 'info', []);
+            if (!silent){
+                if (missingVariables && missingVariables.length){
+                    this.log('Missing css variables found - "{1}"', 'warning', [missingVariables.join('", "')]);
+                    console.log(missingVariables);
+                } else {
+                    this.log('No missing css variables found', 'info', []);
+                }
             }
         }
         return missingVariables;

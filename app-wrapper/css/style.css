@@ -35,7 +35,6 @@ body.nw-body-initialized {
 
 *::selection {
     background: var(--no-selection-background);
-    /*color: var(--no-selection-color);*/
 }
 
 .can-select::selection,

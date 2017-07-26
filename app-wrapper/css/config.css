@@ -16,7 +16,6 @@
 
     /* selection styles */
     --no-selection-background: transparent;
-    --no-selection-color: inherit;
 
     --selection-background: #999999;
     --selection-color: #DDDDDD;
@@ -48,6 +47,7 @@
     --app-header-height: auto;
     --app-header-background-color-top: #EEEEEE;
     --app-header-background-color-bottom: #CCCCCC;
+    --app-header-background-color: none;
     --app-header-text-color: #333333;
     --app-header-border-base-color: #000000;
 
@@ -189,7 +189,7 @@
     --app-message-list-message-text-color: #999999;
     --app-message-list-message-background-color: #333333;
     --app-message-list-message-text-text-shadow: 0 0 1px #999999;
-    --app-message-list-message-highlight-background-color: var(--lightest-orange-color) !important;
+    --app-message-list-message-highlight-background-color: #EEEEEE !important;
     --app-message-list-message-highlight-text-color: #000000 !important;
 
     --app-message-list-message-debug-text-color: #999999;
@@ -427,6 +427,7 @@
 
 
     --modal-dialog-close-background-hovered: #999999;
+    --modal-dialog-close-border-hovered: 1px solid #999999;
     --modal-dialog-close-color-hovered: #FFFFFF;
     --modal-dialog-close-text-shadow-hovered: 0 0 2px #000000;
 
@@ -469,7 +470,7 @@
 
     --link-color: var(--link-base-color);
     --link-cursor: var(--link-base-cursor);
-    --link-text-decoration-visited: var(--link-base-text-decoration);
+    --link-text-decoration: var(--link-base-text-decoration);
 
     --link-color-hovered: var(--link-base-color-hovered);
     --link-cursor-hovered: var(--link-base-cursor-hovered);
@@ -496,6 +497,7 @@
     /* app footer */
     --app-footer-background-color-top: var(--app-header-background-color-bottom);
     --app-footer-background-color-bottom: var(--app-header-background-color-top);
+    --app-footer-background-color: none;
     --app-footer-background: -webkit-linear-gradient(top,  var(--app-footer-background-color-top) 0%, var(--app-footer-background-color-bottom) 100%);
     --app-footer-border-base-color: var(--app-header-border-base-color);
     --app-footer-border-color: var(--app-footer-border-base-color) var(--app-header-background-color-top) var(--app-footer-border-base-color) var(--app-footer-border-base-color);
@@ -507,6 +509,7 @@
     /* app debug */
     --app-debug-wrapper-border-color: var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color) var(--app-debug-wrapper-border-base-color);
     --app-debug-header-background: -webkit-linear-gradient(top, var(--app-debug-header-background-color-top) 0%, var(--app-debug-header-background-color-bottom) 100%);
+    --app-debug-header-background-color: none;
     --app-debug-debug-window-header-background: #EEEEEE;
     --app-debug-debug-window-header-color: #666666;
     --app-debug-debug-window-header-link-color: #990000;
