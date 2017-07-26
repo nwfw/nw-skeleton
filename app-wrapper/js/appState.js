@@ -431,5 +431,13 @@ exports.appState = {
             reloading: false,
             cancelable: false,
         },
+
+        appInfoModal: {
+            name: 'app-info',
+            bodyComponent: 'app-info',
+            defaultBodyComponent: 'app-info',
+            modalClassName: 'app-info-modal',
+            busy: true,
+        },
     },
 };

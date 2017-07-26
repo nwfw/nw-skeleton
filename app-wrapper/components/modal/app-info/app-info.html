@@ -1,0 +1,150 @@
+<ul class="app-info-list">
+    <li class="app-info-list-item app-info-list-item-subtitle">
+        <span class="fa fa-info-circle"></span>
+        {{ translate('Application data') }}
+    </li>
+    <li class="app-info-list-item" v-if="appState.config.appInfo.name">
+        <span class="app-info-list-item-name">
+            {{ translate('Application name') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.config.appInfo.name }}
+        </span>
+    </li>
+    <li class="app-info-list-item" v-if="appState.config.appInfo.description">
+        <span class="app-info-list-item-name">
+            {{ translate('Application description') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.config.appInfo.description }}
+        </span>
+    </li>
+    <li class="app-info-list-item" v-if="appState.manifest.version">
+        <span class="app-info-list-item-name">
+            {{ translate('Application version') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.manifest.version }}
+        </span>
+    </li>
+    <li class="app-info-list-item" v-if="appState.manifest.author">
+        <span class="app-info-list-item-name">
+            {{ translate('Application author') }}
+        </span>
+        <span class="app-info-list-item-value">
+            <a @click.prevent="openEmail">
+                {{ appState.manifest.author }}
+            </a>
+        </span>
+    </li>
+    <li class="app-info-list-item" v-if="appState.manifest.homepage">
+        <span class="app-info-list-item-name">
+            {{ translate('Application homepage') }}
+        </span>
+        <span class="app-info-list-item-value">
+            <a @click.prevent="openHomePage">
+                {{ appState.manifest.homepage }}
+            </a>
+        </span>
+    </li>
+    <li class="app-info-list-item app-info-list-item-subtitle">
+        <span class="fa fa-wrench"></span>
+        {{ translate('Wrapper data') }}
+    </li>
+    <li class="app-info-list-item wrapper-info-list-item" v-if="appState.wrapperManifest.version">
+        <span class="app-info-list-item-name">
+            {{ translate('Wrapper version') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.wrapperManifest.version }}
+        </span>
+    </li>
+    <li class="app-info-list-item wrapper-info-list-item" v-if="appState.wrapperManifest.homepage">
+        <span class="app-info-list-item-name">
+            {{ translate('Wrapper homepage') }}
+        </span>
+        <span class="app-info-list-item-value">
+            <a @click.prevent="openWrapperHomePage">
+                {{ appState.wrapperManifest.homepage }}
+            </a>
+        </span>
+    </li>
+    <li class="app-info-list-item app-info-list-item-subtitle">
+        <span class="fa fa-desktop"></span>
+        {{ translate('Platform data') }}
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.platformData.platform.name">
+        <span class="app-info-list-item-name">
+            {{ translate('Platform') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.platformData.platform.name }}
+            <span v-if="appState.platformData.platform.is64Bit">
+                x64
+            </span>
+            <span v-if="appState.platformData.platform.version">
+                v{{ appState.platformData.platform.version }}
+            </span>
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.platformData.versions.nw">
+        <span class="app-info-list-item-name">
+            {{ translate('NWJS version') }}
+        </span>
+        <span class="app-info-list-item-value">
+            v{{ appState.platformData.versions.nw }}
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.platformData.versions.node">
+        <span class="app-info-list-item-name">
+            {{ translate('Node version') }}
+        </span>
+        <span class="app-info-list-item-value">
+            v{{ appState.platformData.versions.node }}
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.platformData.versions.chromium">
+        <span class="app-info-list-item-name">
+            {{ translate('Chromium version') }}
+        </span>
+        <span class="app-info-list-item-value">
+            v{{ appState.platformData.versions.chromium }}
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.platformData.versions.modules">
+        <span class="app-info-list-item-name">
+            {{ translate('Loaded modules') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.platformData.versions.modules }}
+        </span>
+    </li>
+    <li class="app-info-list-item app-info-list-item-subtitle">
+        <span class="fa fa-plus-square-o"></span>
+        {{ translate('Additional data') }}
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.initializationTime">
+        <span class="app-info-list-item-name">
+            {{ translate('Initialization time') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.initializationTime }}
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.config.currentLanguageName">
+        <span class="app-info-list-item-name">
+            {{ translate('Language') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.config.currentLanguageName }}
+        </span>
+    </li>
+    <li class="app-info-list-item platform-info-list-item" v-if="appState.config.theme">
+        <span class="app-info-list-item-name">
+            {{ translate('Theme') }}
+        </span>
+        <span class="app-info-list-item-value">
+            {{ appState.config.theme }}
+        </span>
+    </li>
+</ul>

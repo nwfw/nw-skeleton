@@ -28,7 +28,7 @@
 
     /* links */
 
-    --link-base-color: #3333CC;
+    --link-base-color: #6666CC;
     --link-base-cursor: pointer;
     --link-base-text-decoration: none;
 
@@ -510,6 +510,11 @@
     --app-debug-debug-window-header-background: #EEEEEE;
     --app-debug-debug-window-header-color: #666666;
     --app-debug-debug-window-header-link-color: #990000;
+
+    /* app info modal */
+    --app-info-modal-subtitle-border: 1px solid #999999;
+    --app-info-modal-name-border-right: 1px solid #999999;
+    --app-info-modal-icon-color: #333333;
 
     /* user messages */
     --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);

@@ -506,10 +506,12 @@ class AppTranslations extends BaseClass {
         if (selectedCode){
             this.addUserMessage('Changing language to "{1}".', 'info', [selectedName], false, false, true);
 
+            appState.languageData.currentLanguageName = selectedName;
             appState.languageData.currentLanguage = selectedCode;
             appState.languageData.currentLocale = selectedLocale;
 
             _appWrapper.appConfig.setConfig({
+                currentLanguageName: selectedName,
                 currentLanguage: selectedCode,
                 currentLocale: selectedLocale
             });

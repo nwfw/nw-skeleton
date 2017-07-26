@@ -128,6 +128,11 @@
 				<span data-event-target="parent" class="fa fa-arrows"></span>
 			</a>
 		</span>
+		<span class="window-control-wrapper">
+			<a :title="translate('App info')" class="window-control window-control-app-info" @click.prevent="callViewHandler" data-click-handler="showAppInfo">
+				<span data-event-target="parent" class="fa fa-info-circle"></span>
+			</a>
+		</span>
 	</span>
 
 	<span class="window-controls window-controls-main">

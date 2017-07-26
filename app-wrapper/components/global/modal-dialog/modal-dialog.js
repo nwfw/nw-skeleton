@@ -91,7 +91,7 @@ component = {
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
                 var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
-                var dimensions = modalDialogWrapper.getRealDimensions('.' + element.className.split(' ')[0]);
+                var dimensions = modalDialogWrapper.getCloneRealDimensions('.' + element.className.split(' ')[0]);
 
                 element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
 
@@ -109,7 +109,7 @@ component = {
                 var modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
 
                 element.addClass('transition-wh');
-                var dimensions = modalDialogWrapper.getRealDimensions('.' + element.className.split(' ')[0]);
+                var dimensions = modalDialogWrapper.getCloneRealDimensions('.' + element.className.split(' ')[0]);
                 element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
             }
         },

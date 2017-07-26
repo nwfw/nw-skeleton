@@ -1,0 +1,55 @@
+.app-info-modal .modal-dialog-form {
+    margin: 0 15px;
+}
+
+.app-info-modal .modal-dialog-form .modal-dialog-buttons {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.app-info-modal .app-info-list {
+    margin: 0;
+    padding: 0;
+    min-width: 75vw;
+    font-size: 0.9rem;
+}
+
+.app-info-modal .app-info-list .app-info-list-item {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.app-info-modal .app-info-list .app-info-list-item .app-info-list-item-name {
+    flex: 0 0 200px;
+    text-align: right;
+    padding: 5px;
+    margin-right: 5px;
+    border-right: var(--app-info-modal-name-border-right);
+}
+
+.app-info-modal .app-info-list .app-info-list-item .app-info-list-item-value {
+    padding: 5px 5px 5px 0;
+}
+
+
+.app-info-modal .app-info-list .app-info-list-item.app-info-list-item-subtitle {
+    text-align: center;
+    justify-content: center;
+    border-top: var(--app-info-modal-subtitle-border);
+    border-bottom: var(--app-info-modal-subtitle-border);
+    max-width: 50%;
+    margin: 10px auto;
+    padding: 7px 0;
+}
+
+.app-info-modal .app-info-list .app-info-list-item.app-info-list-item-subtitle .fa {
+    margin-right: 5px;
+    color: var(--app-info-modal-icon-color);
+
+}
+
+.app-info-modal .app-info-list .app-info-list-item .app-info-list-item-value {
+    flex: 1 1 auto;
+    font-weight: 500;
+}

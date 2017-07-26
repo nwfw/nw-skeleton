@@ -378,6 +378,7 @@ exports.config = {
     varDir: './app/var',
     logDir: './app/var/log',
 
+    currentLanguageName: 'Srpski',
     currentLanguage: 'sr_RS',
     currentLocale: 'sr-rs',
     allowLanguageChange: true,

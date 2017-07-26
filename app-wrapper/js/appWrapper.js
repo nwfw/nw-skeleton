@@ -192,6 +192,8 @@ class AppWrapper extends BaseClass {
         appState.platformData = this.getHelper('util').getPlatformData();
 
         appState.appDir = await this.getAppDir();
+        appState.manifest = require(path.join(appState.appDir, '../package.json'));
+        appState.wrapperManifest = require(path.join(appState.appDir, '../node_modules/nw-skeleton/package.json'));
         appState.appRootDir = path.join(appState.appDir, '../');
 
         this.getHelper('menu').initializeAppMenu();
@@ -774,6 +776,7 @@ class AppWrapper extends BaseClass {
      *
      */
     setDynamicAppStateValues () {
+        appState.languageData.currentLanguageName = this.getConfig('currentLanguageName');
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
     }
@@ -1092,10 +1095,20 @@ class AppWrapper extends BaseClass {
         return appDir;
     }
 
+    /**
+     * Handles message responses from main script
+     *
+     * @param  {Object} data Message response data
+     */
     handleMessageResponse (data) {
         console.log(data);
     }
 
+    /**
+     * Handles messages from main script
+     *
+     * @param  {Object} data Message data
+     */
     handleMainMessage (data){
         if (data && data.instruction){
             if (data.instruction == 'callMethod' && data.data && data.data.method){
@@ -1106,6 +1119,18 @@ class AppWrapper extends BaseClass {
                 this.callObjMethod(data.data.method, args, this);
             }
         }
+    }
+
+    /**
+     * Opens app info modal
+     */
+    showAppInfo (){
+        let modalOptions = {
+            title: this.appTranslations.translate('Application info'),
+            confirmButtonText: this.appTranslations.translate('Close'),
+            showCancelButton: false,
+        };
+        this.getHelper('modal').openModal('appInfoModal', modalOptions);
     }
 }
 exports.AppWrapper = AppWrapper;

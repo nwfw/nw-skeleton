@@ -341,12 +341,13 @@ class ComponentHelper extends BaseClass {
         if (componentModuleData && componentModuleData[type] && componentModuleData[type].length){
             for (let i=0; i<componentModuleData[type].length; i++){
                 if (componentModuleData[type][i]) {
-                    if (componentModuleData[type][i].componentDir){
-                        dirs = _.uniq(_.concat(dirs, componentModuleData[type][i].componentDir));
+                    if (componentModuleData[type][i][type + 'Dir']){
+                        dirs = _.uniq(_.concat(dirs, componentModuleData[type][i][type + 'Dir']));
                     }
-                    if (componentModuleData[type][i].componentMapping && componentModuleData[type][i].componentMapping.length){
-                        for (let j=0; j<componentModuleData[type][i].componentMapping.length; j++){
-                            let currentMappingData = componentModuleData[type][i].componentMapping[j];
+                    if (componentModuleData[type][i][type + 'Mapping'] && componentModuleData[type][i][type + 'Mapping'].length){
+                        let typeMapping = componentModuleData[type][i][type + 'Mapping'];
+                        for (let j=0; j<typeMapping.length; j++){
+                            let currentMappingData = typeMapping[j];
 
                             for (let currentMappingName in currentMappingData){
                                 let currentMapping = currentMappingData[currentMappingName];
@@ -384,6 +385,7 @@ class ComponentHelper extends BaseClass {
         this.vueModalComponents = {};
 
         let componentModuleData = await this.getComponentModuleData();
+        this.componentModuleData = componentModuleData;
 
         let wrapperDirs = this.getConfig('wrapper.componentDirectories.component');
         let overrideDirs = this.getConfig('appConfig.componentDirectories.component');

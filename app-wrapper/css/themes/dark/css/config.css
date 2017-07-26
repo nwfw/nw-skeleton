@@ -26,10 +26,10 @@
 
     /* links */
 
-    --link-base-color: #CCCCCC;
+    --link-base-color: #DDDDDD;
     --link-base-color-hovered: #EEEEEE;
     --link-base-color-active: #EEEEEE;
-    --link-base-color-visited: #CCCCCC;
+    --link-base-color-visited: #DDDDDD;
 
     --app-header-height: auto;
     --app-header-background-color-top: #333333;
@@ -447,5 +447,10 @@
     --modal-dialog-confirm-modal-box-shadow: 0 0 50px #CC9999;
 
     --modal-dialog-confirm-modal-title-color: #FF3333;
+
+    /* app info modal */
+    --app-info-modal-subtitle-border: 1px solid #999999;
+    --app-info-modal-name-border-right: 1px solid #999999;
+    --app-info-modal-icon-color: #FFFFFF;
 
 }
