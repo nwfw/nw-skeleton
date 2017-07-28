@@ -428,7 +428,7 @@ class MainScript {
         if (_.isUndefined(code)){
             code = 4;
         }
-        this.log('Caught SIGINT, code:' + code);
+        this.doLog('\nCaught SIGINT, code:' + code + ', shutting down.\n');
     }
 }
 
