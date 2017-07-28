@@ -1,7 +1,7 @@
 /**
  * @fileOverview DebugHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 var path = require('path');

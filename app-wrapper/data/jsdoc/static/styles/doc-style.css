@@ -1,3 +1,7 @@
+p {
+    margin: 5px 0;
+}
+
 .author a,
 .author a:visited {
     color: #5BA7F2;

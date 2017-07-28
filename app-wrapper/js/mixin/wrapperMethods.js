@@ -1,16 +1,45 @@
-var _ = require('lodash');
+/**
+ * @fileOverview wrapperMethods mixin file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.2.0
+ */
 
+const _ = require('lodash');
 var _appWrapper = window.getAppWrapper();
 
+/**
+ * Translate mixin
+ *
+ * @name MixinWrapperMethods
+ * @memberOf mixins
+ */
 var MixinWrapperMethods  = {
     methods: {
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper),
+        /**
+         * Logs output to console
+         *
+         * @param  {mixed} value  Value to log
+         * @return {undefined}
+         */
         log: function(value){
             console.log(value);
         },
+        /**
+         * Converts value to JSON and returns it
+         *
+         * @param  {mixed} value        Value to convert
+         * @param  {Boolean} minified   Flag to force minified JSON output
+         * @return {string}             JSON-encoded value representation
+         */
         toJson: function(value, minified){
             return _appWrapper.getHelper('util').toJson(value, minified);
         },
+        /**
+         * Takes a var and returns default value if no value founr
+         *
+         * @return {mixed} Value or default value from arguments
+         */
         def: function(){
             var value;
             if (arguments && arguments.length){
@@ -30,7 +59,12 @@ var MixinWrapperMethods  = {
             }
             return value;
         },
-        // this one returns default for all falsy values
+
+        /**
+         * Takes a var and returns default value if no value found or value is falsy
+         *
+         * @return {mixed} Value or default value from arguments
+         */
         defAll: function(){
             var value;
             if (arguments && arguments.length){
@@ -50,6 +84,13 @@ var MixinWrapperMethods  = {
             }
             return value;
         },
+
+        /**
+         * Handler for nw-model directive triggered on model update
+         *
+         * @param  {Event} e    Event that triggered the method
+         * @return {undefined}
+         */
         onUpdateModel: function(e) {
             // console.log('nwModel onUpdateModel', e.target);
             if (e && e.target && e.target.triggerCustomEvent && _.isFunction(e.target.triggerCustomEvent)) {
@@ -57,6 +98,13 @@ var MixinWrapperMethods  = {
                 e.target.triggerCustomEvent('change');
             }
         },
+
+        /**
+         * Handler for 'input' event on fields bound to nw-model directive
+         *
+         * @param  {Event} e    Event that triggered the method
+         * @return {undefined}
+         */
         nwModelInput: function (e){
 
             let utilHelper = _appWrapper.getHelper('util');
@@ -77,18 +125,53 @@ var MixinWrapperMethods  = {
                 context[binding.expression] = value;
             }
         },
+
+        /**
+         * Converts decimal value to hexadecimal
+         *
+         * @param  {Number} decimalValue Decimal value
+         * @return {string}              Hexadecimal value
+         */
         decToHex: function(decimalValue){
             return _appWrapper.getHelper('format').decToHex(decimalValue);
         },
+
+        /**
+         * Converts hexadecimal value to decimal
+         *
+         * @param  {string} hexadecimalValue Hexadecimal value
+         * @return {Number}                  Decimal value
+         */
         hexToDec: function(hexadecimalValue){
             return _appWrapper.getHelper('format').hexToDec(hexadecimalValue);
         },
+
+        /**
+         * Convers hex color representation to r,g,b array
+         *
+         * @param  {string} hexColor Hexadecimal color value
+         * @return {Integer[]}       r,g,b array
+         */
         hexToDecColor: function(hexColor){
             return _appWrapper.getHelper('format').hexToDecColor(hexColor);
         },
+
+        /**
+         * Converts r,g,b array to hexadecimal color value
+         *
+         * @param  {Integer[]} decColorArray    r,g,b values arrat
+         * @return {string}                     Hexadecimal color value
+         */
         decToHexColor: function(decColorArray){
             return _appWrapper.getHelper('format').decToHexColor(decColorArray);
         },
+
+        /**
+         * Formats file size from bytes to human-readable format
+         *
+         * @param  {Integer} bytes File size in bytes
+         * @return {string}        Formatted file size
+         */
         formatFileSize: function(bytes){
             return _appWrapper.getHelper('format').formatFileSize(bytes);
         },

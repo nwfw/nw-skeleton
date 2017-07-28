@@ -1,8 +1,19 @@
-var _ = require('lodash');
+/**
+ * @fileOverview translate mixin file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.2.0
+ */
 
+const _ = require('lodash');
 var _appWrapper = window.getAppWrapper();
 var appState = _appWrapper.getAppState();
 
+/**
+ * Translate mixin
+ *
+ * @name translate
+ * @memberOf mixins
+ */
 var TranslateMixin  = {
     created: function(){
         _.noop(appState);

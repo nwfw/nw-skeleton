@@ -1,7 +1,7 @@
 /**
  * @fileOverview MainMessageHandlers class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 const _ = require('lodash');
@@ -100,6 +100,7 @@ class MainMessageHandlers {
      */
     setConfigHandler(data){
         if (data && data.config){
+            mainScript.log('Setting new config');
             mainScript.config = data.config;
         }
     }

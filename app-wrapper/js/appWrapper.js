@@ -1,37 +1,7 @@
 /**
  * @fileOverview AppWrapper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.1.0
- */
-
-/**
- * @namespace
- * @name mainScript
- * @description mainScript mainScript namespace
- */
-
-/**
- * @namespace
- * @name appWrapper
- * @description appWrapper appWrapper namespace
- */
-
-/**
- * @namespace
- * @name appWrapper.helpers
- * @description appWrapper.helpers appWrapper.helpers namespace
- */
-
-/**
- * @namespace
- * @name appWrapper.helpers.systemHelpers
- * @description appWrapper.helpers.systemHelpers appWrapper.helpers.systemHelpers namespace
- */
-
-/**
- * @namespace
- * @name components
- * @description components components namespace
+ * @version 1.2.0
  */
 
 const _ = require('lodash');
@@ -164,7 +134,7 @@ class AppWrapper extends BaseClass {
             await this.fileManager.createDirRecursive(tmpDataDir);
         }
 
-        this.log('Initializing application.', 'group', []);
+        this.log('Initializing application wrapper.', 'group', []);
 
         if (this.getConfig('debug.debugToFile') && !this.getConfig('debug.debugToFileAppend')){
             this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
@@ -297,7 +267,7 @@ class AppWrapper extends BaseClass {
             appState.status.appReady = true;
         }
         window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
-        this.log('Initializing application.', 'groupend', []);
+        this.log('Initializing application wrapper.', 'groupend', []);
         this.message({instruction: 'log', data: {message: 'Application initialized', force: false}});
         return retValue;
     }
@@ -1154,3 +1124,53 @@ class AppWrapper extends BaseClass {
     }
 }
 exports.AppWrapper = AppWrapper;
+
+
+
+/**
+ * @namespace
+ * @name mainScript
+ * @description mainScript mainScript namespace
+ */
+
+/**
+ * @namespace
+ * @name appWrapper
+ * @description appWrapper appWrapper namespace
+ */
+
+/**
+ * @namespace
+ * @name appWrapper.helpers
+ * @description appWrapper.helpers appWrapper.helpers namespace
+ */
+
+/**
+ * @namespace
+ * @name appWrapper.helpers.systemHelpers
+ * @description appWrapper.helpers.systemHelpers appWrapper.helpers.systemHelpers namespace
+ */
+
+/**
+ * @namespace
+ * @name components
+ * @description components components namespace
+ */
+
+/**
+ * @namespace
+ * @name directives
+ * @description directives directives namespace
+ */
+
+/**
+ * @namespace
+ * @name filters
+ * @description filters filters namespace
+ */
+
+/**
+ * @namespace
+ * @name mixins
+ * @description mixins mixins namespace
+ */

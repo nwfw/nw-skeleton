@@ -1,3 +1,31 @@
+/**
+ * @fileOverview config for app wrapper file
+ * @author Dino Ivankov <dinoivankov@gmail.com>
+ * @version 1.2.0
+ */
+
+/**
+ * MainConfig Object that contains current window state variables
+ * @typedef  {Object}    MainConfig
+ *
+ * @property {Boolean}   debug           Flag to enable or disable debug for main script
+ * @property {Boolean}   debugToWind     Flag to enable or disable passing debug messages to main window
+ */
+
+/**
+ * AppWrapperConfig Object that contains base app config
+ * @typedef  {Object}    AppWrapperConfig
+ *
+ * @property {MainConfig}   main           Main script config variables
+ */
+
+/**
+ * @type {AppWrapperConfig}
+ * @memberOf appWrapper
+ * @name appWrapperConfig
+ *
+ * @todo Complete typedefs
+ */
 exports.config = {
     main : {
         debug: true,

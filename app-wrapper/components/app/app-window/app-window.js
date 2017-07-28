@@ -1,7 +1,7 @@
 /**
  * @fileOverview app-window component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 var _appWrapper = window.getAppWrapper();

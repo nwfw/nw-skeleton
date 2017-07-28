@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppConfig class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 var _ = require('lodash');
@@ -183,10 +183,10 @@ class AppConfig extends BaseClass {
 
             try {
                 if (userConfig && Object.keys(userConfigKeys).length){
-                    this.log('Saving user config...', 'info', []);
+                    this.log('Saving user config...', 'debug', []);
                     let configString = JSON.stringify(userConfig);
                     localStorage.setItem(configName, configString);
-                    this.addUserMessage('Configuration data saved', 'info', [], true);
+                    this.addUserMessage('Configuration data saved', 'debug', []);
                     appState.hasUserConfig = true;
                     this.userConfig = _.cloneDeep(userConfig);
                     appState.userConfig = _.cloneDeep(userConfig);
@@ -198,10 +198,10 @@ class AppConfig extends BaseClass {
                         this.config = _.cloneDeep(appState.config);
                     }
                 } else {
-                    this.log('Removing user config...', 'info', []);
+                    this.log('Removing user config...', 'debug', []);
                     if (localStorage.getItem(configName)){
                         localStorage.removeItem(configName);
-                        this.log('Removed user config.', 'info', []);
+                        this.addUserMessage('Removed user config', 'debug', []);
                         appState.hasUserConfig = false;
                         this.userConfig = {};
                         appState.userConfig = {};
@@ -214,11 +214,11 @@ class AppConfig extends BaseClass {
                         }
                     }
                 }
-            } catch (e) {
-                this.addUserMessage('Configuration data could not be saved - "{1}"', 'error', [e], false,  false);
+            } catch (ex) {
+                this.addUserMessage('Configuration data could not be saved - "{1}"', 'error', [ex.message], false, false);
             }
         } else {
-            this.log('Can\'t save user config.', 'warning', []);
+            this.log('Can not save user config.', 'warning', []);
         }
     }
 
@@ -232,10 +232,10 @@ class AppConfig extends BaseClass {
     async clearUserConfig (noReload) {
         let configName = this.getConfigStorageName();
         if (localStorage){
-            this.log('Clearing user config...', 'info', []);
+            this.log('Clearing user config...', 'debug', []);
             try {
                 localStorage.removeItem(configName);
-                this.addUserMessage('Configuration data cleared', 'info', [], false,  false, true);
+                this.addUserMessage('Configuration data cleared', 'debug', [], false,  false, true);
                 if (!noReload){
                     this.userConfig = {};
                     appState.userConfig = {};
@@ -259,7 +259,7 @@ class AppConfig extends BaseClass {
                 this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);
             }
         } else {
-            this.log('Can\'t clear user config.', 'warning', []);
+            this.log('Can not clear user config.', 'warning', []);
         }
     }
 
@@ -482,12 +482,13 @@ class AppConfig extends BaseClass {
      * @return {undefined}
      */
     async configChanged (oldValue, newValue){
+        this.message({instruction: 'setConfig', data: {config: appState.config}});
         if (this.watchConfig){
             let utilHelper = _appWrapper.getHelper('util');
             let difference = utilHelper.difference(this.previousConfig, newValue);
             let diffKeys = Object.keys(difference);
             if (diffKeys && diffKeys.length){
-                this.log('Config vars changed: "{1}"', 'info', [diffKeys.join(', ')]);
+                this.log('{1} config variables have changed: "{2}"', 'debug', [diffKeys.length, diffKeys.join(', ')]);
                 await this.saveUserConfig();
             }
         }
