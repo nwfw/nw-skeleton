@@ -12,16 +12,16 @@ let _appWrapper;
 let appState;
 
 /**
- * Base class for extending when creating other app classes
+ * Base class for extending when creating other classes
  *
  * @class
  * @memberOf appWrapper
- * @property {boolean}  forceUserMessages   Flag to force user message output
- * @property {boolean}  forceDebug          Flag to force debug message output
+ * @property {Boolean}  forceUserMessages   Flag to force user message output
+ * @property {Boolean}  forceDebug          Flag to force debug message output
  * @property {Object}   boundMethods        Object to hold bound method references for event listeners
  * @property {Object}   timeouts            Object that holds references to this class instance timeouts
  * @property {Object}   intervals           Object that holds references to this class instance intervals
- * @property {boolean}  needsConfig         Flag to indicate whether class instance needs config, triggering warnings if config is not available for the class
+ * @property {Boolean}  needsConfig         Flag to indicate whether class instance needs config, triggering warnings if config is not available for the class
  */
 class BaseClass extends eventEmitter {
 
@@ -71,7 +71,7 @@ class BaseClass extends eventEmitter {
      * etc. Entire app structure, including frontend app is available here
      *
      * @async
-     * @return {boolean} Finalizing result
+     * @return {Boolean} Finalizing result
      */
     async finalize () {
         return true;
@@ -83,7 +83,7 @@ class BaseClass extends eventEmitter {
      * are no configuration settings for this class)
      *
      * @async
-     * @param  {object} options Options for logging initialization (currently only 'silent' property is used, determining whether warnings should be printed if no config found)
+     * @param  {Object} options Options for logging initialization (currently only 'silent' property is used, determining whether warnings should be printed if no config found)
      * @return {BaseClass}      Instance of the current class
      */
     async initializeLogging(options) {
@@ -118,15 +118,26 @@ class BaseClass extends eventEmitter {
      * @return {AppWrapper} An instance of AppWrapper class
      */
     getAppWrapper () {
+        if (!_appWrapper){
+            if (window && window.getAppWrapper && _.isFunction(window.getAppWrapper)){
+                _appWrapper = window.getAppWrapper();
+            }
+        }
         return _appWrapper;
     }
 
     /**
      * Helper method to get appState object
      *
-     * @return {object} Current appState object
+     * @return {Object} Current appState object
      */
     getAppState () {
+        if (!appState){
+            let aw = this.getAppWrapper();
+            if (aw){
+                appState = aw.getAppState();
+            }
+        }
         return appState;
     }
 
@@ -181,7 +192,7 @@ class BaseClass extends eventEmitter {
      * @param  {sting} message  Message to be logged
      * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
      * @param  {array} data     An array of data strings that are to be applied to logging message
-     * @param  {boolean} force  Flag to force logging output even if config does not allow it
+     * @param  {Boolean} force  Flag to force logging output even if config does not allow it
      * @return {undefined}
      */
     async log(message, type, data, force){
@@ -232,7 +243,7 @@ class BaseClass extends eventEmitter {
     /**
      * Does actual logging to console (and log file is file logging is enabled)
      *
-     * @param  {object} debugMessage Message object to be logged (returned by this.getMessageObject method)
+     * @param  {Object} debugMessage Message object to be logged (returned by this.getMessageObject method)
      * @return {undefined}
      */
     _doLog (debugMessage){
@@ -359,10 +370,10 @@ class BaseClass extends eventEmitter {
      * @param {sting}   message         Message to be logged
      * @param {string}  type            Type of log message (debug, info, warning, error)
      * @param {array}   data            An array of data strings that are to be applied to logging message
-     * @param {boolean} important       Flag to indicate message importance
-     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
-     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
-     * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     * @param {Boolean} important       Flag to indicate message importance
+     * @param {Boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {Boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @param {Boolean} passToDebug     Flag to force passing same message to debug log
      * @return {undefined}
      */
     async addUserMessage (message, type, data, important, dontTranslate, force, passToDebug){
@@ -432,10 +443,10 @@ class BaseClass extends eventEmitter {
      * @param {sting}   message         Message to be logged
      * @param {string}  type            Type of log message (debug, info, warning, error)
      * @param {array}   data            An array of data strings that are to be applied to logging message
-     * @param {boolean} important       Flag to indicate message importance
-     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
-     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
-     * @return {object}                 Object that represents log message
+     * @param {Boolean} important       Flag to indicate message importance
+     * @param {Boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {Boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @return {Object}                 Object that represents log message
      */
     async getMessageObject (messageLevel, message, type, data, important, dontTranslate, force){
 
@@ -500,10 +511,10 @@ class BaseClass extends eventEmitter {
      * @param {sting}   message         Message to be logged
      * @param {string}  type            Type of log message (debug, info, warning, error)
      * @param {array}   data            An array of data strings that are to be applied to logging message
-     * @param {boolean} important       Flag to indicate message importance
-     * @param {boolean} dontTranslate   Flag to prevent automatic message translation
-     * @param {boolean} force           Flag to force message output even if configuration wouldn't allow it
-     * @param {boolean} passToDebug     Flag to force passing same message to debug log
+     * @param {Boolean} important       Flag to indicate message importance
+     * @param {Boolean} dontTranslate   Flag to prevent automatic message translation
+     * @param {Boolean} force           Flag to force message output even if configuration wouldn't allow it
+     * @param {Boolean} passToDebug     Flag to force passing same message to debug log
      * @return {undefined}
      */
     async addModalMessage (message, type, data, important, dontTranslate, force, passToDebug){
@@ -538,7 +549,7 @@ class BaseClass extends eventEmitter {
      * @async
      * @param {sting}   message         Notification message
      * @param {array}   data            An array of data strings that are to be applied to notification
-     * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @param {Boolean} dontTranslate   Flag to prevent automatic notification translation
      * @return {undefined}
      */
     async addNotification (message, data, dontTranslate){
@@ -555,9 +566,9 @@ class BaseClass extends eventEmitter {
      * @async
      * @param {sting}   message         Notification message
      * @param {array}   data            An array of data strings that are to be applied to notification
-     * @param {boolean} dontTranslate   Flag to prevent automatic notification translation
-     * @param {object} options          Desktop notification options (passed to HTML5 Notification object constructor)
-     * @param {object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
+     * @param {Boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @param {Object} options          Desktop notification options (passed to HTML5 Notification object constructor)
+     * @param {Object} callbacks        Object with onshow, onClicked, onClosed and onerror notification handlers
      * @return {undefined}
      */
     async addDesktopNotification (message, data, dontTranslate, options, callbacks){
@@ -587,7 +598,7 @@ class BaseClass extends eventEmitter {
      * Returns instance of helper object based on passed parameter (or false if helper can't be found)
      *
      * @param  {string} name       Name of the helper
-     * @return {object}            Instance of the helper object (or false if helper can't be found)
+     * @return {Object}            Instance of the helper object (or false if helper can't be found)
      */
     getHelper(name){
         return _appWrapper.getHelper(name);

@@ -8,7 +8,7 @@ const _ = require('lodash');
 const path = require('path');
 
 var App;
-let BaseClass = require('./base').BaseClass;
+const AppBaseClass = require('./lib/appBase').AppBaseClass;
 
 var AppTranslations = require('./lib/appTranslations').AppTranslations;
 var WindowManager = require('./lib/windowManager').WindowManager;
@@ -20,7 +20,7 @@ var AppConfig = require('./lib/appConfig').AppConfig;
  * A "wrapper" object for nw-skeleton based apps
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
  * @property {App}              app                 Property that holds reference to App class instance
@@ -34,7 +34,7 @@ var AppConfig = require('./lib/appConfig').AppConfig;
  * @property {Object}           initialAppConfig    Object that stores initial app config that wrapper was initialized with
  * @property {Function}         noop                Reference to empty function (_.noop)
  */
-class AppWrapper extends BaseClass {
+class AppWrapper extends AppBaseClass {
 
     /**
      * Creates appWrapper instance using initial config object

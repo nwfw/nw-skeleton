@@ -18,8 +18,8 @@
  * @property {Number[]} reloadCssKeyCodes   An array of key codes for CSS reloading
  */
 
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const _ = require('lodash');
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -28,14 +28,14 @@ var appState;
  * KeyboardHelper class - handles and manages keyboard events and operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  * @property {KeyboardHelperKeyCodes}   keyCodes        Key code definitions for keyboard helper
  * @property {Object}                   keyCodeNames    Hash for detecting 'ctrl', 'alt' and 'shift' buttons, mapping them to this.keyCodes members
  * @property {Object}                   globalKeyData   Data from configuration for global key handlers
  * @property {Number[]}                 pressedKeys     An array of previously pressed keys
  */
-class KeyboardHelper extends BaseClass {
+class KeyboardHelper extends AppBaseClass {
 
     /**
      * Creates KeyboardHelper instance

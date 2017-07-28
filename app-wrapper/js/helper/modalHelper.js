@@ -4,8 +4,8 @@
  * @version 1.2.0
  */
 
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const _ = require('lodash');
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -14,10 +14,10 @@ var appState;
  * ModalHelper class - handles and manages modal dialogs
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  */
-class ModalHelper extends BaseClass {
+class ModalHelper extends AppBaseClass {
 
     /**
      * Creates ModalHelper instance

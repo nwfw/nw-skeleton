@@ -5,10 +5,10 @@
  */
 
 
-var _ = require('lodash');
-var path = require('path');
-var fs = require('fs');
-var BaseClass = require('../base').BaseClass;
+const _ = require('lodash');
+const path = require('path');
+const fs = require('fs');
+const AppBaseClass = require('./appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -17,13 +17,13 @@ var appState;
  * A class for app translations/languages operations and manipulation
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
  * @property {Object}           addingLabels        Object that stores labels that are currently being added (prevents double adding)
  * @property {boolean}          translationsLoaded  Flag to indicate whether translation data is loaded
  */
-class AppTranslations extends BaseClass {
+class AppTranslations extends AppBaseClass {
     constructor() {
         super();
 

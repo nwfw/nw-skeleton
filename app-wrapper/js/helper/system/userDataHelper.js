@@ -5,7 +5,7 @@
  */
 
 const _ = require('lodash');
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -14,12 +14,12 @@ var appState;
  * UserDataHelper class - handles and manages user data operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  * @property {Object} previousUserData  Object storing previous user data
  */
 
-class UserDataHelper extends BaseClass {
+class UserDataHelper extends AppBaseClass {
 
     /**
      * Creates UserDataHelper instance

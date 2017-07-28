@@ -5,7 +5,7 @@
  */
 
 var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -14,7 +14,7 @@ var appState;
  * AppOperationHelper class - handles and manages app operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  * @property {Number}   operationStartTime              Timestamp of last operation start
  * @property {Number}   lastTimeCalculation             Timestamp of last time calculation
@@ -26,7 +26,7 @@ var appState;
  * @property {boolean}  progressNotificationCreated     Flag to indicate whether progress notification was created
  * @property {boolean}  progressNotificationProgress    Percent complete of progress desktop notification
  */
-class AppOperationHelper extends BaseClass {
+class AppOperationHelper extends AppBaseClass {
 
     /**
      * Creates AppOperationHelper instance

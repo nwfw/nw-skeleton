@@ -22,8 +22,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -32,10 +31,10 @@ var appState;
  * ThemeHelper class - handles and manages themes and theme operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
-class ThemeHelper extends BaseClass {
+class ThemeHelper extends AppBaseClass {
 
     /**
      * Creates ThemeHelper instance

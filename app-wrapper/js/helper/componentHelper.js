@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-const BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -17,7 +17,7 @@ var BaseComponent;
  * ComponentHelper class - handles and manages app component operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  * @property {Object} allComponents         Object holding all components
  * @property {Object} vueComponents         Object holding "regular" app components
@@ -30,7 +30,7 @@ var BaseComponent;
  * @property {Object} vueFilters            Object holding wrapper filters
  * @property {Object} appVueFilters         Object holding app filters
  */
-class ComponentHelper extends BaseClass {
+class ComponentHelper extends AppBaseClass {
 
     /**
      * Creates ComponentHelper instance

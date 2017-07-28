@@ -5,7 +5,7 @@
  */
 
 const _ = require('lodash');
-const BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 // var appState;
@@ -13,11 +13,11 @@ var _appWrapper;
  * HtmlHelper class - manages HTML element operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  */
 
-class HtmlHelper extends BaseClass {
+class HtmlHelper extends AppBaseClass {
 
     /**
      * Creates HtmlHelper instance

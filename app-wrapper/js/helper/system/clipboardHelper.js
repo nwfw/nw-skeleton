@@ -5,16 +5,16 @@
  */
 
 const _ = require('lodash');
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 /**
  * ClipboardHelper class - handles clipboard operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
-class ClipboardHelper extends BaseClass {
+class ClipboardHelper extends AppBaseClass {
 
     /**
      * Creates ClipboardHelper instance

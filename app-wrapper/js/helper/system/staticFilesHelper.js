@@ -9,8 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const postcssUrl = require('postcss-url');
-
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -19,13 +18,13 @@ var appState;
  * StaticFilesHelper class - handles and manages static (js and css) file operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  * @property {Object}   jsFileLoadResolves    Object containing promises for added js files (each file resolves promise on load)
  * @property {Object}   cssFileLoadResolves   Object containing promises for added css files (each file resolves promise on load)
  * @property {string[]} watchedFiles          Array of watched file paths
  */
-class StaticFilesHelper extends BaseClass {
+class StaticFilesHelper extends AppBaseClass {
 
     /**
      * Creates StaticFilesHelper instance

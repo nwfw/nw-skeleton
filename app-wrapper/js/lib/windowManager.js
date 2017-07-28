@@ -5,7 +5,7 @@
  */
 
 const _ = require('lodash');
-const BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('./appBase').AppBaseClass;
 
 let _appWrapper;
 var appState;
@@ -14,7 +14,7 @@ var appState;
  * WindowManager class - for managing windows in application
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
  * @property {window}           win                 Reference to nwjs Window object
@@ -23,7 +23,7 @@ var appState;
  * @property {Number}           screenWidth         Value to store screen width value
  * @property {Number}           screenHeight        Value to store screen height value
  */
-class WindowManager extends BaseClass {
+class WindowManager extends AppBaseClass {
 
     /**
      * Creates WindowManager instance

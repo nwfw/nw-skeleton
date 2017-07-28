@@ -4,16 +4,16 @@
  * @version 1.2.0
  */
 
-const BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 /**
  * StyleHelper class - handles and manages html element style operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  */
-class StyleHelper extends BaseClass {
+class StyleHelper extends AppBaseClass {
 
     /**
      * Creates StyleHelper instance

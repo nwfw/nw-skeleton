@@ -6,8 +6,7 @@
 
 const _ = require('lodash');
 const os = require('os');
-
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -16,10 +15,10 @@ var appState;
  * UtilHelper class - contains various utility methods
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
-class UtilHelper extends BaseClass {
+class UtilHelper extends AppBaseClass {
 
     /**
      * Creates UtilHelper instance

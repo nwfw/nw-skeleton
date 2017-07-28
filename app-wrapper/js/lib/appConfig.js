@@ -4,8 +4,8 @@
  * @version 1.2.0
  */
 
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const _ = require('lodash');
+const AppBaseClass = require('./appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -14,7 +14,7 @@ var appState;
  * A class for app config operations and manipulation
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
  * @property {Object}           initialAppConfig    Object that stores initial app config that wrapper was initialized with
@@ -26,7 +26,7 @@ var appState;
  * @property {Object}           previousConfig      Object that stores previous app config
  * @property {Boolean}          watchConfig         Flag to indicate whether to watch for config changes
  */
-class AppConfig extends BaseClass {
+class AppConfig extends AppBaseClass {
 
     /**
      * Creates AppConfig instance using initial app config object

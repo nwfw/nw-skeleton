@@ -1,5 +1,6 @@
 exports.MainScript = require('./app-wrapper/js/lib/main/mainScript').MainScript;
-exports.BaseClass = require('./app-wrapper/js/base').BaseClass;
+exports.BaseClass = require('./app-wrapper/js/lib/base').BaseClass;
+exports.AppBaseClass = require('./app-wrapper/js/lib/appBase').AppBaseClass;
 exports.AppState = require('./app-wrapper/js/appState').appState;
 exports.AppWrapper = require('./app-wrapper/js/appWrapper').AppWrapper;
 exports.AppTranslations = require('./app-wrapper/js/lib/appTranslations').AppTranslations;

@@ -4,9 +4,9 @@
  * @version 1.2.0
  */
 
-var path = require('path');
-var _ = require('lodash');
-var BaseClass = require('../base').BaseClass;
+const path = require('path');
+const _ = require('lodash');
+const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -15,10 +15,10 @@ var appState;
  * DebugHelper class - handles and manages app debugger and debug messages
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers
  */
-class DebugHelper extends BaseClass {
+class DebugHelper extends AppBaseClass {
 
     /**
      * Creates DebugHelper instance

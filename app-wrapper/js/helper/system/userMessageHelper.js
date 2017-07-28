@@ -4,9 +4,9 @@
  * @version 1.2.0
  */
 
-var _ = require('lodash');
-var BaseClass = require('../../base').BaseClass;
+const _ = require('lodash');
 const path = require('path');
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -15,11 +15,11 @@ var appState;
  * UserMessageHelper class - handles and manages user message operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
 
-class UserMessageHelper extends BaseClass {
+class UserMessageHelper extends AppBaseClass {
 
     /**
      * Creates UserMessageHelper instance

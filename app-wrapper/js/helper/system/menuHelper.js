@@ -5,8 +5,7 @@
  */
 
 const _ = require('lodash');
-
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -15,7 +14,7 @@ var appState;
  * MenuHelper class - handles and manages app menus and tray
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  * @property {boolean}  hasMacBuiltin   Flag to indicate whether the app has mac builtin menu
  * @property {boolean}  hasEditMenu     Flag to indicate whether the app has "Edit" menu
@@ -26,7 +25,7 @@ var appState;
  * @property {array}   menuShortcutMap  Array containing map of key shortcuts by menu position
  * @property {array}   userShortcuts    Array with all used shortcuts so far (used to warn about duplicate shortcuts)
  */
-class MenuHelper extends BaseClass {
+class MenuHelper extends AppBaseClass {
 
     /**
      * Creates MenuHelper instance

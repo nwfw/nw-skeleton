@@ -4,8 +4,8 @@
  * @version 1.2.0
  */
 
-var _ = require('lodash');
-var BaseClass = require('../../base').BaseClass;
+const _ = require('lodash');
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -14,10 +14,10 @@ var appState;
  * StorageHelper class - handles localStorage data manipulation operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
-class StorageHelper extends BaseClass {
+class StorageHelper extends AppBaseClass {
 
     /**
      * Creates StorageHelper instance

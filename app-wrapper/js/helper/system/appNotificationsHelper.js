@@ -6,7 +6,7 @@
 
 const _ = require('lodash');
 const path = require('path');
-const BaseClass = require('../../base').BaseClass;
+const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
 var appState;
@@ -15,10 +15,10 @@ var appState;
  * AppNotificationsHelper class - handles and manages app and desktop notifications
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberof appWrapper.helpers.systemHelpers
  */
-class AppNotificationsHelper extends BaseClass {
+class AppNotificationsHelper extends AppBaseClass {
 
     /**
      * Creates AppNotificationsHelper instance

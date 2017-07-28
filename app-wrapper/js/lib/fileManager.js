@@ -8,20 +8,19 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
-
-const BaseClass = require('../base').BaseClass;
+const AppBaseClass = require('./appBase').AppBaseClass;
 
 /**
  * A class for file operations
  *
  * @class
- * @extends BaseClass
+ * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
  * @property {array}            watchedFiles        An array with absolute watched file paths
  * @property {Object}           watched             Object that stores references to unwatch methods for watched files
  */
-class FileManager extends BaseClass {
+class FileManager extends AppBaseClass {
 
     /**
      * Creates FileManager instance
