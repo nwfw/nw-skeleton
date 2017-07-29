@@ -1,9 +1,9 @@
 header {
-	color: var(--app-header-text-color);
-	background-color: var(--app-header-background-color);
-	background: var(--app-header-background);
-	overflow: visible;
-	position: relative;
+    color: var(--app-header-text-color);
+    background-color: var(--app-header-background-color);
+    background: var(--app-header-background);
+    overflow: visible;
+    position: relative;
     flex-direction: column;
     z-index: 2;
     border-radius: var(--app-main-border-radius) var(--app-main-border-radius) 0 0;

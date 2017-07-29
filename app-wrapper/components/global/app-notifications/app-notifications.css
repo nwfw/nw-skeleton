@@ -49,6 +49,7 @@
     transition-property: opacity, top, width, height, background, color;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
+    overflow: hidden;
 }
 
 .app-notifications .app-notification.debug .app-notification-contents {
@@ -117,7 +118,7 @@
 
 .app-notifications .app-notification-contents .app-notification-close,
 .app-notifications .app-notification-contents .app-notification-pin {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     cursor: pointer;
     transition-property: opacity, background, color, transform, text-shadow, margin-top;
     transition-timing-function: ease-in-out;
@@ -196,17 +197,19 @@
 
 
 .app-notifications .app-notification-pinned .app-notification-pin {
-    transform: rotateZ(20deg);
-    text-shadow: 0 1px 3px #000000;
-    margin-top: 2px;
+    transform: rotateZ(30deg) rotateX(45deg);
+    text-shadow: 0 10px 2px #666666;
+    margin-top: -1px;
+    overflow: visible;
 }
+
 .app-notifications .app-notification .app-notification-more {
     display: inline-block;
     float: right;
     margin-right: -16px;
     margin-top: -19px;
     color: var(--app-notification-color);
-    transition-property: color, opacity, scale;
+    transition-property: color, opacity;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
     animation: app-notification-info-icon 3s ease-in-out infinite;

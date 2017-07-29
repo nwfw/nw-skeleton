@@ -54,6 +54,20 @@ button {
 	border: var(--input-base-border);
 	padding: var(--input-base-padding);
 }
+input[disabled=disabled],
+input[disabled=true],
+select[disabled=disabled],
+select[disabled=true],
+textarea[disabled=disabled],
+textarea[disabled=true],
+button[disabled=disabled],
+button[disabled=true] {
+	background: var(--input-disabled-background);
+	color: var(--input-disabled-color);
+	border: var(--input-disabled-border);
+	padding: var(--input-disabled-padding);
+	cursor: not-allowed;
+}
 
 input[type=range] {
     position: relative;
@@ -89,7 +103,7 @@ a:visited {
 }
 
 .app-body {
-	font-size: 0.8rem;
+	font-size: var(--app-base-font-size);
 	border-radius: var(--app-main-border-radius);
 	transition: opacity linear var(--short-animation-duration);
 }
@@ -125,49 +139,6 @@ a:visited {
 	display: none !important;
 }
 
-
-.tabs {
-
-}
-
-.tabs .tab-links {
-
-}
-
-.tabs .tab-links .tab-link {
-	display: inline-block;
-	color:#666;
-	padding: 3px 5px;
-	border: 1px solid #999;
-	border-radius: 3px;
-	margin-left: 5px;
-	margin-bottom: -1px;
-}
-
-.tabs .tab-links .tab-link:hover {
-	text-decoration: none;
-	background: #F8F8F8;
-}
-
-.tabs .tab-links .tab-link.active {
-	border-bottom: 1px solid #F8F8F8;
-	background: #F8F8F8;
-	font-weight: bold;
-}
-
-.tabs .tab-items {
-	border: 1px solid #999;
-}
-
-.tabs .tab-items .tab-item {
-	display: none;
-	padding: 10px;
-}
-
-.tabs .tab-items .tab-item.active {
-	display: block;
-}
-
 .form-row {
 	padding: 3px;
 }
@@ -185,7 +156,6 @@ a:visited {
 .form-row.form-row-has-error .form-row-error {
 	display: block;
 }
-
 
 .form-control-field {
 	display: flex;

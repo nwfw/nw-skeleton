@@ -3,6 +3,7 @@
     /* basic variables */
 
     --app-base-text-color: #333333;
+    --app-base-font-size: 0.8rem;
     --font-smoothing: subpixel-antialiased;
 
     --input-base-background: #FFFFFF;
@@ -13,6 +14,11 @@
     --input-highlight-background: #FFFFCC;
     --input-highlight-color: #333333;
     --input-highlight-border: 1px solid #CCCCCC;
+
+    --input-disabled-background: #999999;
+    --input-disabled-color: #666666;
+    --input-disabled-border: 1px solid #CCCCCC;
+    --input-disabled-padding: 2px 6px 3px 6px;
 
     /* selection styles */
     --no-selection-background: transparent;

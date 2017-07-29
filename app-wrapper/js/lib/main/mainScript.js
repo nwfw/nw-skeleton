@@ -59,6 +59,7 @@ class MainScript extends MainBaseClass {
             onMessage: null,
             uncaughtException: null,
             sigInt: null,
+            sigTerm: null,
         }, boundMethods);
 
         return this;
@@ -142,6 +143,7 @@ class MainScript extends MainBaseClass {
     addEventListeners() {
         process.once('uncaughtException', this.boundMethods.uncaughtException);
         process.on('SIGINT', this.boundMethods.sigInt);
+        process.on('SIGTERM', this.boundMethods.sigTerm);
     }
 
     /**
@@ -151,6 +153,7 @@ class MainScript extends MainBaseClass {
      */
     removeEventListeners() {
         process.removeListener('SIGINT', this.boundMethods.sigInt);
+        process.removeListener('SIGTERM', this.boundMethods.sigTerm);
     }
 
     /**
@@ -316,6 +319,24 @@ class MainScript extends MainBaseClass {
             code = 4;
         }
         this.log('\nCaught SIGINT, code:' + code + ', shutting down.\n', 'warning', [], true);
+    }
+
+    /**
+     * Handler for SIGTERM signal
+     *
+     * @param  {Integer} code Optional exit code for the app
+     * @return {undefined}
+     */
+    sigTerm (code) {
+        if (_.isUndefined(code)){
+            code = 0;
+        }
+        this.log('Caught SIGTERM, code:' + code + ', shutting down.\n', 'warning', [], true);
+        if (this.mainWindow && this.mainWindow.window && this.mainWindow.window.appWrapper){
+            this.mainWindow.window.appWrapper.exitApp();
+        } else {
+            process.exit(code);
+        }
     }
 
     /**

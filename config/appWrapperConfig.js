@@ -132,9 +132,6 @@ exports.config = {
         ],
         cssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/header.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/footer.css',
-            '/node_modules/nw-skeleton/app-wrapper/css/modals.css',
             '/node_modules/nw-skeleton/app-wrapper/css/style.css',
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
         ],

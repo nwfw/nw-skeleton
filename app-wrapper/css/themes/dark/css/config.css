@@ -1,16 +1,22 @@
 :root {
 
     --app-base-text-color: #CCCCCC;
+    --app-base-font-size: 0.8rem;
     --font-smoothing: subpixel-antialiased;
 
-    --input-base-background: #333333;
-    --input-base-color: #CCCCCC;
-    --input-base-border: 1px solid #CCCCCC;
+    --input-base-background: #4F4F4F;
+    --input-base-color: #EEEEEE;
+    --input-base-border: 1px solid #999999;
     --input-base-padding: 2px 6px 3px 6px;
 
     --input-highlight-background: #999999;
     --input-highlight-color: #EEEEEE;
     --input-highlight-border: 1px solid #CCCCCC;
+
+    --input-disabled-background: #666666;
+    --input-disabled-color: #999999;
+    --input-disabled-border: 1px solid #999999;
+    --input-disabled-padding: 2px 6px 3px 6px;
 
     /* selection styles */
     --no-selection-background: transparent;

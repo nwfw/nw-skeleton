@@ -159,3 +159,37 @@
 	flex: 1 1 auto;
 	text-align: center;
 }
+
+.translation-editor .tabs .tab-links .tab-link {
+	display: inline-block;
+	color:#666;
+	padding: 3px 5px;
+	border: 1px solid #999;
+	border-radius: 3px;
+	margin-left: 5px;
+	margin-bottom: -1px;
+}
+
+.translation-editor .tabs .tab-links .tab-link:hover {
+	text-decoration: none;
+	background: #F8F8F8;
+}
+
+.translation-editor .tabs .tab-links .tab-link.active {
+	border-bottom: 1px solid #F8F8F8;
+	background: #F8F8F8;
+	font-weight: bold;
+}
+
+.translation-editor .tabs .tab-items {
+	border: 1px solid #999;
+}
+
+.translation-editor .tabs .tab-items .tab-item {
+	display: none;
+	padding: 10px;
+}
+
+.translation-editor .tabs .tab-items .tab-item.active {
+	display: block;
+}
