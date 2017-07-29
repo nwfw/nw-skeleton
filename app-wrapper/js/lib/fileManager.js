@@ -359,7 +359,7 @@ class FileManager extends AppBaseClass {
     readFileSync(file, options){
         var data = null;
         try {
-            data = fs.readFileSync(file, options);
+            data = fs.readFileSync(file, options) + '';
         } catch (ex) {
             console.log(ex);
         }

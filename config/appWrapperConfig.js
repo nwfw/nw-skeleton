@@ -5,11 +5,24 @@
  */
 
 /**
+ * MainConfigDebug Object that contains main config debug data
+ * @typedef  {Object}    MainConfigDebug
+ *
+ * @property {Boolean}   enabled            Flag to enable or disable debug for main script
+ * @property {Boolean}   debugToWindow      Flag to enable or disable passing debug messages to main window
+ * @property {Integer}   debugLevel         Minimum debug level for logging
+ * @property {Boolean}   displayTimestamps  Flag to enable or disable timestamps with log messages
+ * @property {Boolean}   debugToFile        Flag to enable or disable writing log to file
+ * @property {Boolean}   saveStacksToFile   Flag to enable or disable writing stacks to log file
+ * @property {Boolean}   debugToFileAppend  Flag to indicate whether to append or overwrite log file
+ * @property {String}    debugLogFilename   Path to main debug log file
+ */
+
+/**
  * MainConfig Object that contains current window state variables
  * @typedef  {Object}    MainConfig
  *
- * @property {Boolean}   debug           Flag to enable or disable debug for main script
- * @property {Boolean}   debugToWind     Flag to enable or disable passing debug messages to main window
+ * @property {MainConfigDebug}   debug      Main config debug data
  */
 
 /**
@@ -32,6 +45,11 @@ exports.config = {
             enabled: true,
             debugToWindow: false,
             debugLevel: 2,
+            displayTimestamps: true,
+            debugToFile: true,
+            saveStacksToFile: true,
+            debugToFileAppend: false,
+            debugLogFilename: './app/var/log/main-debug.log',
         },
     },
     wrapper : {

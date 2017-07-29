@@ -137,11 +137,19 @@ class AppWrapper extends AppBaseClass {
 
         this.log('Initializing application wrapper.', 'group', []);
 
-        if (this.getConfig('debug.debugToFile') && !this.getConfig('debug.debugToFileAppend')){
-            this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
+        if (this.getConfig('debug.debugToFile')){
+            if (!await this.fileManager.isFile(this.getConfig('debug.debugMessagesFilename')) || !this.getConfig('debug.debugToFileAppend')) {
+                this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
+            } else if (this.getConfig('debug.debugToFileAppend')) {
+                await this.initializeDebugMessageLog();
+            }
         }
-        if (this.getConfig('userMessages.userMessagesToFile') && !this.getConfig('userMessages.userMessagesToFileAppend')){
-            this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
+        if (this.getConfig('userMessages.userMessagesToFile')){
+            if (!await this.fileManager.isFile(this.getConfig('userMessages.userMessagesFilename')) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
+                this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
+            } else if (this.getConfig('userMessages.userMessagesToFileAppend')) {
+                await this.initializeUserMessageLog();
+            }
         }
 
         appState.config = await this.appConfig.loadUserConfig();
@@ -902,19 +910,61 @@ class AppWrapper extends AppBaseClass {
         return true;
     }
 
+
     /**
-     * Finalizes user message log file if user message logging to file is enabled
+     * Initializes user message log file if user message logging to file is enabled
+     *
+     * @async
+     * @return {boolean} Result of log initialization
+     */
+    async initializeUserMessageLog(){
+        if (this.getConfig('userMessages.userMessagesToFile')){
+            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
+            let messageLogContents = await this.fileManager.readFileSync(messageLogFile);
+            if (messageLogContents){
+                messageLogContents = messageLogContents.replace(/\n?\[\n/g, '');
+                messageLogContents = messageLogContents.replace(/\n\],?\n/g, ',');
+                messageLogContents = messageLogContents.replace(/,+/g, ',');
+                await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Initializes debug log file if debug logging to file is enabled
      *
      * @async
      * @return {boolean} Result of log finalizing
      */
     async finalizeUserMessageLog(){
+        if (this.getConfig('userMessages.userMessagesToFile')){
+            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
+            let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]\n';
+            messageLogContents = messageLogContents.replace(/\n,\n/g, '\n');
+            await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
+            // this.log('Finalized user message log...', 'info', []);
+        }
+        return true;
+    }
+
+
+    /**
+     * Initializes debug message log file if debug message logging to file is enabled
+     *
+     * @async
+     * @return {boolean} Result of log initialization
+     */
+    async initializeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
             let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
-            this.log('Finalizing debug message log...', 'info', []);
-            let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]';
-            await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
-            this.log('Finalized debug message log.', 'info', []);
+            let debugLogContents = await this.fileManager.readFileSync(debugLogFile);
+            if (debugLogContents){
+                debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
+                debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',');
+                debugLogContents = debugLogContents.replace(/,+/g, ',');
+                await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            }
         }
         return true;
     }
@@ -926,12 +976,11 @@ class AppWrapper extends AppBaseClass {
      * @return {boolean} Result of log finalizing
      */
     async finalizeDebugMessageLog(){
-        if (this.getConfig('userMessages.userMessagesToFile')){
-            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
-            this.log('Finalizing user message log...', 'info', []);
-            let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]';
-            await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
-            this.log('Finalized user message log...', 'info', []);
+        if (this.getConfig('debug.debugToFile')){
+            let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
+            let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]\n';
+            debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
+            await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
         }
         return true;
     }

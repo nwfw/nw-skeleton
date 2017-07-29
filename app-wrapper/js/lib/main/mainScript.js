@@ -5,6 +5,8 @@
  */
 
 const _ = require('lodash');
+const path = require('path');
+const fs = require('fs');
 const EventEmitter = require('events');
 const MainBaseClass = require('./mainBase').MainBaseClass;
 
@@ -47,6 +49,7 @@ class MainScript extends MainBaseClass {
         this.manifest = null;
         this.messageHandlers = null;
         this.asyncMessageHandlers = null;
+        this.debugToFileStarted = false;
 
         let boundMethods = _.cloneDeep(this.boundMethods);
 
@@ -71,6 +74,14 @@ class MainScript extends MainBaseClass {
      */
     async initialize (options){
         await super.initialize(options);
+
+        if (this.getConfig('main.debug.debugToFile')){
+            if (!await this.isFile(this.getConfig('main.debug.debugLogFilename')) || !this.getConfig('main.debug.debugToFileAppend')) {
+                this.createDirFileRecursive(this.getConfig('main.debug.debugLogFilename'));
+            } else if (this.getConfig('main.debug.debugToFileAppend')) {
+                await this.initializeDebugMessageLog();
+            }
+        }
 
         this.messageHandlers = new MainMessageHandlers();
         await this.messageHandlers.initialize(options);
@@ -241,8 +252,9 @@ class MainScript extends MainBaseClass {
      * @param  {Boolean} noExit Flag to prevent exiting main process
      * @return {undefined}
      */
-    windowClosed (e, noExit) {
+    async windowClosed (e, noExit) {
         _.noop(e);
+        await this.finalizeDebugMessageLog();
         if (!noExit){
             process.exit(0);
         }
@@ -307,9 +319,53 @@ class MainScript extends MainBaseClass {
         this.log('\nCaught SIGINT, code:' + code + ', shutting down.\n', 'warning', [], true);
     }
 
+    /**
+     * Sets new config to data from argument
+     *
+     * @param {Object} configData Object with config data
+     * @return {undefined}
+     */
     setNewConfig (configData){
         this.log('Setting new config', 'info');
         this.config = configData;
+        this.messageHandlers.config = configData;
+        this.asyncMessageHandlers.config = configData;
+    }
+
+    /**
+     * Initializes debug message log file if debug message logging to file is enabled
+     *
+     * @async
+     * @return {boolean} Result of log initialization
+     */
+    async initializeDebugMessageLog(){
+        if (this.getConfig('main.debug.debugToFile')){
+            let debugLogFile = path.resolve(this.getConfig('main.debug.debugLogFilename'));
+            let debugLogContents = fs.readFileSync(debugLogFile) + '';
+            if (debugLogContents){
+                debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
+                debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',\n');
+                debugLogContents = debugLogContents.replace(/,+/g, ',');
+                fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Finalizes debug log file if debug logging to file is enabled
+     *
+     * @async
+     * @return {boolean} Result of log finalizing
+     */
+    async finalizeDebugMessageLog(){
+        if (this.getConfig('main.debug.debugToFile')){
+            let debugLogFile = path.resolve(this.getConfig('main.debug.debugLogFilename'));
+            let debugLogContents = '[\n' + fs.readFileSync(debugLogFile) + '\n]\n';
+            debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
+            fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+        }
+        return true;
     }
 }
 
