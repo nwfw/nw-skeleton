@@ -410,6 +410,7 @@ class AppWrapper extends AppBaseClass {
                 if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
                     document.body.addEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
                 }
+                this.addUserMessage('Application initialized.', 'info', []);
                 if (!noFinalize){
                     await this.finalize();
                 }
@@ -417,10 +418,10 @@ class AppWrapper extends AppBaseClass {
                     this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
                 } else {
                     if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                        this.addUserMessage('Active config file: "{1}"', 'info', [appState.activeConfigFile], false, false);
+                        this.log('Active config file: "{1}"', 'info', [appState.activeConfigFile], true);
                     }
-                    this.addUserMessage('Application initialized', 'info', [], false, false);
                 }
+
                 resolveReference(window.feApp);
             },
             beforeDestroy: async () => {
@@ -518,6 +519,7 @@ class AppWrapper extends AppBaseClass {
             return;
         }
         if (confirmed){
+            appState.status.appShuttingDown = true;
             await this.cleanup();
             if (!appState.isDebugWindow){
                 appState.appError.error = false;
@@ -565,7 +567,6 @@ class AppWrapper extends AppBaseClass {
      * @return {boolean} Shutdown result
      */
     async shutdownApp () {
-        this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
         this.log('Shutting down...', 'group', []);
         await this.getHelper('menu').removeAppMenu();
         await this.getHelper('menu').removeTrayIcon();
@@ -574,6 +575,7 @@ class AppWrapper extends AppBaseClass {
         }
         appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
         appState.status.appShuttingDown = true;
+        this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
         if (this.app && this.app.shutdown && _.isFunction(this.app.shutdown)){
             await this.app.shutdown();
         }
@@ -627,6 +629,7 @@ class AppWrapper extends AppBaseClass {
             return;
         }
         if (confirmed){
+            appState.status.appShuttingDown = true;
             await this.cleanup();
             if (!appState.isDebugWindow){
                 appState.appError.error = false;

@@ -1,3 +1,12 @@
+@keyframes app-notification-info-icon {
+  0% {transform: scale(1, 1)}
+  15%   {transform: scale(1.3, 1.3)}
+  30% {transform: scale(1, 1)}
+  100% {transform: scale(1, 1)}
+}
+
+
+
 .app-notifications {
     position: fixed;
     font-size: var(--app-notification-font-size);
@@ -6,7 +15,7 @@
     transform: translateX(-50%);
     z-index: 3;
     max-height: 30vh;
-    overflow: hidden;
+    overflow: visible;
     width: auto;
     opacity: 1;
     max-width: 90vw;
@@ -37,9 +46,29 @@
     border-radius: var(--app-notification-border-radius);
     padding: 2px 10px;
     min-height: 24px;
-    transition-property: opacity, top, width, height;
+    transition-property: opacity, top, width, height, background, color;
     transition-timing-function: ease-in-out;
-    transition-duration: var(--long-animation-duration);
+    transition-duration: var(--medium-animation-duration);
+}
+
+.app-notifications .app-notification.debug .app-notification-contents {
+    background: var(--app-notification-debug-background);
+    color: var(--app-notification-debug-color);
+}
+
+.app-notifications .app-notification.info .app-notification-contents {
+    background: var(--app-notification-info-background);
+    color: var(--app-notification-info-color);
+}
+
+.app-notifications .app-notification.warning .app-notification-contents {
+    background: var(--app-notification-warning-background);
+    color: var(--app-notification-warning-color);
+}
+
+.app-notifications .app-notification.error .app-notification-contents {
+    background: var(--app-notification-error-background);
+    color: var(--app-notification-error-color);
 }
 
 .app-notifications .app-notification-contents .app-notification-text {
@@ -47,7 +76,8 @@
 }
 
 .app-notifications .app-notification-contents .app-notification-count {
-    margin-left: 10px;
+    margin-right: 10px;
+    margin-left: -5px;
     flex: 1 1 auto;
     font-size: var(--app-notification-count-font-size);
     color: var(--app-notification-count-color);
@@ -55,6 +85,151 @@
     background: var(--app-notification-count-background);
     border-radius: var(--app-notification-count-border-radius);
     opacity: 0.8;
+    transition-property: background, color, border;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.app-notifications .app-notification.debug .app-notification-contents .app-notification-count {
+    background: var(--app-notification-debug-color);
+    color: var(--app-notification-debug-background);
+    border-color: var(--app-notification-debug-color);
+}
+
+.app-notifications .app-notification.info .app-notification-contents .app-notification-count {
+    background: var(--app-notification-info-color);
+    color: var(--app-notification-info-background);
+    border-color: var(--app-notification-info-color);
+}
+
+.app-notifications .app-notification.warning .app-notification-contents .app-notification-count {
+    background: var(--app-notification-warning-color);
+    color: var(--app-notification-warning-background);
+    border-color: var(--app-notification-warning-color);
+}
+
+.app-notifications .app-notification.error .app-notification-contents .app-notification-count {
+    background: var(--app-notification-error-color);
+    color: var(--app-notification-error-background);
+    border-color: var(--app-notification-error-color);
+}
+
+
+.app-notifications .app-notification-contents .app-notification-close,
+.app-notifications .app-notification-contents .app-notification-pin {
+    flex: 1 1 auto;
+    cursor: pointer;
+    transition-property: opacity, background, color, transform, text-shadow, margin-top;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.app-notifications .app-notification-contents .app-notification-close {
+    margin-left: 5px;
+    margin-right: -7px;
+}
+
+.app-notifications .app-notification-contents .app-notification-pin {
+    margin-left: 15px;
+    margin-top: 1px;
+}
+
+.app-notifications .app-notification-contents .app-notification-pin,
+.app-notifications .app-notification-contents .app-notification-close {
+    background: var(--app-notification-background);
+    color: var(--app-notification-color);
+}
+
+.app-notifications .app-notification.debug .app-notification-contents .app-notification-pin,
+.app-notifications .app-notification.debug .app-notification-contents .app-notification-close {
+    background: var(--app-notification-debug-background);
+    color: var(--app-notification-debug-color);
+}
+
+.app-notifications .app-notification.info .app-notification-contents .app-notification-pin,
+.app-notifications .app-notification.info .app-notification-contents .app-notification-close {
+    background: var(--app-notification-info-background);
+    color: var(--app-notification-info-color);
+}
+
+.app-notifications .app-notification.warning .app-notification-contents .app-notification-pin,
+.app-notifications .app-notification.warning .app-notification-contents .app-notification-close {
+    background: var(--app-notification-warning-background);
+    color: var(--app-notification-warning-color);
+}
+
+.app-notifications .app-notification.error .app-notification-contents .app-notification-pin,
+.app-notifications .app-notification.error .app-notification-contents .app-notification-close {
+    background: var(--app-notification-error-background);
+    color: var(--app-notification-error-color);
+}
+
+.app-notifications .app-notification-contents .app-notification-pin:hover,
+.app-notifications .app-notification-contents .app-notification-close:hover {
+    background: var(--app-notification-background-hovered);
+    color: var(--app-notification-color-hovered);
+}
+
+.app-notifications .app-notification.debug .app-notification-contents .app-notification-pin:hover,
+.app-notifications .app-notification.debug .app-notification-contents .app-notification-close:hover {
+    background: var(--app-notification-debug-background-hovered);
+    color: var(--app-notification-debug-color-hovered);
+}
+
+.app-notifications .app-notification.info .app-notification-contents .app-notification-pin:hover,
+.app-notifications .app-notification.info .app-notification-contents .app-notification-close:hover {
+    background: var(--app-notification-info-background-hovered);
+    color: var(--app-notification-info-color-hovered);
+}
+
+.app-notifications .app-notification.warning .app-notification-contents .app-notification-pin:hover,
+.app-notifications .app-notification.warning .app-notification-contents .app-notification-close:hover {
+    background: var(--app-notification-warning-background-hovered);
+    color: var(--app-notification-warning-color-hovered);
+}
+
+.app-notifications .app-notification.error .app-notification-contents .app-notification-pin:hover,
+.app-notifications .app-notification.error .app-notification-contents .app-notification-close:hover {
+    background: var(--app-notification-error-background-hovered);
+    color: var(--app-notification-error-color-hovered);
+}
+
+
+.app-notifications .app-notification-pinned .app-notification-pin {
+    transform: rotateZ(20deg);
+    text-shadow: 0 1px 3px #000000;
+    margin-top: 2px;
+}
+.app-notifications .app-notification .app-notification-more {
+    display: inline-block;
+    float: right;
+    margin-right: -16px;
+    margin-top: -19px;
+    color: var(--app-notification-color);
+    transition-property: color, opacity, scale;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+    animation: app-notification-info-icon 3s ease-in-out infinite;
+}
+
+.app-notifications .app-notification .app-notification-more {
+    color: var(--app-notification-background);
+}
+
+.app-notifications .app-notification.debug .app-notification-more {
+    color: var(--app-notification-debug-background);
+}
+
+.app-notifications .app-notification.info .app-notification-more {
+    color: var(--app-notification-info-color);
+}
+
+.app-notifications .app-notification.warning .app-notification-more {
+    color: var(--app-notification-warning-background);
+}
+
+.app-notifications .app-notification.error .app-notification-more {
+    color: var(--app-notification-error-background);
 }
 
 .modal-dialog-wrapper .app-notifications {

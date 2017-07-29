@@ -110,6 +110,7 @@ exports.config = {
         },
     },
 
+    minPauseDuration: 10,
     shortPauseDuration: 100,
     mediumPauseDuration: 250,
     longPauseDuration: 1000,
@@ -441,7 +442,8 @@ exports.config = {
     compileCss: false,
 
     appNotifications: {
-        duration: 5000
+        duration: 5000,
+        userMessageDuration: 3000,
     },
     logger: {
         messageLevels: {
@@ -453,6 +455,7 @@ exports.config = {
     },
     userMessages: {
         animateMessages: true,
+        hideUserMessages: false,
         userMessageLevel: 3,
         maxUserMessages: 200,
         userMessagesToFile: true,

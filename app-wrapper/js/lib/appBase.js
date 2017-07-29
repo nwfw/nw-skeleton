@@ -325,6 +325,14 @@ class AppBaseClass extends BaseClass {
             if (appState && appState.userMessages && _.isArray(appState.userMessages)){
                 appState.userMessageQueue.push(userMessage);
             }
+
+            if (appState.config.userMessages.hideUserMessages && type !== 'delimiter' && appState.status.appInitialized && !appState.status.appShuttingDown && !appState.appError.error){
+                let notificationDuration = this.getConfig('appNotifications.userMessageDuration');
+                if (type == 'warning' || type == 'error'){
+                    notificationDuration *= 2;
+                }
+                await this.addNotification(message, type, data, dontTranslate, {duration: notificationDuration, pinned: false});
+            }
         }
 
         if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessages.userMessagesToFile')){
@@ -456,13 +464,30 @@ class AppBaseClass extends BaseClass {
      *
      * @async
      * @param {string}   message         Notification message
+     * @param {string}   type           Notification message type
      * @param {array}   data            An array of data strings that are to be applied to notification
      * @param {Boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @param {Object} options          Additional notification options
      * @return {undefined}
      */
-    async addNotification (message, data, dontTranslate){
-        let notification = await this.getMessageObject(0, message, 'info', data, false, dontTranslate);
-        _appWrapper.getHelper('appNotifications').addNotification(notification);
+    async addNotification (message, type, data, dontTranslate, options){
+        let notification = await this.getMessageObject(0, message, type, data, false, dontTranslate);
+        let duration = _appWrapper.getConfig('appNotifications.duration');
+        if (options && !_.isUndefined(options.duration)){
+            duration = options.duration;
+        }
+        notification.duration = duration;
+        notification.pinned = false;
+        if (options && options.pinned){
+            notification.pinned = true;
+        }
+        if (!duration){
+            notification.pinned = true;
+            notification.duration = _appWrapper.getConfig('appNotifications.duration');
+        }
+        await _appWrapper.getHelper('appNotifications').addNotification(notification);
+        await _appWrapper.wait(this.getConfig('minPauseDuration'));
+
     }
 
     /**

@@ -79,8 +79,6 @@ exports.component = {
                     let newNotification = _.pullAt(this.newNotifications, 0)[0];
                     if (this.currentNotification){
                         this.oldNotifications.push(this.currentNotification);
-                        // this.currentNotification = {};
-                        // await _appWrapper.wait(animationDuration);
                     }
                     this.notificationExpired = false;
                     this.currentNotification = newNotification;
@@ -107,10 +105,34 @@ exports.component = {
 
         setNotificationTimeout: function(){
             clearTimeout(this.timeouts.notificationQueue);
+            let duration = _appWrapper.getConfig('appNotifications.duration');
+            if (this.currentNotification && this.currentNotification.duration){
+                duration = this.currentNotification.duration;
+            }
             this.timeouts.notificationQueue = setTimeout( () => {
+                if (this.currentNotification && this.currentNotification.pinned){
+                    return;
+                }
                 this.notificationExpired = true;
                 this.processQueue();
-            }, _appWrapper.getConfig('appNotifications.duration'));
+            }, duration);
+        },
+        removeNotification: function(){
+            clearTimeout(this.timeouts.notificationQueue);
+            this.notificationExpired = true;
+            this.processQueue();
+        },
+        pinNotification: function(){
+            if (this.currentNotification){
+                if (this.currentNotification.pinned){
+                    this.currentNotification.pinned = false;
+                    this.setNotificationTimeout();
+                } else {
+                    clearTimeout(this.timeouts.notificationQueue);
+                    this.currentNotification.pinned = true;
+                }
+            }
+
         }
     },
     watch: {
@@ -129,6 +151,16 @@ exports.component = {
         },
         notification: function(){
             return appState.appNotificationsData.currentNotification;
+        },
+        appNotificationClass: function() {
+            let classNames = [];
+            if (this.notification && this.notification.type){
+                classNames.push(this.notification.type);
+            }
+            if (this.notification && this.notification.pinned){
+                classNames.push('app-notification-pinned');
+            }
+            return classNames;
         }
     }
 };

@@ -8,7 +8,7 @@ const _ = require('lodash');
 var _appWrapper = window.getAppWrapper();
 
 /**
- * Translate mixin
+ * Wrapper methods mixin
  *
  * @name MixinWrapperMethods
  * @memberOf mixins

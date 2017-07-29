@@ -67,11 +67,19 @@ class MainMessageHandlers extends MainBaseClass {
      * @return {undefined}
      */
     logHandler (messageData) {
-        if (messageData && messageData.data && messageData.data.message){
-            let type = messageData.data.type || 'info';
-            let force = messageData.data.force || false;
-            this.log(messageData.data.message, type, messageData.data.data, force);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+        if (messageData && messageData.data){
+            if (messageData.data.message){
+                let type = messageData.data.type || 'info';
+                let force = messageData.data.force || false;
+                this.log(messageData.data.message, type, messageData.data.data, force);
+                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+            } else {
+                this.log('Can not log message - no message supplied', 'error', []);
+                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+            }
+        } else {
+            this.log('Can not log message - no data supplied', 'error', []);
+            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
         }
     }
 
@@ -82,11 +90,19 @@ class MainMessageHandlers extends MainBaseClass {
      * @return {undefined}
      */
     logMainScriptPropertyHandler (messageData) {
-        if (messageData.data && messageData.data.property && mainScript[messageData.data.property]){
-            let type = messageData.data.type || 'info';
-            let force = messageData.data.force || false;
-            this.log(mainScript[messageData.data.property], type, messageData.data.data, force);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+        if (messageData.data && messageData.data.property) {
+            if (mainScript[messageData.data.property]){
+                let type = messageData.data.type || 'info';
+                let force = messageData.data.force || false;
+                this.log(mainScript[messageData.data.property], type, messageData.data.data, force);
+                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+            } else {
+                this.log('Can not find mainScript property "{1}"', 'error', [messageData.data.property]);
+                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+            }
+        } else {
+            this.log('Can not find mainScript property - no property supplied', 'error', []);
+            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
         }
     }
 

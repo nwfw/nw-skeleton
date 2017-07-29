@@ -114,12 +114,21 @@ class UserMessageHelper extends AppBaseClass {
     }
 
     /**
+     * Toggles userMessages.hideUserMessages config variable, showing or hiding user-messages component with user messages
+     *
+     * @return {undefined}
+     */
+    toggleUserMessages () {
+        _appWrapper.appConfig.setConfigVar('userMessages.hideUserMessages', !appState.config.userMessages.hideUserMessages);
+    }
+
+    /**
      * Handler for expanding/contracting user-messages conponent
      *
      * @param  {Event} e Event that triggered the method
      * @return {undefined}
      */
-    toggleUserMessages (e) {
+    toggleUserMessagesExpanded (e) {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }

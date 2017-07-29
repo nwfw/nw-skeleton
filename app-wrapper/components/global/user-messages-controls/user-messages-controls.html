@@ -32,6 +32,6 @@
 			<span v-if="stacksState" class="fa fa-close" :title="translate('Hide message call stacks')" ></span>
 			<span v-else class="fa fa-list" :title="translate('Show message call stacks')" ></span>
 		</a>
-		<a class="user-message-control-link expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessages.messagesExpanded, 'fa-arrow-down': appState.config.userMessages.messagesExpanded }" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages" :title="translate('Expand user message list')"></a>
+		<a class="user-message-control-link expand-user-messages fa" v-bind:class="{ 'fa-arrow-up': !appState.config.userMessages.messagesExpanded, 'fa-arrow-down': appState.config.userMessages.messagesExpanded }" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessagesExpanded" :title="translate('Expand user message list')"></a>
 	</div>
 </div>

@@ -47,13 +47,13 @@ class AppNotificationsHelper extends AppBaseClass {
      * @param {Object} notification Notification object
      * @return {undefined}
      */
-    addNotification(notification){
-        if (appState.appNotificationsData.currentNotification && appState.appNotificationsData.currentNotification.message == notification.message){
+    async addNotification(notification){
+        if (appState.appNotificationsData.currentNotification && appState.appNotificationsData.currentNotification.message == notification.message && appState.appNotificationsData.currentNotification.type == notification.type){
             appState.appNotificationsData.currentNotification.count++;
             appState.appNotificationsData.currentNotification.timestamps.push(new Date().toString());
         } else {
             if (appState.appNotificationsData.newNotifications.length){
-                if (appState.appNotificationsData.newNotifications[0].message == notification.message){
+                if (appState.appNotificationsData.newNotifications[0].message == notification.message && appState.appNotificationsData.newNotifications[0].type == notification.type){
                     appState.appNotificationsData.newNotifications[0].count++;
                     appState.appNotificationsData.newNotifications[0].timestamps.push(new Date().toString());
                 } else {

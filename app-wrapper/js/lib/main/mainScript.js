@@ -87,7 +87,6 @@ class MainScript extends MainBaseClass {
         await this.messageHandlers.initialize(options);
         this.asyncMessageHandlers = new MainAsyncMessageHandlers();
         await this.asyncMessageHandlers.initialize(options);
-
         return this;
     }
 
