@@ -67,6 +67,7 @@ class AppWrapper extends AppBaseClass {
             onWindowClose: null,
             onDebugWindowClose: null,
             handleMessageResponse: null,
+            handleAsyncMessageResponse: null,
             handleMainMessage: null,
         };
 
@@ -203,7 +204,7 @@ class AppWrapper extends AppBaseClass {
             this.windowManager.winState.devTools = true;
         }
 
-        this.addEventListeners();
+        this.addWrapperEventListeners();
 
         if (nw.App.argv && nw.App.argv.length){
             if (_.includes(nw.App.argv, 'resetAll')){
@@ -277,13 +278,14 @@ class AppWrapper extends AppBaseClass {
      *
      * @return {undefined}
      */
-    addEventListeners() {
+    addWrapperEventListeners() {
         if (!appState.isDebugWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
         } else {
             this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
         }
         this.windowManager.win.globalEmitter.on('messageResponse', this.boundMethods.handleMessageResponse);
+        this.windowManager.win.globalEmitter.on('asyncMessageResponse', this.boundMethods.handleAsyncMessageResponse);
         this.windowManager.win.globalEmitter.on('mainMessage', this.boundMethods.handleMainMessage);
     }
 
@@ -292,12 +294,15 @@ class AppWrapper extends AppBaseClass {
      *
      * @return {undefined}
      */
-    removeEventListeners() {
+    removeWrapperEventListeners() {
         if (!appState.isDebugWindow){
             this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
         } else {
             this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
         }
+        this.windowManager.win.globalEmitter.removeListener('messageResponse', this.boundMethods.handleMessageResponse);
+        this.windowManager.win.globalEmitter.removeListener('asyncMessageResponse', this.boundMethods.handleAsyncMessageResponse);
+        this.windowManager.win.globalEmitter.removeListener('mainMessage', this.boundMethods.handleMainMessage);
     }
 
     /**
@@ -581,7 +586,7 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     beforeWindowClose () {
-        this.removeEventListeners();
+        this.removeWrapperEventListeners();
         this.removeBoundMethods();
     }
 
@@ -1084,12 +1089,33 @@ class AppWrapper extends AppBaseClass {
     /**
      * Handles message responses from main script
      *
-     * @param  {Object} data Message response data
+     * @param  {Object} messageData Message response data
      * @return {undefined}
      */
-    handleMessageResponse (data) {
-        console.log(data);
+    handleMessageResponse (messageData) {
+        if (messageData._result_){
+            this.log('Message "{1}" succeeded', 'info', [messageData.uuid]);
+        } else {
+            this.log('Message "{1}" failed', 'error', [messageData.uuid]);
+        }
+        this.log(messageData, 'debug', []);
     }
+
+    /**
+     * Handles async message responses from main script
+     *
+     * @param  {Object} messageData Message response data
+     * @return {undefined}
+     */
+    handleAsyncMessageResponse (messageData) {
+        if (messageData._result_){
+            this.log('Async message "{1}" succeeded', 'info', [messageData.uuid]);
+        } else {
+            this.log('Async message "{1}" failed', 'error', [messageData.uuid]);
+        }
+        this.log(messageData, 'debug', []);
+    }
+
 
     /**
      * Handles messages from main script

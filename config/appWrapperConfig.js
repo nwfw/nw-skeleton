@@ -28,8 +28,11 @@
  */
 exports.config = {
     main : {
-        debug: true,
-        debugToWindow: false,
+        debug: {
+            enabled: true,
+            debugToWindow: false,
+            debugLevel: 2,
+        },
     },
     wrapper : {
         appFile: '../../app/js/app',

@@ -5,8 +5,8 @@
  */
 
 const _ = require('lodash');
-const util = require('util');
 const EventEmitter = require('events');
+const MainBaseClass = require('./mainBase').MainBaseClass;
 
 const MainMessageHandlers = require('./mainMessageHandlers').MainMessageHandlers;
 const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsyncMessageHandlers;
@@ -16,7 +16,7 @@ const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsync
  *
  * @class
  * @memberOf mainScript
- *
+ * @extends {appWrapper.MainBaseClass}
  * @property {Object}                   config                  App configuration
  * @property {Object}                   inspectOptions          Util.inspect default options
  * @property {Window}                   mainWindow              Reference to main nw.Window
@@ -25,7 +25,7 @@ const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsync
  * @property {MainAsyncMessageHandlers} asyncMessageHandlers    Object that handles async messages
  * @property {Object}                   boundMethods            Wrapper object for bound method references
  */
-class MainScript {
+class MainScript extends MainBaseClass {
 
     /**
      * Creates MainScript instance
@@ -34,6 +34,7 @@ class MainScript {
      * @return {MainScript}              Instance of MainScript class
      */
     constructor() {
+        super();
 
         this.config = null;
 
@@ -47,15 +48,15 @@ class MainScript {
         this.messageHandlers = null;
         this.asyncMessageHandlers = null;
 
-        this.boundMethods = {
+        let boundMethods = _.cloneDeep(this.boundMethods);
+
+        this.boundMethods = _.extend({
             windowClosed: null,
             windowLoaded: null,
-            messageReceived: null,
-            asyncMessageReceived: null,
+            onMessage: null,
             uncaughtException: null,
-            printLog: null,
             sigInt: null,
-        };
+        }, boundMethods);
 
         return this;
 
@@ -65,19 +66,17 @@ class MainScript {
      * Initializes MainScript using manifest and app config data
      *
      * @async
-     * @param  {Object}     manifest Manifest file data
-     * @param  {Object}     config   App config data
+     * @param  {Object}     options  Object with 'manifest' property containing manifest file data and 'config' property containing config data
      * @return {MainScript}          Instance of MainScript class
      */
-    async initialize (manifest, config){
-        this.manifest = manifest;
-        this.config = config;
+    async initialize (options){
+        await super.initialize(options);
 
         this.messageHandlers = new MainMessageHandlers();
+        await this.messageHandlers.initialize(options);
         this.asyncMessageHandlers = new MainAsyncMessageHandlers();
+        await this.asyncMessageHandlers.initialize(options);
 
-        this.addBoundMethods();
-        this.addEventListeners();
         return this;
     }
 
@@ -88,10 +87,9 @@ class MainScript {
      * @return {undefined}
      */
     async destroy () {
-        this.removeEventListeners();
         this.removeMainWindowEventListeners();
         this.removeGlobalEmitterEventListeners();
-        this.removeBoundMethods();
+        await super.destroy();
     }
 
     /**
@@ -127,42 +125,7 @@ class MainScript {
     }
 
     /**
-     * Method that sets up this.boundMethods property by binding this objects
-     * functions to itself to be used as event listener handlers
-     *
-     * @return {undefined}
-     */
-    addBoundMethods () {
-        if (this.boundMethods){
-            var keys = Object.keys(this.boundMethods);
-            for (let i=0; i<keys.length; i++){
-                if (this[keys[i]] && _.isFunction(this[keys[i]]) && this[keys[i]].bind && _.isFunction(this[keys[i]].bind)){
-                    this.boundMethods[keys[i]] = this[keys[i]].bind(this);
-                }
-            }
-        }
-    }
-
-    /**
-     * Method that cleans up this.boundMethods property
-     * set in this.addBoundMethods method
-     *
-     * @return {undefined}
-     */
-    removeBoundMethods () {
-        var keys = Object.keys(this.boundMethods);
-        for (let i=0; i<keys.length; i++){
-            this.boundMethods[keys[i]] = null;
-        }
-        this.boundMethods = {};
-    }
-
-    /**
      * Adds event listeners
-     *
-     *
-     *
-     *
      *
      * @return {undefined}
      */
@@ -206,8 +169,8 @@ class MainScript {
      * @return {undefined}
      */
     addGlobalEmitterEventListeners() {
-        this.mainWindow.globalEmitter.on('message', this.boundMethods.messageReceived);
-        this.mainWindow.globalEmitter.on('asyncMessage', this.boundMethods.asyncMessageReceived);
+        this.mainWindow.globalEmitter.on('message', this.boundMethods.onMessage);
+        this.mainWindow.globalEmitter.on('asyncMessage', this.boundMethods.onMessage);
     }
 
     /**
@@ -216,8 +179,8 @@ class MainScript {
      * @return {undefined}
      */
     removeGlobalEmitterEventListeners() {
-        this.mainWindow.globalEmitter.removeListener('message', this.boundMethods.messageReceived);
-        this.mainWindow.globalEmitter.removeListener('asyncMessage', this.boundMethods.asyncMessageReceived);
+        this.mainWindow.globalEmitter.removeListener('message', this.boundMethods.onMessage);
+        this.mainWindow.globalEmitter.removeListener('asyncMessage', this.boundMethods.onMessage);
     }
 
     /**
@@ -226,138 +189,49 @@ class MainScript {
      * @param  {Object} data    Data passed with message
      * @return {mixed}          Result of message execution
      */
-    messageReceived (data){
-        if (data && data.instruction){
-            // this.log('Message received');
-            let instruction = data.instruction;
-            let messageData = {};
-            if (data.data){
-                messageData = data.data;
-            } else {
-                messageData = data;
+    onMessage (data) {
+        if (data){
+            let responseMessage = 'messageResponse';
+            let messageType = 'Message';
+            if (data._async_){
+                responseMessage = 'asyncMessageResponse';
+                messageType = 'Async message';
             }
-            return this.messageHandlers.execute(instruction, messageData);
-        } else {
-            this.doLog('ERROR: Message with no data received');
-        }
-    }
-
-    /**
-     * Handles async messages received from the app
-     *
-     * @param  {Object} data    Data passed with message
-     * @return {mixed}          Result of message execution
-     */
-    asyncMessageReceived (data){
-        if (data && data.instruction && data.uuid){
-            // this.log('Async message received, uuid: ' + data.uuid);
-            let instruction = data.instruction;
-            let uuid = data.uuid;
-            let messageData = {};
-            if (data.data){
-                messageData = data.data;
-            } else {
-                // messageData = _.omit(data, 'instruction', 'uuid');
-                messageData = data;
-            }
-            return this.asyncMessageHandlers.execute(instruction, uuid, messageData);
-        } else {
-            this.doLog('ERROR: Async message received without data!');
-            return false;
-        }
-    }
-
-    /**
-     * Logs data to console if debug is enabled
-     *
-     * @return {undefined}
-     */
-    log () {
-        if (this.config && this.config.main && this.config.main.debug){
-            this.doLog(arguments);
-        }
-    }
-
-    /**
-     * Logs data to console
-     *
-     * @return {undefined}
-     */
-    doLog () {
-        let params = [];
-        for (let i=0; i<arguments.length; i++){
-            let param = [];
-            if (_.isObject(arguments[i])){
-                for (let name in arguments[i]){
-                    param.push(arguments[i][name]);
+            if (data.instruction && data.uuid){
+                let instruction = data.instruction;
+                let uuid = data.uuid;
+                let result;
+                if (data._async_){
+                    result = this.asyncMessageHandlers.execute(instruction, uuid, data);
+                } else {
+                    result = this.messageHandlers.execute(instruction, data);
                 }
+                if (!result){
+                    this.log('{1} "{2}" handler for instruction "{3}" not found!', 'error', [messageType, uuid, instruction]);
+                    this.mainWindow.globalEmitter.emit(responseMessage, _.extend(data, {_result_: false}));
+                } else {
+                    this.log('{1} "{2}" with instruction "{3}" received', 'debug', [messageType, uuid, instruction]);
+                    this.log('{1} "{2}" with instruction "{3}" data: {4}', 'debug', [messageType, uuid, instruction, data]);
+                }
+                return result;
             } else {
-                param = arguments[i];
-            }
-            params.push(param);
-        }
-        params = _.flatten(params);
-
-        let formattedParams = _.cloneDeep(params);
-        if (formattedParams.length == 1){
-            if (_.isString(formattedParams[0])){
-                formattedParams = formattedParams[0];
-            } else {
-                formattedParams = util.inspect(formattedParams[0], this.inspectOptions);
+                if (!data.instruction){
+                    this.log('{1} "{2}" received without instruction!', 'error', [messageType, data.uuid]);
+                } else if (!data.uuid) {
+                    this.log('{1} with instruction "{2}" received without uuid!', 'error', [messageType, data.instruction]);
+                }
+                let responseData = {
+                    _result_: false
+                };
+                if (data && _.isObject(data)){
+                    responseData = _.extend(data, responseData);
+                }
+                this.mainWindow.globalEmitter.emit(responseMessage, responseData);
+                return false;
             }
         } else {
-            formattedParams = util.inspect(formattedParams, this.inspectOptions);
+            this.log('Message received without data!', 'error');
         }
-
-        let logMethod = this.printLn;
-        let clearLastLine = false;
-        if (this.manifest['chromium-args'] && this.manifest['chromium-args'].match(/--enable-logging=stderr/)){
-            clearLastLine = true;
-            logMethod = this.boundMethods.printLog;
-        }
-        logMethod(formattedParams);
-        if (this.config && this.config.main && this.config.main.debugToWindow && this.mainWindow && this.mainWindow.window && this.mainWindow.window.console){
-            setTimeout( () => {
-                if (clearLastLine){
-                    process.stdout.write('\x1B[s');
-                }
-                this.mainWindow.window.console.log.apply(this.mainWindow.window.console, _.union(['MAINSCRIPT'], params));
-                if (clearLastLine){
-                    process.stdout.write('\x1B[u');
-                    process.stdout.write('\x1B[J');
-                }
-            }, 0);
-        }
-    }
-
-    /**
-     * Prints message to stdout
-     *
-     * @param  {string} message Message to print
-     * @return {undefined}
-     */
-    print (message){
-        process.stdout.write(message);
-    }
-
-    /**
-     * Prints message to stdout with newline appended
-     *
-     * @param  {string} message Message to print
-     * @return {undefined}
-     */
-    printLn (message){
-        process.stdout.write(message.replace(/\r?\n?$/, '\n'));
-    }
-
-    /**
-     * Logs message to console
-     *
-     * @param  {mixed} message Message to log
-     * @return {undefined}
-     */
-    printLog(message){
-        console.log(message);
     }
 
     /**
@@ -380,7 +254,7 @@ class MainScript {
      * @return {undefined}
      */
     windowLoaded () {
-        this.log('Main window loaded');
+        this.log('Main window loaded', 'debug');
     }
 
     /**
@@ -390,16 +264,18 @@ class MainScript {
      * @return {undefined}
      */
     uncaughtException (err) {
-        this.doLog('EXCEPTION');
+        let message = 'EXCEPTION: {1}';
+        let data = [];
         if (err.message){
-            this.doLog(err.message);
+            data[0] = err.message;
         }
         if (err.stack){
-            this.doLog(err.stack);
+            data[0] = err.stack;
         }
-        if (!(err.stack || err.message)){
-            this.doLog(err);
+        if (!data[0]){
+            data[0] = err;
         }
+        this.log(message, 'error', data);
         this.mainWindow.window.appState.appError.error = true;
         if (err && err.message){
             this.mainWindow.globalEmitter.emit('mainMessage', {instruction: 'callMethod', data: {method: 'addUserMessage', arguments: [err.message, 'error', [], false, true]}});
@@ -428,7 +304,12 @@ class MainScript {
         if (_.isUndefined(code)){
             code = 4;
         }
-        this.doLog('\nCaught SIGINT, code:' + code + ', shutting down.\n');
+        this.log('\nCaught SIGINT, code:' + code + ', shutting down.\n', 'warning', [], true);
+    }
+
+    setNewConfig (configData){
+        this.log('Setting new config', 'info');
+        this.config = configData;
     }
 }
 
