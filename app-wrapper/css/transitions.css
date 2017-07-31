@@ -1,72 +1,60 @@
-/* fade */
+/*
+    fade:
+        variants:
+            fade-slow       slow fade       (long-animation-duration)
+            fade            normal fade     (medium-animation-duration)
+            fade-fast       fast fade       (short-animation-duration)
+            fade-delayed    delayed fade    (medium-animation-duration, delayed by medium-animation-duration)
+ */
+.fade-fast-enter,
+.fade-fast-leave-to,
+.modal-dialog-background.fade-fast-enter,
+.modal-dialog-background.fade-fast-leave-to,
 .fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity ease-out var(--long-animation-duration);
-}
-
-.fade-enter-to,
-.fade-leave {
-    opacity: 1;
-}
-
+.fade-leave-to,
+.fade-delayed-enter,
+.fade-delayed-leave-to,
 .modal-dialog-background.fade-enter,
-.modal-dialog-background.fade-leave-to {
-    opacity: 0;
-}
-
-
-
-/* fade-slow */
-
+.modal-dialog-background.fade-leave-to,
 .fade-slow-enter,
-.fade-slow-leave-to {
-    opacity: 0;
+.fade-slow-leave-to,
+.modal-dialog-background.fade-slow-enter,
+.modal-dialog-background.fade-slow-leave-to,
+.fade-preset-enter,
+.fade-preset-leave-to {
+    opacity: 0 !important;
 }
-
+.fade-fast-enter-active,
+.fade-fast-leave-active,
+.fade-delayed-enter-active,
+.fade-delayed-leave-active,
+.fade-enter-active,
+.fade-leave-active,
 .fade-slow-enter-active,
 .fade-slow-leave-active {
-    transition: opacity ease-out var(--long-animation-duration);
+    transition-property: opacity !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
 }
 
-.fade-slow-enter-to,
-.fade-slow-leave {
-    opacity: 1;
+.modal-dialog-background.fade-fast-enter-active,
+.modal-dialog-background.fade-fast-leave-active,
+.fade-fast-enter-active,
+.fade-fast-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
 }
 
-.modal-dialog-background.fade-slow-enter,
-.modal-dialog-background.fade-slow-leave-to {
-    opacity: 0;
+.modal-dialog-background.fade-slow-enter-active,
+.modal-dialog-background.fade-slow-leave-active,
+.fade-slow-enter-active,
+.fade-slow-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
 }
 
-
-
-/* fade-delayed-slow */
-
-.fade-delayed-slow-enter {
-    opacity: 0;
+.fade-delayed-enter-active,
+.fade-delayed-leave-active {
+    transition-delay: var(--medium-animation-duration) !important;
 }
-
-.fade-delayed-slow-enter-active {
-    transition: opacity linear var(--long-animation-duration) var(--long-animation-duration);
-}
-
-.fade-delayed-slow-enter-to {
-    opacity: 1;
-}
-
-.fade-delayed-slow-leave-active {
-    transition: opacity linear var(--long-animation-duration) var(--long-animation-duration);
-}
-
-.fade-delayed-slow-leave-to {
-    opacity: 0;
-}
-
 
 /* flex-basis */
 
@@ -125,82 +113,83 @@
 
 
 
-/* width */
+/*
+    width:
+        variants:
+            width-slow       slow width       (long-animation-duration)
+            width            normal width     (medium-animation-duration)
+            width-fast       fast width       (short-animation-duration)
+            width-delayed    delayed width    (medium-animation-duration, delayed by medium-animation-duration)
+ */
 
-.width-enter {
-    width: 0;
+.width-short-enter,
+.width-short-leave-to,
+.width-enter,
+.width-leave-to,
+.width-long-enter,
+.width-long-leave-to,
+.width-delayed-enter,
+.width-delayed-leave-to {
+    flex-basis: unset !important;
+    overflow: hidden !important;
+    width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
-.width-enter-active {
-    transition-property: width;
-    transition-timing-function: linear;
-    transition-duration: var(--short-animation-duration);
+.width-short-enter-active,
+.width-short-leave-active,
+.width-enter-active,
+.width-leave-active,
+.width-long-enter-active,
+.width-long-leave-active,
+.width-delayed-enter-active,
+.width-delayed-leave-active {
+    overflow: hidden !important;
+    flex-basis: unset !important;
+    transition-property: width, margin-left, margin-right, padding-left, padding-right !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
 }
 
-.width-enter-to {
-    /*width: unset;*/
+.width-short-enter-active,
+.width-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
 }
 
-.width-leave-active {
-    transition-property: width;
-    transition-timing-function: linear;
-    transition-duration: var(--short-animation-duration);
-}
-
-.width-leave-to {
-    width: 0;
-}
-
-
-
-/* width-long */
-
-.width-long-enter {
-    width: 0;
-}
-
-.width-long-enter-active {
-    transition: width linear var(--long-animation-duration);
-}
-
-.width-long-enter-to {
-    width: auto;
-}
-
+.width-long-enter-active,
 .width-long-leave-active {
-    transition: width linear var(--long-animation-duration);
+    transition-duration: var(--long-animation-duration) !important;
 }
 
-.width-long-leave-to {
-    width: 0;
+.width-delayed-enter-active,
+.width-delayed-leave-active {
+    transition-delay: var(--medium-animation-duration) !important;
 }
 
 /* height */
 
-.height-enter {
-    height: 0;
-}
-
-.height-enter-active {
-    transition-property: height;
-    transition-timing-function: linear;
-    transition-duration: var(--short-animation-duration);
-}
-
-.height-enter-to {
-    /*height: unset;*/
-}
-
-.height-leave-active {
-    transition-property: height;
-    transition-timing-function: linear;
-    transition-duration: var(--short-animation-duration);
-}
-
+.height-enter,
 .height-leave-to {
-    height: 0;
+    overflow: hidden !important;
+    height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+
 }
 
+.height-enter-active,
+.height-leave-active {
+    overflow: hidden !important;
+    transition-property: height, margin-top, margin-top, padding-top, padding-top !important;
+    transition-timing-function: linear !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
 
 
 /* height-long */
@@ -564,4 +553,9 @@
     /*transition-property: max-height, padding, opacity, box-shadow, border, border-bottom, color !important;*/
     transition-timing-function: ease-out !important;
     transition-duration: var(--medium-animation-duration) !important;
+}
+
+.window-control-maximize .fa,
+.window-control-restore .fa {
+    width: 1rem;
 }

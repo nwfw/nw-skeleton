@@ -19,7 +19,9 @@
     width: auto;
     opacity: 1;
     max-width: 90vw;
-    transition: top ease-in-out var(--medium-animation-duration);
+    transition-property: top;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--long-animation-duration);
 }
 .app-notifications.no-notifications {
     opacity: 0;

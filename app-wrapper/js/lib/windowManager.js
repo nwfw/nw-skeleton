@@ -66,6 +66,8 @@ class WindowManager extends AppBaseClass {
             resize: null
         };
 
+        this.ignoreResize = false;
+
         this.initWinState();
     }
 
@@ -216,7 +218,6 @@ class WindowManager extends AppBaseClass {
             this.winState.width = appW;
             this.winState.height = appH;
             if (appState.config.debug.enabled){
-                // this.win.show();
                 if (appState.isDebugWindow){
                     this.winState.x = 0;
                     this.winState.y = 0;
@@ -254,10 +255,7 @@ class WindowManager extends AppBaseClass {
                     // }
                 }
             }
-            this.win.show();
             this.document.body.className = this.document.body.className + ' nw-body-initialized';
-            this.win.focus();
-            this.window.focus();
             resolveReference(true);
         }, 200);
         return returnPromise;
@@ -569,6 +567,9 @@ class WindowManager extends AppBaseClass {
                         this.emit('winStateChange', { name: 'fullscreen', value: value});
                     }
                     if (this.propagateChange.fullscreen){
+                        // if (this.winState.maximized){
+                        //     this.toggleMaximize();
+                        // }
                         self.win.toggleFullscreen();
                     }
                 }
@@ -619,9 +620,9 @@ class WindowManager extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.propagateChange.maximized = false;
-        this.winState.maximized = false;
-        this.propagateChange.maximized = true;
+        // this.propagateChange.maximized = false;
+        // this.winState.maximized = false;
+        // this.propagateChange.maximized = true;
 
         this.winState.minimized = !this.winState.minimized;
     }
@@ -636,6 +637,7 @@ class WindowManager extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        this.ignoreResize = true;
         this.propagateChange.minimized = false;
         this.winState.minimized = false;
         this.propagateChange.minimized = true;
@@ -723,6 +725,7 @@ class WindowManager extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        this.ignoreResize = true;
         this.winState.fullscreen =! this.winState.fullscreen;
         // _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.fullscreen', this.winState.fullscreen);
     }
@@ -861,8 +864,15 @@ class WindowManager extends AppBaseClass {
     windowResize () {
         clearTimeout(this.timeouts.resize);
         this.timeouts.resize = setTimeout( () => {
-            this.windowPositionSizeUpdated();
-        }, 500);
+            if (!this.ignoreResize){
+                if (this.winState.maximized){
+                    this.winState.maximized = false;
+                }
+                this.windowPositionSizeUpdated();
+            } else {
+                this.ignoreResize = false;
+            }
+        }, this.getConfig('longPauseDuration'));
     }
 
     /**
@@ -917,6 +927,26 @@ class WindowManager extends AppBaseClass {
      */
     windowFocus (){
         appState.status.windowFocused = true;
+    }
+
+    /**
+     * Shows main window
+     *
+     * @return {undefined}
+     */
+    showWindow () {
+        this.win.show();
+        this.win.focus();
+        this.window.focus();
+    }
+
+    /**
+     * Hides main window
+     *
+     * @return {undefined}
+     */
+    hideWindow () {
+        this.win.hide();
     }
 }
 

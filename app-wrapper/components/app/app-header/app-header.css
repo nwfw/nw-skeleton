@@ -14,6 +14,9 @@ header {
 
 header .header-top {
     flex: 1 1 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0 5px 0;
 }
 
 header .header-bottom {
@@ -23,7 +26,7 @@ header .header-bottom {
 header .header-app-title {
     flex: 0 1 auto;
     font-size: 1rem;
-    padding: 3px 10px 5px 10px;
+    padding-left: 10px;
 }
 
 header .progress-bar-wrapper {

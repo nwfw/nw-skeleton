@@ -35,6 +35,10 @@ class UserDataHelper extends AppBaseClass {
             appState = _appWrapper.getAppState();
         }
 
+        this.boundMethods = {
+            clearUserData: null
+        };
+
         this.previousUserData = {};
 
         return this;
@@ -122,6 +126,8 @@ class UserDataHelper extends AppBaseClass {
             this.addUserMessage('Could not delete user data!', 'error', [], false, false);
         } else {
             this.addUserMessage('Deleted user data.', 'info', [], false,  false);
+            this.previousUserData = {};
+            appState.userData = {};
         }
         return deleted;
     }

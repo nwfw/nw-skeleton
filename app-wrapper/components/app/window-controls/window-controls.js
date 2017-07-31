@@ -97,7 +97,19 @@ exports.component = {
         },
         toggleAppShuttingDown: function(){
             appState.status.appShuttingDown = !appState.status.appShuttingDown;
+        },
+        clearUserDataHandler: function() {
+            _appWrapper.getHelper('modal').confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved data.'), '', '', this.clearUserData.bind(this));
+        },
+        clearUserData: async function(){
+            let cleared = await _appWrapper.getHelper('userData').boundMethods.clearUserData();
+            this.$forceUpdate();
+            _appWrapper.getHelper('modal').closeCurrentModal();
+        },
+        userDataChanged: function(){
+            return _appWrapper.getHelper('userData').userDataChanged({});
         }
+
     },
     watch: {},
     computed: {

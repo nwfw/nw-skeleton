@@ -57,7 +57,8 @@ class KeyboardHelper extends AppBaseClass {
             reloadKeyCodes: [82], // 'r'
             closeKeyCodes: [87], // 'w'
             escKeyCodes: [27],
-            reloadCssKeyCodes: [85] // 'u'
+            reloadCssKeyCodes: [85], // 'u'
+            reinitializeFeAppKeyCodes: [85], // 'u'
         };
 
         this.keyCodeNames = {
@@ -196,6 +197,9 @@ class KeyboardHelper extends AppBaseClass {
                     fulfilled = true;
                 } else if (!appState.status.noHandlingKeys && appState && appState.status.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
                     _appWrapper.windowManager.closeWindow();
+                    fulfilled = true;
+                } else if (appState && appState.status.ctrlPressed && appState.status.shiftPressed && _.includes(this.keyCodes.reinitializeFeAppKeyCodes, keyCode)){
+                    _appWrapper.reinitializeFeApp();
                     fulfilled = true;
                 } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();

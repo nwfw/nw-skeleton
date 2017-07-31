@@ -1,5 +1,5 @@
 <transition name="fade">
-    <div v-show="appState.status.appLoaded" id="app-body" class="app-body" v-bind:class="['theme-' + appState.config.theme, { 'moving-window': appState.status.movingWindow, 'debug-enabled': appState.config.debug.enabled, 'debug-visible': appState.config.debug.enabled && !appState.config.debug.hideDebug, 'user-messages-visible':  !appState.config.userMessages.hideUserMessages, 'has-debug-window': !appState.isDebugWindow && appState.hasDebugWindow, 'modal-visible': appState.modalData.modalVisible, 'app-loaded': appState.status.appLoaded, 'has-app-operation': appState.appOperation.operationVisible, 'has-active-app-operation': appState.appOperation.operationVisible && appState.appOperation.operationActive && appState.appOperation.useProgress }]">
+    <div v-show="appState.status.appLoaded" id="app-body" class="app-body" v-bind:class="appBodyClassObject">
         <div class="app-content">
             <app-header ref="appHeader"></app-header>
             <template v-if="!isDebug">
@@ -23,6 +23,7 @@
                 <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
             <app-footer ref="appFooter"></app-footer>
+            <app-notifications v-if="!appState.isDebugWindow && !appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
         </template>
     </div>
 </div>

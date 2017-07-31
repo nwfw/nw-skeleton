@@ -113,7 +113,8 @@ exports.config = {
     minPauseDuration: 10,
     shortPauseDuration: 100,
     mediumPauseDuration: 250,
-    longPauseDuration: 1000,
+    longPauseDuration: 700,
+    longerPauseDuration: 1000,
 
     cancelOperationTimeout: 30000,
 
@@ -259,6 +260,7 @@ exports.config = {
         },
         hasTrayIcon: false,
         trayData: {},
+        allowFullscreen: true,
         windowConfig: {
             left: null,
             top: null,

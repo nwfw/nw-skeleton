@@ -267,8 +267,8 @@ class AppWrapper extends AppBaseClass {
      * @return {booelan} Result of the wrapper and its dependencies finalization
      */
     async finalize () {
+        this.windowManager.showWindow();
         appState.status.appLoaded = true;
-
         await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
         var retValue = await this.app.finalize();
         if (retValue){
@@ -555,6 +555,7 @@ class AppWrapper extends AppBaseClass {
             }
             await this.shutdownApp();
             await this.finalizeLogs();
+            this.windowManager.hideWindow();
             if (window && window.feApp && window.feApp.$destroy && _.isFunction(window.feApp.$destroy)){
                 window.feApp.$destroy();
             }

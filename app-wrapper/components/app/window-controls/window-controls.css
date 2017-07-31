@@ -1,22 +1,17 @@
 .window-controls-wrapper {
-    position: absolute;
-    top: 5px;
-    right: 5px;
+    position: relative;
     display: flex;
-    flex: 1 1 auto;
-    -webkit-app-region: no-drag;
+    flex: 0 1 auto;
     cursor: pointer;
     overflow: visible;
-}
-.window-control-hidden {
-    visibility: hidden;
+    justify-content: flex-end;
+    -webkit-app-region: no-drag;
 }
 
 .window-controls-wrapper .window-controls {
     display: flex;
     position: relative;
     overflow: visible;
-    padding: 0 3px;
 }
 
 .window-controls-wrapper .window-controls.window-controls-main {
@@ -24,12 +19,13 @@
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper {
-    flex: 0 0 16px;
-    display: inline-block;
-    position: relative;
-    overflow: visible;
+    flex: 0 1 1rem;
     margin-right: 5px;
     font-size: 1rem;
+    width: 1rem;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control {
@@ -39,11 +35,15 @@
     -webkit-text-stroke-width: var(--window-control-link-text-stroke-width);
     -webkit-text-stroke-color: var(--window-control-link-text-stroke-color);
     text-shadow: var(--window-control-link-text-shadow);
+    transition-property: color, background, opacity, width;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+    display: flex;
+    flex-flow: row;
 }
 
-.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa,
-.window-controls-wrapper .window-controls .window-control-wrapper .window-control .fa:before {
-    display: block;
+.window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-move {
+    transition: opacity ease-in-out var(--medium-animation-duration);
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control:hover {
@@ -84,19 +84,14 @@
     max-height: 0;
     position: absolute;
     left: 50%;
-    transform: translateX(calc(-50% - 1px));
+    top: 1rem;
+    transform: translateX(calc(-50% - 2px));
     overflow: hidden;
     z-index: 4;
     padding: 0px var(--window-control-submenu-shadow-size);
     transition-property: max-height;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
-}
-
-.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu-link {
-    transition-property: color;
-    transition-timing-function: ease-in-out;
-    transition-duration: var(--long-animation-duration);
 }
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper.menu-opened .window-control-submenu-link {
@@ -181,4 +176,26 @@
 .window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control .window-control-submenu-item-text {
     font-size: 0.8rem;
     white-space: nowrap;
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control .window-control-submenu-item-shortcut {
+    font-size: 0.7rem;
+    align-self: flex-end;
+    padding: 1px 4px;
+    margin-left: 15px;
+    white-space: nowrap;
+    opacity: 0.9;
+    border-radius: 5px;
+    border: 1px solid var(--window-control-link-color-active);
+    color: var(--window-control-submenu-text-color-active);
+    background-color: var(--window-control-submenu-background-color-active);
+    transition-property: color, background, border-color;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+}
+
+.window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-item-wrapper .window-control.window-control-destructive:hover .window-control-submenu-item-shortcut {
+    border: 1px solid var(--window-control-submenu-destructive-text-color-hover);
+    color: var(--window-control-submenu-destructive-text-color-hover);
+    background-color: var(--window-control-submenu-destructive-background-color-hover);
 }
