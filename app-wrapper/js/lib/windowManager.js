@@ -1,7 +1,7 @@
 /**
  * @fileOverview WindowManager class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 const _ = require('lodash');
@@ -45,25 +45,27 @@ class WindowManager extends AppBaseClass {
         this.screenHeight = null;
 
         this.boundMethods = {
-            minimizeWindow: this.minimizeWindow.bind(this),
-            toggleMaximize: this.toggleMaximize.bind(this),
-            reloadWindow: this.reloadWindow.bind(this),
-            toggleDevTools: this.toggleDevTools.bind(this),
-            closeWindow: this.closeWindow.bind(this),
-            toggleFullScreen: this.toggleFullScreen.bind(this),
-            dragWindow: this.dragWindow.bind(this),
-            moveWindowMousedown: this.moveWindowMousedown.bind(this),
-            moveWindowMouseup: this.moveWindowMouseup.bind(this),
-            winStateChanged: this.winStateChanged.bind(this),
-            windowRestored: this.windowRestored.bind(this),
-            windowResize: this.windowResize.bind(this),
-            windowBlur: this.windowBlur.bind(this),
-            windowFocus: this.windowFocus.bind(this),
-            beforeUnload: this.beforeUnload.bind(this)
+            minimizeWindow: null,
+            toggleMaximize: null,
+            reloadWindow: null,
+            toggleDevTools: null,
+            closeWindow: null,
+            toggleFullScreen: null,
+            dragWindow: null,
+            moveWindowMousedown: null,
+            moveWindowMouseup: null,
+            winStateChanged: null,
+            windowRestored: null,
+            windowResize: null,
+            windowBlur: null,
+            windowFocus: null,
+            beforeUnload: null,
+            mouseMoveHandler: null,
         };
 
         this.timeouts = {
-            resize: null
+            resize: null,
+            showHeader: null,
         };
 
         this.ignoreResize = false;
@@ -96,6 +98,7 @@ class WindowManager extends AppBaseClass {
         this.window.addEventListener('blur', this.boundMethods.windowBlur);
         this.window.addEventListener('focus', this.boundMethods.windowFocus);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
+        this.window.addEventListener('mousemove', this.boundMethods.mouseMoveHandler);
     }
 
     /**
@@ -110,6 +113,7 @@ class WindowManager extends AppBaseClass {
         this.window.removeEventListener('blur', this.boundMethods.windowBlur);
         this.window.removeEventListener('focus', this.boundMethods.windowFocus);
         this.window.removeEventListener('beforeunload', this.boundMethods.beforeUnload);
+        this.window.removeEventListener('mousemove', this.boundMethods.mouseMoveHandler);
 
         Object.keys(this.boundMethods).forEach((key) => {
             this.boundMethods[key] = null;
@@ -947,6 +951,30 @@ class WindowManager extends AppBaseClass {
      */
     hideWindow () {
         this.win.hide();
+    }
+
+    /**
+     * Handles mouseMove event and shows or hides header based on config
+     *
+     * @param  {Event} e Event that triggered the handler
+     * @return {undefined}
+     */
+    mouseMoveHandler (e) {
+        if (this.getConfig('appConfig.hideFullscreenHeader') && this.getStateVar('windowState.fullscreen')){
+            clearTimeout(this.timeouts.showHeader);
+            let yPosition = e.clientY;
+            if (yPosition <= 15){
+                this.timeouts.showHeader = setTimeout( () => {
+                    if (appState.appBodyClasses.indexOf('show-header') == -1){
+                        appState.appBodyClasses.push('show-header');
+                    }
+                }, 1000);
+            } else {
+                this.timeouts.showHeader = setTimeout( () => {
+                    appState.appBodyClasses = _.without(appState.appBodyClasses, 'show-header');
+                }, 1000);
+            }
+        }
     }
 }
 

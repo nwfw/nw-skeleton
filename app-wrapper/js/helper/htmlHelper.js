@@ -1,7 +1,7 @@
 /**
  * @fileOverview HtmlHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 const _ = require('lodash');
@@ -90,6 +90,9 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     setElementStyles (element, styles, merge){
+        if (this instanceof Element){
+            element = this;
+        }
         if (element && element.setAttribute && _.isFunction(element.setAttribute) && styles && _.isObject(styles)){
             var newStyles;
             if (merge){

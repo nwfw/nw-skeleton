@@ -1,7 +1,7 @@
 /**
  * @fileOverview live-info component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 var _appWrapper = window.getAppWrapper();
@@ -33,7 +33,7 @@ exports.component = {
                 'fa-exclamation-triangle': appState.status.appStatus == 'error',
                 'fa-check': appState.status.appStatus == 'success',
                 'fa-ban': appState.status.appStatus == 'offline',
-                'app-status-icon-placeholder': appState.status.appStatus == 'idle'
+                'fa-check app-status-icon-placeholder': appState.status.appStatus == 'idle'
 
             };
         },

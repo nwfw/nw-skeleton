@@ -1,4 +1,4 @@
-header {
+header.app-header {
     color: var(--app-header-text-color);
     background-color: var(--app-header-background-color);
     background: var(--app-header-background);
@@ -10,16 +10,19 @@ header {
     border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
     border-style: var(--app-main-border-style);
     border-color: var(--app-header-border-color);
+    transition-property: margin-top;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
 }
 
-header .header-top {
+header.app-header .header-top {
     flex: 1 1 auto;
     display: flex;
     justify-content: space-between;
     padding: 3px 0 5px 0;
 }
 
-header .header-bottom {
+header.app-header .header-bottom {
     position: absolute;
     flex: 1 1 auto;
     display: flex;
@@ -32,8 +35,16 @@ header .header-bottom {
     height: 0px;
 }
 
-header .header-app-title {
+header.app-header .header-app-title {
     flex: 0 1 auto;
     font-size: 1rem;
     padding-left: 10px;
+}
+
+header.app-header.hide-fullscreen-header {
+    margin-top: -26px;
+}
+
+.show-header header.app-header.hide-fullscreen-header {
+    margin-top: 0px;
 }

@@ -209,6 +209,5 @@
 }
 
 .live-info .app-status-icon-placeholder {
-    width: 16px;
-    height: 16px;
+    visibility: hidden;
 }

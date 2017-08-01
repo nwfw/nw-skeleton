@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppState app wrapper file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 /**
@@ -160,6 +160,7 @@ exports.appState = {
     config: {},
     userConfig: {},
     componentCssFiles: [],
+    appBodyClasses: [],
     windowState: {
         title: '',
         position: '',

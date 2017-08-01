@@ -1,7 +1,7 @@
 /**
  * @fileOverview window-controls component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 var _appWrapper = window.getAppWrapper();
@@ -41,6 +41,12 @@ exports.component = {
                     menuEl.addClass('menu-opened');
                     submenuEl.addEventListener('mouseout', this.closeSubmenuIntent);
                     submenuEl.addEventListener('mouseover', this.keepSubmenuIntent);
+                    clearTimeout(this.timeouts[menuIdentifier]);
+                    clearTimeout(this.timeouts[menuIdentifier + '_removeMargin']);
+                    clearTimeout(this.timeouts[menuIdentifier + '_size']);
+                    this.timeouts[menuIdentifier + '_size'] = setTimeout(() => {
+                        this.checkSubmenuSize(submenuEl);
+                    }, 100);
                 }
             }
         },
@@ -65,6 +71,7 @@ exports.component = {
             let menuIdentifier = menuEl.getAttribute('data-submenu');
             let submenuSelector = '.window-control-submenu[data-submenu="' + menuIdentifier + '"]';
             let submenuEl = menuEl.querySelector(submenuSelector);
+            let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--medium-animation-duration'), 10) * 1000, 10);
             if (submenuEl){
                 submenuEl.removeEventListener('mouseout', this.closeSubmenuIntent);
                 submenuEl.removeEventListener('mouseover', this.keepSubmenuIntent);
@@ -73,6 +80,11 @@ exports.component = {
                     clearTimeout(this.timeouts[menuIdentifier]);
                     delete this.timeouts[menuIdentifier];
                 }
+                clearTimeout(this.timeouts[menuIdentifier + '_removeMargin']);
+                this.timeouts[menuIdentifier + '_removeMargin'] = setTimeout(() => {
+                    submenuEl.removeElementStyles(['margin-left']);
+                    submenuEl.querySelector('.window-control-submenu-arrow').removeElementStyles(['padding-left']);
+                }, duration);
             }
         },
         closeAllSubmenus: function(){
@@ -108,6 +120,17 @@ exports.component = {
         },
         userDataChanged: function(){
             return _appWrapper.getHelper('userData').userDataChanged({});
+        },
+        checkSubmenuSize: function(submenuEl) {
+            let submenuLeft = submenuEl.getAbsolutePosition().offsetLeft;
+            let submenuWidth = submenuEl.offsetWidth / 2;
+            let windowWidth = window.outerWidth;
+            if (submenuLeft + submenuWidth > windowWidth){
+                let marginLeft = '-' + Math.abs(windowWidth - (submenuLeft + submenuWidth)) + 'px';
+                let paddingLeft = (2 * Math.abs(windowWidth - (submenuLeft + submenuWidth))) + 'px';
+                submenuEl.setElementStyles({'margin-left': marginLeft});
+                submenuEl.querySelector('.window-control-submenu-arrow').setElementStyles({'padding-left': paddingLeft});
+            }
         }
 
     },

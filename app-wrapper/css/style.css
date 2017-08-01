@@ -74,6 +74,14 @@ input[type=range] {
     top: 0.4rem;
 }
 
+button:hover,
+input[type=button]:hover {
+	background: var(--input-hover-background);
+	color: var(--input-hover-color);
+	border: var(--input-hover-border);
+	cursor: pointer;
+}
+
 h1, h2 {
 	font-weight: 600;
 }

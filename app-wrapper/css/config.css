@@ -15,6 +15,10 @@
     --input-highlight-color: #333333;
     --input-highlight-border: 1px solid #CCCCCC;
 
+    --input-hover-background: #CCCCCC;
+    --input-hover-color: #333333;
+    --input-hover-border: 1px solid #999999;
+
     --input-disabled-background: #999999;
     --input-disabled-color: #666666;
     --input-disabled-border: 1px solid #CCCCCC;

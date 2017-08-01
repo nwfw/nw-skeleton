@@ -1,5 +1,5 @@
 <transition name="fade">
-    <div v-show="appState.status.appLoaded" id="app-body" class="app-body" v-bind:class="appBodyClassObject">
+    <div v-show="appState.status.appLoaded" id="app-body" class="app-body" v-bind:class="[appState.appBodyClasses, appBodyClassObject]">
         <div class="app-content">
             <app-header ref="appHeader"></app-header>
             <template v-if="!isDebug">

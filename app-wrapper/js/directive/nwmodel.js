@@ -1,7 +1,7 @@
 /**
  * @fileOverview nw-model filter file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 const _ = require('lodash');
 

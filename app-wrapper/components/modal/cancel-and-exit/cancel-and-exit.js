@@ -1,7 +1,7 @@
 /**
  * @fileOverview cancel-and-exit component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 var _appWrapper = window.getAppWrapper();

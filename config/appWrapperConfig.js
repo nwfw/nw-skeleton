@@ -261,6 +261,7 @@ exports.config = {
         hasTrayIcon: false,
         trayData: {},
         allowFullscreen: true,
+        hideFullscreenHeader: true,
         windowConfig: {
             left: null,
             top: null,

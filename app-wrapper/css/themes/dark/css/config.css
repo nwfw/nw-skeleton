@@ -9,6 +9,10 @@
     --input-base-border: 1px solid #999999;
     --input-base-padding: 2px 6px 3px 6px;
 
+    --input-hover-background: #CCCCCC;
+    --input-hover-color: #333333;
+    --input-hover-border: 1px solid #999999;
+
     --input-highlight-background: #999999;
     --input-highlight-color: #EEEEEE;
     --input-highlight-border: 1px solid #CCCCCC;

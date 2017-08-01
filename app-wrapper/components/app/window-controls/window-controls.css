@@ -89,7 +89,7 @@
     overflow: hidden;
     z-index: 4;
     padding: 0px var(--window-control-submenu-shadow-size);
-    transition-property: max-height;
+    transition-property: max-height, margin-left;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
 }
@@ -110,6 +110,9 @@
     line-height: 8px;
     display: block;
     color: var(--window-control-submenu-arrow-color);
+    transition-property: padding-left;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
 }
 
 .window-controls-wrapper .window-controls .window-control-menu-wrapper .window-control-submenu .window-control-submenu-inner {
