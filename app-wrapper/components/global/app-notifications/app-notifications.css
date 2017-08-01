@@ -28,11 +28,11 @@
 }
 
 .has-app-operation .app-notifications {
-    top: 35px;
+    top: 32px;
 }
 
 .has-app-operation.has-active-app-operation .app-notifications {
-    top: 85px;
+    top: 80px;
 }
 
 .app-notifications .app-notification {

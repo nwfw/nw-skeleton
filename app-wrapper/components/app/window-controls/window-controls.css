@@ -199,3 +199,8 @@
     color: var(--window-control-submenu-destructive-text-color-hover);
     background-color: var(--window-control-submenu-destructive-background-color-hover);
 }
+
+.window-controls-wrapper .window-controls .window-control-maximize .fa,
+.window-controls-wrapper .window-controls .window-control-restore .fa {
+    width: 1rem;
+}

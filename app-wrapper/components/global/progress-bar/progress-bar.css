@@ -8,24 +8,52 @@
 }
 
 .progress-bar-wrapper {
+    width: 240px;
+    border-radius: 0 0 var(--app-progress-bar-wrapper-border-radius) var(--app-progress-bar-wrapper-border-radius);
+    background: var(--app-progress-bar-wrapper-background);
     font-size: var(--app-progress-bar-font-size);
-    border: 1px solid var(--app-progress-bar-wrapper-border-color);
-    border-radius: var(--app-progress-bar-wrapper-border-radius);
-    padding: 0px 10px 5px 10px;
-    transition: opacity linear 0.3s;
+    border-top: none;
     text-align: center;
     height: 50px;
-    margin: 0 auto;
+    min-height: 50px;
+    margin: -1px auto 0 auto;
 }
 
-.has-progress-bar .progress-bar-wrapper {
-	box-shadow: var(--app-progress-bar-wrapper-box-shadow);
-    /*clip-path: polygon(calc(0% - var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) 0%, calc(100% + var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)), calc(0% - var(--app-progress-bar-wrapper-clip-offset)) calc(100% + var(--app-progress-bar-wrapper-clip-offset)));*/
-
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow {
+    clip-path: inset(1px -20px -20px -20px);
+    box-shadow: var(--app-progress-bar-box-shadow-idle);
+    padding: 0px 10px 5px 10px;
+    border: 1px solid var(--app-progress-bar-wrapper-border-color);
+    transition-property: box-shadow, background, border;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
 }
-
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.offline {
+    box-shadow: var(--app-progress-bar-box-shadow-offline);
+    background: var(--app-live-info-background-offline);
+    border: var(--app-live-info-border-offline);
+}
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.success {
+    box-shadow: var(--app-progress-bar-box-shadow-success);
+    background: var(--app-live-info-background-success);
+    border: var(--app-live-info-border-success);
+}
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.error {
+    box-shadow: var(--app-progress-bar-box-shadow-error);
+    background: var(--app-live-info-background-error);
+    border: var(--app-live-info-border-error);
+}
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.working {
+    box-shadow: var(--app-progress-bar-box-shadow-working);
+    background: var(--app-live-info-background-working);
+    border: var(--app-live-info-border-working);
+}
+.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.busy {
+    box-shadow: var(--app-progress-bar-box-shadow-busy);
+    background: var(--app-live-info-background-busy);
+    border: var(--app-live-info-border-busy);
+}
 .progress-bar-wrapper.progress-bar-wrapper-active {
-
 }
 
 .progress-bar-wrapper .progress-operation {

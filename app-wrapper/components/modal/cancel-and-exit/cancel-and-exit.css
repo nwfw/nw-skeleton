@@ -21,6 +21,9 @@
     display: none;
 }
 
+.cancel-and-exit-modal .live-info {
+    margin: 0 auto;
+}
 
 .cancel-and-exit-modal .live-info,
 .cancel-and-exit-modal .live-info.offline,

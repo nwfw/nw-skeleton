@@ -56,63 +56,6 @@
     transition-delay: var(--medium-animation-duration) !important;
 }
 
-/* flex-basis */
-
-.flex-basis-enter {
-    flex-grow: 1;
-    flex-basis: 0;
-    transition: flex-basis linear var(--short-animation-duration);
-}
-
-.flex-basis-enter-active {
-
-}
-
-.flex-basis-enter-to {
-    flex-grow: unset;
-    flex-basis: unset;
-    transition: flex-basis linear var(--short-animation-duration);
-}
-
-.flex-basis-leave {
-    flex-shrink: 1;
-    transition: flex-basis linear var(--short-animation-duration);
-}
-.flex-basis-leave-active {
-    flex-shrink: 1;
-}
-
-.flex-basis-leave-to {
-    flex-shrink: unset;
-    flex-basis: 0;
-    transition: flex-basis linear var(--short-animation-duration);
-
-}
-
-/* flex-basis slow */
-
-.flex-basis-slow-enter {
-    flex-basis: 0;
-}
-
-.flex-basis-slow-enter-active {
-    transition: flex-basis linear var(--long-animation-duration);
-}
-
-.flex-basis-slow-enter-to {
-    flex-basis: auto;
-}
-
-.flex-basis-slow-leave-active {
-    transition: flex-basis linear var(--long-animation-duration)
-}
-
-.flex-basis-slow-leave-to {
-    flex-basis: 0;
-}
-
-
-
 /*
     width:
         variants:
@@ -132,6 +75,8 @@
 .width-delayed-leave-to {
     flex-basis: unset !important;
     overflow: hidden !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
     width: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -149,7 +94,7 @@
 .width-delayed-leave-active {
     overflow: hidden !important;
     flex-basis: unset !important;
-    transition-property: width, margin-left, margin-right, padding-left, padding-right !important;
+    transition-property: width, max-width, min-width, margin-left, margin-right, padding-left, padding-right !important;
     transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
@@ -169,108 +114,85 @@
     transition-delay: var(--medium-animation-duration) !important;
 }
 
-/* height */
 
+
+
+/*
+    height:
+        variants:
+            height-slow       slow height       (long-animation-duration)
+            height            normal height     (medium-animation-duration)
+            height-fast       fast height       (short-animation-duration)
+            height-delayed    delayed height    (medium-animation-duration, delayed by medium-animation-duration)
+ */
+
+.height-short-enter,
+.height-short-leave-to,
 .height-enter,
-.height-leave-to {
+.height-leave-to,
+.height-long-enter,
+.height-long-leave-to,
+.height-delayed-enter,
+.height-delayed-leave-to {
+    flex-basis: unset !important;
     overflow: hidden !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
     height: 0 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-
-
 }
 
+.height-short-enter-active,
+.height-short-leave-active,
 .height-enter-active,
-.height-leave-active {
+.height-leave-active,
+.height-long-enter-active,
+.height-long-leave-active,
+.height-delayed-enter-active,
+.height-delayed-leave-active {
     overflow: hidden !important;
-    transition-property: height, margin-top, margin-top, padding-top, padding-top !important;
-    transition-timing-function: linear !important;
+    flex-basis: unset !important;
+    transition-property: height, max-height, min-height, margin-top, margin-bottom, padding-top, padding-bottom !important;
+    transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
 
-
-/* height-long */
-
-.height-long-enter {
-    height: 0;
+.height-short-enter-active,
+.height-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
 }
 
-.height-long-enter-active {
-    transition-property: height;
-    transition-timing-function: linear;
-    transition-duration: var(--long-animation-duration);
-}
-
-.height-long-enter-to {
-    /*height: unset;*/
-}
-
+.height-long-enter-active,
 .height-long-leave-active {
-    transition-property: height;
-    transition-timing-function: linear;
-    transition-duration: var(--long-animation-duration);
+    transition-duration: var(--long-animation-duration) !important;
 }
 
-.height-long-leave-to {
-    height: 0;
+.height-delayed-enter-active,
+.height-delayed-leave-active {
+    transition-delay: var(--medium-animation-duration) !important;
 }
-
-
-
 
 /* highlight */
 .highlight-enter,
 .highlight-leave-to {
-    opacity: 0;
+    opacity: 0 !important;
 }
 
 .highlight-enter-active,
 .highlight-leave-active {
     transition: opacity linear var(--short-animation-duration),
     background-color linear var(--short-animation-duration) var(--short-animation-duration),
-    color linear var(--short-animation-duration) var(--short-animation-duration);
+    color linear var(--short-animation-duration) var(--short-animation-duration)  !important;
 }
 
 .highlight-enter-to {
-    background-color: unset;
-    color: unset;
-    opacity: 1;
+    background-color: unset !important;
+    color: unset !important;
+    opacity: 1 !important;
 }
-
-
-
-/* attention */
-
-.attention-enter,
-.attention-leave {
-    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
-    color linear var(--short-animation-duration) var(--short-animation-duration),
-    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
-}
-
-.attention-enter-to,
-.attention-leave-to {
-    background-color: unset;
-    color: unset;
-    text-shadow: unset;
-    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
-    color linear var(--short-animation-duration) var(--short-animation-duration),
-    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
-}
-
-.attention-enter-active,
-.attention-leave-active {
-    transition: background-color linear var(--short-animation-duration) var(--short-animation-duration),
-    color linear var(--short-animation-duration) var(--short-animation-duration),
-    text-shadow linear var(--short-animation-duration) var(--short-animation-duration);
-}
-
-
-
-
 
 /* size */
 
@@ -278,13 +200,15 @@
 .size-long-enter,
 .size-enter {
     flex-grow: 1 !important;
-    flex-basis: 0 !important;
+    flex-basis: unset !important;
     height: 0px !important;
     width: 0px !important;
     max-height: 0px !important;
     max-width: 0px !important;
     min-height: 0px !important;
     min-width: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden !important;
 }
 
@@ -312,6 +236,8 @@
     height: 0 !important;
     max-height: 0 !important;
     min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     flex-basis: 0 !important;
 }
 
@@ -329,8 +255,10 @@
                 max-width,
                 min-height,
                 min-width,
+                margin,
+                padding,
                 flex-basis !important;
-    transition-timing-function: linear !important;
+    transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
 
@@ -414,35 +342,43 @@
 .size-height-long-enter,
 .size-height-enter {
     flex-grow: 1 !important;
-    flex-basis: 0 !important;
-    height: 0px !important;
-    max-height: 0px !important;
-    min-height: 0px !important;
-    /*overflow: hidden !important;*/
+    flex-basis: unset !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
 }
 
 .size-height-short-enter-to,
 .size-height-long-enter-to,
 .size-height-enter-to {
     flex-grow: 1 !important;
-    /*overflow: hidden !important;*/
+    overflow: hidden !important;
 }
 
 .size-height-short-leave,
 .size-height-long-leave,
 .size-height-leave {
     flex-shrink: 1 !important;
-    /*overflow: hidden !important;*/
+    overflow: hidden !important;
 }
 
 .size-height-short-leave-to,
 .size-height-long-leave-to,
 .size-height-leave-to {
     flex-shrink: 1 !important;
-    height: 0 !important;
-    /*max-height: 0 !important;*/
-    /*min-height: 0 !important;*/
     flex-basis: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     overflow: hidden !important;
 }
 
@@ -454,9 +390,12 @@
 .size-height-long-leave-active {
     overflow: hidden !important;
     transition-property: height,
-                height,
                 max-height,
                 min-height,
+                margin-top,
+                margin-bottom,
+                padding-top,
+                padding-bottom,
                 flex-basis !important;
     transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
@@ -469,34 +408,7 @@
 
 .size-height-long-enter-active,
 .size-height-long-leave-active {
-    clip-path: none !important;
     transition-duration: var(--long-animation-duration) !important;
-}
-
-/* max-width-height */
-
-.max-width-height-enter,
-.max-width-height-leave-to {
-    overflow: hidden;
-    max-height: 0 !important;
-    max-width: 0 !important;
-    height: 0 !important;
-    width: 0 !important;
-}
-
-.max-width-height-enter-active,
-.max-width-height-leave-active {
-    transition-property: max-height, max-width, height, width;
-    transition-timing-function: ease-in;
-    transition-duration: 100s;
-}
-
-.max-width-height-enter-to {
-    overflow: unset;
-    max-height: unset;
-    max-width: unset;
-    height: auto;
-    width: auto;
 }
 
 /* custom transition for modals */
@@ -514,48 +426,4 @@
     transition-property: width, height, opacity;
     transition-duration: var(--medium-animation-duration);
     overflow: hidden;
-}
-
-
-
-
-
-
-/* live-info */
-
-.live-info-enter {
-    max-height: 0px !important;
-    padding: 0px !important;
-    opacity: 0 !important;
-    overflow: hidden !important;
-}
-
-.live-info-enter-to {
-    max-height: 30px !important;
-    overflow: hidden !important;
-}
-
-.live-info-leave {
-    max-height: 30px !important;
-    overflow: hidden !important;
-}
-
-.live-info-leave-to {
-    max-height: 0px !important;
-    padding: 0px !important;
-    opacity: 0 !important;
-    overflow: hidden !important;
-}
-
-.live-info-enter-active,
-.live-info-leave-active {
-    overflow: hidden !important;
-    /*transition-property: max-height, padding, opacity, box-shadow, border, border-bottom, color !important;*/
-    transition-timing-function: ease-out !important;
-    transition-duration: var(--medium-animation-duration) !important;
-}
-
-.window-control-maximize .fa,
-.window-control-restore .fa {
-    width: 1rem;
 }

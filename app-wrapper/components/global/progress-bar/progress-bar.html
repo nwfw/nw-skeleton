@@ -1,23 +1,25 @@
 <transition name="size-height-long">
-	<div v-show="progressData.inProgress && !dontDisplay" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
-		<div class="progress-operation">
-			<div class="progress-detail-text" v-bind:title="progressData.operationText">
-			{{ progressData.operationText }}
+	<div v-if="progressData.inProgress && !dontDisplay" class="progress-bar-wrapper" v-bind:class="{'progress-bar-wrapper-active': progressData.inProgress, 'no-animation': !progressData.animated}">
+		<div class="progress-bar-shadow" v-bind:class="appStatusWrapperClassObject">
+			<div class="progress-operation">
+				<div class="progress-detail-text" v-bind:title="progressData.operationText">
+					{{ progressData.operationText }}
+				</div>
+				<div v-if="progressData.detailText" class="progress-detail">
+					({{ progressData.detailText }})
+				</div>
 			</div>
-			<div v-if="progressData.detailText" class="progress-detail">
-				({{ progressData.detailText }})
+			<div class="progress-bar" v-bind:class="progressData.progressBarClass">
+				<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">
+					{{ progressData.percentComplete }}
+				</div>
+				<div class="progress-bar-inner" v-bind:style="progressData.styleObject">
+					{{ progressData.percentComplete }}
+				</div>
 			</div>
+			<a :title="translate('Cancel operation')" v-on:click="callViewHandler" data-click-handler="helpers.appOperationHelper.operationCancel" v-if="appState.appOperation.cancelable && !appState.appOperation.cancelling" class="progress-cancel">
+				<span class="fa fa-ban" data-event-target="parent"></span>
+			</a>
 		</div>
-		<div class="progress-bar" v-bind:class="progressData.progressBarClass">
-			<div class="progress-bar-inner-below" v-bind:style="progressData.styleObject">
-				{{ progressData.percentComplete }}
-			</div>
-			<div class="progress-bar-inner" v-bind:style="progressData.styleObject">
-				{{ progressData.percentComplete }}
-			</div>
-		</div>
-		<a :title="translate('Cancel operation')" v-on:click="callViewHandler" data-click-handler="helpers.appOperationHelper.operationCancel" v-if="appState.appOperation.cancelable && !appState.appOperation.cancelling" class="progress-cancel">
-			<span class="fa fa-ban" data-event-target="parent"></span>
-		</a>
 	</div>
 </transition>

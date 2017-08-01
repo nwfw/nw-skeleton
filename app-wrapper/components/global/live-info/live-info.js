@@ -23,7 +23,7 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'live-info',
     template: '',
-    props: ['dontDisplay'],
+    props: ['dontDisplay', 'appStatusWrapperClassObject'],
     computed: {
         appStatusClassObject: function () {
             var appState = _appWrapper.getAppState();
@@ -35,17 +35,6 @@ exports.component = {
                 'fa-ban': appState.status.appStatus == 'offline',
                 'app-status-icon-placeholder': appState.status.appStatus == 'idle'
 
-            };
-        },
-        appStatusWrapperClassObject: function () {
-            var appState = _appWrapper.getAppState();
-            return {
-                'idle': appState.status.appStatus == 'idle',
-                'busy': appState.status.appStatus == 'busy',
-                'not-busy': appState.status.appStatus == 'success',
-                'working': appState.status.appStatus == 'working',
-                'error': appState.status.appStatus == 'error',
-                'offline': appState.status.appStatus == 'offline'
             };
         },
         appState: function(){

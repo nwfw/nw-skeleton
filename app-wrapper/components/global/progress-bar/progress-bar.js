@@ -23,7 +23,7 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'progress-bar',
     template: '',
-    props: ['dontDisplay'],
+    props: ['dontDisplay', 'appStatusWrapperClassObject'],
     data: function () {
         return appState.progressData;
     },

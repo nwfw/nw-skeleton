@@ -20,35 +20,20 @@ header .header-top {
 }
 
 header .header-bottom {
+    position: absolute;
     flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    top: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: visible;
+    width: 240px;
+    height: 0px;
 }
 
 header .header-app-title {
     flex: 0 1 auto;
     font-size: 1rem;
     padding-left: 10px;
-}
-
-header .progress-bar-wrapper {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    border-top: none;
-    width: 240px;
-    border-radius: 0 0 var(--app-progress-bar-wrapper-border-radius) var(--app-progress-bar-wrapper-border-radius);
-    background: var(--app-progress-bar-wrapper-background);
-}
-
-header .progress-bar-wrapper .progress-bar {
-    width: var(--app-progress-bar-width);
-}
-
-header .live-info {
-    position: absolute;
-    bottom: 0px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 240px;
-    background: var(--app-live-info-background);
-
 }
