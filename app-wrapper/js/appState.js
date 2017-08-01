@@ -320,6 +320,8 @@ exports.appState = {
 
             showContentImmediately: false,
 
+            noHandlingKeys: false,
+
             autoClosing: false,
             autoCloseTime: 0,
             autoCloseTimeIntervalDuration: 1000,
@@ -359,6 +361,8 @@ exports.appState = {
             name: 'translation-modal',
             bodyComponent: 'translation-editor',
             defaultBodyComponent: 'translation-editor',
+            noHandlingKeys: true,
+            hasGoogleTranslate: false,
             hasSearch: false,
             searchResults: null,
             modalClassName: 'translation-editor-modal',

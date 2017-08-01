@@ -128,6 +128,7 @@ class ModalHelper extends AppBaseClass {
                 cm = this.getModalObject('defaultModal');
                 md.fadeModal = fadeModal;
             }
+            appState.status.noHandlingKeys = false;
         } else {
             this.log('Can\'t close modal because it is busy', 'warning', []);
         }
@@ -194,6 +195,10 @@ class ModalHelper extends AppBaseClass {
 
         if (cm.autoCloseTime) {
             cm.autoCloseTimeText = _appWrapper.getHelper('format').formatDurationCustom(cm.autoCloseTime / 1000);
+        }
+
+        if (cm.noHandlingKeys) {
+            appState.status.noHandlingKeys = true;
         }
 
         if (!cm.showContentImmediately){

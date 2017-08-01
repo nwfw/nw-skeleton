@@ -59,7 +59,7 @@ exports.component = {
 
         },
         performSearch: function(e){
-            if (e.keyCode == 27){
+            if (e && e.keyCode && e.keyCode == 27){
                 this.$el.querySelector('.translation-editor-search-field').value = '';
             }
             var value = this.$el.querySelector('.translation-editor-search-field').value;
@@ -193,6 +193,54 @@ exports.component = {
                 await _appWrapper.appTranslations.addUserMessage('No excess translations found.', 'info', [], false, false, true);
             }
             appState.modalData.currentModal.messages = [_.cloneDeep(appState.allUserMessages[appState.allUserMessages.length-1])];
+        },
+        googleTranslateTab: async function(e) {
+            let target = e.target;
+            let fieldset = target.getParentByClass('translation-fieldset');
+            let code = target.getAttribute('data-code').replace(/_.*$/, '');
+            let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
+            let total = labels.length;
+            let count = 0;
+            if (total){
+                _appWrapper.addModalMessage('Translation in progress...', 'info');
+            }
+            for (let i=0; i<total;i++){
+                let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
+                if (textarea){
+                    let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], code);
+                    if (translated){
+                        translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
+                        textarea.setInputValue(translated);
+                        count++;
+                    } else {
+                        _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                    }
+                } else {
+                    _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                }
+            }
+            _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
+        },
+        googleTranslate: async function(e) {
+            let target = e.target;
+            let code = target.getAttribute('data-code').replace(/_.*$/, '');
+            let label = target.getAttribute('data-label');
+            let textarea;
+
+            try {
+                textarea = target.getParentByClass('lang-form-row').querySelector('textarea');
+            } catch (ex) {
+                _appWrapper.addModalMessage('Problem translating label "{1}" - "{2}"', 'error', [label, ex.stack], false, false, false, true);
+            }
+            _appWrapper.addModalMessage('Translation in progress...', 'info');
+            let translated = await _appWrapper.appTranslations.googleTranslate(label, code);
+            if (translated){
+                translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
+                textarea.setInputValue(translated);
+                _appWrapper.addModalMessage('Translation complete.', 'info');
+            } else {
+                _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [label], false, false, false, true);
+            }
         }
     },
     mounted: function() {

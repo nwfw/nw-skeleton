@@ -10,6 +10,15 @@ const path = require('path');
 const fs = require('fs');
 const AppBaseClass = require('./appBase').AppBaseClass;
 
+
+var Gta;
+try {
+    Gta = require('google-translate-api');
+} catch (ex) {
+    _.noop(ex);
+}
+
+
 var _appWrapper;
 var appState;
 
@@ -135,11 +144,15 @@ class AppTranslations extends AppBaseClass {
             confirmButtonText: _appWrapper.appTranslations.translate('Save'),
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
             translationData: this.getTranslationEditorData(),
+            hasGoogleTranslate: false,
             translations: {
                 'not translated': this.translate('not translated'),
                 'Copy label to translation': this.translate('Copy label to translation')
             },
         };
+        if (Gta){
+            modalOptions.hasGoogleTranslate = true;
+        }
         appState.modalData.currentModal = modalHelper.getModalObject('translationModal', modalOptions);
         _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveTranslations.bind(this);
@@ -147,7 +160,6 @@ class AppTranslations extends AppBaseClass {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
-            // appState.status.noHandlingKeys = false;
             _appWrapper.helpers.modalHelper.modalNotBusy();
             clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
@@ -620,6 +632,186 @@ class AppTranslations extends AppBaseClass {
             }
         }
         return labels;
+    }
+
+
+    /**
+     * Translates text using google-translate-api module
+     *
+     * @async
+     * @param  {String} text Text to translate
+     * @param  {String} to   Source language code
+     * @param  {String} from Destination language code
+     * @return {String}      Translated text
+     */
+    async googleTranslate(text, to, from){
+        if (!Gta){
+            return text;
+        }
+        let options = {
+            to: to
+        };
+        if (from){
+            options.from = from;
+        }
+
+        var returnPromise;
+        var resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        Gta(text, options).then(res => {
+            resolveReference(res.text);
+        }).catch(err => {
+            this.log('Error translating "{1}" - "{2}"', 'error', [text, err]);
+            resolveReference(text);
+        });
+
+        return returnPromise;
+    }
+
+
+    /**
+     * Takes text string as parameter and transliterates it based on set options
+     *
+     * @param {String} text             Text to transliterate
+     * @param {String} direction        Direction for transliteration ('c2l', 'l2c' or 'yu2ascii')
+     * @return {String} transliterated    Transliterated text
+     */
+    transliterateText(text, direction){
+        let options = this.getTransliterateData();
+        if (direction){
+            options.direction = direction;
+        }
+        var _text = new String(text);
+        if (_text){
+            /*
+         * preprocessing - performing all multi-char replacements
+         * before 1:1 transliteration based on options
+         */
+            _text = this.multiReplace(_text, options.maps[options.direction].multiPre);
+            /*
+         * 1:1 transliteration - transliterating the text using
+         * character maps supplied in options
+         */
+            _text = this.charTransliteration(_text);
+
+            /*
+         * postrocessing - performing all multi-char replacements after
+         * 1:1 transliteration based on options
+         */
+            _text = this.multiReplace(_text, options.maps[options.direction].multiPost);
+        };
+        return _text;
+    }
+
+    /**
+     * Transliterates char to char using charmap
+     *
+     * @param {String} text             Text to transliterate
+     * @return {String} transliterated    Transliterated text
+     */
+    charTransliteration(text){
+        let options = this.getTransliterateData();
+        var _text = new String(text);
+        if (_text){
+            var fromChars = options.maps[options.direction].charMap[0].split('');
+            var toChars = options.maps[options.direction].charMap[1].split('');
+            var charMap = {};
+            for(var i = 0; i < fromChars.length; i++) {
+                var c = i < toChars.length ? toChars[i] : fromChars[i];
+                charMap[fromChars[i]] = c;
+            };
+            var re = new RegExp(fromChars.join("|"), "g");
+            _text = _text.replace(re, function(c) {
+                if (charMap[c]){
+                    return charMap[c];
+                } else {
+                    return c;
+                };
+            });
+        };
+        return _text;
+    }
+
+    /**
+     * multiReplace - replaces all occurrences of all present elements of multiMap[0] with multiMap[1] in a string and returns the string
+     *
+     * @param {String} text             Text to replace
+     * @param {Array[][]} multiMap      An array of arrays (patterns and replacements) for regex
+     * @return {String}                 Transliterated text
+     */
+    multiReplace(text, multiMap){
+        if (multiMap[0]){
+            var len = multiMap[0].length;
+            for(var i=0;i<len;i++){
+                var tempReplacements = [];
+                var pattern = multiMap[0][i];
+                var regex = new RegExp(pattern);
+                var replacement = multiMap[1][i];
+                if (replacement.match(regex)){
+                    var _tempReplacement = (new Date).getTime();
+                    while (_tempReplacement == (new Date).getTime()){
+                        _tempReplacement = _tempReplacement;
+                    };
+                    var _tempReplacements = tempReplacements;
+                    tempReplacements = [];
+                    for(var k=0; k<_tempReplacements.length;k++){
+                        if (_tempReplacements[k][0] == multiMap[0][i]){
+                            continue
+                        } else {
+                            tempReplacements.push(_tempReplacements[k]);
+                        };
+                    };
+                    tempReplacements.push([multiMap[0][i], _tempReplacement]);
+                    while(regex.test(text)){
+                        text = text.replace(regex, _tempReplacement);
+                    };
+                } else if (pattern.match(new RegExp(replacement))){
+                    for(var j=0;j<tempReplacements.length;j++){
+                        var tempRegex = new RegExp(tempReplacements[j][1]);
+                        while(text.match(tempRegex)){
+                            text = text.replace(tempRegex, tempReplacements[j][0]);
+                        };
+                    };
+                };
+                while(regex.test(text)){
+                    text = text.replace(regex, replacement);
+                };
+            };
+        };
+        return text;
+    }
+
+    /**
+     * Returns data used for transliteration
+     *
+     * @todo  move elsewhere
+     * @return {Object} Data for transliteration
+     */
+    getTransliterateData () {
+        return {
+            direction : 'c2l',
+            transliterateFormValues : true,
+            maps : {
+                l2c : {
+                    charMap : ['abcdefghijklmnoprstuvzšđžčćABCDEFGHIJKLMNOPRSTUVZŠĐŽČĆ', 'абцдефгхијклмнопрстувзшђжчћАБЦДЕФГХИЈКЛМНОПРСТУВЗШЂЖЧЋ'],
+                    multiPre : [[], []],
+                    multiPost : [['&\u043d\u0431\u0441\u043f;', '&\u0430\u043c\u043f;',  '\u043bј', '\u043dј', '\u041bј', '\u041d\u0458', '\u041bЈ', '\u041d\u0408', '\u0434ж', '\u0414\u0436', '\u0414\u0416'], ['&nbsp;', '&amp;', '\u0459', '\u045a', '\u0409', '\u040a', '\u0409', '\u040a', '\u045f', '\u040f', '\u040f']]
+                },
+                c2l : {
+                    charMap : ['абцдефгхијклмнопрстувзшђжчћАБЦДЕФГХИЈКЛМНОПРСТУВЗШЂЖЧЋ', 'abcdefghijklmnoprstuvzšđžčćABCDEFGHIJKLMNOPRSTUVZŠĐŽČĆ'],
+                    multiPre : [[], []],
+                    multiPost : [['\u0459', '\u045a', '\u0409', '\u040a', '\u045f', '\u040f'], ['lj', 'nj', 'Lj', 'Nj', 'Dž', 'Dž']]
+                },
+                yu2ascii : {
+                    charMap : ['абцдефгхијклмнопрстувзшђжчћАБЦДЕФГХИЈКЛМНОПРСТУВЗШЂЖЧЋabcdefghijklmnoprstuvzšđžčćABCDEFGHIJKLMNOPRSTUVZŠĐŽČĆ','abcdefghijklmnoprstuvzsđzccABCDEFGHIJKLMNOPRSTUVZSĐZCCabcdefghijklmnoprstuvzsđzccABCDEFGHIJKLMNOPRSTUVZSĐZCC'],
+                    multiPre : [[], []],
+                    multiPost : [['\u0459', '\u045a', '\u0409', '\u040a', '\u045f', '\u040f', 'đ', 'Đ'], ['lj', 'nj', 'Lj', 'Nj', 'Dž', 'Dž', 'dj', 'Dj']]
+                }
+            }
+        };
     }
 }
 exports.AppTranslations = AppTranslations;

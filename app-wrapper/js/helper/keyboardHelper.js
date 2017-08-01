@@ -155,10 +155,6 @@ class KeyboardHelper extends AppBaseClass {
     handleAppKeyDown(e){
         var fulfilled = false;
         var keyCode = e.keyCode;
-        if (appState.status.noHandlingKeys){
-            e.stopImmediatePropagation();
-            return false;
-        }
         if (_.includes(this.keyCodes.commandKeyCodes, keyCode)){
             e.stopImmediatePropagation();
             this.pressedKeys = [];
@@ -189,25 +185,41 @@ class KeyboardHelper extends AppBaseClass {
         } else {
             if (e.type == 'keydown') {
                 if (appState && appState.modalData.currentModal && !appState.modalData.currentModal.preventEscClose && appState.modalData.modalVisible && _.includes(this.keyCodes.escKeyCodes, keyCode)){
-                    if (_appWrapper.cancelModalAction && _.isFunction(_appWrapper.cancelModalAction)){
-                        _appWrapper.cancelModalAction();
+                    if (!this.checkNoHandlingKeys()){
+                        if (_appWrapper.cancelModalAction && _.isFunction(_appWrapper.cancelModalAction)){
+                            _appWrapper.cancelModalAction();
+                        } else {
+                            _appWrapper.helpers.modalHelper.closeCurrentModal();
+                        }
+                        fulfilled = true;
                     } else {
-                        _appWrapper.helpers.modalHelper.closeCurrentModal();
+                        e.stopImmediatePropagation();
                     }
-                    fulfilled = true;
-                } else if (!appState.status.noHandlingKeys && appState && appState.status.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
-                    _appWrapper.windowManager.closeWindow();
-                    fulfilled = true;
+                } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.closeKeyCodes, keyCode)){
+                    if (!this.checkNoHandlingKeys()){
+                        _appWrapper.windowManager.closeWindow();
+                        fulfilled = true;
+                    } else {
+                        e.stopImmediatePropagation();
+                    }
                 } else if (appState && appState.status.ctrlPressed && appState.status.shiftPressed && _.includes(this.keyCodes.reinitializeFeAppKeyCodes, keyCode)){
-                    _appWrapper.reinitializeFeApp();
-                    fulfilled = true;
+                    if (!this.checkNoHandlingKeys()){
+                        _appWrapper.reinitializeFeApp();
+                        fulfilled = true;
+                    } else {
+                        e.stopImmediatePropagation();
+                    }
                 } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
-                } else if ( appState.status.ctrlPressed && !appState.status.noHandlingKeys && appState && appState.config.debug.enabled && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
-                    this.pressedKeys = [];
-                    _appWrapper.windowManager.reloadWindow();
-                    fulfilled = true;
+                } else if ( appState.status.ctrlPressed && appState && appState.config.debug.enabled && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
+                    if (!this.checkNoHandlingKeys()){
+                        this.pressedKeys = [];
+                        _appWrapper.windowManager.reloadWindow();
+                        fulfilled = true;
+                    } else {
+                        e.stopImmediatePropagation();
+                    }
                 } else {
                     var nextDebugCode = this.keyCodes.debugKeys[this.pressedKeys.length];
                     if (keyCode == nextDebugCode){
@@ -285,10 +297,13 @@ class KeyboardHelper extends AppBaseClass {
                 var shortcut = shortcutData[j];
                 if (shortcut.handler){
                     if (_.isFunction(shortcut.handler)){
-                        shortcut.handler(e);
+                        if (!this.checkNoHandlingKeys()){
+                            shortcut.handler(e);
+                        }
                     } else if (_.isString(shortcut.handler)){
-                        _appWrapper.callObjMethod(shortcut.handler, [e]);
-
+                        if (!this.checkNoHandlingKeys()){
+                            _appWrapper.callObjMethod(shortcut.handler, [e]);
+                        }
                     }
                 }
             }
@@ -303,6 +318,17 @@ class KeyboardHelper extends AppBaseClass {
     destroy () {
         super.destroy();
         this.removeEventListeners();
+    }
+
+    checkNoHandlingKeys () {
+        if (appState.status.noHandlingKeys){
+            if (appState.modalData.modalVisible){
+                _appWrapper.addModalMessage('Action prevented because modal is open', 'warning', [], false, false, true, true);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

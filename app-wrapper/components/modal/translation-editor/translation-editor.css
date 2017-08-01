@@ -114,7 +114,7 @@
 }
 
 .translation-editor .translation-editor-tools a,
-.translation-editor .translation-editor-copy-all-tab {
+.translation-editor .translation-fieldset h2 a {
 	font-size: 0.8rem;
 	float: right;
 	margin: 4px;

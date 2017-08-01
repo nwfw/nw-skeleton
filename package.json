@@ -21,6 +21,9 @@
     "postcss": "^5.2.17",
     "postcss-url": "^7.1.0"
   },
+  "devDependencies": {
+    "google-translate-api": "^2.3.0"
+  },
   "window": {
     "title": "Nw skeleton",
     "position": "center",
