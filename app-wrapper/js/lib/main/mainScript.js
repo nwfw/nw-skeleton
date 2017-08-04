@@ -10,6 +10,7 @@ const fs = require('fs');
 const EventEmitter = require('events');
 const MainBaseClass = require('./mainBase').MainBaseClass;
 
+const MenuHelper = require('./menuHelper').MenuHelper;
 const MainMessageHandlers = require('./mainMessageHandlers').MainMessageHandlers;
 const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsyncMessageHandlers;
 
@@ -49,11 +50,13 @@ class MainScript extends MainBaseClass {
         this.manifest = null;
         this.messageHandlers = null;
         this.asyncMessageHandlers = null;
+        this.menuHelper = null;
         this.debugToFileStarted = false;
 
         let boundMethods = _.cloneDeep(this.boundMethods);
 
         this.boundMethods = _.extend({
+            windowClose: null,
             windowClosed: null,
             windowLoaded: null,
             onMessage: null,
@@ -61,6 +64,11 @@ class MainScript extends MainBaseClass {
             sigInt: null,
             sigTerm: null,
         }, boundMethods);
+
+        this.mainState = {
+            menuInitialized: false,
+            trayInitialized: false
+        };
 
         return this;
 
@@ -88,6 +96,8 @@ class MainScript extends MainBaseClass {
         await this.messageHandlers.initialize(options);
         this.asyncMessageHandlers = new MainAsyncMessageHandlers();
         await this.asyncMessageHandlers.initialize(options);
+        this.menuHelper = new MenuHelper();
+        await this.menuHelper.initialize();
         return this;
     }
 
@@ -162,6 +172,7 @@ class MainScript extends MainBaseClass {
      * @return {undefined}
      */
     addMainWindowEventListeners() {
+        this.mainWindow.on('close', this.boundMethods.windowClose);
         this.mainWindow.on('closed', this.boundMethods.windowClosed);
         this.mainWindow.on('loaded', this.boundMethods.windowLoaded);
     }
@@ -172,6 +183,7 @@ class MainScript extends MainBaseClass {
      * @return {undefined}
      */
     removeMainWindowEventListeners() {
+        this.mainWindow.removeListener('close', this.boundMethods.windowClose);
         this.mainWindow.removeListener('closed', this.boundMethods.windowClosed);
         this.mainWindow.removeListener('loaded', this.boundMethods.windowLoaded);
     }
@@ -262,6 +274,18 @@ class MainScript extends MainBaseClass {
             process.exit(0);
         }
     }
+
+    /**
+     * Handler for mainWindow 'close' event
+     *
+     * @param  {Event} e        Event that triggered the method
+     * @return {undefined}
+     */
+    async windowClose (e) {
+        _.noop(e);
+        this.log('Main window closing', 'info');
+    }
+
 
     /**
      * Handler for main window 'loaded' event

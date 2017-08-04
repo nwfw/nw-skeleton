@@ -63,6 +63,31 @@ class MainAsyncMessageHandlers extends MainBaseClass {
             mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
         }, duration);
     }
+
+
+    async initializeTrayIconHandler (uuid, messageData) {
+        await mainScript.menuHelper.initializeTrayIcon();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    async setupAppMenuHandler (uuid, messageData) {
+        await mainScript.menuHelper.setupAppMenu();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    async removeAppMenuHandler (uuid, messageData) {
+        await mainScript.menuHelper.removeAppMenu();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    async removeTrayIconHandler (uuid, messageData) {
+        await mainScript.menuHelper.removeTrayIcon();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
 }
 
 exports.MainAsyncMessageHandlers = MainAsyncMessageHandlers;

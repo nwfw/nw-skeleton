@@ -121,6 +121,11 @@ class MainMessageHandlers extends MainBaseClass {
             mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
         }
     }
+
+    initializeAppMenuHandler (messageData) {
+        mainScript.menuHelper.initializeAppMenu();
+        mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+    }
 }
 
 exports.MainMessageHandlers = MainMessageHandlers;

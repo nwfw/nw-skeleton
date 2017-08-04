@@ -595,6 +595,9 @@ class AppBaseClass extends BaseClass {
             };
         }
         data._async_ = false;
+        if (!_appWrapper.windowManager.win.globalEmitter){
+            console.trace('a');
+        }
         _appWrapper.windowManager.win.globalEmitter.emit('message', data);
     }
 

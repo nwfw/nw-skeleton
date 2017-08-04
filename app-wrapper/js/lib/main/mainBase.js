@@ -43,11 +43,6 @@ class MainBaseClass extends BaseClass {
         return this;
     }
 
-
-    async initialize (options){
-        await super.initialize(options);
-    }
-
     /**
      * Logs message to console or stdout
      *
@@ -120,17 +115,18 @@ class MainBaseClass extends BaseClass {
 
         let logMethod = this.boundMethods.printLog;
         let clearLastLine = false;
-        if (this.manifest['chromium-args'] && this.manifest['chromium-args'].match(/--enable-logging=stderr/)){
+        if (mainScript.manifest['chromium-args'] && mainScript.manifest['chromium-args'].match(/--enable-logging=stderr/)){
             clearLastLine = true;
             logMethod = this.boundMethods.consoleLog;
         }
         logMethod(message, type);
-        if (this.getConfig('main.debug.debugToWindow') && this.mainWindow && this.mainWindow.window && this.mainWindow.window.getAppWrapper && _.isFunction(this.mainWindow.window.getAppWrapper) && this.mainWindow.window.getAppWrapper()){
+        let mainWindow = this.getMainWindow();
+        if (this.getConfig('main.debug.debugToWindow') && mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper) && mainWindow.window.getAppWrapper()){
             setTimeout( () => {
                 if (clearLastLine){
                     process.stdout.write('\x1B[s');
                 }
-                let aw = this.mainWindow.window.getAppWrapper();
+                let aw = mainWindow.window.getAppWrapper();
                 aw.log('MAINSCRIPT: ' + message, type, data, true);
                 if (clearLastLine){
                     process.stdout.write('\x1B[u');
@@ -223,8 +219,8 @@ class MainBaseClass extends BaseClass {
      */
     getConfig (name, defaultValue){
         let value = defaultValue;
-        if (this.config){
-            value = _.get(this.config, name, defaultValue);
+        if (mainScript.config){
+            value = _.get(mainScript.config, name, defaultValue);
         }
         return value;
     }
@@ -380,6 +376,35 @@ class MainBaseClass extends BaseClass {
             isFile = false;
         }
         return isFile;
+    }
+
+    /**
+     * Gets reference to main window if available
+     *
+     * @return {(Window|Boolean)} nw.Window or false if not available
+     */
+    getMainWindow () {
+        if (this.mainWindow){
+            return this.mainWindow;
+        } else if (mainScript && mainScript.mainWindow){
+            return mainScript.mainWindow;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets appWrapper if available
+     *
+     * @return {AppWrapper} Instance of AppWrapper class
+     */
+    getAppWrapper () {
+        let _appWrapper;
+        let mainWindow = this.getMainWindow();
+        if (mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper)){
+            _appWrapper = mainWindow.window.getAppWrapper();
+        }
+        return _appWrapper;
     }
 }
 

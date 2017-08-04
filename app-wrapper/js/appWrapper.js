@@ -155,10 +155,15 @@ class AppWrapper extends AppBaseClass {
         this.app = new App();
 
         this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
+        if (!appState.isDebugWindow) {
+            this.message({instruction: 'setConfig', data: {config: appState.config}});
+        }
 
         await this.setDynamicAppStateValues();
 
-        this.getHelper('menu').initializeAppMenu();
+        if (!appState.isDebugWindow) {
+            this.message({instruction: 'initializeAppMenu', data: {}});
+        }
 
         await this.helpers.themeHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
@@ -192,7 +197,9 @@ class AppWrapper extends AppBaseClass {
 
         await this.processCommandParams();
 
-        this.getHelper('menu').initializeTrayIcon();
+        if (!appState.isDebugWindow){
+            await this.asyncMessage({instruction: 'initializeTrayIcon', data: {}});
+        }
         if (this.getConfig('debug.devTools')){
             this.windowManager.winState.devTools = true;
         }
@@ -202,7 +209,9 @@ class AppWrapper extends AppBaseClass {
         await this.app.initialize();
         await this.initializeFeApp();
 
-        this.getHelper('menu').setupAppMenu();
+        if (!appState.isDebugWindow){
+            await this.asyncMessage({instruction: 'setupAppMenu', data: {}});
+        }
 
         if (this.getConfig('appConfig.showInitializationStatus')){
             let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
@@ -488,6 +497,8 @@ class AppWrapper extends AppBaseClass {
             await this.cleanup();
             if (!appState.isDebugWindow){
                 this.resetAppError();
+                await this.asyncMessage({instruction: 'removeAppMenu', data: {}});
+                await this.asyncMessage({instruction: 'removeTrayIcon', data: {}});
                 this.windowManager.closeWindowForce();
             }
         } else {
@@ -534,8 +545,6 @@ class AppWrapper extends AppBaseClass {
      */
     async shutdownApp () {
         this.log('Shutting down...', 'group', []);
-        await this.getHelper('menu').removeAppMenu();
-        await this.getHelper('menu').removeTrayIcon();
         if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
             this.debugWindow.getAppWrapper().onDebugWindowClose();
         }
