@@ -7,4 +7,5 @@ exports.AppTranslations = require('./app-wrapper/js/lib/appTranslations').AppTra
 exports.FileManager = require('./app-wrapper/js/lib/fileManager').FileManager;
 exports.WindowManager = require('./app-wrapper/js/lib/windowManager').WindowManager;
 exports.AppConfig = require('./app-wrapper/js/lib/appConfig').AppConfig;
+exports.App = require('./app-wrapper/js/app').App;
 exports.appWrapperConfig = require('./config/appWrapperConfig').config;

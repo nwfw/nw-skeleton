@@ -1,15 +1,25 @@
 <div class="app-error">
-    <template v-if="appState.appError.component">
-        <component v-bind:is="appState.appError.component"></component>
+    <template v-if="component">
+        <component v-bind:is="component"></component>
     </template>
     <template v-else>
         <div class="app-error-content">
-            <h2 v-if="appState.appError.title" class="app-error-title" v-html="def(appState.appError.title, 'Error')"></h2>
-            <div class="app-error-icon">
-                <span class="fa fa-exclamation-triangle"></span>
-            </div>
-            <p v-if="appState.appError.text" class="app-error-text" v-html="appState.appError.text"></p>
-            <user-messages v-bind:hide-stacks="true" v-bind:list-only="true" ref="appErrorUserMessages" v-if="appState.appError.userMessages"></user-messages>
+            <h2 v-if="title" class="app-error-title" v-html="def(title, 'Error')"></h2>
+            <transition name="size-height">
+                <div v-if="icon" class="app-error-icon"></div>
+            </transition>
+            <p class="app-error-text" v-if="text" v-html="text"></p>
+            <p class="app-error-debug-text" v-if="isDebugEnabled() && debugText" v-html="debugText"></p>
+            <transition name="size-height">
+                <div key="userMessages" v-if="messages == 'user'" class="app-error-message-list">
+                    <h3 class="app-error-messages-title" v-html="translate('User messages')"></h3>
+                    <message-list v-bind:hide-stacks="true" v-bind:messages="appState.userMessages" v-bind:config="appState.config.userMessages" ref="appErrorUserMessageList"></message-list>
+                </div>
+                <div key="debugMessages" v-else-if="messages == 'debug'" class="app-error-message-list">
+                    <h3 class="app-error-messages-title" v-html="translate('Debug messages')"></h3>
+                    <message-list v-bind:hide-stacks="true" v-bind:messages="appState.debugMessages" v-bind:config="appState.config.debug" ref="appErrorDebugMessageList"></message-list>
+                </div>
+            </transition>
         </div>
     </template>
 </div>

@@ -147,6 +147,12 @@ a:visited {
 	display: none !important;
 }
 
+.paragraph {
+	font-size: var(--app-paragraph-font-size);
+	line-height: var(--app-paragraph-line-height);
+}
+
+
 .form-row {
 	padding: 3px;
 }

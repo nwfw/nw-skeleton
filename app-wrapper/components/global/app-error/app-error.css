@@ -1,49 +1,73 @@
 .app-error {
     text-align: center;
     background: var(--app-error-background-color);
-}
-
-.app-error-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 70%;
-    transform: translate(-50%, -50%);
-}
-
-.app-error-title {
-    font-size: 2rem;
-    color: var(--app-error-text-color);
-}
-
-.app-error-text {
-    font-size: 1rem;
-    color: var(--app-error-text-color);
-}
-
-.app-error-icon {
-    text-align: center;
-    color: var(--app-error-text-color);
-}
-
-.app-error-icon span {
-    font-size: 10rem;
-}
-
-.app-error .message-list-wrapper {
-    min-height: 100px;
-}
-
-.app-error .user-messages .message-list-wrapper .message-list {
-    height: 100px;
-    border: var(--app-loader-user-message-list-border);
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
     flex: 1 1 auto;
 }
 
-.app-error .message-list-expanded .message-list-wrapper .message-list {
-    height: 100px;
+.app-error-content {
+    flex: 1 1 auto;
+    min-width: 70vw;
+    max-width: 90vw;
+    display: flex;
+    flex-flow: column;
 }
 
-.app-error .user-messages .message-list-wrapper .message-list-no-messages {
-    padding: 8px 0px 10px;
+.app-error-title {
+    flex: 0 1 auto;
+    font-size: var(--app-error-title-font-size);
+    color: var(--app-error-title-color);
+}
+
+.app-error-text {
+    flex: 0 1 auto;
+    font-size: var(--app-error-text-font-size);
+    color: var(--app-error-text-color);
+}
+
+.app-error-debug-text {
+    flex: 0 1 auto;
+    font-size: var(--app-error-debug-text-font-size);
+    color: var(--app-error-debug-text-color);
+}
+
+.app-error-icon {
+    flex: 2 1 100px;
+    background: var(--app-error-icon-background);
+    filter: var(--app-error-icon-filter);
+}
+
+.app-error-message-list {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 10px;
+}
+
+.app-error-message-list .app-error-messages-title {
+    flex: 0 1 auto;
+    margin: 0 5px;
+    text-align: center;
+    color: var(--app-error-message-list-title-color);
+    background: var(--app-error-message-list-title-background);
+    font-weight: normal;
+    border: var(--app-message-list-border);
+    border-bottom: none;
+}
+
+.app-error-message-list .message-list-wrapper .message-list {
+    border-top: none;
+}
+
+.app-error-message-list .message-list-empty {
+    display: flex;
+    max-height: 100px;
+    flex-flow: column;
+    justify-content: center;
+}
+.app-error-message-list .message-list-empty .message-list-no-messages {
+    padding: 0;
 }

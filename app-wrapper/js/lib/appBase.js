@@ -137,6 +137,10 @@ class AppBaseClass extends BaseClass {
             if (this.getConfig('debug.alwaysTrace')){
                 console.trace();
             }
+            if (this.getConfig('debug.passToMain')){
+                this.message({instruction:'log', data: {message: message, type: type, data: data, force: force}});
+            }
+
         }
         if (debugMessage && debugMessage.message && this.getConfig('debug.debugToFile')){
             let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
@@ -537,7 +541,7 @@ class AppBaseClass extends BaseClass {
             }
             value = _.get(appState.u, path);
         }
-        if (_.isUndefined(value) && !_.isUndefined(defaultValue)){
+        if (!value && !_.isUndefined(defaultValue)){
             value = defaultValue;
         }
         return value;
@@ -556,7 +560,11 @@ class AppBaseClass extends BaseClass {
      * @return {string}                 Translated message with interpolated data
      */
     translate (text, currentLanguage, data) {
-        return _appWrapper.appTranslations.translate(text, currentLanguage, data);
+        let translation = text;
+        if (appState.status.languageInitialized && _appWrapper && _appWrapper.appTranslations && _appWrapper.appTranslations.translate && _.isFunction(_appWrapper.appTranslations.translate)){
+            translation = _appWrapper.appTranslations.translate(text, currentLanguage, data);
+        }
+        return translation;
     }
 
     /**
@@ -623,6 +631,94 @@ class AppBaseClass extends BaseClass {
         _appWrapper.windowManager.win.globalEmitter.on('asyncMessageResponse', listener);
         _appWrapper.windowManager.win.globalEmitter.emit('asyncMessage', data);
         return returnPromise;
+    }
+
+    /**
+     * Sets (turns on) application error, triggering rendering of app-error component
+     *
+     * @param   {String}            title            App error title
+     * @param   {String}            text             App error text
+     * @param   {String}            debugText        App error debug text (shown only if debug is enabled)
+     * @param   {String[]}          data             An array with replacement data for error title, text and debugText
+     * @param   {Boolean}           doNotTranslate   Flag to prevent automatic traslation of title and text
+     * @param   {(String|null)}     messageType      Type of messages to show in app-error ('user', 'debug' or null)
+     * @param   {Boolean}           omitIcon         Flag to control app-error icon rendering
+     * @return  {undefined}
+     */
+    setAppError (title, text, debugText, data, doNotTranslate, messageType, omitIcon) {
+        if (!title){
+            title = appState.appError.defaultTitle;
+        }
+        if (_.isUndefined(text)){
+            text = appState.appError.defaultText;
+        }
+        if (_.isUndefined(debugText)){
+            debugText = '';
+        }
+
+        if (!doNotTranslate){
+            if (title){
+                title = this.translate(title);
+            }
+            if (text){
+                text = this.translate(text);
+            }
+            if (debugText){
+                debugText = this.translate(debugText);
+            }
+        }
+
+        if (title && title.match && title.match(/{(\d+)}/) && _.isArray(data) && data.length) {
+            title = title.replace(/{(\d+)}/g, (match, number) => {
+                var index = number - 1;
+                return !_.isUndefined(data[index]) ? data[index] : match;
+            });
+        }
+        if (text && text.match && text.match(/{(\d+)}/) && _.isArray(data) && data.length) {
+            text = text.replace(/{(\d+)}/g, (match, number) => {
+                var index = number - 1;
+                return !_.isUndefined(data[index]) ? data[index] : match;
+            });
+        }
+        if (debugText && debugText.match && debugText.match(/{(\d+)}/) && _.isArray(data) && data.length) {
+            debugText = debugText.replace(/{(\d+)}/g, (match, number) => {
+                var index = number - 1;
+                return !_.isUndefined(data[index]) ? data[index] : match;
+            });
+        }
+        appState.appError.title = title;
+        appState.appError.text = text;
+        appState.appError.debugText = debugText;
+        if (!_.isUndefined(messageType)) {
+            appState.appError.messages = messageType;
+        }
+        if (omitIcon){
+            appState.appError.icon = false;
+        }
+        appState.appError.error = true;
+    }
+
+    /**
+     * Resets (turns off) application error, removing app-error component
+     *
+     * @return {undefined}
+     */
+    resetAppError () {
+        appState.appError.error = false;
+        appState.appError.title = '';
+        appState.appError.text = '';
+        appState.appError.debugText = '';
+        appState.appError.icon = true;
+        appState.appError.messages = 'user';
+    }
+
+    /**
+     * Checks whether debug mode is on
+     *
+     * @return {Boolean} True if debug is enabled, false otherwise
+     */
+    isDebugEnabled () {
+        return this.getConfig('debug.enabled', false);
     }
 
 }

@@ -24,7 +24,7 @@ exports.component = {
     name: 'app-error',
     template: '',
     data: function () {
-        return appState.appInfo;
+        return appState.appError;
     },
     computed: {
         appState: function(){

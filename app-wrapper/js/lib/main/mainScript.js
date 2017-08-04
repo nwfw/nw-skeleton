@@ -257,6 +257,7 @@ class MainScript extends MainBaseClass {
     async windowClosed (e, noExit) {
         _.noop(e);
         await this.finalizeDebugMessageLog();
+        this.log('Main window closed, exiting', 'info');
         if (!noExit){
             process.exit(0);
         }
@@ -318,7 +319,7 @@ class MainScript extends MainBaseClass {
         if (_.isUndefined(code)){
             code = 4;
         }
-        this.log('\nCaught SIGINT, code:' + code + ', shutting down.\n', 'warning', [], true);
+        this.log('Caught SIGINT, code: {1}, shutting down.', 'warning', [code], true);
     }
 
     /**
@@ -331,7 +332,7 @@ class MainScript extends MainBaseClass {
         if (_.isUndefined(code)){
             code = 0;
         }
-        this.log('Caught SIGTERM, code:' + code + ', shutting down.\n', 'warning', [], true);
+        this.log('Caught SIGTERM, code: {1}, shutting down.', 'warning', [code], true);
         if (this.mainWindow && this.mainWindow.window && this.mainWindow.window.appWrapper){
             this.mainWindow.window.appWrapper.exitApp();
         } else {

@@ -30,7 +30,7 @@ var appState;
  * @memberOf appWrapper
  *
  * @property {Object}           addingLabels        Object that stores labels that are currently being added (prevents double adding)
- * @property {boolean}          translationsLoaded  Flag to indicate whether translation data is loaded
+ * @property {Boolean}          translationsLoaded  Flag to indicate whether translation data is loaded
  */
 class AppTranslations extends AppBaseClass {
     constructor() {
@@ -75,6 +75,7 @@ class AppTranslations extends AppBaseClass {
         }
         this.log('{1} languages initialized.', 'debug', [appState.languageData.availableLanguages.length]);
         this.log('Initializing languages...', 'groupend', []);
+        appState.status.languageInitialized = true;
         return this.translationData;
     }
 

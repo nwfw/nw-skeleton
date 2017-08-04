@@ -24,6 +24,9 @@
     --input-disabled-border: 1px solid #CCCCCC;
     --input-disabled-padding: 2px 6px 3px 6px;
 
+    --app-paragraph-font-size: 0.8rem;
+    --app-paragraph-line-height: 1.2rem;
+
     /* selection styles */
     --no-selection-background: transparent;
 
@@ -152,7 +155,16 @@
 
 
 
+    --app-error-title-color: #DD0000;
+    --app-error-title-font-size: 2rem;
     --app-error-text-color: #DD0000;
+    --app-error-text-font-size: 1rem;
+    --app-error-debug-text-color: #DD0000;
+    --app-error-debug-text-font-size: 0.8rem;
+    --app-error-icon-background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" text-rendering="optimizeLegibility" xmlns="http://www.w3.org/2000/svg" version="1.1"><text fill="#FF0000" stroke="#990000" stroke-width="0.2" font-family="FontAwesome" x="0" y="90" font-size="100">&#xf071;</text></svg>') center center no-repeat;
+    --app-error-icon-filter: drop-shadow(0px 0px 5px #990000);
+    --app-error-message-list-title-color: var(--app-error-title-color);
+    --app-error-message-list-title-background: -webkit-linear-gradient(top, var(--app-message-list-background) 0%, var(--app-error-background-color) 70%);
     --app-error-background-color: #EEEEEE;
 
     --app-loader-text-color: #666666;
@@ -203,7 +215,7 @@
     --app-user-messages-clear-messages-link-color-hovered: #FF6666;
 
     --app-message-list-border: 1px solid #666666;
-    --app-message-list-background: #EEEEEE;
+    --app-message-list-background: #CCCCCC;
 
     --app-message-no-messages-border: none;
     --app-message-no-messages-background: none;

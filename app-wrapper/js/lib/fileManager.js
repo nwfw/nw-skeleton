@@ -572,11 +572,13 @@ class FileManager extends AppBaseClass {
                     if (notSilent) {
                         this.log('Problem loading file (not a file) "{1}" from "{2}".', 'error', [fileName, directory]);
                     }
+                    throw new Error('Problem loading file (not a file).');
                 }
             } else {
                 if (notSilent) {
                     this.log('Problem loading file (does not exist) "{1}" from "{2}".', 'error', [fileName, directory]);
                 }
+                throw new Error('Problem loading file (does not exist).');
             }
         } else {
             try {
@@ -602,6 +604,7 @@ class FileManager extends AppBaseClass {
                 if (notSilent) {
                     this.log('Problem requiring file "{1}" - "{2}"', 'error', [filePath, ex.message]);
                 }
+                throw ex;
             }
         }
         if (fileData){
@@ -612,6 +615,7 @@ class FileManager extends AppBaseClass {
             if (notSilent) {
                 this.log('Failed loading file "{1}" from "{2}"...', 'error', [fileName, directory]);
             }
+            throw new Error('Failed loading file');
         }
         if (notSilent){
             this.log('Loading file "{1}" from "{2}"...', 'groupend', [fileName, directory]);

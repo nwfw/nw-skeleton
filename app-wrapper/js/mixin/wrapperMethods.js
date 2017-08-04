@@ -175,6 +175,15 @@ var MixinWrapperMethods  = {
         formatFileSize: function(bytes){
             return _appWrapper.getHelper('format').formatFileSize(bytes);
         },
+        /**
+         * Checks whether debug is enabled and returns value accordingly
+         *
+         * @method
+         * @return {Boolean} True if debug is on, false otherwise
+         */
+        isDebugEnabled: function(){
+            return _appWrapper.isDebugEnabled();
+        }
     }
 };
 exports.mixin = MixinWrapperMethods;

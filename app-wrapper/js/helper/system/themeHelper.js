@@ -172,16 +172,19 @@ class ThemeHelper extends AppBaseClass {
                                 }
                                 this.log('Loading theme module "{1}".', 'groupend', [themeModules[i]]);
                             } else {
-                                this.log('Theme module "{1}" "themes" key does not contain any themes.', 'warning', [themeModules[i]]);
+                                this.addUserMessage('Theme module "{1}" "themes" key does not contain any themes.', 'warning', [themeModules[i]]);
                             }
                         } else {
                             this.log('Problem loading theme module "{1}" - "themes" key not found in exported value', 'error', [themeModules[i]]);
+                            this.setAppError('Problem loading theme', 'Problem loading theme module "{1}" - "themes" key not found in exported value.', 'Check whether module "{1}" exports value under name "themes".', [themeModules[i]]);
                         }
                     } else {
                         this.log('Problem loading theme module "{1}" - module not found', 'error', [themeModules[i]]);
+                        this.setAppError('Problem loading theme', 'Problem loading theme module "{1}" - module not found.', 'Verify config variable "themeModules" to fix this problem.', [themeModules[i]]);
                     }
                 } catch (ex){
                     this.log('Problem loading theme module "{1}" - "{2}"', 'error', [themeModules[i], ex.message]);
+                    this.setAppError('Problem loading theme', 'Problem loading theme module "{1}" - module not found.', 'Verify config variable "themeModules" to fix this problem.', [themeModules[i]]);
                 }
             }
             this.log('Initializing {1} theme modules...', 'groupend', [themeModules.length]);

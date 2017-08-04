@@ -38,6 +38,7 @@
  * @property {boolean}  appBusy             Flag to indicate whether app is busy
  * @property {string}   appStatus           Current app indicator status (idle, busy, success, working, offline, error)
  * @property {boolean}  appStatusChanging   Flag to indicate whether app status is changing
+ * @property {boolean}  languageInitialized Flag to indicate whether languages and translation system has been initialized
  * @property {boolean}  feAppInitialized    Flag to indicate whether frontend app is initalized
  * @property {boolean}  windowMaximized     Flag to indicate whether window is maximized
  * @property {boolean}  devToolsOpened      Flag to indicate whether dev tools are opened
@@ -188,6 +189,7 @@ exports.appState = {
         appBusy: true,
         appStatus: 'idle',
         appStatusChanging: false,
+        languageInitialized: false,
         feAppInitialized: false, // ?
         windowMaximized: false, // ?
         devToolsOpened: false,
@@ -204,8 +206,10 @@ exports.appState = {
         defaultText: 'An unknown error occured.',
         title: '',
         text: '',
+        debugText: '',
         component: '',
-        userMessages: true,
+        icon: true,
+        messages: 'user'
     },
     mainLoaderTitle: '',
     preventReload: false,

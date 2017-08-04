@@ -53,7 +53,7 @@ exports.config = {
         },
     },
     wrapper : {
-        appFile: '../../app/js/app',
+        appFile: './node_modules/nw-skeleton/app-wrapper/js/app',
 
         themeBaseDir: './node_modules/nw-skeleton/app-wrapper/css/themes',
 
@@ -119,6 +119,7 @@ exports.config = {
     cancelOperationTimeout: 30000,
 
     appConfig: {
+        appFile: null,
         appSubFiles: [],
         mainComponent: 'app-main',
         tmpDataDir: './app/var',
@@ -487,7 +488,8 @@ exports.config = {
             UserDataHelper: false,
             UserMessageHelper: false,
             UtilHelper: false,
-            WindowManager: false
+            WindowManager: false,
+            WrapperApp: false
         }
     },
     debug: {
@@ -505,6 +507,7 @@ exports.config = {
         debugLevel: 3,
         maxDebugMessages: 200,
         debugGroupsCollapsed: false,
+        passToMain: false,
         debugWindowFile: './node_modules/nw-skeleton/app-wrapper/template/debug.html',
         forceDebug: {
             AppConfig: false,
@@ -529,7 +532,8 @@ exports.config = {
             UserDataHelper: false,
             UserMessageHelper: false,
             UtilHelper: false,
-            WindowManager: false
+            WindowManager: false,
+            WrapperApp: false
         },
     },
 

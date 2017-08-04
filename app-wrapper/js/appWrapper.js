@@ -137,20 +137,8 @@ class AppWrapper extends AppBaseClass {
 
         this.log('Initializing application wrapper.', 'group', []);
 
-        if (this.getConfig('debug.debugToFile')){
-            if (!await this.fileManager.isFile(this.getConfig('debug.debugMessagesFilename')) || !this.getConfig('debug.debugToFileAppend')) {
-                this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
-            } else if (this.getConfig('debug.debugToFileAppend')) {
-                await this.initializeDebugMessageLog();
-            }
-        }
-        if (this.getConfig('userMessages.userMessagesToFile')){
-            if (!await this.fileManager.isFile(this.getConfig('userMessages.userMessagesFilename')) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
-                this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
-            } else if (this.getConfig('userMessages.userMessagesToFileAppend')) {
-                await this.initializeUserMessageLog();
-            }
-        }
+        await this.initializeDebugMessageLog();
+        await this.initializeUserMessageLog();
 
         appState.config = await this.appConfig.loadUserConfig();
         await this.initializeLogging();
@@ -160,20 +148,15 @@ class AppWrapper extends AppBaseClass {
         this.windowManager = new WindowManager();
         await this.windowManager.initialize();
 
-        this.setDynamicAppStateValues();
+        let appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
 
-        App = require(path.join(process.cwd(), this.getConfig('wrapper.appFile'))).App;
+        App = await this.fileManager.loadFile(appFilePath, true);
 
         this.app = new App();
 
         this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
 
-        appState.platformData = this.getHelper('util').getPlatformData();
-
-        appState.appDir = await this.getAppDir();
-        appState.manifest = require(path.join(appState.appDir, '../package.json'));
-        appState.wrapperManifest = require(path.join(appState.appDir, '../node_modules/nw-skeleton/package.json'));
-        appState.appRootDir = path.join(appState.appDir, '../');
+        await this.setDynamicAppStateValues();
 
         this.getHelper('menu').initializeAppMenu();
 
@@ -184,9 +167,9 @@ class AppWrapper extends AppBaseClass {
 
         appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
 
-        await this.helpers.staticFilesHelper.loadCssFiles();
-
         appState.userData = await this.getHelper('userData').loadUserData();
+
+        await this.helpers.staticFilesHelper.loadCssFiles();
 
         var globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
         if (globalKeyHandlers && globalKeyHandlers.length){
@@ -201,11 +184,13 @@ class AppWrapper extends AppBaseClass {
 
         await this.initializeLanguage();
         if (!appState.appError.title){
-            appState.appError.title = this.appTranslations.translate(appState.appError.defaultTitle);
+            appState.appError.title = this.translate(appState.appError.defaultTitle);
         }
         if (!appState.appError.text){
-            appState.appError.text = this.appTranslations.translate(appState.appError.defaultText);
+            appState.appError.text = this.translate(appState.appError.defaultText);
         }
+
+        await this.processCommandParams();
 
         this.getHelper('menu').initializeTrayIcon();
         if (this.getConfig('debug.devTools')){
@@ -214,30 +199,7 @@ class AppWrapper extends AppBaseClass {
 
         this.addWrapperEventListeners();
 
-        if (nw.App.argv && nw.App.argv.length){
-            if (_.includes(nw.App.argv, 'resetAll')){
-                await this.appConfig.clearUserConfig(true);
-                await this.getHelper('userData').clearUserData();
-                appState.userData = {};
-                this.log('All data reset', 'info', [], true);
-                this.exitApp();
-                return;
-            } else if (_.includes(nw.App.argv, 'resetData')){
-                await this.getHelper('userData').clearUserData();
-                appState.userData = {};
-                this.log('User data reset', 'info', [], true);
-                this.exitApp();
-                return;
-            } else if (_.includes(nw.App.argv, 'resetConfig')){
-                await this.appConfig.clearUserConfig(true);
-                this.log('Config data reset', 'info', [], true);
-                this.exitApp();
-                return;
-            }
-        }
-
         await this.app.initialize();
-
         await this.initializeFeApp();
 
         this.getHelper('menu').setupAppMenu();
@@ -247,7 +209,6 @@ class AppWrapper extends AppBaseClass {
             this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
         }
 
-        // await this.finalize();
         if (this.getConfig('appConfig.showInitializationStatus')){
             if (this.getConfig('appConfig.showInitializationProgress')){
                 this.getHelper('appOperation').operationUpdate(100, 100);
@@ -526,7 +487,7 @@ class AppWrapper extends AppBaseClass {
             appState.status.appShuttingDown = true;
             await this.cleanup();
             if (!appState.isDebugWindow){
-                appState.appError.error = false;
+                this.resetAppError();
                 this.windowManager.closeWindowForce();
             }
         } else {
@@ -637,7 +598,7 @@ class AppWrapper extends AppBaseClass {
             appState.status.appShuttingDown = true;
             await this.cleanup();
             if (!appState.isDebugWindow){
-                appState.appError.error = false;
+                this.resetAppError();
                 this.windowManager.reloadWindow(null, true);
             }
         } else {
@@ -779,12 +740,18 @@ class AppWrapper extends AppBaseClass {
     /**
      * Sets dynamic (calculated) appState values (mainly language related)
      *
+     * @async
      * @return {undefined}
      */
-    setDynamicAppStateValues () {
+    async setDynamicAppStateValues () {
         appState.languageData.currentLanguageName = this.getConfig('currentLanguageName');
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
+        appState.platformData = this.getHelper('util').getPlatformData();
+        appState.appDir = await this.getAppDir();
+        appState.manifest = require(path.join(appState.appDir, '../package.json'));
+        appState.wrapperManifest = require(path.join(appState.appDir, '../node_modules/nw-skeleton/package.json'));
+        appState.appRootDir = path.join(appState.appDir, '../');
     }
 
     /**
@@ -927,13 +894,17 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeUserMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
-            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
-            let messageLogContents = await this.fileManager.readFileSync(messageLogFile);
-            if (messageLogContents){
-                messageLogContents = messageLogContents.replace(/\n?\[\n/g, '');
-                messageLogContents = messageLogContents.replace(/\n\],?\n/g, ',');
-                messageLogContents = messageLogContents.replace(/,+/g, ',');
-                await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
+            if (!await this.fileManager.isFile(this.getConfig('userMessages.userMessagesFilename')) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
+                this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
+            } else if (this.getConfig('userMessages.userMessagesToFileAppend')) {
+                let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
+                let messageLogContents = await this.fileManager.readFileSync(messageLogFile);
+                if (messageLogContents){
+                    messageLogContents = messageLogContents.replace(/\n?\[\n/g, '');
+                    messageLogContents = messageLogContents.replace(/\n\],?\n/g, ',');
+                    messageLogContents = messageLogContents.replace(/,+/g, ',');
+                    await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
+                }
             }
         }
         return true;
@@ -965,13 +936,17 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
-            let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
-            let debugLogContents = await this.fileManager.readFileSync(debugLogFile);
-            if (debugLogContents){
-                debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
-                debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',');
-                debugLogContents = debugLogContents.replace(/,+/g, ',');
-                await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            if (!await this.fileManager.isFile(this.getConfig('debug.debugMessagesFilename')) || !this.getConfig('debug.debugToFileAppend')) {
+                this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
+            } else if (this.getConfig('debug.debugToFileAppend')) {
+                let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
+                let debugLogContents = await this.fileManager.readFileSync(debugLogFile);
+                if (debugLogContents){
+                    debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
+                    debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',');
+                    debugLogContents = debugLogContents.replace(/,+/g, ',');
+                    await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+                }
             }
         }
         return true;
@@ -1204,6 +1179,38 @@ class AppWrapper extends AppBaseClass {
             showCancelButton: false,
         };
         this.getHelper('modal').openModal('appInfoModal', modalOptions);
+    }
+
+    /**
+     * Process eventual command line params
+     *
+     * @return {undefined}
+     */
+    async processCommandParams () {
+        if (nw.App.argv && nw.App.argv.length){
+            if (_.includes(nw.App.argv, 'resetAll')){
+                await this.appConfig.clearUserConfig(true);
+                await this.getHelper('userData').clearUserData();
+                appState.userData = {};
+                this.log('All data reset', 'info', [], true);
+                this.message({instruction:'log', data: {message: 'All data reset', force: true}});
+                this.exitApp();
+                return;
+            } else if (_.includes(nw.App.argv, 'resetData')){
+                await this.getHelper('userData').clearUserData();
+                appState.userData = {};
+                this.log('User data reset', 'info', [], true);
+                this.message({instruction:'log', data: {message: 'User data reset', force: true}});
+                this.exitApp();
+                return;
+            } else if (_.includes(nw.App.argv, 'resetConfig')){
+                await this.appConfig.clearUserConfig(true);
+                this.log('Config data reset', 'info', [], true);
+                this.message({instruction:'log', data: {message: 'Config data reset', force: true}});
+                this.exitApp();
+                return;
+            }
+        }
     }
 }
 exports.AppWrapper = AppWrapper;

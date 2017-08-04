@@ -312,14 +312,12 @@ class ComponentHelper extends AppBaseClass {
                             }
                         } catch (ex){
                             this.addUserMessage('Problem loading component module "{1}"', 'error', [moduleName]);
-                            this.log(ex, 'error');
-                            appState.appError.text = 'Problem loading component module "' + moduleName + '"';
-                            appState.appError.error = true;
+                            this.log(ex.message, 'error');
+                            this.setAppError('Error loading component', 'Problem loading component module "{1}"', 'Verify appConfig.componentModules config variable to fix this', [moduleName]);
                         }
                     } else {
                         this.addUserMessage('Problem loading component module of type "{1}" - no "moduleName" config property', 'error', [componentModulesConfigTypes[i]]);
-                        appState.appError.text = 'Problem loading component module of type "' + componentModulesConfigTypes[i] + '" - no "moduleName" config property';
-                        appState.appError.error = true;
+                        this.setAppError('Error loading component', 'Problem loading component module of type "{1}" - no "moduleName" config property', 'Verify appConfig.componentModules.{1} config variable to fix this', [componentModulesConfigTypes[i]]);
                     }
                 }
             }
@@ -407,7 +405,7 @@ class ComponentHelper extends AppBaseClass {
 
         let appDirs = this.getConfig('wrapper.componentDirectories.component');
         overrideDirs = this.getConfig('appConfig.componentDirectories.component');
-        let appMapping = this.getConfig('appConfig.componentMapping');
+        let appMapping = _.defaultsDeep(this.getConfig('appConfig.componentMapping'), this.getConfig('wrapper.componentMapping'));
         let appliedData = await this.applyComponentModuleData(componentModuleData, overrideDirs, appMapping, 'component');
         if (appliedData){
             if (appliedData.dirs){
@@ -598,9 +596,19 @@ class ComponentHelper extends AppBaseClass {
         let componentFile = await _appWrapper.fileManager.getFirstFileFromDirs(componentName + '.js', loadDirs);
         if (componentFile){
             // let componentDir = path.dirname(componentFile);
-            component = await _appWrapper.fileManager.loadFile(componentFile, true);
+            let noErrors = true;
+            try {
+                component = await _appWrapper.fileManager.loadFile(componentFile, true);
+            } catch (ex) {
+                noErrors = false;
+                this.addUserMessage('Error loading component "{1}" - "{2}"', 'error', [componentName, ex.message]);
+                this.log('Error loading component "{1}" - "{2}"', 'error', [componentName, ex.stack]);
+                this.setAppError('Error loading component', 'Error loading component "{1}" - "{2}"', '', [componentName, ex.message]);
+            }
             if (!component){
-                this.log('Problem loading component "{1}"', 'error', [componentName]);
+                if (noErrors){
+                    this.log('Problem loading component "{1}"', 'error', [componentName]);
+                }
                 return false;
             } else {
                 this.log('Loaded component "{1}"', 'info', [componentName]);
