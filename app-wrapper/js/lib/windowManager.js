@@ -68,6 +68,8 @@ class WindowManager extends AppBaseClass {
             showHeader: null,
         };
 
+        this.headerTimer = null;
+
         this.ignoreResize = false;
 
         this.initWinState();
@@ -963,16 +965,38 @@ class WindowManager extends AppBaseClass {
         if (this.getConfig('appConfig.hideFullscreenHeader') && this.getStateVar('windowState.fullscreen')){
             clearTimeout(this.timeouts.showHeader);
             let yPosition = e.clientY;
-            if (yPosition <= 15){
+            if (!this.headerTimer){
+                this.headerTimer = +new Date();
+            }
+            let headerDelay = + new Date() - this.headerTimer;
+            if (yPosition <= 30){
+                if (headerDelay > 1000) {
+                    clearTimeout(this.timeouts.showHeader);
+                    this.headerTimer = null;
+                    if (appState.appBodyClasses.indexOf('show-header') == -1){
+                        appState.appBodyClasses.push('show-header');
+                    }
+                }
                 this.timeouts.showHeader = setTimeout( () => {
+                    this.headerTimer = null;
                     if (appState.appBodyClasses.indexOf('show-header') == -1){
                         appState.appBodyClasses.push('show-header');
                     }
                 }, 1000);
             } else {
+                if (headerDelay > 2000) {
+                    if (!document.querySelectorAll('.window-controls-wrapper .menu-opened').length){
+                        clearTimeout(this.timeouts.showHeader);
+                        this.headerTimer = null;
+                        appState.appBodyClasses = _.without(appState.appBodyClasses, 'show-header');
+                    }
+                }
                 this.timeouts.showHeader = setTimeout( () => {
-                    appState.appBodyClasses = _.without(appState.appBodyClasses, 'show-header');
-                }, 1000);
+                    if (!document.querySelectorAll('.window-controls-wrapper .menu-opened').length){
+                        this.headerTimer = null;
+                        appState.appBodyClasses = _.without(appState.appBodyClasses, 'show-header');
+                    }
+                }, 2000);
             }
         }
     }

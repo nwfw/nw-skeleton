@@ -6,9 +6,15 @@ footer {
     color: var(--app-footer-text-color);
     background-color: var(--app-footer-background-color);
     background: var(--app-footer-background);
-    transition-property: flex-basis;
-    transition-duration: 0.3s;
+    transition-property: flex-basis, max-height;
+    transition-duration: var(--medium-animation-duration);
     justify-content: center;
+    max-height: 100vh;
+}
+
+footer.hide-fullscreen-footer {
+    max-height: 0px;
+    overflow: hidden;
 }
 
 footer .footer-info {

@@ -24,10 +24,20 @@ exports.component = {
     name: 'window-controls',
     template: '',
     props: [],
+    timeouts: {
+        checkSubmenuSizes: null,
+    },
     data: function () {
         return {
             timeouts: {}
         };
+    },
+    updated: function(){
+        let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--medium-animation-duration'), 10) * 1000, 10);
+        clearTimeout(this.timeouts.checkSubmenuSizes);
+        this.timeouts.checkSubmenuSizes = setTimeout(() => {
+            this.checkSubmenuSizes();
+        }, duration);
     },
     methods: {
         openSubmenu: function(e){
@@ -130,6 +140,18 @@ exports.component = {
                 let paddingLeft = (2 * Math.abs(windowWidth - (submenuLeft + submenuWidth))) + 'px';
                 submenuEl.setElementStyles({'margin-left': marginLeft});
                 submenuEl.querySelector('.window-control-submenu-arrow').setElementStyles({'padding-left': paddingLeft});
+            }
+        },
+        checkSubmenuSizes: function(){
+            let openMenus = this.$el.querySelectorAll('.menu-opened');
+            if (openMenus && openMenus.length){
+                let submenuSelector = '.window-control-submenu';
+                for (let i=0; i<openMenus.length;i++){
+                    let submenuEl = openMenus[i].querySelector(submenuSelector);
+                    if (submenuEl){
+                        this.checkSubmenuSize(submenuEl);
+                    }
+                }
             }
         },
         reinitializeAppMenu: async function(){

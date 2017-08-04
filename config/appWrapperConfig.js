@@ -133,6 +133,7 @@ exports.config = {
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
         cssFiles: [
+            '/node_modules/nw-skeleton/app-wrapper/css/fonts.css',
             '/node_modules/nw-skeleton/app-wrapper/css/layout.css',
             '/node_modules/nw-skeleton/app-wrapper/css/style.css',
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
@@ -263,6 +264,7 @@ exports.config = {
         trayData: {},
         allowFullscreen: true,
         hideFullscreenHeader: true,
+        hideFullscreenFooter: true,
         windowConfig: {
             left: null,
             top: null,

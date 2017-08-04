@@ -1,4 +1,4 @@
-<footer v-bind:class="{'has-user-messages': !appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized}">
+<footer v-bind:class="{'has-user-messages': !appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized, 'hide-fullscreen-footer': appState.config.appConfig.hideFullscreenFooter && appState.windowState.fullscreen}">
 	<user-messages v-if="!appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized"></user-messages>
 	<div class="footer-info" v-html="translate('_footer_info_')"></div>
 </footer>

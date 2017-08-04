@@ -4,6 +4,9 @@
     margin-top: -23px;
     background: var(--app-live-info-background);
     width: 240px;
+    transition-property: margin-top;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
 }
 
 
@@ -210,4 +213,10 @@
 
 .live-info .app-status-icon-placeholder {
     visibility: hidden;
+}
+header.app-header.hide-fullscreen-header .live-info {
+    margin-top: 3px;
+}
+.show-header header.app-header.hide-fullscreen-header .live-info {
+    margin-top: -23px;
 }

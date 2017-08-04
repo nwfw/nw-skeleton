@@ -1203,21 +1203,18 @@ class AppWrapper extends AppBaseClass {
                 appState.userData = {};
                 this.log('All data reset', 'info', [], true);
                 this.message({instruction:'log', data: {message: 'All data reset', force: true}});
-                this.exitApp();
-                return;
+                this.exitApp(true);
             } else if (_.includes(nw.App.argv, 'resetData')){
                 await this.getHelper('userData').clearUserData();
                 appState.userData = {};
                 this.log('User data reset', 'info', [], true);
                 this.message({instruction:'log', data: {message: 'User data reset', force: true}});
-                this.exitApp();
-                return;
+                this.exitApp(true);
             } else if (_.includes(nw.App.argv, 'resetConfig')){
                 await this.appConfig.clearUserConfig(true);
                 this.log('Config data reset', 'info', [], true);
                 this.message({instruction:'log', data: {message: 'Config data reset', force: true}});
-                this.exitApp();
-                return;
+                this.exitApp(true);
             }
         }
     }

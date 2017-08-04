@@ -10,7 +10,7 @@ header.app-header {
     border-width: var(--app-main-border-width) var(--app-main-border-width) 0 var(--app-main-border-width);
     border-style: var(--app-main-border-style);
     border-color: var(--app-header-border-color);
-    transition-property: margin-top;
+    transition-property: top;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
 }
@@ -42,9 +42,13 @@ header.app-header .header-app-title {
 }
 
 header.app-header.hide-fullscreen-header {
-    margin-top: -26px;
+    top: -26px;
+    position: absolute;
+    width: 100%;
 }
 
 .show-header header.app-header.hide-fullscreen-header {
-    margin-top: 0px;
+    position: absolute;
+    top: 0;
+    width: 100%;
 }

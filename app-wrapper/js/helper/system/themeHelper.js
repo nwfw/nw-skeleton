@@ -134,7 +134,7 @@ class ThemeHelper extends AppBaseClass {
                 this.log('Initializing {1} themes from {2} directories...', 'groupend', [type, themeDirs.length]);
             }
         } else {
-            this.log('Directory for {1} themes not found.', 'warning', [type]);
+            this.log('Directory for {1} themes not found.', 'info', [type]);
         }
         return themeCount;
     }
