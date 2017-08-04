@@ -483,7 +483,7 @@ class AppConfig extends AppBaseClass {
      */
     async configChanged (oldValue, newValue){
         if (!appState.isDebugWindow){
-            this.message({instruction: 'setConfig', data: {config: appState.config}});
+            await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
             if (this.watchConfig){
                 let utilHelper = _appWrapper.getHelper('util');
                 let difference = utilHelper.difference(this.previousConfig, newValue);

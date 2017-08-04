@@ -35,6 +35,7 @@ class MenuHelper extends MainBaseClass {
 
         this.hasMacBuiltin = false;
         this.hasEditMenu = false;
+        this.hasWindowMenu = false;
         this.tray = null;
         this.trayMenu = null;
         this.menu = null;
@@ -52,9 +53,10 @@ class MenuHelper extends MainBaseClass {
     /**
      * Initializes app menu using data from config
      *
+     * @async
      * @return {undefined}
      */
-    initializeAppMenu() {
+    async initializeAppMenu() {
         if (!this.menuInitialized){
             this.log('Initializing app menu', 'debug', []);
             let utilHelper = this.getAppWrapper().getHelper('util');
@@ -63,20 +65,28 @@ class MenuHelper extends MainBaseClass {
                 let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
                 if (hasAppMenu){
                     if (menuData && menuData.mainItemName && menuData.options){
-                        this.menu = new nw.Menu({type: 'menubar'});
-                        if (!(menuData.menus && menuData.menus.length) && utilHelper.isMac()){
-                            this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
-                            this.hasMacBuiltin = true;
+                        if (!this.menu){
+                            this.menu = new nw.Menu({type: 'menubar'});
+                            if (!this.hasMacBuiltin){
+                                this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                                this.hasMacBuiltin = true;
+                            }
                             this.hasEditMenu = !menuData.options.hideEdit;
+                            this.hasWindowMenu = !menuData.options.hideWindow;
                         }
                     }
                 } else {
                     if (utilHelper.isMac()){
                         if (menuData && menuData.mainItemName && menuData.options){
-                            this.menu = new nw.Menu({type: 'menubar'});
-                            this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
-                            this.hasMacBuiltin = true;
-                            this.hasEditMenu = !menuData.options.hideEdit;
+                            if (!this.menu){
+                                this.menu = new nw.Menu({type: 'menubar'});
+                                if (!this.hasMacBuiltin){
+                                    this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+                                    this.hasMacBuiltin = true;
+                                }
+                                this.hasEditMenu = !menuData.options.hideEdit;
+                                this.hasWindowMenu = !menuData.options.hideWindow;
+                            }
                         }
                     }
                 }
@@ -85,6 +95,20 @@ class MenuHelper extends MainBaseClass {
         } else {
             this.log('App menu already initialized', 'debug', []);
         }
+    }
+
+    /**
+     * Reinitializes app menu using data from config
+     *
+     * @async
+     * @return {undefined}
+     */
+    async reinitializeAppMenu() {
+        if (this.menuInitialized){
+            await this.removeAppMenu();
+        }
+        await this.initializeAppMenu();
+        await this.setupAppMenu();
     }
 
     /**
@@ -100,13 +124,35 @@ class MenuHelper extends MainBaseClass {
             let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
             if (hasAppMenu){
                 if (!utilHelper.isMac() && !appState.windowState.frame){
-                    this.log('You should not be using frameless window with app menus.', 'warning', []);
+                    this.log('You should not be using frameless window with app menus.', 'warning', [], false, true);
                 }
                 let menuData = this.getConfig('appConfig.menuData');
                 this.menuMethodMap = [];
                 if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
-                    if (utilHelper.isMac() && !this.hasEditMenu){
-                        menuData.menus = _.concat(_.first(menuData.menus), menuData.editMenu, _.tail(menuData.menus));
+
+                    if (utilHelper.isMac()){
+                        let firstMenuChunk = [];
+                        let secondMenuChunk = [];
+                        let thirdMenuChunk = [];
+                        if (!this.hasMacBuiltin && !this.hasEditMenu && this.hasWindowMenu){
+                            firstMenuChunk = _.slice(menuData.menus, 0);
+                        } else {
+                            if (this.hasMacBuiltin) {
+                                firstMenuChunk = _.slice(menuData.menus, 0, 1);
+                            }
+                            if (!this.hasEditMenu && !this.hasWindowMenu){
+                                thirdMenuChunk = _.slice(menuData.menus, 1);
+                            } else {
+                                if (this.hasEditMenu && this.hasWindowMenu){
+                                    secondMenuChunk = _.slice(menuData.menus, 1, 2);
+                                    thirdMenuChunk = _.slice(menuData.menus, 3);
+                                } else {
+                                    secondMenuChunk = _.slice(menuData.menus, 1, 1);
+                                    thirdMenuChunk = _.slice(menuData.menus, 2);
+                                }
+                            }
+                        }
+                        menuData.menus = _.concat(firstMenuChunk, secondMenuChunk, thirdMenuChunk);
                     }
                     for(let i=0; i<menuData.menus.length; i++){
                         let menuMethodData = await this.initializeAppMenuItemData(menuData.menus[i], i);
@@ -160,7 +206,7 @@ class MenuHelper extends MainBaseClass {
             menuItemObj.modifiers = modifiers.join('+');
             let shortcutIdentifier = modifiers.join('+') + '+' + (menuItemObj.key + '').toLowerCase();
             if (_.includes(this.usedShortcuts, shortcutIdentifier)){
-                this.log('Double shortcut "{1}" found for menuItem "{2}", ignoring!', 'warning', [shortcutIdentifier, menuItemObj.label]);
+                this.log('Double shortcut "{1}" found for menuItem "{2}", ignoring!', 'warning', [shortcutIdentifier, menuItemObj.label], false, true);
                 menuItemObj.modifiers = [];
                 menuItemObj.key = null;
             } else {
@@ -197,7 +243,7 @@ class MenuHelper extends MainBaseClass {
                 menuMethod = await this.getAppWrapper().getObjMethod(menuItemData.menuItem.method, [], this.getAppWrapper(), true);
             }
             if (!menuMethod){
-                this.log('Can not find method "{1}" for menu item with label "{2}"!', 'error', [menuItemData.menuItem.method, menuItemData.menuItem.label]);
+                this.log('Can not find method "{1}" for menu item with label "{2}"!', 'error', [menuItemData.menuItem.method, menuItemData.menuItem.label], false, true);
             }
 
             menuData.push({
@@ -232,7 +278,7 @@ class MenuHelper extends MainBaseClass {
         menuItemIndex = menuItemIndex + '';
         let menuItem = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
         if (!menuItem){
-            this.log('Can not find menu item {1}', 'warning', [menuItemIndex]);
+            this.log('Can not find menu item {1}', 'warning', [menuItemIndex], false, true);
         }
         return menuItem;
     }
@@ -307,7 +353,7 @@ class MenuHelper extends MainBaseClass {
         if (menuMethod && menuMethod.method) {
             method = menuMethod.method;
         } else {
-            this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex]);
+            this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex], false, true);
         }
         return method;
     }
@@ -319,13 +365,34 @@ class MenuHelper extends MainBaseClass {
      * @return {undefined}
      */
     async removeAppMenu (){
+        let start = 0;
+        if (this.hasMacBuiltin){
+            start++;
+        }
+        if (this.hasEditMenu){
+            start++;
+        }
+        if (this.hasWindowMenu){
+            start++;
+        }
         if (this.menuSetup && this.menu && this.menu.items){
-            for(let i=1; i<this.menu.items.length;i++){
+
+            for(let i=start; i<this.menu.items.length;i++){
+                this.menu.removeAt(i);
+            }
+            for(let i=start; i<this.menu.items.length;i++){
                 this.menu.removeAt(i);
             }
         }
         this.menuSetup = false;
         this.menuInitialized = false;
+        // this.hasMacBuiltin = false;
+        // this.hasEditMenu = false;
+        // this.menu = null;
+        this.menuMethodMap = [];
+        this.menuShortcutMap = [];
+        this.usedShortcuts = [];
+
     }
 
     /**
@@ -337,6 +404,7 @@ class MenuHelper extends MainBaseClass {
     handleMenuClick (menuIndex) {
         let originalMenuIndex = menuIndex;
         let methodIdentifier = this.getMenuItemMethodName(menuIndex);
+        let menuItem = this.getMenuItem(menuIndex);
         var objectIdentifier;
         var method;
         var object = this.getAppWrapper();
@@ -361,9 +429,9 @@ class MenuHelper extends MainBaseClass {
 
         if (object && method && _.isFunction(method)){
             this.log('Calling menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'debug', [methodIdentifier, label, menuIndex]);
-            return method.call(object);
+            return method.call(object, menuItem);
         } else {
-            this.log('Can\'t call menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'error', [methodIdentifier, label, menuIndex]);
+            this.log('Can\'t call menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'error', [methodIdentifier, label, menuIndex], false, true);
             return false;
         }
     }
@@ -402,7 +470,7 @@ class MenuHelper extends MainBaseClass {
                 this.log('Calling tray menu click handler "{1}" for menuItem "{2}"', 'debug', [methodIdentifier, trayMenuItem.label]);
                 return method.call(object, trayMenuItem);
             } else {
-                this.log('Can\'t call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label]);
+                this.log('Can\'t call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label], false, true);
                 return false;
             }
         }
@@ -484,9 +552,23 @@ class MenuHelper extends MainBaseClass {
     async removeTrayIcon(){
         if (this.trayInitialized && this.tray && this.tray.remove && _.isFunction(this.tray.remove)){
             this.tray.remove();
+            this.trayMenu = null;
             this.tray = null;
         }
         this.trayInitialized = false;
+    }
+
+    /**
+     * Reinitializes app tray icon
+     *
+     * @async
+     * @return {undefined}
+     */
+    async reinitializeTrayIcon() {
+        if (this.trayInitialized){
+            await this.removeTrayIcon();
+        }
+        await this.initializeTrayIcon();
     }
 }
 

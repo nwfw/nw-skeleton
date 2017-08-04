@@ -114,7 +114,7 @@ exports.component = {
             _appWrapper.getHelper('modal').confirm(_appWrapper.appTranslations.translate('Are you sure?'), _appWrapper.appTranslations.translate('This will delete your saved data.'), '', '', this.clearUserData.bind(this));
         },
         clearUserData: async function(){
-            let cleared = await _appWrapper.getHelper('userData').boundMethods.clearUserData();
+            await _appWrapper.getHelper('userData').boundMethods.clearUserData();
             this.$forceUpdate();
             _appWrapper.getHelper('modal').closeCurrentModal();
         },
@@ -131,6 +131,12 @@ exports.component = {
                 submenuEl.setElementStyles({'margin-left': marginLeft});
                 submenuEl.querySelector('.window-control-submenu-arrow').setElementStyles({'padding-left': paddingLeft});
             }
+        },
+        reinitializeAppMenu: async function(){
+            await _appWrapper.asyncMessage({instruction: 'reinitializeAppMenu', data: {}});
+        },
+        reinitializeTrayIcon: async function(){
+            await _appWrapper.asyncMessage({instruction: 'reinitializeTrayIcon', data: {}});
         }
 
     },

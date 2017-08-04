@@ -71,7 +71,8 @@ class MainMessageHandlers extends MainBaseClass {
             if (messageData.data.message){
                 let type = messageData.data.type || 'info';
                 let force = messageData.data.force || false;
-                this.log(messageData.data.message, type, messageData.data.data, force);
+                let forceToWindow = messageData.data.forceToWindow || false;
+                this.log(messageData.data.message, type, messageData.data.data, force, forceToWindow);
                 mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
             } else {
                 this.log('Can not log message - no message supplied', 'error', []);
@@ -91,10 +92,12 @@ class MainMessageHandlers extends MainBaseClass {
      */
     logMainScriptPropertyHandler (messageData) {
         if (messageData.data && messageData.data.property) {
-            if (mainScript[messageData.data.property]){
+            let prop = _.get(mainScript, messageData.data.property);
+            if (prop){
                 let type = messageData.data.type || 'info';
                 let force = messageData.data.force || false;
-                this.log(mainScript[messageData.data.property], type, messageData.data.data, force);
+                let forceToWindow = messageData.data.forceToWindow || false;
+                this.log(prop, type, messageData.data.data, force, forceToWindow);
                 mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
             } else {
                 this.log('Can not find mainScript property "{1}"', 'error', [messageData.data.property]);
@@ -104,27 +107,6 @@ class MainMessageHandlers extends MainBaseClass {
             this.log('Can not find mainScript property - no property supplied', 'error', []);
             mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
         }
-    }
-
-    /**
-     * Configuration setting handler - sets current config to data from message
-     *
-     * @param  {Object} messageData        Data passed with message
-     * @return {undefined}
-     */
-    setConfigHandler(messageData){
-        if (messageData && messageData.data && messageData.data.config){
-            mainScript.setNewConfig(messageData.data.config);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
-        } else {
-            this.log('setConfigHandler called "{1}" with no data.config', 'warning', [messageData.uuid]);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
-        }
-    }
-
-    initializeAppMenuHandler (messageData) {
-        mainScript.menuHelper.initializeAppMenu();
-        mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
     }
 }
 

@@ -367,14 +367,13 @@ class MainScript extends MainBaseClass {
     /**
      * Sets new config to data from argument
      *
+     * @async
      * @param {Object} configData Object with config data
      * @return {undefined}
      */
-    setNewConfig (configData){
-        this.log('Setting new config', 'info');
+    async setNewConfig (configData){
+        this.log('Setting new config', 'debug');
         this.config = configData;
-        this.messageHandlers.config = configData;
-        this.asyncMessageHandlers.config = configData;
     }
 
     /**

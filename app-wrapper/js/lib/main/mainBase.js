@@ -46,13 +46,14 @@ class MainBaseClass extends BaseClass {
     /**
      * Logs message to console or stdout
      *
-     * @param  {string} message  Message to be logged
-     * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
-     * @param  {array} data     An array of data strings that are to be applied to logging message
-     * @param  {Boolean} force  Flag to force logging output even if config does not allow it
+     * @param  {string} message         Message to be logged
+     * @param  {string} type            Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
+     * @param  {array} data             An array of data strings that are to be applied to logging message
+     * @param  {Boolean} force          Flag to force logging output even if config does not allow it
+     * @param  {Boolean} forceToWindow  Flag to force logging to main window console
      * @return {undefined}
      */
-    log (message, type, data, force) {
+    log (message, type, data, force, forceToWindow) {
 
         if (!type){
             type = 'info';
@@ -74,7 +75,7 @@ class MainBaseClass extends BaseClass {
             }
 
             if (doLog) {
-                this._doLog(message, type, data);
+                this._doLog(message, type, data, forceToWindow);
             }
         }
     }
@@ -82,12 +83,14 @@ class MainBaseClass extends BaseClass {
     /**
      * Logs data to console
      *
-     * @param  {string} message  Message to be logged
-     * @param  {string} type    Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
-     * @param  {array} data     An array of data strings that are to be applied to logging message
+     * @param  {string}     message         Message to be logged
+     * @param  {string}     type            Type of log message (debug, info, warning, error, group, groupCollaped, groupend)
+     * @param  {array}      data            An array of data strings that are to be applied to logging message
+     * @param  {Boolean}    forceToWindow   Flag to force logging to main window console
      * @return {undefined}
      */
-    _doLog (message, type, data) {
+    _doLog (message, type, data, forceToWindow) {
+        let sourceMessage = message;
         if (_.isObject(message) || _.isArray(message)){
             message = util.inspect(message, this.inspectOptions);
         }
@@ -121,13 +124,17 @@ class MainBaseClass extends BaseClass {
         }
         logMethod(message, type);
         let mainWindow = this.getMainWindow();
-        if (this.getConfig('main.debug.debugToWindow') && mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper) && mainWindow.window.getAppWrapper()){
+        if ((forceToWindow || this.getConfig('main.debug.debugToWindow')) && mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper) && mainWindow.window.getAppWrapper()){
             setTimeout( () => {
                 if (clearLastLine){
                     process.stdout.write('\x1B[s');
                 }
                 let aw = mainWindow.window.getAppWrapper();
-                aw.log('MAINSCRIPT: ' + message, type, data, true);
+                if (_.isObject(sourceMessage) || _.isArray(sourceMessage)){
+                    mainWindow.window.console.log('MAINSCRIPT: ', sourceMessage);
+                } else {
+                    aw.log('MAINSCRIPT: ' + message, type, data, true);
+                }
                 if (clearLastLine){
                     process.stdout.write('\x1B[u');
                     process.stdout.write('\x1B[J');

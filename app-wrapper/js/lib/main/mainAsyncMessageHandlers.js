@@ -64,27 +64,120 @@ class MainAsyncMessageHandlers extends MainBaseClass {
         }, duration);
     }
 
+    /**
+     * Configuration setting handler - sets current config to data from message
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
+    async setConfigHandler(uuid, messageData){
+        let responseData;
+        if (messageData && messageData.data && messageData.data.config){
+            mainScript.setNewConfig(messageData.data.config);
+            responseData = _.extend({_result_: true}, messageData);
+        } else {
+            this.log('setConfigHandler called "{1}" with no data.config', 'warning', [messageData.uuid]);
+            responseData = _.extend({_result_: false}, messageData);
+        }
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
 
+    /**
+     * Handler for tray icon initialization
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
     async initializeTrayIconHandler (uuid, messageData) {
         await mainScript.menuHelper.initializeTrayIcon();
         let responseData = _.extend({_result_: true}, messageData);
         mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
     }
 
+    /**
+     * Handler for app menu setup
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
     async setupAppMenuHandler (uuid, messageData) {
         await mainScript.menuHelper.setupAppMenu();
         let responseData = _.extend({_result_: true}, messageData);
         mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
     }
 
+    /**
+     * Handler for app menu removal
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
     async removeAppMenuHandler (uuid, messageData) {
         await mainScript.menuHelper.removeAppMenu();
         let responseData = _.extend({_result_: true}, messageData);
         mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
     }
 
+    /**
+     * Handler for tray icon removal
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
     async removeTrayIconHandler (uuid, messageData) {
         await mainScript.menuHelper.removeTrayIcon();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    /**
+     * Handler for app menu initialization
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
+    async initializeAppMenuHandler (uuid, messageData) {
+        await mainScript.menuHelper.initializeAppMenu();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    /**
+     * Handler for app menu reinitialization
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
+    async reinitializeAppMenuHandler (uuid, messageData) {
+        await mainScript.menuHelper.reinitializeAppMenu();
+        let responseData = _.extend({_result_: true}, messageData);
+        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    }
+
+    /**
+     * Handler for app tray icon reinitialization
+     *
+     * @async
+     * @param  {string} uuid            UUID of the message
+     * @param  {Object} messageData     Data passed with message
+     * @return {undefined}
+     */
+    async reinitializeTrayIconHandler (uuid, messageData) {
+        await mainScript.menuHelper.reinitializeTrayIcon();
         let responseData = _.extend({_result_: true}, messageData);
         mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
     }

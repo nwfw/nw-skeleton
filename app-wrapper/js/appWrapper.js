@@ -156,13 +156,13 @@ class AppWrapper extends AppBaseClass {
 
         this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
         if (!appState.isDebugWindow) {
-            this.message({instruction: 'setConfig', data: {config: appState.config}});
+            await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
         }
 
         await this.setDynamicAppStateValues();
 
         if (!appState.isDebugWindow) {
-            this.message({instruction: 'initializeAppMenu', data: {}});
+            await this.asyncMessage({instruction: 'initializeAppMenu', data: {}});
         }
 
         await this.helpers.themeHelper.initializeThemes();

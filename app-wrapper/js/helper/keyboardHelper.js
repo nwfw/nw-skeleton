@@ -320,6 +320,11 @@ class KeyboardHelper extends AppBaseClass {
         this.removeEventListeners();
     }
 
+    /**
+     * Checks whether global key handlers are enabled
+     *
+     * @return {Boolean} True if global key handlers are enabled, false otherwise
+     */
     checkNoHandlingKeys () {
         if (appState.status.noHandlingKeys){
             if (appState.modalData.modalVisible){

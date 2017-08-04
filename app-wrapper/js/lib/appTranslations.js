@@ -703,7 +703,7 @@ class AppTranslations extends AppBaseClass {
          * 1:1 transliteration based on options
          */
             _text = this.multiReplace(_text, options.maps[options.direction].multiPost);
-        };
+        }
         return _text;
     }
 
@@ -723,25 +723,25 @@ class AppTranslations extends AppBaseClass {
             for(var i = 0; i < fromChars.length; i++) {
                 var c = i < toChars.length ? toChars[i] : fromChars[i];
                 charMap[fromChars[i]] = c;
-            };
-            var re = new RegExp(fromChars.join("|"), "g");
+            }
+            var re = new RegExp(fromChars.join('|'), 'g');
             _text = _text.replace(re, function(c) {
                 if (charMap[c]){
                     return charMap[c];
                 } else {
                     return c;
-                };
+                }
             });
-        };
+        }
         return _text;
     }
 
     /**
      * multiReplace - replaces all occurrences of all present elements of multiMap[0] with multiMap[1] in a string and returns the string
      *
-     * @param {String} text             Text to replace
-     * @param {Array[][]} multiMap      An array of arrays (patterns and replacements) for regex
-     * @return {String}                 Transliterated text
+     * @param {String}  text        Text to replace
+     * @param {Array[]} multiMap    An array of arrays (patterns and replacements) for regex
+     * @return {String}             Transliterated text
      */
     multiReplace(text, multiMap){
         if (multiMap[0]){
@@ -754,34 +754,34 @@ class AppTranslations extends AppBaseClass {
                 if (replacement.match(regex)){
                     var _tempReplacement = (new Date).getTime();
                     while (_tempReplacement == (new Date).getTime()){
-                        _tempReplacement = _tempReplacement;
-                    };
+                        _.noop();
+                    }
                     var _tempReplacements = tempReplacements;
                     tempReplacements = [];
                     for(var k=0; k<_tempReplacements.length;k++){
                         if (_tempReplacements[k][0] == multiMap[0][i]){
-                            continue
+                            continue;
                         } else {
                             tempReplacements.push(_tempReplacements[k]);
-                        };
-                    };
+                        }
+                    }
                     tempReplacements.push([multiMap[0][i], _tempReplacement]);
                     while(regex.test(text)){
                         text = text.replace(regex, _tempReplacement);
-                    };
+                    }
                 } else if (pattern.match(new RegExp(replacement))){
                     for(var j=0;j<tempReplacements.length;j++){
                         var tempRegex = new RegExp(tempReplacements[j][1]);
                         while(text.match(tempRegex)){
                             text = text.replace(tempRegex, tempReplacements[j][0]);
-                        };
-                    };
-                };
+                        }
+                    }
+                }
                 while(regex.test(text)){
                     text = text.replace(regex, replacement);
-                };
-            };
-        };
+                }
+            }
+        }
         return text;
     }
 

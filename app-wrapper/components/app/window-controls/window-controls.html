@@ -21,38 +21,53 @@
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-hide-debug " v-bind:class="{'window-control-active': !appState.config.debug.hideDebug}" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-bug"></span>
-								<span v-html="translate('Toggle debug visible')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.config.debug.hideDebug ? translate('Show debug') : translate('Hide debug')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
-						<div class="window-control-submenu-item-wrapper">
-							<a class="window-control window-control-reload-css " @click.prevent="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss">
-								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-retweet"></span>
-								<span v-html="translate('Reload CSS')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
-								<span v-html="(appState.platformData.platform.isMac ? '⌘' : 'Ctrl') + ' + u'" data-event-target="parent" class="window-control-submenu-item-shortcut"></span>
-							</a>
-						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-devtools " v-bind:class="{'window-control-active': appState.status.devToolsOpened}" @click.prevent="callViewHandler" data-click-handler="windowManager.toggleDevTools">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-wrench"></span>
-								<span v-html="translate('Toggle dev tools')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.status.devToolsOpened ? translate('Hide dev tools') : translate('Show dev tools')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-error " v-bind:class="{'window-control-active': appState.appError.error}" @click.prevent="toggleAppError">
 								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-exclamation-triangle"></span>
-								<span v-html="translate('Toggle app error')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.appError.error ? translate('Disable app error') : translate('Enable app error')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-app-initialized " v-bind:class="{'window-control-active': appState.status.appInitialized}" @click.prevent="toggleAppInitialized">
 								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-check-circle-o"></span>
-								<span v-html="translate('Toggle app initialized')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.status.appInitialized ? translate('Disable app initialized') : translate('Enable app initialized')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-app-shutting-down " v-bind:class="{'window-control-active': appState.status.appShuttingDown}" @click.prevent="toggleAppShuttingDown">
 								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-power-off"></span>
-								<span v-html="translate('Toggle app shutting down')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.status.appShuttingDown ? translate('Disable app shutting down') : translate('Enable app shutting down')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-reinitialize-app-menu"  @click.prevent="reinitializeAppMenu">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-bars"></span>
+								<span v-html="translate('Reinitialize application menu')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-reinitialize-tray-icon"  @click.prevent="reinitializeTrayIcon">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-align-center"></span>
+								<span v-html="translate('Reinitialize application tray icon')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-reload-css " @click.prevent="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss">
+								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-retweet"></span>
+								<span v-html="translate('Reload CSS')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="(appState.platformData.platform.isMac ? '⌘' : 'Ctrl') + ' + u'" data-event-target="parent" class="window-control-submenu-item-shortcut"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
@@ -62,6 +77,7 @@
 								<span v-html="(appState.platformData.platform.isMac ? '⌘' : 'Ctrl') + ' + ⇧ + u'" data-event-target="parent" class="window-control-submenu-item-shortcut"></span>
 							</a>
 						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-destructive window-control-reload " @click.prevent="callViewHandler" data-click-handler="windowManager.reloadWindow">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-refresh"></span>
@@ -101,8 +117,7 @@
 								<span v-html="translate('Clear saved data')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
-						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error">
-						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error"></div>
 						<div v-if="appState.config.allowLanguageChange && appState.languageData.availableLanguages.length > 1 && !appState.appError.error" class="window-control-submenu-item-wrapper">
 							<language-select ref="languageSelect"></language-select>
 						</div>
@@ -128,7 +143,7 @@
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-hide-user-messages " v-bind:class="{'window-control-active': !appState.config.userMessages.hideUserMessages}" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-list"></span>
-								<span v-html="translate('Toggle user messages visible')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+								<span v-html="appState.config.userMessages.hideUserMessages ? translate('Show user messages') : translate('Hide user messages')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
