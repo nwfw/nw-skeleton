@@ -178,12 +178,22 @@ var MixinWrapperMethods  = {
         /**
          * Checks whether debug is enabled and returns value accordingly
          *
-         * @method
          * @return {Boolean} True if debug is on, false otherwise
          */
         isDebugEnabled: function(){
             return _appWrapper.isDebugEnabled();
+        },
+        /**
+         * Rounds number to decimals from argument
+         *
+         * @param  {Number}     value    Value to round
+         * @param  {Integer}    decimals Max decimal places
+         * @return {Number}              Rounded value
+         */
+        round: function(value, decimals){
+            return _.round(value, decimals);
         }
+
     }
 };
 exports.mixin = MixinWrapperMethods;

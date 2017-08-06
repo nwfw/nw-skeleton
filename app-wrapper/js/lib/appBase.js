@@ -484,11 +484,21 @@ class AppBaseClass extends BaseClass {
         notification.pinned = false;
         if (options && options.pinned){
             notification.pinned = true;
+        } else {
+            notification.pinned = false;
         }
+
+        if (options && options.immediate){
+            notification.immediate = true;
+        } else {
+            notification.immediate = false;
+        }
+
         if (!duration){
             notification.pinned = true;
             notification.duration = _appWrapper.getConfig('appNotifications.duration');
         }
+
         await _appWrapper.getHelper('appNotifications').addNotification(notification);
         await _appWrapper.wait(this.getConfig('minPauseDuration'));
 

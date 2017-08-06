@@ -21,6 +21,6 @@
         </transition>
         <transition name="fade">
             <span v-if="notification && notification.pinned && appState.appNotificationsData.newNotifications.length" :title="translate('You have {1} unseen {2}', null, [appState.appNotificationsData.newNotifications.length, appState.appNotificationsData.newNotifications.length>1 ? translate('notifications') : translate('notification')])" class="app-notification-more fa fa-info-circle"></span>
-        </span>
+        </transition>
     </div>
 </div>

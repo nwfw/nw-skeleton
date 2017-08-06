@@ -414,11 +414,10 @@
 /* custom transition for modals */
 
 .transition-wh {
-    transition-property: height, width;
-    transition-duration: var(--long-animation-duration);
-    overflow: hidden;
+    transition-property: max-width, width, max-height, height, margin, opacity !important;
+    transition-duration: var(--long-animation-duration) !important;
+    overflow: hidden !important;
 }
-
 
 /* custom transition for notifications */
 

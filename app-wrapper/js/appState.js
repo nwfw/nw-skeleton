@@ -314,6 +314,8 @@ exports.appState = {
             title: '',
             body: '',
 
+            ready: false,
+
             busyText: 'Please wait...',
             busy: false,
 
@@ -339,6 +341,7 @@ exports.appState = {
 
             showCloseLink: true,
             closeLinkText: null,
+            cancelOnClose: true,
 
             showConfirmButton: true,
             confirmButtonText: 'Confirm',

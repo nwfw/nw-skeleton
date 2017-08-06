@@ -26,7 +26,10 @@ exports.component = {
     template: '',
     data: function () {
         return {
-            currentModal: appState.modalData.currentModal
+            currentModal: appState.modalData.currentModal,
+            activeTabIndex: 0,
+            translationInProgress: false,
+            tabTranslationInProgress: false,
         };
     },
     computed: {
@@ -54,7 +57,6 @@ exports.component = {
                 e.preventDefault;
             }
             this.$el.querySelector('.translation-editor-search-field').value = '';
-            this.$el.querySelector('.tab-item.active').unsetFixedSize();
             this.performSearch();
 
         },
@@ -64,7 +66,7 @@ exports.component = {
             }
             var value = this.$el.querySelector('.translation-editor-search-field').value;
             if (value && value.length >= 2){
-                this.$el.querySelector('.tab-item.active').setFixedSize();
+                this.$el.addClass('has-search');
                 var valueRegex = new RegExp(value, 'i');
                 let rows = this.$el.querySelectorAll('.lang-form-row');
                 for(let i=0; i<rows.length; i++){
@@ -78,7 +80,7 @@ exports.component = {
                 }
                 appState.modalData.currentModal.searchResults = this.$el.querySelectorAll('.lang-form-row:not(.lang-form-row-hidden)').length;
             } else {
-                this.$el.querySelector('.tab-item.active').unsetFixedSize();
+                this.$el.removeClass('has-search');
                 let rows = this.$el.querySelectorAll('.lang-form-row-hidden');
                 for (let i=0; i<rows.length; i++){
                     rows[i].removeClass('lang-form-row-hidden');
@@ -97,28 +99,32 @@ exports.component = {
                 e.preventDefault;
             }
 
-            var target = e.target;
+            let target = e.target;
 
-            var tabLinks = this.$el.querySelectorAll('.tab-link');
-            var tabItems = this.$el.querySelectorAll('.tab-item');
+            // let tabLinks = this.$el.querySelectorAll('.tab-link-wrapper');
+            // let tabItems = this.$el.querySelectorAll('.tab-item');
 
-            var index = target.getAttribute('data-index');
-            for(var i=0; i<tabLinks.length; i++){
-                tabLinks[i].className = tabLinks[i].className.replace(/\s?active/, '');
-                tabItems[i].className = tabItems[i].className.replace(/\s?active/, '');
-            }
-            tabLinks[index].className += ' active';
-            tabItems[index].className += ' active';
+            let index = target.getAttribute('data-index');
+            this.activeTabIndex = index;
+            // for(let i=0; i<tabLinks.length; i++){
+            //     if (i == index){
+            //         tabLinks[i].addClass('active');
+            //         tabItems[i].addClass('active');
+            //     } else {
+            //         tabLinks[i].removeClass('active');
+            //         tabItems[i].removeClass('active');
+            //     }
+            // }
         },
         copyLabel: function(e){
-            var target = e.target;
+            let target = e.target;
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault;
             }
-            var labelElement = target.parentNode;
-            var formRow = labelElement.parentNode;
-            var textarea = formRow.querySelector('textarea');
-            var label = target.getAttribute('data-label');
+            let labelElement = target.parentNode;
+            let formRow = labelElement.parentNode;
+            let textarea = formRow.querySelector('textarea');
+            let label = target.getAttribute('data-label');
             textarea.value = label;
         },
         copyAll: function(e){
@@ -195,32 +201,37 @@ exports.component = {
             appState.modalData.currentModal.messages = [_.cloneDeep(appState.allUserMessages[appState.allUserMessages.length-1])];
         },
         googleTranslateTab: async function(e) {
-            let target = e.target;
-            let fieldset = target.getParentByClass('translation-fieldset');
-            let code = target.getAttribute('data-code').replace(/_.*$/, '');
-            let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
-            let total = labels.length;
-            let count = 0;
-            if (total){
-                _appWrapper.addModalMessage('Translation in progress...', 'info');
-            }
-            for (let i=0; i<total;i++){
-                let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
-                if (textarea){
-                    let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], code);
-                    if (translated){
-                        translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
-                        textarea.setInputValue(translated);
-                        count++;
-                    } else {
-                        _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
-                    }
-                } else {
-                    _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+            if (!this.tabTranslationInProgress){
+                let target = e.target;
+                let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
+                let code = target.getAttribute('data-code').replace(/_.*$/, '');
+                let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
+                let total = labels.length;
+                let count = 0;
+                if (total){
+                    _appWrapper.addModalMessage('Translation in progress...', 'info');
+                    this.tabTranslationInProgress = true;
                 }
+                for (let i=0; i<total;i++){
+                    let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
+                    if (textarea){
+                        let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], code);
+                        if (translated){
+                            translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
+                            textarea.setInputValue(translated);
+                            count++;
+                        } else {
+                            _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                        }
+                    } else {
+                        _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                    }
+                }
+                _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
+                this.tabTranslationInProgress = false;
             }
-            _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
         },
+
         googleTranslate: async function(e) {
             let target = e.target;
             let code = target.getAttribute('data-code').replace(/_.*$/, '');
@@ -233,6 +244,8 @@ exports.component = {
                 _appWrapper.addModalMessage('Problem translating label "{1}" - "{2}"', 'error', [label, ex.stack], false, false, false, true);
             }
             _appWrapper.addModalMessage('Translation in progress...', 'info');
+            target.addClass('fa-spinner');
+            target.addClass('fa-spinn');
             let translated = await _appWrapper.appTranslations.googleTranslate(label, code);
             if (translated){
                 translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
@@ -241,18 +254,20 @@ exports.component = {
             } else {
                 _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [label], false, false, false, true);
             }
+            target.removeClass('fa-spinner');
+            target.removeClass('fa-spinn');
         }
     },
     mounted: function() {
         var appState = _appWrapper.getAppState();
         appState.modalData.currentModal.busy = false;
         appState.modalData.modalContentVisible = true;
-        var tabLinks = this.$el.querySelectorAll('.tab-link');
-        var tabItems = this.$el.querySelectorAll('.tab-item');
-        var activeTabIndex = 0;
+        // var tabLinks = this.$el.querySelectorAll('.tab-link-wrapper');
+        // var tabItems = this.$el.querySelectorAll('.tab-item');
+        // var activeTabIndex = 0;
 
-        tabLinks[activeTabIndex].className += ' active';
-        tabItems[activeTabIndex].className += ' active';
+        // tabLinks[activeTabIndex].addClass('active');
+        // tabItems[activeTabIndex].addClass('active');
 
         setTimeout(() => {
             this.$el.querySelector('.translation-editor-search-field').focus();

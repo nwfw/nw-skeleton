@@ -729,7 +729,9 @@ class AppWrapper extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.getHelper('modal').closeCurrentModal();
+        if (!appState.modalData.currentModal.busy){
+            this.getHelper('modal').closeCurrentModal();
+        }
     }
 
     /**
@@ -743,7 +745,9 @@ class AppWrapper extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        this.getHelper('modal').closeCurrentModal();
+        if (!appState.modalData.currentModal.busy){
+            this.getHelper('modal').closeCurrentModal();
+        }
     }
 
     /**

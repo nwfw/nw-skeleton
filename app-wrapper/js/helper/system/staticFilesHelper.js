@@ -98,7 +98,7 @@ class StaticFilesHelper extends AppBaseClass {
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
                 this.watchedFiles.push(cssFilePath);
-                _appWrapper.fileManager.watch(cssFilePath, {}, this.boundMethods.cssFileChanged);
+                _appWrapper.fileManager.watch(cssFilePath, {persistent: false}, this.boundMethods.cssFileChanged);
             }
         } else {
             this.log('Problem loading CSS file "{1}" - file does not exist', 'error', [cssFilePath]);
@@ -139,7 +139,7 @@ class StaticFilesHelper extends AppBaseClass {
 
         if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
             this.watchedFiles.push(href);
-            _appWrapper.fileManager.watch(href, {}, this.boundMethods.cssFileChanged);
+            _appWrapper.fileManager.watch(href, {persistent: false}, this.boundMethods.cssFileChanged);
         }
 
         if (!headEl){
@@ -220,6 +220,9 @@ class StaticFilesHelper extends AppBaseClass {
      * @return {undefined}
      */
     refreshLinkTags(links){
+        if (_.isUndefined(links)){
+            links = document.querySelectorAll('link');
+        }
         this.log('Reloading {1} CSS files.', 'group', [links.length]);
         let headEl = document.querySelector('head');
         let linkCount = links.length;
@@ -237,7 +240,7 @@ class StaticFilesHelper extends AppBaseClass {
                     loadedLinks++;
                     this.log('Reloaded CSS file "{1}"', 'info', [newLink.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
                     if (loadedLinks >= linkCount){
-                        await this.removeOldCssTags();
+                        await this.removeOldCssTags(links);
                         this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
                     }
                 };
@@ -245,7 +248,7 @@ class StaticFilesHelper extends AppBaseClass {
                 newLinks[i].setAttribute('rel', 'stylesheet');
                 newLinks[i].setAttribute('type', 'text/css');
                 newLinks[i].setAttribute('href', newHref);
-                newLinks[i].setAttribute('data-new', 'true');
+                // newLinks[i].setAttribute('data-new', 'true');
                 headEl.appendChild(newLinks[i]);
             }
         }
@@ -255,19 +258,18 @@ class StaticFilesHelper extends AppBaseClass {
      * Removes old CSS tags from head element
      *
      * @async
+     * @param  {DOMElement[]} links Array of <link> elements to remove
      * @return {undefined}
      */
-    async removeOldCssTags () {
+    async removeOldCssTags (links) {
         await _appWrapper.wait(1);
-        this.log('Removing old CSS tags', 'group');
-        let links = document.querySelectorAll('link');
+        this.log('Removing old CSS tags', 'group', []);
+        if (_.isUndefined(links)){
+            links = document.querySelectorAll('link');
+        }
         for (let i=0; i<links.length;i++){
-            if (!links[i].hasAttribute('data-new')){
-                this.log('Removing old CSS file "{1}" tag', 'info', [links[i].href]);
-                links[i].parentNode.removeChild(links[i]);
-            } else {
-                links[i].removeAttribute('data-new');
-            }
+            this.log('Removing old CSS file "{1}" tag', 'info', [links[i].href]);
+            links[i].parentNode.removeChild(links[i]);
         }
         this.detectMissingVariables();
         this.log('Removing old CSS tags', 'groupend', []);
@@ -806,7 +808,6 @@ class StaticFilesHelper extends AppBaseClass {
             if (!silent){
                 if (missingVariables && missingVariables.length){
                     this.log('Missing css variables found - "{1}"', 'warning', [missingVariables.join('", "')]);
-                    console.log(missingVariables);
                 } else {
                     this.log('No missing css variables found', 'info', []);
                 }

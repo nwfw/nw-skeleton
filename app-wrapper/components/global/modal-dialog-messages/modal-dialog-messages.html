@@ -1,0 +1,15 @@
+<div class="modal-dialog-messages">
+	<transition-group name="highlight" tag="div" class="modal-dialog-message-list">
+		<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.message" v-bind:class="'modal-dialog-' + modalMessage.type">
+			{{ modalMessage.message }}
+		</div>
+	</transition-group>
+	<div class="modal-dialog-message-controls" v-if="currentModal.messages.length">
+		<a v-bind:class="{'hide-control': currentModal.currentMessageIndex <= 0}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageUp">
+			<span class="fa fa-arrow-up"></span>
+		</a>
+		<a v-bind:class="{'hide-control': currentModal.currentMessageIndex >= (currentModal.messages.length - 1)}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageDown">
+			<span class="fa fa-arrow-down"></span>
+		</a>
+	</div>
+</div>

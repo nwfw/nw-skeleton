@@ -1,0 +1,9 @@
+<div class="modal-dialog-busy-indicator">
+	<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
+		{{ currentModal.busyText }}
+	</h2>
+	<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
+		<div class="fa fa-circle-o-notch fa-spin">
+		</div>
+	</div>
+</div>

@@ -281,6 +281,39 @@
     --app-message-list-message-delimiter-fill-color-90: #CCCCCC;
     --app-message-list-message-delimiter-fill-color-100: #CCCCCC;
 
+    /*app tabs*/
+    --app-tabs-tab-link-color: #999999;
+    --app-tabs-tab-link-border: 1px solid #999999;
+    --app-tabs-tab-link-background: none;
+    --app-tabs-tab-link-font-size: 0.9rem;
+
+    --app-tabs-tab-link-hover-background: #666666;
+    --app-tabs-tab-link-hover-color: #999999;
+
+    --app-tabs-tab-link-active-background: #333333;
+    --app-tabs-tab-link-active-color: #CCCCCC;
+
+    --app-tabs-tab-link-tools-color: #999999;
+
+    --app-tabs-tab-link-tools-hover-color: #CCCCCC;
+    --app-tabs-tab-link-tools-hover-text-shadow: 0 0 1px #CCCCCC;
+
+    --app-tabs-tab-items-border: 1px solid #999999;
+
+    --app-tabs-tab-item-background: none;
+    --app-tabs-tab-item-active-background: #333333;
+
+    /*app translations*/
+    --app-translations-text-color: #CCCCCC;
+    --app-translations-font-size: 0.8rem;
+
+    --app-translations-link-color: #999999;
+
+    --app-translations-link-hover-color: #CCCCCC;
+    --app-translations-link-hover-text-shadow: 0 0 1px #CCCCCC;
+
+    --app-translations-no-results-font-size: 1.2rem;
+
     /* window controls */
     --window-control-link-color: #999999;
     --window-control-link-color-hovered: #CCCCCC;

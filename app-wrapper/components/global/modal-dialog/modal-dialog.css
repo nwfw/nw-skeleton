@@ -32,6 +32,15 @@
     max-width: 90vw;
     min-height: 100px;
     min-width: 50vw;
+    transition-property: transform;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+    display: flex;
+    flex-flow: column;
+}
+
+.modal-dialog.no-messages {
+    transform: translate(-50%, calc(-50% + 0.65rem));
 }
 
 .modal-dialog h2 {
@@ -131,13 +140,22 @@
 }
 
 .modal-dialog .modal-dialog-messages {
-    height: 20px;
+    height: 1.3rem;
     font-size: 0.9rem;
     overflow: hidden;
     position: relative;
     margin: 0 5px;
     padding: 1px 5px 2px 5px;
     display: flex;
+    flex: 1 0 auto;
+    max-height: 100px;
+    transition-property: height;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+}
+
+.modal-dialog.no-messages .modal-dialog-messages {
+    height: 0;
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-message-list {
@@ -190,51 +208,49 @@
 .modal-dialog .modal-dialog-content {
     display: flex;
     flex-flow: column;
+    align-items: center;
+    align-content: stretch;
+    justify-content: center;
     overflow: auto;
     max-height: calc(75vh - 40px);
 }
 
-.modal-dialog .modal-dialog-content-wrapper {
+.modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper {
     display: flex;
     flex-flow: column;
+    flex: 1 1 auto;
 }
 
-.modal-dialog-busy-wrapper {
-    text-align: center;
-    font-size: 2rem;
-    flex: 1 0 auto;
-    flex-flow: column;
-    color: var(--modal-dialog-busy-text-color);
-}
-.modal-dialog-wrapper .modal-dialog-busy-text {
-    flex: 0 0 auto;
-    text-align: center;
-    font-size: 1rem;
-    color: var(--modal-dialog-busy-text-color);
-}
 
-.modal-dialog-wrapper-busy .modal-dialog {
-    display: flex;
-    flex-flow: column;
-}
-
-.modal-dialog-wrapper-busy .modal-dialog .modal-dialog-content {
-    display: flex;
-    flex-flow: row;
-    flex: 1 0 auto;
-    justify-content: space-between;
-
-}
-
-.modal-dialog-wrapper-busy .modal-dialog-busy-indicator {
+.modal-dialog-wrapper .modal-dialog-busy-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-flow: column;
     flex: 1 0 auto;
     align-self: center;
 }
 
+.modal-dialog-wrapper .modal-dialog-busy-indicator .modal-dialog-busy-wrapper {
+    text-align: center;
+    font-size: 2rem;
+    flex: 1 0 auto;
+    flex-flow: column;
+    color: var(--modal-dialog-busy-text-color);
+}
+.modal-dialog-wrapper .modal-dialog-busy-indicator .modal-dialog-busy-text {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--modal-dialog-busy-text-color);
+    white-space: nowrap;
+}
+
+
 
 .form-row.modal-form-row {
+
 }
 
 .form-row.modal-form-row label {

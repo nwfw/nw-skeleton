@@ -524,7 +524,7 @@ class ComponentHelper extends AppBaseClass {
             this.log('Initializing {1} {2} components...', 'group', [componentCount, type]);
             for (let i=0; i<componentNames.length;i++){
                 let currentName = componentNames[i];
-                if (currentName == 'modal-dialog'){
+                if (currentName == 'modal-dialog-contents'){
                     additionalSubComponents = this.vueModalComponents;
                 }
                 let currentMapping = componentMapping && componentMapping[currentName] ? componentMapping[currentName] : {};

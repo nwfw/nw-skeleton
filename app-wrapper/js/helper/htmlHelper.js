@@ -195,6 +195,68 @@ class HtmlHelper extends AppBaseClass {
     }
 
     /**
+     * Forces element width and height to values from the arguments, if values are omitted, current element size is used
+     *
+     * @param {HTMLElement}    element  Element to set fixed size on
+     * @param {Number} elementHeight    Optional height value to force element size
+     * @param {Number} elementWidth     Optional width value to force element size
+     * @return {undefined}
+     */
+    forceSize (element, elementHeight, elementWidth) {
+        if (element && element.offsetHeight){
+            if (_.isUndefined(elementHeight)){
+                elementHeight = parseInt(element.offsetHeight, 10);
+            } else {
+                element.setAttribute('data-previous-height', parseInt(element.offsetHeight, 10));
+            }
+
+            if (_.isUndefined(elementWidth)){
+                elementWidth = parseInt(element.offsetWidth, 10);
+            } else {
+                element.setAttribute('data-previous-width', parseInt(element.offsetWidth, 10));
+            }
+
+            let newStyles = {
+                height: elementHeight + 'px',
+                width: elementWidth + 'px'
+            };
+
+            this.setElementStyles(element, newStyles, true);
+            element.setAttribute('data-forced-size', '1');
+        }
+    }
+
+    /**
+     * Removes forced size values from element style
+     *
+     * @param {HTMLElement}    element  Element to unset fixed size on
+     * @return {undefined}
+     */
+    unforceSize (element) {
+        let previousWidth = element.getAttribute('data-previous-width');
+        let previousHeight = element.getAttribute('data-previous-height');
+        this.removeElementStyles(element, ['width', 'height']);
+
+        let newStyles = {};
+
+        if (previousWidth){
+            element.removeAttribute('data-previous-width');
+            newStyles.width = previousWidth;
+        }
+
+        if (previousHeight){
+            element.removeAttribute('data-previous-height');
+            newStyles.width = previousHeight;
+        }
+
+        if (Object.keys(newStyles).length){
+            this.setElementStyles(element, newStyles, true);
+        }
+        element.removeAttribute('data-forced-size');
+
+    }
+
+    /**
      * Gets element "real" dimensions, taking paddings, borders etc. into consideration
      *
      * @param {HTMLElement} element     Element to get dimensions (or parent in which selector argument will be applied)
@@ -329,13 +391,18 @@ class HtmlHelper extends AppBaseClass {
      * @return {HTMLElement}        Same element for chaining
      */
     addClass (element, className){
-        var classes = element.getAttribute('class');
-        if (classes && classes.split && _.isFunction(classes.split)){
-            classes = classes.split(' ');
-            classes.push(className);
-            element.setAttribute('class', classes.join(' '));
-        } else {
-            element.setAttribute('class', className);
+        if (this instanceof Element){
+            element = this;
+        }
+        if (!this.hasClass(element, className)){
+            let classes = element.getAttribute('class');
+            if (classes && classes.split && _.isFunction(classes.split)){
+                classes = classes.split(' ');
+                classes.push(className);
+                element.setAttribute('class', classes.join(' '));
+            } else {
+                element.setAttribute('class', className);
+            }
         }
         return element;
     }
@@ -348,11 +415,16 @@ class HtmlHelper extends AppBaseClass {
      * @return {HTMLElement}        Same element for chaining
      */
     removeClass (element, className){
-        var classes = element.getAttribute('class');
-        if (classes && classes.split && _.isFunction(classes.split)){
-            classes = classes.split(' ');
-            classes = _.without(classes, className);
-            element.setAttribute('class', classes.join(' '));
+        if (this instanceof Element){
+            element = this;
+        }
+        if (this.hasClass(element, className)){
+            let classes = element.getAttribute('class');
+            if (classes && classes.split && _.isFunction(classes.split)){
+                classes = classes.split(' ');
+                classes = _.without(classes, className);
+                element.setAttribute('class', classes.join(' '));
+            }
         }
         return element;
     }
@@ -365,8 +437,11 @@ class HtmlHelper extends AppBaseClass {
      * @return {Boolean}            True if element has class, false otherwise
      */
     hasClass (element, className){
-        var hasClass = false;
-        var classes = element.getAttribute('class');
+        if (this instanceof Element){
+            element = this;
+        }
+        let hasClass = false;
+        let classes = element.getAttribute('class');
         if (classes && classes.split && _.isFunction(classes.split)){
             classes = classes.split(' ');
             hasClass = _.includes(classes, className);
@@ -604,10 +679,13 @@ class HtmlHelper extends AppBaseClass {
      * @return {HTMLElement}            Parent element that matches given criteria
      */
     getParentByClass(element, targetClass){
-        var parent;
+        if (this instanceof Element){
+            element = this;
+        }
+        let parent;
         if (element && element.parentNode){
             parent = element;
-            while (!this.hasClass(parent, targetClass)) {
+            while (!parent.hasClass(targetClass)) {
                 parent = parent.parentNode;
             }
         }
@@ -807,6 +885,29 @@ class HtmlHelper extends AppBaseClass {
             element.value = value;
         }
         return value;
+    }
+
+    /**
+     * Gets transition duration in milliseconds for given element
+     *
+     * @param {HTMLElement}    element  Element for which should transition-duration be returned
+     * @return {Number}                 transition-duration in milliseconds
+     */
+    getTransitionDuration(element){
+        let duration = 0;
+
+        if (this instanceof Element){
+            element = this;
+        }
+
+        let styles = element.getComputedStyles();
+        if (styles && styles['transition-duration']){
+            let newDuration = parseFloat(styles['transition-duration']);
+            if (newDuration && !isNaN(newDuration)){
+                duration = newDuration * 1000;
+            }
+        }
+        return duration;
     }
 }
 

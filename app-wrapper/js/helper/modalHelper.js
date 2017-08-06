@@ -67,11 +67,14 @@ class ModalHelper extends AppBaseClass {
      * @return {undefined}
      */
     modalBusy (message) {
-        if (!message){
-            message = this.translate('Please wait...');
+        let cm = appState.modalData.currentModal;
+        if (!cm.busy){
+            if (!message){
+                message = this.translate('Please wait...');
+            }
+            appState.modalData.currentModal.busyText = message;
+            appState.modalData.currentModal.busy = true;
         }
-        appState.modalData.currentModal.busyText = message;
-        appState.modalData.currentModal.busy = true;
     }
 
     /**
@@ -84,53 +87,57 @@ class ModalHelper extends AppBaseClass {
     }
 
     /**
+     * Sets modal dialog ready status to true
+     *
+     * @return {undefined}
+     */
+    modalReady () {
+        appState.modalData.currentModal.ready = true;
+    }
+
+    /**
+     * Resets modal dialog ready status to false
+     *
+     * @return {undefined}
+     */
+    modalNotReady () {
+        appState.modalData.currentModal.ready = false;
+    }
+
+    /**
      * Closes currently visible modal dialog
      *
      * @param  {Boolean} force Flag to force modal closing even if modal is busy
      * @return {undefined}
      */
     closeCurrentModal (force){
-        let fadeModal = appState.modalData.fadeModal;
-        let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
         let md = appState.modalData;
         let cm = md.currentModal;
 
-        if (!cm.busy || force) {
+        if (!cm.busy || force === true) {
             this.log('Closing current modal.', 'info', []);
-            cm.opening = false;
-            cm.closing = true;
-            if (cm.onBeforeClose && _.isFunction(cm.onBeforeClose)){
-                this.log('Calling current modal onBeforeClose...', 'info', []);
-                cm.onBeforeClose();
-            }
-            if (force){
+            this.setModalVars({
+                opening: false,
+                closing: true
+            });
+            if (force === true){
                 md.fadeModal = 'none';
             }
             this.stopAutoCloseModal();
-
-            this.modalNotBusy();
             this.resetModalActions();
+            if (cm.animateSize){
+                this.modalBusy();
+                this.modalNotReady();
+            } else {
+                md.modalVisible = false;
+            }
 
             cm.autoCloseTime = null;
-            md.modalVisible = false;
             md.modalElement = null;
 
-            if (cm.onClose && _.isFunction(cm.onClose)){
-                setTimeout( () => {
-                    this.log('Calling current modal onClose...', 'info', []);
-                    cm.onClose();
-                    this.resetCurrentCallbacks();
-                    cm = this.getModalObject('defaultModal');
-                    md.fadeModal = fadeModal;
-                }, duration);
-            } else {
-                this.resetCurrentCallbacks();
-                cm = this.getModalObject('defaultModal');
-                md.fadeModal = fadeModal;
-            }
             appState.status.noHandlingKeys = false;
         } else {
-            this.log('Can\'t close modal because it is busy', 'warning', []);
+            this.log('Can not close modal because it is busy', 'warning', []);
         }
     }
 
@@ -147,9 +154,12 @@ class ModalHelper extends AppBaseClass {
             delay = 1000;
         }
         if (!appState.modalData.currentModal.busy || force) {
+            this.modalNotReady();
             this.modalBusy(busyText);
-            this.setModalVar('opening', false);
-            this.setModalVar('closing', true);
+            this.setModalVars({
+                opening: false,
+                closing: true
+            });
 
             setTimeout( () => {
                 this.emptyModal();
@@ -157,7 +167,7 @@ class ModalHelper extends AppBaseClass {
                 this.closeCurrentModal();
             }, delay);
         } else {
-            this.log('Can\'t delayed close modal because it is already busy', 'warning', []);
+            this.log('Can not delayed close modal because it is already busy', 'warning', []);
         }
     }
 
@@ -172,15 +182,12 @@ class ModalHelper extends AppBaseClass {
         let md = appState.modalData;
         let cm = md.currentModal;
 
-        cm.closing = false;
-        cm.opening = true;
+        this.setModalVars({
+            opening: true,
+            closing: false
+        });
 
         this.log('Opening current modal.', 'info', []);
-
-        if (cm.onBeforeOpen && _.isFunction(cm.onBeforeOpen)){
-            this.log('Calling current modal onBeforeOpen...', 'info', []);
-            cm.onBeforeOpen();
-        }
 
         if (cm.autoCloseTime) {
             cm.autoCloseTimeText = parseInt(cm.autoCloseTime / 1000, 10);
@@ -207,14 +214,7 @@ class ModalHelper extends AppBaseClass {
                     cm.bodyComponent = cm.defaultBodyComponent;
                 }
                 this.modalNotBusy();
-
-                setTimeout(() => {
-                    if (cm.onOpen && _.isFunction(cm.onOpen)){
-                        this.log('Calling current modal onOpen...', 'info', []);
-                        cm.onOpen();
-                    }
-                    cm.opening = false;
-                }, duration);
+                this.modalReady();
             }, duration);
         } else {
             md.fadeModal = 'none';
@@ -222,14 +222,16 @@ class ModalHelper extends AppBaseClass {
                 cm.bodyComponent = cm.defaultBodyComponent;
             }
             this.modalNotBusy();
-            setTimeout( () => {
-                if (cm.onOpen && _.isFunction(cm.onOpen)){
-                    this.log('Calling current modal onOpen...', 'info', []);
-                    cm.onOpen();
-                }
-                cm.opening = false;
-                md.fadeModal = fadeModal;
-            }, duration);
+            this.modalReady();
+            // setTimeout( () => {
+            //     if (cm.onOpen && _.isFunction(cm.onOpen)){
+            //         this.log('Calling current modal onOpen...', 'info', []);
+            //         cm.onOpen();
+            //     }
+            //     cm.opening = false;
+            //     md.fadeModal = fadeModal;
+            // }, duration);
+            md.fadeModal = fadeModal;
         }
         if (cm.autoCloseTime) {
             this.autoCloseModal();
@@ -388,7 +390,8 @@ class ModalHelper extends AppBaseClass {
         if (appState.modalData.currentModal && appState.modalData.modalVisible){
             if (appState.modalData.currentModal.messages){
                 if (_.isArray(appState.modalData.currentModal.messages)){
-                    window.getFeApp().$refs.modalDialog.addModalMessage(messageObject);
+                    // window.getFeApp().$refs.modalDialog.addModalMessage(messageObject);
+                    window.getFeApp().$refs.modalDialog.$refs.modalDialogContents.$refs.modalDialogMessages.addModalMessage(messageObject);
                 }
             }
         }
@@ -458,6 +461,20 @@ class ModalHelper extends AppBaseClass {
         this.timeouts.autoClose = setTimeout(() => {
             this.log('Auto-closing modal.', 'info', []);
             this.stopAutoCloseModal();
+            if (!cm.animateSize){
+                if (cm.cancelOnClose && cm.onCancel && _.isFunction(cm.onCancel)){
+                    this.log('Calling current modal onCancel...', 'info', []);
+                    cm.onCancel();
+                }
+                if (cm.onBeforeClose && _.isFunction(cm.onBeforeClose)){
+                    this.log('Calling current modal onBeforeClose...', 'info', []);
+                    cm.onBeforeClose();
+                }
+                if (cm.onClose && _.isFunction(cm.onClose)){
+                    this.log('Calling current modal onClose...', 'info', []);
+                    cm.onClose();
+                }
+            }
             this.closeCurrentModal();
         }, +cm.autoCloseTime);
 

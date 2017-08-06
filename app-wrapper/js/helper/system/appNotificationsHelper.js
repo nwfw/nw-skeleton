@@ -48,19 +48,31 @@ class AppNotificationsHelper extends AppBaseClass {
      * @return {undefined}
      */
     async addNotification(notification){
-        if (appState.appNotificationsData.currentNotification && appState.appNotificationsData.currentNotification.message == notification.message && appState.appNotificationsData.currentNotification.type == notification.type){
-            appState.appNotificationsData.currentNotification.count++;
-            appState.appNotificationsData.currentNotification.timestamps.push(new Date().toString());
+        let nd = appState.appNotificationsData;
+        let cn = nd.currentNotification;
+        if (cn && cn.message == notification.message && cn.type == notification.type){
+            cn.count++;
+            cn.timestamps.push(new Date().toString());
         } else {
-            if (appState.appNotificationsData.newNotifications.length){
-                if (appState.appNotificationsData.newNotifications[0].message == notification.message && appState.appNotificationsData.newNotifications[0].type == notification.type){
-                    appState.appNotificationsData.newNotifications[0].count++;
-                    appState.appNotificationsData.newNotifications[0].timestamps.push(new Date().toString());
+            if (nd.newNotifications.length){
+                if (nd.newNotifications[0].message == notification.message && nd.newNotifications[0].type == notification.type){
+                    nd.newNotifications[0].count++;
+                    nd.newNotifications[0].timestamps.push(new Date().toString());
                 } else {
-                    appState.appNotificationsData.newNotifications.push(notification);
+                    if (notification.immediate){
+                        nd.notificationExpired = true;
+                        nd.newNotifications.unshift(notification);
+                    } else {
+                        nd.newNotifications.push(notification);
+                    }
                 }
             } else {
-                appState.appNotificationsData.newNotifications.push(notification);
+                if (notification.immediate){
+                    nd.notificationExpired = true;
+                    nd.newNotifications.unshift(notification);
+                } else {
+                    nd.newNotifications.push(notification);
+                }
             }
         }
     }

@@ -1,92 +1,36 @@
-<div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy }]">
-	<transition v-bind:name="fadeModal">
-		<template v-if="!currentModal.preventEscClose">
-			<div v-show="modalVisible" class="modal-dialog-background" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
-			</div>
-		</template>
-		<template v-else>
-			<div v-show="modalVisible" class="modal-dialog-background">
-			</div>
-		</template>
-	</transition>
-	<transition v-bind:name="fadeModal">
-		<div v-show="modalVisible" class="modal-dialog">
-			<a v-if="currentModal.showCloseLink && !currentModal.closing" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
-				<span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime">
-					<template v-if="currentModal.autoClosing">
-						<template v-if="!currentModal.autoCloseTime">
-							{{ currentModal.closeLinkText }}
-						</template>
-						<template v-else-if="!currentModal.closeLinkText">
-							{{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }}
-						</template>
-						<template v-else>
-							{{ currentModal.closeLinkText }} ({{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }})
-						</template>
-					</template>
-				</span>
-				<span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times"></span>
-			</a>
-			<div class="modal-dialog-content">
-				<div v-if="currentModal.busy" key="modalBusy" class="modal-dialog-busy-indicator">
-					<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
-						{{ currentModal.busyText }}
-					</h2>
-					<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
-						<div class="fa fa-circle-o-notch fa-spin">
-						</div>
-					</div>
-				</div>
-				<transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter" v-on:enter-cancelled="afterCancel" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterLeave" v-on:leave-cancelled="afterCancel">
-
-					<div key="modalFree" v-if="!currentModal.busy" class="modal-dialog-content-wrapper">
-						<h2 class="modal-dialog-title" v-html="getTitle()"></h2>
-						<div class="modal-dialog-messages">
-							<transition-group name="highlight" tag="div" class="modal-dialog-message-list">
-								<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.message" v-bind:class="'modal-dialog-' + modalMessage.type">
-									{{ modalMessage.message }}
-								</div>
-							</transition-group>
-							<div class="modal-dialog-message-controls" v-if="currentModal.messages.length">
-								<a v-bind:class="{'hide-control': currentModal.currentMessageIndex <= 0}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageUp">
-									<span class="fa fa-arrow-up"></span>
-								</a>
-								<a v-bind:class="{'hide-control': currentModal.currentMessageIndex >= (currentModal.messages.length - 1)}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageDown">
-									<span class="fa fa-arrow-down"></span>
-								</a>
-							</div>
-						</div>
-						<form name="modalDialogForm" v-on:submit.stop.prevent="callViewHandler" data-submit-handler="confirmModalAction" class="modal-dialog-form">
-							<div class="modal-dialog-body">
-								<transition name="width-height">
-									<component v-bind:is="currentModal.bodyComponent"></component>
-								</transition>
-							</div>
-							<template v-if="currentModal.showCancelButton || currentModal.showConfirmButton">
-								<div class="modal-dialog-buttons">
-									<template v-if="currentModal.showConfirmButton">
-										<template v-if="currentModal.confirmDisabled">
-											<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
-										</template>
-										<template v-else>
-											<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
-										</template>
-									</template>
-									<template v-if="currentModal.showCancelButton">
-										<template v-if="currentModal.cancelDisabled">
-											<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-										</template>
-										<template v-else>
-											<button class="modal-button modal-button-cancel" @click.prevent="callViewHandler" data-click-handler="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-										</template>
-									</template>
-								</div>
-							</template>
-						</form>
-					</div>
-				</transition>
-			</div>
-			<app-notifications v-if="appState.modalData.modalVisible" ref="modalAppNotifications"></app-notifications>
-		</div>
-	</transition>
+<div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy, 'modal-dialog-wrapper-opening': currentModal.opening, 'modal-dialog-wrapper-closing': currentModal.closing, 'modal-dialog-wrapper-ready': currentModal.ready, 'modal-dialog-wrapper-animated': currentModal.animateSize }]">
+    <transition v-bind:name="fadeModal">
+        <template v-if="!currentModal.preventEscClose">
+            <div v-show="modalVisible" class="modal-dialog-background" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
+            </div>
+        </template>
+        <template v-else>
+            <div v-show="modalVisible" class="modal-dialog-background">
+            </div>
+        </template>
+    </transition>
+    <transition v-bind:name="fadeModal">
+        <div v-show="modalVisible" class="modal-dialog" :class="{'no-messages': !currentModal.messages.length}">
+            <a v-if="currentModal.showCloseLink && !currentModal.closing" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="closeModalAction">
+                <span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime">
+                    <template v-if="currentModal.autoClosing">
+                        <template v-if="!currentModal.autoCloseTime">
+                            {{ currentModal.closeLinkText }}
+                        </template>
+                        <template v-else-if="!currentModal.closeLinkText">
+                            {{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }}
+                        </template>
+                        <template v-else>
+                            {{ currentModal.closeLinkText }} ({{ defAll(currentModal.autoCloseTimeText, parseInt(currentModal.autoCloseTime / 1000, 10)) }})
+                        </template>
+                    </template>
+                </span>
+                <span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times"></span>
+            </a>
+            <div class="modal-dialog-content">
+                <modal-dialog-contents v-bind:body-component="currentModal.bodyComponent" ref="modalDialogContents"></modal-dialog-contents>
+            </div>
+            <app-notifications v-if="appState.modalData.modalVisible" ref="modalAppNotifications"></app-notifications>
+        </div>
+    </transition>
 </div>
