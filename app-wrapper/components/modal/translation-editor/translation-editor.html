@@ -4,6 +4,9 @@
 		<a href="#" :title="translate('Clear search')" class="translation-editor-top-tool translation-editor-clear-search fa fa-close" @click.prevent="clearSearch"></a>
 		<a href="#" :title="translate('Copy all untranslated labels')" v-if="!allTranslated" class="translation-editor-top-tool translation-editor-copy-all fa fa-files-o" @click.prevent="copyAll"></a>
 		<a href="#" :title="translate('Trim translations')" class="translation-editor-top-tool auto-trim-translations fa fa-scissors" @click.prevent="trimTranslations"></a>
+		<transition name="fade">
+			<a href="#" :title="translate('Reset data')" class="translation-editor-top-tool reset-data fa fa-undo" v-if="dataChanged" @click.prevent="resetData"></a>
+		</transition>
 	</div>
 	<div class="tabs">
 		<div class="tab-links">
@@ -14,7 +17,7 @@
 					</span>
 					<span class="tab-link-tools lang-tab-link-tools">
 						<a v-bind:data-code="language.code" class="fa fa-files-o translation-editor-copy-all-tab" @click.stop.prevent="copyAllTab" :title="translate('Copy all untranslated labels in this tab')" v-if="_.keys(currentModal.translationData[language.code].notTranslated).length"></a>
-						<a v-bind:data-code="language.code" class="fa translation-editor-google-translate-all-tab" :class="{'fa-spinner fa-spin': tabTranslationInProgress, 'fa-globe': !tabTranslationInProgress}" @click.stop.prevent="googleTranslateTab" :title="translate('Auto-translate all untranslated labels in this tab')" v-if="language.code != 'en_US' && currentModal.hasGoogleTranslate && _.keys(currentModal.translationData[language.code].notTranslated).length"></a>
+						<a v-bind:data-code="language.code" class="fa fa-globe translation-editor-google-translate-all-tab" @click.stop.prevent="googleTranslateTab" :title="translate('Auto-translate all untranslated labels in this tab')" v-if="language.code != 'en_US' && currentModal.hasGoogleTranslate && _.keys(currentModal.translationData[language.code].notTranslated).length"></a>
 					</span>
 				</span>
 			</template>
@@ -40,7 +43,7 @@
 										<a v-bind:data-code="language.code" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en_US'"></a>
 										<a v-if="label !== translated" :title="currentModal.translations['Copy label to translation']" class="copy-translation-label fa fa-files-o" v-bind:data-label="label" v-on:click="copyLabel"></a>
 									</div>
-									<textarea class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" />
+									<textarea v-bind:data-code="language.code" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" />
 								</div>
 							</template>
 							<template v-for="(translated, label) in currentModal.translationData[language.code].translated">
@@ -55,7 +58,7 @@
 										<a v-bind:data-code="language.code" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en_US'"></a>
 										<a v-if="label !== translated" :title="currentModal.translations['Copy label to translation']" class="copy-translation-label fa fa-files-o" v-bind:data-label="label" v-on:click="copyLabel"></a>
 									</div>
-									<textarea class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" />
+									<textarea v-bind:data-code="language.code" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" />
 								</div>
 							</template>
 						</div>

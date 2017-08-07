@@ -26,7 +26,7 @@ component = {
     name: 'modal-dialog-contents',
     template: '',
     props: ['bodyComponent'],
-    updated: function(){
+    mounted: function(){
         let activeElement = document.activeElement;
         if (!(activeElement && activeElement.tagName && activeElement.parentQuerySelector('.modal-dialog-wrapper') && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
             this.setFocus();
@@ -153,6 +153,7 @@ component = {
             if (!cm.ready && cm.animateSize){
                 cm.busy = false;
                 md.modalVisible = false;
+                appState.status.noHandlingKeys = false;
             }
         },
         enterCancelled: function (element) {

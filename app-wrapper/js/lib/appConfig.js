@@ -410,9 +410,7 @@ class AppConfig extends AppBaseClass {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
-            // appState.status.noHandlingKeys = false;
             _appWrapper.getHelper('modal').modalNotBusy();
-            // clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             return _appWrapper.__cancelModalAction();
         };

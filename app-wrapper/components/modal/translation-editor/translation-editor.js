@@ -27,10 +27,18 @@ exports.component = {
     data: function () {
         return {
             currentModal: appState.modalData.currentModal,
+            originalData: _.cloneDeep(appState.modalData.currentModal.translationData),
             activeTabIndex: 0,
             translationInProgress: false,
             tabTranslationInProgress: false,
         };
+    },
+    mounted: function() {
+        appState.modalData.currentModal.busy = false;
+        appState.modalData.modalContentVisible = true;
+        setTimeout(() => {
+            this.$el.querySelector('.translation-editor-search-field').focus();
+        }, 100);
     },
     computed: {
         appState: function(){
@@ -49,9 +57,15 @@ exports.component = {
         },
         _: function() {
             return _;
+        },
+        dataChanged: function(){
+            return JSON.stringify(this.originalData) != JSON.stringify(this.currentModal.translationData);
         }
     },
     methods: {
+        resetData: function(){
+            this.currentModal.translationData = _.cloneDeep(this.originalData);
+        },
         clearSearch: function(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault;
@@ -98,23 +112,7 @@ exports.component = {
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault;
             }
-
-            let target = e.target;
-
-            // let tabLinks = this.$el.querySelectorAll('.tab-link-wrapper');
-            // let tabItems = this.$el.querySelectorAll('.tab-item');
-
-            let index = target.getAttribute('data-index');
-            this.activeTabIndex = index;
-            // for(let i=0; i<tabLinks.length; i++){
-            //     if (i == index){
-            //         tabLinks[i].addClass('active');
-            //         tabItems[i].addClass('active');
-            //     } else {
-            //         tabLinks[i].removeClass('active');
-            //         tabItems[i].removeClass('active');
-            //     }
-            // }
+            this.activeTabIndex = e.target.getAttribute('data-index');
         },
         copyLabel: function(e){
             let target = e.target;
@@ -126,6 +124,7 @@ exports.component = {
             let textarea = formRow.querySelector('textarea');
             let label = target.getAttribute('data-label');
             textarea.value = label;
+            this.currentModal.translationData[textarea.getAttribute('data-code')].notTranslated[label] = label;
         },
         copyAll: function(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -137,6 +136,7 @@ exports.component = {
                 var textarea = formRow.querySelector('textarea');
                 var label = formRow.getAttribute('data-label');
                 textarea.value = label;
+                this.currentModal.translationData[textarea.getAttribute('data-code')].notTranslated[label] = label;
             }
 
         },
@@ -153,6 +153,7 @@ exports.component = {
                 var textarea = formRow.querySelector('textarea');
                 var label = formRow.getAttribute('data-label');
                 textarea.value = label;
+                this.currentModal.translationData[langCode].notTranslated[label] = label;
             }
 
         },
@@ -203,6 +204,7 @@ exports.component = {
         googleTranslateTab: async function(e) {
             if (!this.tabTranslationInProgress){
                 let target = e.target;
+                target.addClass(['fa-spinner', 'fa-spin']);
                 let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
                 let code = target.getAttribute('data-code').replace(/_.*$/, '');
                 let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
@@ -219,6 +221,7 @@ exports.component = {
                         if (translated){
                             translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
                             textarea.setInputValue(translated);
+                            this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
                             count++;
                         } else {
                             _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
@@ -227,6 +230,7 @@ exports.component = {
                         _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
                     }
                 }
+                target.removeClass(['fa-spinner', 'fa-spin']);
                 _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
                 this.tabTranslationInProgress = false;
             }
@@ -250,6 +254,7 @@ exports.component = {
             if (translated){
                 translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
                 textarea.setInputValue(translated);
+                this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[label] = translated;
                 _appWrapper.addModalMessage('Translation complete.', 'info');
             } else {
                 _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [label], false, false, false, true);
@@ -257,20 +262,5 @@ exports.component = {
             target.removeClass('fa-spinner');
             target.removeClass('fa-spinn');
         }
-    },
-    mounted: function() {
-        var appState = _appWrapper.getAppState();
-        appState.modalData.currentModal.busy = false;
-        appState.modalData.modalContentVisible = true;
-        // var tabLinks = this.$el.querySelectorAll('.tab-link-wrapper');
-        // var tabItems = this.$el.querySelectorAll('.tab-item');
-        // var activeTabIndex = 0;
-
-        // tabLinks[activeTabIndex].addClass('active');
-        // tabItems[activeTabIndex].addClass('active');
-
-        setTimeout(() => {
-            this.$el.querySelector('.translation-editor-search-field').focus();
-        }, 100);
     }
 };

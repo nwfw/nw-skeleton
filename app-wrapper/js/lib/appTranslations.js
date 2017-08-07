@@ -42,9 +42,6 @@ class AppTranslations extends AppBaseClass {
         this.addingLabels = {};
         this.translationsLoaded = false;
 
-        this.timeouts = {
-            translationModalInitTimeout: null
-        };
         return this;
     }
 
@@ -146,6 +143,7 @@ class AppTranslations extends AppBaseClass {
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
             translationData: this.getTranslationEditorData(),
             hasGoogleTranslate: false,
+            busy: true,
             translations: {
                 'not translated': this.translate('not translated'),
                 'Copy label to translation': this.translate('Copy label to translation')
@@ -155,14 +153,12 @@ class AppTranslations extends AppBaseClass {
             modalOptions.hasGoogleTranslate = true;
         }
         appState.modalData.currentModal = modalHelper.getModalObject('translationModal', modalOptions);
-        _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
         _appWrapper._confirmModalAction = this.saveTranslations.bind(this);
         _appWrapper._cancelModalAction = (evt) => {
             if (evt && evt.preventDefault && _.isFunction(evt.preventDefault)){
                 evt.preventDefault();
             }
             _appWrapper.helpers.modalHelper.modalNotBusy();
-            clearTimeout(_appWrapper.appTranslations.timeouts.translationModalInitTimeout);
             _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
             return _appWrapper.__cancelModalAction(e);
         };
@@ -180,6 +176,7 @@ class AppTranslations extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
+        let modalHelper = _appWrapper.getHelper('modal');
         let autoAdd = appState.config.autoAddLabels;
         appState.config.autoAddLabels = false;
         var modalElement = window.document.querySelector('.modal-dialog-wrapper');
@@ -190,7 +187,9 @@ class AppTranslations extends AppBaseClass {
             var modalForm = modalElement.querySelector('form');
             if (modalForm){
                 this.log('Saving translations.', 'info', []);
-                _appWrapper.helpers.modalHelper.modalBusy(this.translate('Please wait...'));
+                modalForm = modalForm.cloneNode(true);
+                modalHelper.modalBusy();
+                await _appWrapper.wait(this.getConfig('mediumPauseDuration'));
                 var fieldsets = modalForm.querySelectorAll('fieldset');
                 for (var i=0; i<fieldsets.length; i++){
                     var fieldset = fieldsets[i];
@@ -236,10 +235,9 @@ class AppTranslations extends AppBaseClass {
             }
         }
         appState.config.autoAddLabels = autoAdd;
-        // appState.status.noHandlingKeys = false;
-        clearTimeout(this.timeouts.translationModalInitTimeout);
-        _appWrapper.helpers.modalHelper.modalNotBusy();
-        _appWrapper.helpers.modalHelper.closeCurrentModal();
+        modalHelper.emptyModal();
+        modalHelper.modalNotBusy();
+        modalHelper.closeCurrentModal();
 
     }
 

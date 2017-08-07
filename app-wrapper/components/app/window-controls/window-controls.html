@@ -24,6 +24,12 @@
 								<span v-html="appState.config.debug.hideDebug ? translate('Show debug') : translate('Hide debug')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor">
+								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-comment-o"></span>
+								<span v-html="translate('Debug log configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-devtools " v-bind:class="{'window-control-active': appState.status.devToolsOpened}" @click.prevent="callViewHandler" data-click-handler="windowManager.toggleDevTools">
@@ -133,12 +139,6 @@
 							<theme-select ref="themeSelect"></theme-select>
 						</div>
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error">
-						</div>
-						<div class="window-control-submenu-item-wrapper" v-if="appState.config.debug.enabled && !appState.config.debug.hideDebug && !appState.hasDebugWindow && !appState.status.appShuttingDown && !appState.appError.error">
-							<a class="window-control window-control-app-debug-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.openDebugConfigEditor">
-								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-comment-o"></span>
-								<span v-html="translate('Debug log configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
-							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-toggle-hide-user-messages " v-bind:class="{'window-control-active': !appState.config.userMessages.hideUserMessages}" @click.prevent="callViewHandler" data-click-handler="helpers.userMessageHelper.toggleUserMessages">

@@ -386,22 +386,28 @@ class HtmlHelper extends AppBaseClass {
     /**
      * Adds css class to element
      *
-     * @param {HTMLElement} element Element to add class to
-     * @param {string} className    Class name to add
-     * @return {HTMLElement}        Same element for chaining
+     * @param {HTMLElement}         element     Element to add class to
+     * @param {(string|string[])}   className   Class name to add
+     * @return {HTMLElement}                    Same element for chaining
      */
     addClass (element, className){
         if (this instanceof Element){
             element = this;
         }
-        if (!this.hasClass(element, className)){
-            let classes = element.getAttribute('class');
-            if (classes && classes.split && _.isFunction(classes.split)){
-                classes = classes.split(' ');
-                classes.push(className);
-                element.setAttribute('class', classes.join(' '));
-            } else {
-                element.setAttribute('class', className);
+        if (_.isArray(className)){
+            for (let i=0; i<className.length;i++){
+                this.addClass(element, className[i]);
+            }
+        } else {
+            if (!this.hasClass(element, className)){
+                let classes = element.getAttribute('class');
+                if (classes && classes.split && _.isFunction(classes.split)){
+                    classes = classes.split(' ');
+                    classes.push(className);
+                    element.setAttribute('class', classes.join(' '));
+                } else {
+                    element.setAttribute('class', className);
+                }
             }
         }
         return element;
@@ -410,20 +416,26 @@ class HtmlHelper extends AppBaseClass {
     /**
      * Removes css class from element
      *
-     * @param {HTMLElement} element Element to remove class from
-     * @param {string} className    Class name to remove
-     * @return {HTMLElement}        Same element for chaining
+     * @param {HTMLElement}         element     Element to remove class from
+     * @param {(string|string[])}   className   Class name to remove
+     * @return {HTMLElement}                    Same element for chaining
      */
     removeClass (element, className){
         if (this instanceof Element){
             element = this;
         }
-        if (this.hasClass(element, className)){
-            let classes = element.getAttribute('class');
-            if (classes && classes.split && _.isFunction(classes.split)){
-                classes = classes.split(' ');
-                classes = _.without(classes, className);
-                element.setAttribute('class', classes.join(' '));
+        if (_.isArray(className)){
+            for (let i=0; i<className.length;i++){
+                this.removeClass(element, className[i]);
+            }
+        } else {
+            if (this.hasClass(element, className)){
+                let classes = element.getAttribute('class');
+                if (classes && classes.split && _.isFunction(classes.split)){
+                    classes = classes.split(' ');
+                    classes = _.without(classes, className);
+                    element.setAttribute('class', classes.join(' '));
+                }
             }
         }
         return element;
