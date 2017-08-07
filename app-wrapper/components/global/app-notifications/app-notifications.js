@@ -39,7 +39,7 @@ exports.component = {
             }
         }
     },
-    beforeUnmount: function(){
+    beforeDestroy: function(){
         this.stopQueue();
     },
     methods: {
@@ -48,8 +48,8 @@ exports.component = {
             element.setElementStyles({width: 0, height: 0, opacity: 0});
         },
         enter: function (element, done) {
-            var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10) + 100;
-            var dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
+            let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssletValue('--long-animation-duration'), 10) * 1000, 10) + 100;
+            let dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
 
             setTimeout( () => {
@@ -58,11 +58,11 @@ exports.component = {
         },
         beforeLeave: function (element) {
             element.addClass('transition-wh2');
-            var dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
+            let dimensions = this.$el.getCloneRealDimensions('.app-notification-contents');
             element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: 1});
         },
         leave: function (element, done) {
-            var duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
+            let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
             element.setElementStyles({width: 0, height: 0, opacity: 0});
             setTimeout( () => {
                 done();

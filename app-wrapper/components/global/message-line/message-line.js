@@ -29,7 +29,7 @@ exports.component = {
             if (message.iconClass){
                 return message.iconClass;
             } else {
-                var iconClass = 'fa fa-info-circle';
+                let iconClass = 'fa fa-info-circle';
                 if (message.type == 'warning'){
                     iconClass = 'fa fa-exclamation-circle';
                 } else if (message.type == 'error'){

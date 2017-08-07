@@ -177,11 +177,11 @@ class AppBaseClass extends BaseClass {
             console.log(debugMessage.message);
         }
 
-        var maxDebugMessages = this.getConfig('debug.maxDebugMessages', 30);
-        var messageCount = this.getStateVar('debugMessages.length', 0);
+        let maxDebugMessages = this.getConfig('debug.maxDebugMessages', 30);
+        let messageCount = this.getStateVar('debugMessages.length', 0);
 
         if (messageCount > maxDebugMessages){
-            var startIndex = messageCount - (maxDebugMessages + 1);
+            let startIndex = messageCount - (maxDebugMessages + 1);
             if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
                 appState.debugMessages = appState.debugMessages.slice(startIndex);
             }
@@ -233,7 +233,7 @@ class AppBaseClass extends BaseClass {
      * @return {string}      String representing log line for appending to user message log file
      */
     async getUserMessageFileLine (message){
-        var line = '';
+        let line = '';
         if (appState.userMessagesToFileStarted){
             line += ',\n';
         } else {
@@ -253,7 +253,7 @@ class AppBaseClass extends BaseClass {
      * @return {string}      String representing log line for appending to debug log file
      */
     async getDebugMessageFileLine (message){
-        var line = '';
+        let line = '';
 
         if (appState.debugToFileStarted){
             line += ',\n';
@@ -370,11 +370,11 @@ class AppBaseClass extends BaseClass {
      */
     async getMessageObject (messageLevel, message, type, data, important, dontTranslate, force){
 
-        var userMessage = {};
-        var debugLevels = this.getConfig('logger.messageLevels');
-        var typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
-        var timestamp = new Date().toString();
-        var iconClass = 'fa fa-info-circle';
+        let userMessage = {};
+        let debugLevels = this.getConfig('logger.messageLevels');
+        let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
+        let timestamp = new Date().toString();
+        let iconClass = 'fa fa-info-circle';
 
         if (type == 'warning'){
             iconClass = 'fa fa-exclamation-circle';
@@ -389,7 +389,7 @@ class AppBaseClass extends BaseClass {
 
         if (message && message.match && message.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             message = message.replace(/{(\d+)}/g, (match, number) => {
-                var index = number - 1;
+                let index = number - 1;
                 return !_.isUndefined(data[index]) ? data[index] : match;
             });
         }
@@ -531,8 +531,8 @@ class AppBaseClass extends BaseClass {
      * @return {mixed}               configuration var value
      */
     getConfig (name, defaultValue){
-        var path = name;
-        var value;
+        let path = name;
+        let value;
         if (!path.match(/^config\./)){
             path = 'config.' + name;
         }
@@ -619,8 +619,8 @@ class AppBaseClass extends BaseClass {
      * @return {mixed}            Returns data returned by main script async message handler for given message instruction
      */
     async asyncMessage (data){
-        var returnPromise;
-        var resolveReference;
+        let returnPromise;
+        let resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
@@ -683,19 +683,19 @@ class AppBaseClass extends BaseClass {
 
         if (title && title.match && title.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             title = title.replace(/{(\d+)}/g, (match, number) => {
-                var index = number - 1;
+                let index = number - 1;
                 return !_.isUndefined(data[index]) ? data[index] : match;
             });
         }
         if (text && text.match && text.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             text = text.replace(/{(\d+)}/g, (match, number) => {
-                var index = number - 1;
+                let index = number - 1;
                 return !_.isUndefined(data[index]) ? data[index] : match;
             });
         }
         if (debugText && debugText.match && debugText.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             debugText = debugText.replace(/{(\d+)}/g, (match, number) => {
-                var index = number - 1;
+                let index = number - 1;
                 return !_.isUndefined(data[index]) ? data[index] : match;
             });
         }

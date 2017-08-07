@@ -74,7 +74,7 @@ class AppConfig extends AppBaseClass {
 
         this.appStateConfig = require('../../../config/appWrapperConfig').config;
 
-        var theConfig = _appWrapper.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
+        let theConfig = _appWrapper.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
         _.each(theConfig.configData.vars, function(value, key){
             if (!value.editable){
                 theConfig.configData.uneditableConfig.push(key);
@@ -113,7 +113,7 @@ class AppConfig extends AppBaseClass {
         let configName = this.getConfigStorageName();
         this.log('Loading user config...', 'group', []);
         if (localStorage && localStorage.getItem(configName)){
-            var userConfig = {};
+            let userConfig = {};
             try {
                 userConfig = JSON.parse(localStorage.getItem(configName));
             } catch (e) {
@@ -154,7 +154,7 @@ class AppConfig extends AppBaseClass {
         let configName = this.getConfigStorageName();
         if (localStorage){
             let utilHelper = _appWrapper.getHelper('util');
-            var userConfig = utilHelper.difference(this.baseConfig, appState.config);
+            let userConfig = utilHelper.difference(this.baseConfig, appState.config);
 
             let ignoreUserConfig = this.getConfig('configData.ignoreUserConfig');
             if (ignoreUserConfig && ignoreUserConfig.length){
@@ -169,17 +169,17 @@ class AppConfig extends AppBaseClass {
                 return returnValue;
             });
 
-            var userConfigKeys = _.keys(userConfig);
-            var userConfigKeyMap = utilHelper.propertyMap(userConfig);
-            var oldUserConfigKeyMap = utilHelper.propertyMap(this.userConfig);
-            var keyMapDiff = _.difference(userConfigKeyMap, oldUserConfigKeyMap);
+            let userConfigKeys = _.keys(userConfig);
+            let userConfigKeyMap = utilHelper.propertyMap(userConfig);
+            let oldUserConfigKeyMap = utilHelper.propertyMap(this.userConfig);
+            let keyMapDiff = _.difference(userConfigKeyMap, oldUserConfigKeyMap);
             keyMapDiff = _.union(keyMapDiff, _.difference(oldUserConfigKeyMap, userConfigKeyMap));
 
 
 
-            var reloadConfig = this.getConfig('configData.reloadConfig');
-            var reloadChanges = _.intersection(keyMapDiff, reloadConfig);
-            var shouldReload = reloadChanges.length > 0;
+            let reloadConfig = this.getConfig('configData.reloadConfig');
+            let reloadChanges = _.intersection(keyMapDiff, reloadConfig);
+            let shouldReload = reloadChanges.length > 0;
 
             try {
                 if (userConfig && Object.keys(userConfigKeys).length){
@@ -345,15 +345,14 @@ class AppConfig extends AppBaseClass {
      * @return {Object} Config editor data
      */
     async prepareConfigEditorData () {
-        var self = this;
         appState.configEditorData = {};
-        var keys = _.keys(appState.config);
-        for(var i=0; i<keys.length; i++){
-            var key = keys[i];
-            var value = appState.config[key];
+        let keys = _.keys(appState.config);
+        for(let i=0; i<keys.length; i++){
+            let key = keys[i];
+            let value = appState.config[key];
             if (key !== 'configData'){
                 if (!_.includes(appState.config.configData.uneditableConfig, key)){
-                    appState.configEditorData[key] = await self.prepareConfigEditorDataItem(value, key);
+                    appState.configEditorData[key] = await this.prepareConfigEditorDataItem(value, key);
                 }
             }
         }
@@ -368,19 +367,18 @@ class AppConfig extends AppBaseClass {
      * @return {(array|Object)}         Prepared config editor data value
      */
     async prepareConfigEditorDataItem (value) {
-        var self = this;
         if (_.isArray(value)){
             for(let i=0; i<value.length; i++) {
                 let innerValue = value[i];
                 let innerKey = i;
-                value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
+                value[innerKey] = await this.prepareConfigEditorDataItem(innerValue, innerKey);
             }
         } else if (_.isObject(value)){
-            var keys = _.keys(value);
+            let keys = _.keys(value);
             for(let i=0; i<keys.length; i++){
                 let innerKey = keys[i];
                 let innerValue = value[innerKey];
-                value[innerKey] = await self.prepareConfigEditorDataItem(innerValue, innerKey);
+                value[innerKey] = await this.prepareConfigEditorDataItem(innerValue, innerKey);
             }
         }
         return value;
@@ -428,15 +426,15 @@ class AppConfig extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        var form = e.target;
-        var newConfig = {};
+        let form = e.target;
+        let newConfig = {};
         _.each(form, function(input){
-            var currentConfig = newConfig;
-            var appConfig = _.cloneDeep(appState.config);
-            var dataPath = input.getAttribute('data-path');
+            let currentConfig = newConfig;
+            let appConfig = _.cloneDeep(appState.config);
+            let dataPath = input.getAttribute('data-path');
             if (dataPath && dataPath.split){
-                var pathChunks = _.drop(dataPath.split('.'), 1);
-                var chunkCount = pathChunks.length - 1;
+                let pathChunks = _.drop(dataPath.split('.'), 1);
+                let chunkCount = pathChunks.length - 1;
                 _.each(pathChunks, function(pathChunk, i){
                     if (i == chunkCount){
                         if (input.getAttribute('type') == 'checkbox'){
@@ -458,11 +456,11 @@ class AppConfig extends AppBaseClass {
                 });
             }
         });
-        var oldConfig = _.cloneDeep(appState.config);
-        var difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
+        let oldConfig = _.cloneDeep(appState.config);
+        let difference = _appWrapper.getHelper('util').difference(oldConfig, newConfig);
 
         if (difference && _.isObject(difference) && _.keys(difference).length){
-            var finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
+            let finalConfig = _appWrapper.mergeDeep({}, appState.config, difference);
             appState.config = _.cloneDeep(finalConfig);
             await this.saveUserConfig();
             _appWrapper.getHelper('modal').closeCurrentModal();

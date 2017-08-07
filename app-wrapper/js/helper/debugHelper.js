@@ -450,6 +450,7 @@ class DebugHelper extends AppBaseClass {
                 this.log(err, 'error', []);
                 resolveReference(false);
             } else {
+                stat.timestamp = +new Date();
                 resolveReference(stat);
             }
         });

@@ -59,25 +59,32 @@ class UserDataHelper extends AppBaseClass {
      * Saves user data to local storage (if data was changed)
      *
      * @async
-     * @param  {Object} userData User data object
-     * @return {boolean}         Saving result
+     * @param  {Object}     userData    User data object
+     * @param  {Boolean}    notSilent   Flag to control message output
+     * @return {Boolean}                Saving result
      */
-    async saveUserData (userData) {
+    async saveUserData (userData, notSilent) {
         let saved = false;
         if (this.userDataChanged(userData)){
             this.previousUserData = _.cloneDeep(appState.userData);
             appState.userData = userData;
-            this.log('Saving user data', 'info', []);
+            if (notSilent){
+                this.log('Saving user data', 'info', []);
+            }
             let userDataName = this.getUserDataStorageName();
             saved = await this.getHelper('storage').set(userDataName, userData);
             if (!saved){
                 this.addUserMessage('Could not save user data!', 'error', [], false, false);
             } else {
                 this.previousUserData = _.cloneDeep(appState.userData);
-                this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
+                if (notSilent){
+                    this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
+                }
             }
         } else {
-            this.log('Not saving user data - data unchanged', 'info', []);
+            if (notSilent){
+                this.log('Not saving user data - data unchanged', 'info', []);
+            }
         }
         return saved;
     }
@@ -86,7 +93,7 @@ class UserDataHelper extends AppBaseClass {
      * Loads user data from localStorage
      *
      * @async
-     * @param  {boolean} omitSettingAppState    Flag to prevent setting userData in appState
+     * @param  {Boolean} omitSettingAppState    Flag to prevent setting userData in appState
      * @return {(Object|boolean)}               Object containing userData or false on failure
      */
     async loadUserData (omitSettingAppState) {
@@ -116,7 +123,7 @@ class UserDataHelper extends AppBaseClass {
      * Clears user data in localStorage
      *
      * @async
-     * @return {boolean} Operation result
+     * @return {Boolean} Operation result
      */
     async clearUserData () {
         this.log('Clearing user data', 'info', []);

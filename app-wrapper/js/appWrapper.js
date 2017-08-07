@@ -129,7 +129,7 @@ class AppWrapper extends AppBaseClass {
         await this.appConfig.initializeLogging();
         await this.fileManager.initializeLogging();
 
-        var tmpDataDir = this.getConfig('appConfig.tmpDataDir');
+        let tmpDataDir = this.getConfig('appConfig.tmpDataDir');
         if (tmpDataDir){
             tmpDataDir = path.resolve(tmpDataDir);
             await this.fileManager.createDirRecursive(tmpDataDir);
@@ -176,7 +176,7 @@ class AppWrapper extends AppBaseClass {
 
         await this.helpers.staticFilesHelper.loadCssFiles();
 
-        var globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
+        let globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
         if (globalKeyHandlers && globalKeyHandlers.length){
             for(let j=0; j<globalKeyHandlers.length; j++){
                 this.getHelper('keyboard').registerGlobalShortcut(globalKeyHandlers[j]);
@@ -240,7 +240,7 @@ class AppWrapper extends AppBaseClass {
         this.windowManager.showWindow();
         appState.status.appLoaded = true;
         await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
-        var retValue = await this.app.finalize();
+        let retValue = await this.app.finalize();
         if (retValue){
             appState.status.appInitialized = true;
             appState.status.appReady = true;
@@ -308,8 +308,8 @@ class AppWrapper extends AppBaseClass {
      * @return {Object} An object with all initialized helper instances
      */
     async initializeHelpers(helperDirs){
-        var helpers = {};
-        var classHelpers = await this.loadHelpers(helperDirs);
+        let helpers = {};
+        let classHelpers = await this.loadHelpers(helperDirs);
 
         for (let helperIdentifier in classHelpers){
             helpers[helperIdentifier] = new classHelpers[helperIdentifier]();
@@ -329,16 +329,16 @@ class AppWrapper extends AppBaseClass {
      * @return {Object} An object with all helper classes
      */
     async loadHelpers (helperDirs) {
-        var helpers = {};
+        let helpers = {};
         if (!(helperDirs && _.isArray(helperDirs) && helperDirs.length)){
             this.log('No wrapper helper dirs defined', 'warning', []);
             this.log('You should define this in ./config/config.js file under "appConfig.templateDirectories.helperDirectories" variable', 'debug', []);
             helperDirs = [];
         } else {
             this.log('Loading wrapper helpers from {1} directories.', 'group', [helperDirs.length]);
-            var currentHelpers;
+            let currentHelpers;
             for (let i=0; i<helperDirs.length; i++){
-                var helperDir = path.resolve(helperDirs[i]);
+                let helperDir = path.resolve(helperDirs[i]);
                 currentHelpers = await this.fileManager.loadFilesFromDir(helperDir, /\.js$/, true);
                 if (currentHelpers && _.isObject(currentHelpers) && _.keys(currentHelpers).length){
                     helpers = _.merge(helpers, currentHelpers);
@@ -366,8 +366,8 @@ class AppWrapper extends AppBaseClass {
             document.querySelector('.nw-app-wrapper').innerHTML = this.appTemplate;
         }
 
-        var returnPromise;
-        var resolveReference;
+        let returnPromise;
+        let resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
@@ -443,12 +443,12 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     async callViewHandler (e) {
-        var target = e.target;
-        var eventType = e.type;
-        var eventHandlerName = '';
-        var dataHandlerAttrName = '';
-        var eventTargetAttrName = '';
-        var eventTargetInstruction = '';
+        let target = e.target;
+        let eventType = e.type;
+        let eventHandlerName = '';
+        let dataHandlerAttrName = '';
+        let eventTargetAttrName = '';
+        let eventTargetInstruction = '';
         if (target){
             eventTargetAttrName = 'data-event-target';
             do {
@@ -519,9 +519,9 @@ class AppWrapper extends AppBaseClass {
      */
     async cleanup(){
         let utilHelper = this.getHelper('util');
-        var returnPromise;
+        let returnPromise;
         this.addUserMessage('Performing pre-close cleanup...', 'info', [], false, false);
-        var resolveReference;
+        let resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
@@ -778,7 +778,7 @@ class AppWrapper extends AppBaseClass {
      * @return {Object}            Instance of the helper object (or false if helper can't be found)
      */
     getHelper(helperName){
-        var helper = false;
+        let helper = false;
         if (this.app && this.app.helpers){
             helper = _.get(this.app.helpers, helperName);
             if (!helper){
@@ -807,10 +807,10 @@ class AppWrapper extends AppBaseClass {
      * @return {Function}            Reference to required method with context and arguments applied (or false if no method is found)
      */
     async getObjMethod(methodString, methodArgs, context, silent){
-        var methodChunks = methodString.split('.');
-        var targetMethod;
-        var methodPath = '';
-        var objMethod = false;
+        let methodChunks = methodString.split('.');
+        let targetMethod;
+        let methodPath = '';
+        let objMethod = false;
         if (methodChunks && methodChunks.length && methodChunks.length > 1){
             targetMethod = _.takeRight(methodChunks);
             methodPath = _.slice(methodChunks, 0, methodChunks.length-1).join('.');
@@ -819,7 +819,7 @@ class AppWrapper extends AppBaseClass {
         }
 
 
-        var handlerObj = this.app;
+        let handlerObj = this.app;
         if (methodPath){
             handlerObj = _.get(handlerObj, methodPath);
         }
@@ -868,7 +868,7 @@ class AppWrapper extends AppBaseClass {
      * @return {mixed}               Method return value or false if no method found
      */
     async callObjMethod(methodString, methodArgs, context){
-        var objMethod = await this.getObjMethod(methodString, methodArgs, context);
+        let objMethod = await this.getObjMethod(methodString, methodArgs, context);
         if (objMethod && _.isFunction(objMethod)){
             return await objMethod();
         } else {
@@ -991,10 +991,10 @@ class AppWrapper extends AppBaseClass {
      * @return {Object} appState object
      */
     getAppState () {
-        var win = nw.Window.get().window;
-        var appStateFile;
-        var appAppState;
-        var initialAppState;
+        let win = nw.Window.get().window;
+        let appStateFile;
+        let appAppState;
+        let initialAppState;
         if (win && win.appState){
             return win.appState;
         } else {
@@ -1024,16 +1024,16 @@ class AppWrapper extends AppBaseClass {
      * @return {Object} Result destination object with all source object values merged
      */
     mergeDeep (){
-        var destination = arguments[0];
-        var sources = Array.prototype.slice.call(arguments, 1);
-        var result = _.cloneDeep(destination);
+        let destination = arguments[0];
+        let sources = Array.prototype.slice.call(arguments, 1);
+        let result = _.cloneDeep(destination);
 
         for (let i=0; i < sources.length; i++){
-            var source = sources[i];
-            var destinationKeys = _.keys(result);
-            var sourceKeys = _.keys(source);
-            var newKeys = _.difference(sourceKeys, destinationKeys);
-            var oldKeys = _.intersection(sourceKeys, destinationKeys);
+            let source = sources[i];
+            let destinationKeys = _.keys(result);
+            let sourceKeys = _.keys(source);
+            let newKeys = _.difference(sourceKeys, destinationKeys);
+            let oldKeys = _.intersection(sourceKeys, destinationKeys);
 
             for (let j=0; j<newKeys.length; j++){
                 result[newKeys[j]] = _.cloneDeep(source[newKeys[j]]);
@@ -1065,7 +1065,7 @@ class AppWrapper extends AppBaseClass {
     async wait(duration){
         if (this.getConfig('debug.enabled')){
             this.log('Waiting {1} ms', 'debug', [duration]);
-            var returnPromise = new Promise((resolve) => {
+            let returnPromise = new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(true);
                 }, duration);
@@ -1084,7 +1084,7 @@ class AppWrapper extends AppBaseClass {
      * @return {boolean} Result of waiting for nextTick (always true)
      */
     async nextTick (){
-        var returnPromise = new Promise((resolve) => {
+        let returnPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
             }, 0);

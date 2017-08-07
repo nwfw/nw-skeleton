@@ -156,7 +156,7 @@ class BaseClass extends eventEmitter {
      */
     addBoundMethods () {
         if (this.boundMethods){
-            var keys = _.keys(this.boundMethods);
+            let keys = _.keys(this.boundMethods);
             for (let i=0; i<keys.length; i++){
                 if (this[keys[i]] && _.isFunction(this[keys[i]]) && this[keys[i]].bind && _.isFunction(this[keys[i]].bind)){
                     this.boundMethods[keys[i]] = this[keys[i]].bind(this);
@@ -172,7 +172,7 @@ class BaseClass extends eventEmitter {
      * @return {undefined}
      */
     removeBoundMethods () {
-        var keys = _.keys(this.boundMethods);
+        let keys = _.keys(this.boundMethods);
         for (let i=0; i<keys.length; i++){
             this.boundMethods[keys[i]] = null;
         }
@@ -198,7 +198,7 @@ class BaseClass extends eventEmitter {
      * @return {mixed}               appState var value
      */
     getStateVar (varPath, defaultValue){
-        var varValue;
+        let varValue;
         if (appState){
             varValue = _.get(appState, varPath, defaultValue);
         }
@@ -226,8 +226,8 @@ class BaseClass extends eventEmitter {
      * @return {mixed}               Configuration var value
      */
     getConfig (name, defaultValue){
-        var path = name;
-        var value;
+        let path = name;
+        let value;
         if (!path.match(/^config\./)){
             path = 'config.' + name;
         }
