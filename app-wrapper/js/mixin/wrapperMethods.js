@@ -41,11 +41,11 @@ var MixinWrapperMethods  = {
          * @return {mixed} Value or default value from arguments
          */
         def: function(){
-            var value;
+            let value;
             if (arguments && arguments.length){
                 value = arguments[0];
             }
-            var defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
+            let defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
             if (_.isUndefined(value)){
                 for(let i=0; i<defaultTexts.length;i++){
                     value = defaultTexts[i];
@@ -66,11 +66,11 @@ var MixinWrapperMethods  = {
          * @return {mixed} Value or default value from arguments
          */
         defAll: function(){
-            var value;
+            let value;
             if (arguments && arguments.length){
                 value = arguments[0];
             }
-            var defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
+            let defaultTexts = Array.prototype.slice.call(arguments, 1, arguments.length);
             if (!(!_.isUndefined(value) && value)){
                 for(let i=0; i<defaultTexts.length;i++){
                     value = defaultTexts[i];

@@ -771,7 +771,7 @@ class HtmlHelper extends AppBaseClass {
         var offsetTop = element.offsetTop;
         var parent = element.parentNode;
 
-        if (parent.tagName.toLowerCase() !== 'body'){
+        if (parent && parent.tagName && parent.tagName.toLowerCase() !== 'body'){
             var parentOffset = this.getAbsolutePosition(parent);
             offsetLeft += parentOffset.offsetLeft;
             offsetTop += parentOffset.offsetTop;

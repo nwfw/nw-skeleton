@@ -47,38 +47,38 @@ class FormatHelper extends AppBaseClass {
         if (isNaN(duration)){
             duration = 0;
         }
-        var sec_num;
+        let sec_num;
         if (!secondFractions){
             sec_num = parseInt(duration, 10);
         } else {
             sec_num = duration;
         }
-        var days   = Math.floor(sec_num / 86400);
-        var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
-        var minutes = Math.floor((sec_num - (hours * 3600) - (days * 86400)) / 60);
-        var seconds = Math.floor(sec_num - (days * 86400) - (hours * 3600) - (minutes * 60));
-        var milliseconds = (sec_num - (days * 86400) - (hours * 3600) - (minutes * 60) - seconds) * 1000;
+        let days   = Math.floor(sec_num / 86400);
+        let hours   = Math.floor((sec_num - (days * 86400)) / 3600);
+        let minutes = Math.floor((sec_num - (hours * 3600) - (days * 86400)) / 60);
+        let seconds = Math.floor(sec_num - (days * 86400) - (hours * 3600) - (minutes * 60));
+        let milliseconds = (sec_num - (days * 86400) - (hours * 3600) - (minutes * 60) - seconds) * 1000;
 
         if (!duration){
-            // var num = parseInt(Math.random() * 100 / 33, 10);
-            var val = '';
-            // for (var i = 0; i<num; i++){
+            // let num = parseInt(Math.random() * 100 / 33, 10);
+            let val = '';
+            // for (let i = 0; i<num; i++){
             //     val += '.';
             // }
             return val;
         }
 
-        var hasDays = false;
+        let hasDays = false;
         if (days){
             hasDays = true;
         }
 
-        var hasHours = false;
+        let hasHours = false;
         if (hours){
             hasHours = true;
         }
 
-        var hasMinutes = false;
+        let hasMinutes = false;
         if (minutes){
             hasMinutes = true;
         }
@@ -95,7 +95,7 @@ class FormatHelper extends AppBaseClass {
             seconds = '0' + seconds;
         }
 
-        var formattedTime = '';
+        let formattedTime = '';
         if (hasDays){
             formattedTime = days + ' ' + _appWrapper.appTranslations.translate('days') + ' ' + hours + ':' + minutes + ':' + seconds;
         } else if (hasHours){
@@ -137,7 +137,7 @@ class FormatHelper extends AppBaseClass {
      */
     formatDate  (date, options, includeTime) {
 
-        var defaultOptions = {
+        let defaultOptions = {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit'
@@ -149,7 +149,7 @@ class FormatHelper extends AppBaseClass {
             defaultOptions.second = '2-digit';
         }
 
-        var dateOptions = defaultOptions;
+        let dateOptions = defaultOptions;
 
         if (options){
             dateOptions = _.defaults(defaultOptions, options);
@@ -159,7 +159,7 @@ class FormatHelper extends AppBaseClass {
             date = new Date(date);
         }
 
-        var formattedDate = date.toLocaleString(appState.config.currentLocale, dateOptions);
+        let formattedDate = date.toLocaleString(appState.config.currentLocale, dateOptions);
         return formattedDate;
     }
 
@@ -183,7 +183,7 @@ class FormatHelper extends AppBaseClass {
             includeDate = true;
         }
 
-        var defaultOptions = {
+        let defaultOptions = {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
@@ -195,13 +195,13 @@ class FormatHelper extends AppBaseClass {
             defaultOptions.day = '2-digit';
         }
 
-        var dateOptions = defaultOptions;
+        let dateOptions = defaultOptions;
 
         if (options){
             dateOptions = _.defaults(defaultOptions, options);
         }
 
-        var formattedDate = date.toLocaleString(appState.config.currentLocale, dateOptions);
+        let formattedDate = date.toLocaleString(appState.config.currentLocale, dateOptions);
         return formattedDate;
     }
 
@@ -220,13 +220,13 @@ class FormatHelper extends AppBaseClass {
             date = new Date(date);
         }
 
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
 
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var seconds = date.getSeconds();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
 
         if (month < 10){
             month = '0' + month;
@@ -247,7 +247,7 @@ class FormatHelper extends AppBaseClass {
             seconds = '0' + seconds;
         }
 
-        var formattedDate = year + '-' + month + '-' + day;
+        let formattedDate = year + '-' + month + '-' + day;
 
         if (includeTime) {
             formattedDate += ' ';
@@ -277,13 +277,13 @@ class FormatHelper extends AppBaseClass {
             date = new Date(date);
         }
 
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
 
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var seconds = date.getSeconds();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
 
 
         if (month < 10){
@@ -305,7 +305,7 @@ class FormatHelper extends AppBaseClass {
             seconds = '0' + seconds;
         }
 
-        var formattedTime = '';
+        let formattedTime = '';
         if (includeDate){
             formattedTime += year + '-' + month + '-' + day;
         }
@@ -531,7 +531,7 @@ class FormatHelper extends AppBaseClass {
      * @return {string}       Formatted currency value
      */
     formatCurrency (value){
-        var returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
+        let returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
     }
 
@@ -644,8 +644,20 @@ class FormatHelper extends AppBaseClass {
         if (bytes == 0) {
             return '0 B';
         }
+        let negative = false;
+        if (bytes < 0){
+            negative = true;
+            bytes = Math.abs(bytes);
+        }
         let size = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        return Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];
+        if (size >= 3){
+            size -= 1;
+        }
+        let value = Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];
+        if (negative){
+            value = '-' + value;
+        }
+        return value;
     }
 }
 

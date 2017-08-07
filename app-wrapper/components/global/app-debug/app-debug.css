@@ -126,3 +126,79 @@
 .app-debug-wrapper.message-list-expanded .message-list-wrapper .message-list-no-messages {
     padding: 8px 0px 10px;
 }
+
+.app-debug-wrapper .app-debug-header .app-debug-tool.toggle-usage-data.active {
+    color: var(--app-debug-header-tool-link-color-hovered);
+    text-shadow: var(--app-debug-header-tool-text-shadow-hovered);
+    text-decoration: none;
+}
+
+.app-debug-wrapper .usage-data-wrapper {
+    max-height: 2rem;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #666666;
+    padding: 0 0 4px 0;
+}
+
+.app-debug-wrapper .usage-data {
+    font-size: 0.8rem;
+    display: inline-block;
+    padding: 3px 5px;
+    flex: 0 0 auto;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item-bar-outer {
+    display: inline-block;
+    width: 100px;
+    height: calc(0.9rem + 2px);
+    border: 1px solid;
+    position: relative;
+    top: 3px;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #FFFFFF;
+    height: 0.9rem;
+    overflow: hidden;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner-value-below {
+    width: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+
+.app-debug-wrapper .usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner .usage-data-item-bar-inner-value {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100px;
+    text-align: center;
+    color: #333333;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item-change {
+    display: inline-block;
+    margin-left: 5px;
+    width: 70px;
+}
+
+.app-debug-wrapper .usage-data .usage-data-item-change .fa {
+    margin-right: 3px;
+}

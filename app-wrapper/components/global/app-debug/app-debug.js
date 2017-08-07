@@ -25,13 +25,45 @@ exports.component = {
     template: '',
     data: function () {
         return {
+            usageData: appState.usageData,
             debugMessages: appState.debugMessages,
             debugMessageCount: appState.debugMessages.length
         };
     },
+    beforeCreate: function(){
+        if (appState.config.debug.usage){
+            _appWrapper.getHelper('debug').startUsageMonitor();
+        }
+    },
+    destroyed: function(){
+        if (appState.config.debug.usage){
+            _appWrapper.getHelper('debug').stopUsageMonitor();
+        }
+    },
+    methods: {
+
+    },
     computed: {
         appState: function(){
             return appState;
-        }
+        },
+        cpuInnerBarStyle: function() {
+            let maxValue = appState.usageData.maxCpu;
+            let currentValue = appState.usageData.current.cpu;
+            let width = parseInt(currentValue / (maxValue / 100), 10);
+            let style = {
+                width: width + '%',
+            };
+            return style;
+        },
+        memoryInnerBarStyle: function() {
+            let maxValue = appState.usageData.maxMemory;
+            let currentValue = appState.usageData.current.memory;
+            let width = parseInt(currentValue / (maxValue / 100), 10);
+            let style = {
+                width: width + '%',
+            };
+            return style;
+        },
     }
 };

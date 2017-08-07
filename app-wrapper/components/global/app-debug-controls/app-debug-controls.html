@@ -8,6 +8,7 @@
 			<span class="fa fa-external-link" :title="translate('Open debug in new window')"></span>
 		</a>
 		<input class="log-file-picker-input" type="file" v-on:change="callViewHandler" data-change-handler="helpers.utilHelper.pickLogViewerFile" />
+		<a class="app-debug-tool toggle-usage-data hide-in-debug-window fa fa-bar-chart" :class="{'active': appState.config.debug.usage}" v-bind:title="translate('Show performance data')" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleUsageData"></a>
 	</div>
 	<div class="app-debug-controls-item app-debug-settings" v-if="appState.isDebugWindow || appState.config.debug.messagesExpanded">
 		<div class="app-debug-control">

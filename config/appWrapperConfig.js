@@ -498,6 +498,8 @@ exports.config = {
         animateMessages: true,
         hideDebug: false,
         enabled: true,
+        usage: false,
+        usageInterval: 500,
         debugToFile: true,
         saveStacksToFile: true,
         debugToFileAppend: false,

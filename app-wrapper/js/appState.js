@@ -273,6 +273,13 @@ exports.appState = {
     debugData: {},
     footerData: {},
     mainData: {},
+    usageData: {
+        current: {},
+        change: {},
+        previous: [],
+        maxCpu: 100,
+        maxMemory: 0,
+    },
     userMessagesData: {
         selectFocused: false
     },

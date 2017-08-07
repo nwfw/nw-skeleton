@@ -50,7 +50,7 @@ class UtilHelper extends AppBaseClass {
      * @return {Number}     Random number
      */
     getRandom (min, max){
-        var random = Math.floor(Math.random() * (max - min + 1)) + min;
+        let random = Math.floor(Math.random() * (max - min + 1)) + min;
         return random;
     }
 
@@ -64,7 +64,7 @@ class UtilHelper extends AppBaseClass {
         if (!size){
             size = 4;
         }
-        var randomString = '';
+        let randomString = '';
         do {
             randomString += Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
         } while (randomString.length < size);
@@ -84,8 +84,8 @@ class UtilHelper extends AppBaseClass {
             return '';
         }
 
-        var cache = [];
-        var replacer = function(key, val) {
+        let cache = [];
+        let replacer = function(key, val) {
             if (_.isObject(val) && val !== null) {
                 if (cache.indexOf(val) !== -1) {
                     return '__circular__';
@@ -111,7 +111,7 @@ class UtilHelper extends AppBaseClass {
      * @return {undefined}
      */
     preloadImageCallback (imgSrc, callback){
-        var imgEl = document.createElement('img');
+        let imgEl = document.createElement('img');
         if (callback && _.isFunction(callback)){
             imgEl.onload = () => {
                 imgEl.onload = null;
@@ -129,9 +129,9 @@ class UtilHelper extends AppBaseClass {
      * @return {array}     Array of duplicate values
      */
     getArrayDuplicates (arr){
-        var sorted_arr = arr.slice().sort();
-        var results = [];
-        for (var i = 0; i < arr.length - 1; i++) {
+        let sorted_arr = arr.slice().sort();
+        let results = [];
+        for (let i = 0; i < arr.length - 1; i++) {
             if (sorted_arr[i + 1] == sorted_arr[i]) {
                 results.push(sorted_arr[i]);
             }
@@ -157,14 +157,14 @@ class UtilHelper extends AppBaseClass {
         if (!isInner){
             isInner = false;
         }
-        var objValue;
-        var configVar = {
+        let objValue;
+        let configVar = {
             path: path,
             name: configName,
             value: _.cloneDeep(configValue),
             controlData: null
         };
-        var innerPath = path.replace(/^config\./, '');
+        let innerPath = path.replace(/^config\./, '');
         if (appState.config.configData.vars[innerPath] && appState.config.configData.vars[innerPath]['control']){
             configVar.formControl = 'form-control-' + appState.config.configData.vars[innerPath]['control'];
             configVar.type = appState.config.configData.vars[innerPath]['type'];
@@ -182,7 +182,7 @@ class UtilHelper extends AppBaseClass {
                 configVar.formControl = 'form-control-array';
                 configVar.type = 'array';
                 objValue = [];
-                var values = _.cloneDeep(configValue);
+                let values = _.cloneDeep(configValue);
                 _.each(values, (value, name) => {
                     objValue.push(this.getControlObject(value, name, path));
                 });
@@ -194,16 +194,16 @@ class UtilHelper extends AppBaseClass {
                 configVar.formControl = 'form-control-object';
                 configVar.type = 'object';
                 objValue = [];
-                var keys = _.keys(configValue);
-                for(var i=0; i<keys.length;i++){
-                    var name = keys[i];
-                    var value;
+                let keys = _.keys(configValue);
+                for(let i=0; i<keys.length;i++){
+                    let name = keys[i];
+                    let value;
                     try {
                         value = configValue[keys[i]];
                     } catch (ex){
                         value = configValue[keys[i]];
                     }
-                    var newObjValue = this.getControlObject(value, name, path, true);
+                    let newObjValue = this.getControlObject(value, name, path, true);
                     objValue.push(newObjValue);
                 }
                 configVar.value = _.cloneDeep(objValue);
@@ -221,8 +221,8 @@ class UtilHelper extends AppBaseClass {
      * @return {Object} Platform data
      */
     getPlatformData (){
-        var name = os.platform();
-        var platform = {
+        let name = os.platform();
+        let platform = {
             isLinux: false,
             isMac: false,
             isWindows: false,
@@ -284,9 +284,9 @@ class UtilHelper extends AppBaseClass {
      * @return {(Object|array)}          Differences in arrays or objects
      */
     difference (original, modified) {
-        var ret = {};
-        var diff;
-        for (var name in modified) {
+        let ret = {};
+        let diff;
+        for (let name in modified) {
             if (name in original) {
                 if (_.isObject(modified[name]) && !_.isArray(modified[name])) {
                     diff = this.difference(original[name], modified[name]);

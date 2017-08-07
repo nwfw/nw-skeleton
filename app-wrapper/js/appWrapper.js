@@ -420,6 +420,10 @@ class AppWrapper extends AppBaseClass {
     async reinitializeFeApp(){
         this.once('feApp:destroyed', async () => {
             window.feApp = null;
+            appState.debugMessages = [];
+            appState.allDebugMessages = [];
+            appState.userMessages = [];
+            appState.allUserMessages = [];
             await this.wait(appState.config.shortPauseDuration);
             await this.getHelper('component').initializeComponents();
             await this.initializeFeApp();

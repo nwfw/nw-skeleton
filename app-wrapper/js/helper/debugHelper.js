@@ -6,6 +6,8 @@
 
 const path = require('path');
 const _ = require('lodash');
+const pusage = require('pidusage');
+
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -36,6 +38,14 @@ class DebugHelper extends AppBaseClass {
 
         this.timeouts = {
             processDebugMessagesTimeout: null
+        };
+
+        this.intervals = {
+            usageData: null
+        };
+
+        this.boundMethods = {
+            refreshUsageData: null
         };
 
         return this;
@@ -377,6 +387,73 @@ class DebugHelper extends AppBaseClass {
      */
     toggleDebugMessages () {
         _appWrapper.appConfig.setConfigVar('debug.messagesExpanded', !this.getConfig('debug.messagesExpanded'));
+    }
+
+    async toggleUsageData () {
+        if (appState.config.debug.usage){
+            appState.config.debug.usage = false;
+            this.stopUsageMonitor();
+        } else {
+            appState.config.debug.usage = true;
+            this.startUsageMonitor();
+        }
+    }
+
+    async startUsageMonitor () {
+        await this.refreshUsageData();
+        this.intervals.usageData = setInterval(this.boundMethods.refreshUsageData, this.getConfig('debug.usageInterval', 1000));
+    }
+
+    stopUsageMonitor () {
+        clearInterval(this.intervals.usageData);
+    }
+
+    async refreshUsageData () {
+        let data = await this.getUsageData();
+        if (data){
+            if (appState.usageData.previous.length > 1000){
+                appState.usageData.previous = appState.usageData.previous.slice(1, 2);
+            }
+            if (appState.usageData.previous.length){
+                appState.usageData.change.cpu = _.round(data.cpu - appState.usageData.previous[appState.usageData.previous.length-1].cpu, 2);
+                appState.usageData.change.memory = data.memory - appState.usageData.previous[appState.usageData.previous.length-1].memory;
+                if (isNaN(appState.usageData.change.cpu)){
+                    appState.usageData.change.cpu = 0;
+                }
+                if (isNaN(appState.usageData.change.memory)){
+                    appState.usageData.change.memory = 0;
+                }
+            } else {
+                appState.usageData.change.cpu = 0;
+                appState.usageData.change.memory = 0;
+            }
+
+            appState.usageData.previous.push(appState.usageData.current);
+            appState.usageData.current = data;
+            if (data.cpu > appState.usageData.maxCpu){
+                appState.usageData.maxCpu = data.cpu;
+            }
+            if (data.memory > appState.usageData.maxMemory){
+                appState.usageData.maxMemory = data.memory;
+            }
+        }
+    }
+
+    async getUsageData () {
+        var returnPromise;
+        var resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+        pusage.stat(process.pid, (err, stat) => {
+            if (err){
+                this.log(err, 'error', []);
+                resolveReference(false);
+            } else {
+                resolveReference(stat);
+            }
+        });
+        return returnPromise;
     }
 
 }
