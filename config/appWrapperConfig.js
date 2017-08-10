@@ -142,7 +142,7 @@ exports.config = {
 
         initJsFiles: [],
         jsFiles: [
-            '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.min.js'
+            '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.js'
         ],
 
         debugCssFiles: [
@@ -500,6 +500,8 @@ exports.config = {
         enabled: true,
         usage: false,
         usageInterval: 500,
+        usageGraphs: false,
+        usageHistoryCount: 1000,
         debugToFile: true,
         saveStacksToFile: true,
         debugToFileAppend: false,

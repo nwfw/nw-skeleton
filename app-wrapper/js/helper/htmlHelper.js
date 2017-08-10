@@ -316,43 +316,39 @@ class HtmlHelper extends AppBaseClass {
      * @return {Object}                 Object with width and height properties
      */
     getCloneRealDimensions (element, selector){
-        var dimensions = {
+        let dimensions = {
             width: 0,
             height: 0
         };
 
-        var originalElement = element;
+        if (element && element.cloneNode && _.isFunction(element.cloneNode)){
+            let clonedEl = element.cloneNode(true);
 
-        if (originalElement && originalElement.cloneNode && _.isFunction(originalElement.cloneNode)){
-            var clonedEl = originalElement.cloneNode(true);
-
-            var clonedElStyles = this.getElementStyles(originalElement);
+            let clonedElStyles = this.getElementStyles(element);
             // clonedElStyles['margin-top'] = '-10000px';
 
             this.setElementStyles(clonedEl, clonedElStyles);
             this.removeElementStyles(clonedEl, ['width', 'height']);
 
-            var clonedMounted = document.body.appendChild(clonedEl);
-
-            var dimsElement = clonedEl;
-            if (selector && dimsElement.querySelector(selector)){
-                dimsElement = dimsElement.querySelector(selector);
+            if (element && element.parentNode){
+                element.parentNode.appendChild(clonedEl);
+            } else {
+                document.body.appendChild(clonedEl);
             }
 
-            var dimsElementStyles = this.getElementStyles(dimsElement);
-            delete dimsElementStyles.width;
-            delete dimsElementStyles.height;
+            let originalCloned = clonedEl;
 
-            this.setElementStyles(dimsElement, dimsElementStyles);
+            if (selector && clonedEl.querySelector(selector)){
+                clonedEl = clonedEl.querySelector(selector);
+            }
 
-            dimensions.height = parseInt(dimsElement.offsetHeight, 10);
-            dimensions.width = parseInt(dimsElement.offsetWidth, 10);
+            this.removeElementStyles(clonedEl, ['width', 'height']);
 
-            clonedMounted.parentNode.removeChild(clonedMounted);
-            clonedEl = null;
-            clonedMounted = null;
+            dimensions.height = parseInt(clonedEl.offsetHeight, 10);
+            dimensions.width = parseInt(clonedEl.offsetWidth, 10);
 
-
+            originalCloned.parentNode.removeChild(originalCloned);
+            originalCloned = null;
         }
 
         return dimensions;

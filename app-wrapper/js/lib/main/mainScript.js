@@ -151,7 +151,7 @@ class MainScript extends MainBaseClass {
      * @return {undefined}
      */
     addEventListeners() {
-        process.once('uncaughtException', this.boundMethods.uncaughtException);
+        process.on('uncaughtException', this.boundMethods.uncaughtException);
         process.on('SIGINT', this.boundMethods.sigInt);
         process.on('SIGTERM', this.boundMethods.sigTerm);
     }
@@ -162,6 +162,7 @@ class MainScript extends MainBaseClass {
      * @return {undefined}
      */
     removeEventListeners() {
+        process.removeListener('uncaughtException', this.boundMethods.uncaughtException);
         process.removeListener('SIGINT', this.boundMethods.sigInt);
         process.removeListener('SIGTERM', this.boundMethods.sigTerm);
     }
@@ -314,7 +315,7 @@ class MainScript extends MainBaseClass {
         if (!data[0]){
             data[0] = err;
         }
-        this.log(message, 'error', data);
+        this.log(message, 'error', data, true, true);
         this.mainWindow.window.appState.appError.error = true;
         if (err && err.message){
             this.mainWindow.globalEmitter.emit('mainMessage', {instruction: 'callMethod', data: {method: 'addUserMessage', arguments: [err.message, 'error', [], false, true]}});

@@ -196,6 +196,11 @@
 
     /* user messages */
 
+    --app-user-messages-background-color: #333333;
+    --app-user-messages-border-base-color: #333333;
+
+    --app-user-messages-border-color: var(--app-user-messages-border-base-color) var(--app-user-messages-border-base-color) var(--app-user-messages-border-base-color) var(--app-user-messages-border-base-color);
+
     --app-user-messages-header-background-color-top: #666666;
     --app-user-messages-header-background-color-bottom: #444444;
     --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);
@@ -553,6 +558,46 @@
     --modal-dialog-confirm-modal-box-shadow: 0 0 50px #CC9999;
 
     --modal-dialog-confirm-modal-title-color: #FF3333;
+
+
+    /* app performance bar */
+    --app-performance-bar-toggle-usage-data-border: 1px solid transparent;
+    --app-performance-bar-toggle-usage-data-border-active: 1px solid #555555;
+
+    --app-performance-bar-background-color-top: #333333;
+    --app-performance-bar-background-color-bottom: #000000;
+    --app-performance-bar-text-color: #999999;
+
+    --app-performance-bar-settings-link-color: #999999;
+    --app-performance-bar-settings-link-hover-color: #FFFFFF;
+    --app-performance-bar-settings-link-active-color: #FFFFFF;
+
+    --app-performance-bar-font-size: 0.8rem;
+
+    --app-performance-bar-usage-item-label-color: #999999;
+
+    --app-performance-bar-usage-item-change-up-color: #CC0000;
+    --app-performance-bar-usage-item-change-down-color: #009900;
+
+    --app-performance-bar-usage-bar-width: 100px;
+    --app-performance-bar-usage-bar-background-color: #333333;
+    --app-performance-bar-usage-bar-background: linear-gradient(to right, #999999 0%, #666666 100%);
+
+    --app-performance-bar-inner-bar-text-color: #CCCCCC;
+
+    --app-performance-bar-usage-bar-extremes-min-color: rgba(0, 127, 0, 1);
+    --app-performance-bar-usage-bar-extremes-max-color: rgba(196, 127, 127, 1);
+
+    --app-performance-bar-background: -webkit-linear-gradient(top, var(--app-performance-bar-background-color-top) 0%, var(--app-performance-bar-background-color-bottom) 100%);
+
+    --app-performance-bar-chart-line-color: #CCCCCC;
+    --app-performance-bar-chart-line-width: 1;
+
+    --app-performance-bar-chart-grid-color: #666666;
+    --app-performance-bar-chart-grid-line-width: 0.5;
+
+    --app-performance-bar-chart-border: 1px solid #787878;
+    --app-performance-bar-chart-background: rgba(255, 255, 255, 0.1);
 
     /* app info modal */
     --app-info-modal-subtitle-border: 1px solid #999999;

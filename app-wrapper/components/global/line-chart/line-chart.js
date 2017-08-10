@@ -1,15 +1,18 @@
 /**
- * @fileOverview app-debug component file
+ * @fileOverview line-chart component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.2.1
  */
 
+const _ = require('lodash');
+
 var _appWrapper = window.getAppWrapper();
 var appState = _appWrapper.getAppState();
+
 /**
- * App debug component
+ * Line chart bar component
  *
- * @name app-debug
+ * @name line-chart
  * @memberOf components
  * @property {string}   name        Name of the component
  * @property {string}   template    Component template contents
@@ -21,20 +24,31 @@ var appState = _appWrapper.getAppState();
  * @property {Object}   components  Child components
  */
 exports.component = {
-    name: 'app-debug',
+    name: 'line-chart',
     template: '',
+    props: ['axis', 'data', 'config'],
     data: function () {
-        return {
-            debugMessages: appState.debugMessages,
-            debugMessageCount: appState.debugMessages.length
-        };
+        return {};
+    },
+    mounted: function(){
+
+
     },
     methods: {
+        drawAxis: function(){
+            let ctx = this.$el.querySelector('canvas').getContext('2d');
 
+        }
     },
     computed: {
         appState: function(){
             return appState;
+        },
+        chartConfig: function(){
+            return _.defaultsDeep(this.config, {
+                live: false,
+                maxValues: 10
+            });
         }
     }
 };

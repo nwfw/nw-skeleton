@@ -278,7 +278,9 @@ exports.appState = {
         change: {},
         previous: [],
         maxCpu: 100,
-        maxMemory: 0,
+        minCpu: -1,
+        minMemory: -1,
+        maxMemory: 1,
     },
     userMessagesData: {
         selectFocused: false

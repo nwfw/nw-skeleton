@@ -22,6 +22,7 @@
             <template v-else>
                 <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
+            <user-messages v-if="!appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized"></user-messages>
             <app-footer ref="appFooter"></app-footer>
             <app-notifications v-if="!appState.isDebugWindow && !appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
         </template>

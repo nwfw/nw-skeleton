@@ -37,10 +37,8 @@ header {
     position: relative;
 }
 
-
 .app-debug-wrapper {
     display: flex;
-    flex: 1 1 auto;
     margin: 0;
 }
 
@@ -54,5 +52,4 @@ header {
 footer {
     display: flex;
     flex-flow: column nowrap;
-    flex: 1 1 var(--app-footer-height);
 }

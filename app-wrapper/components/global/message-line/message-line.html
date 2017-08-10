@@ -4,10 +4,10 @@
 			<template v-if="message.type != 'delimiter'">
 				<div v-bind:class="getIconClass(message)">
 				</div>
-				<transition name="size-width-short">
-					<div v-if="message.timestamp && config.displayTimestamps" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
+				<transition name="width-short" v-on:before-enter="beforeEnterWidth" v-on:after-enter="afterEnterWidth" v-on:before-leave="beforeLeaveWidth" v-on:after-leave="afterLeaveWidth" v-on:enter-cancelled="afterEnterWidth" v-on:leave-cancelled="afterLeaveWidth">
+					<span v-if="message.timestamp && config.displayTimestamps" class="message-timestamp" :title="message.timestamps ? message.timestamps.join('\n') : ''">
 						{{ formatTime(message.timestamp, {}, false) }}
-					</div>
+					</span>
 				</transition>
 				<div class="message-body" :class="{'important-message': message.important}">
 					{{ message.message }}
@@ -43,7 +43,7 @@
 				</svg>
 			</template>
 		</div>
-		<transition name="size-height-short" v-on:before-enter="beforeEnter" v-on:after-enter="afterEnter" v-on:before-leave="beforeLeave" v-on:after-leave="afterLeave" v-on:enter-cancelled="afterEnter" v-on:leave-cancelled="afterLeave">
+		<transition name="height" v-on:before-enter="beforeEnter" v-on:after-enter="afterEnter" v-on:before-leave="beforeLeave" v-on:after-leave="afterLeave" v-on:enter-cancelled="afterEnter" v-on:leave-cancelled="afterLeave">
 			<div class="message-stack-info" v-if="!hideStacks && (message.stack && message.stack.length && message.stackVisible)">
 				<div class="message-stack-info-data">
 					<table align="center" class="message-stack-info-table" width="95%" border="1" cellpadding="0" cellspacing="0">

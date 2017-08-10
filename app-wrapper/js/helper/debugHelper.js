@@ -389,29 +389,51 @@ class DebugHelper extends AppBaseClass {
         _appWrapper.appConfig.setConfigVar('debug.messagesExpanded', !this.getConfig('debug.messagesExpanded'));
     }
 
+    /**
+     * Toggles usage data display flag on or off
+     *
+     * @async
+     * @return {undefined}
+     */
     async toggleUsageData () {
-        if (appState.config.debug.usage){
-            appState.config.debug.usage = false;
-            this.stopUsageMonitor();
-        } else {
-            appState.config.debug.usage = true;
-            this.startUsageMonitor();
-        }
+        appState.config.debug.usage = !appState.config.debug.usage;
     }
 
+    /**
+     * Starts app usage monitoring
+     *
+     * @async
+     * @return {undefined}
+     */
     async startUsageMonitor () {
         await this.refreshUsageData();
         this.intervals.usageData = setInterval(this.boundMethods.refreshUsageData, this.getConfig('debug.usageInterval', 1000));
     }
 
+    /**
+     * Stops app usage monitoring
+     *
+     * @async
+     * @return {undefined}
+     */
     stopUsageMonitor () {
         clearInterval(this.intervals.usageData);
+        appState.usageData.minCpu = -1;
+        appState.usageData.maxCpu = 1;
+        appState.usageData.minMemory = -1;
+        appState.usageData.maxMemory = 1;
     }
 
+    /**
+     * Refreshes current usage data, setting max and min values if needed and pushing previous values to history
+     *
+     * @async
+     * @return {undefined}
+     */
     async refreshUsageData () {
         let data = await this.getUsageData();
         if (data){
-            if (appState.usageData.previous.length > 1000){
+            if (appState.usageData.previous.length > this.getConfig('debug.usageHistoryCount', 1000)){
                 appState.usageData.previous = appState.usageData.previous.slice(1, 2);
             }
             if (appState.usageData.previous.length){
@@ -432,13 +454,23 @@ class DebugHelper extends AppBaseClass {
             appState.usageData.current = data;
             if (data.cpu > appState.usageData.maxCpu){
                 appState.usageData.maxCpu = data.cpu;
+            } else if (appState.usageData.minCpu === -1 || data.cpu < appState.usageData.minCpu){
+                appState.usageData.minCpu = data.cpu;
             }
             if (data.memory > appState.usageData.maxMemory){
                 appState.usageData.maxMemory = data.memory;
+            } else if (appState.usageData.minMemory === -1 || data.memory < appState.usageData.minMemory){
+                appState.usageData.minMemory = data.memory;
             }
         }
     }
 
+    /**
+     * Gets usage data from the OS
+     *
+     * @async
+     * @return {Object} Usage data object with 'cpu' and 'memory' properties
+     */
     async getUsageData () {
         var returnPromise;
         var resolveReference;
@@ -457,6 +489,27 @@ class DebugHelper extends AppBaseClass {
         return returnPromise;
     }
 
+    /**
+     * Handler for usage interval change - stops current interval and starts new one with new duration
+     *
+     * @async
+     * @return {undefined}
+     */
+    async usageIntervalChange (){
+        if (appState.config.debug.usage){
+            clearInterval(this.intervals.usageData);
+            this.intervals.usageData = setInterval(this.boundMethods.refreshUsageData, this.getConfig('debug.usageInterval', 1000));
+        }
+    }
+
+    /**
+     * Toggles display of usage graphs
+     *
+     * @return {undefined}
+     */
+    toggleUsageGraphs (){
+        appState.config.debug.usageGraphs = !appState.config.debug.usageGraphs;
+    }
 }
 
 exports.DebugHelper = DebugHelper;

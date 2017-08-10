@@ -8,8 +8,18 @@
   100% {transform: translateX(0)}
 }
 
+.user-messages-wrapper {
+    border-width: 0 var(--app-main-border-width) 0 var(--app-main-border-width);
+    background: var(--app-user-messages-background-color);
+    border-style: var(--app-main-border-style);
+    border-color: var(--app-user-messages-border-color);
+    border-radius: 0;
+    list-style: none;
+    font-size: 0.8rem;
+}
+
 .user-messages {
-	margin-top: 10px;
+    margin: 0 0 5px 0;
 }
 
 .user-messages .user-messages-toolbar {
@@ -18,6 +28,7 @@
 
 .user-messages .user-messages-header {
 	display: flex;
+    flex: 1 1 auto;
 	background: var(--app-user-messages-header-background);
 	margin-bottom: 5px;
 }
@@ -81,17 +92,14 @@
     color: var(--app-user-messages-clear-messages-link-color-hovered);
 }
 
-.user-messages .user-message-controls .user-message-control-link.toggle-message-stacks {
+.user-messages-wrapper .user-message-controls .user-message-control-link.toggle-message-stacks {
     visibility: hidden;
 }
 
-.user-messages.message-list-expanded .user-message-controls .user-message-control-link.toggle-message-stacks {
+.user-messages-wrapper.message-list-expanded .user-message-controls .user-message-control-link.toggle-message-stacks {
     visibility: visible;
 }
 
 .user-messages .message-list-wrapper .message-list-no-messages {
     padding: 0px;
-}
-.user-messages.message-list-expanded .message-list-wrapper .message-list-no-messages {
-    padding: 8px 0px 10px;
 }

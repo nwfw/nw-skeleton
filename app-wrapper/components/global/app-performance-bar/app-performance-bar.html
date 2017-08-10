@@ -1,0 +1,74 @@
+<div class="usage-data-wrapper">
+    <div class="usage-data">
+        <div class="usage-data-section usage-data-tool usage-data-settings">
+            <a :title="appState.config.debug.usageGraphs ? translate('Hide usage graphs') : translate('Show usage graphs')" class="fa fa-area-chart" :class="{'active': appState.config.debug.usageGraphs}" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleUsageGraphs"></a>
+        </div>
+        <div class="usage-data-section usage-data-values">
+            <div class="usage-data-item cpu-usage" :title="translate('CPU') + ' - ' + translate('minimum') + ':' + minCpu + '%, ' + translate('maximum') + ':' + maxCpu + '%'">
+                <span class="usage-data-item-label fa fa-server"></span>
+                <span class="usage-data-item-value cpu-usage-value">
+                    <span class="usage-data-item-bar-outer">
+                        <span class="usage-data-item-bar-inner-value-below" v-html="current.cpu + '%'"></span>
+                        <span class="usage-data-item-bar-inner-value-extremes" :style="cpuExtremesBarStyle"></span>
+                        <span class="usage-data-item-bar-inner" :style="cpuInnerBarStyle">
+                            <span class="usage-data-item-bar-inner-value" v-html="current.cpu + '%'"></span>
+                        </span>
+                    </span>
+                </span>
+                <span class="usage-data-item-change">
+                    <transition name="width" v-on:after-enter="itemChangeAfterEnter" v-on:after-leave="itemChangeAfterLeave">
+                        <div key="cpu-change" v-if="!appState.config.debug.usageGraphs" class="usage-data-item-change-value cpu-usage-change" :class="{'usage-down': change.cpu < 0, 'usage-up': change.cpu > 0}">
+                            <span :title="translate('Change')" class="fa" :class="{'fa-minus': change.cpu == 0, 'fa-caret-down' : change.cpu < 0, 'fa-caret-up' : change.cpu > 0}"></span> {{ change.cpu + '%'}}
+                        </div>
+                        <div key="cpu-graph" v-else class="usage-data-item-change-value usage-data-item-change-graph usage-data-item-change-graph-cpu">
+                            <span class="usage-graph cpu-usage-change-graph">
+                                <canvas style="width: 100%;" class="cpu-usage-change-graph-canvas"></canvas>
+                            </span>
+                            <a v-if="graphStarted('cpu')" class="graph-control fa fa-pause" @click.prevent="pauseGraph('cpu')"></a>
+                            <a v-else class="graph-control fa fa-play" @click.prevent="resumeGraph('cpu')"></a>
+                        </div>
+                    </transition>
+                </span>
+            </div>
+
+            <div class="usage-data-item memory-usage" :title="translate('Memory') + ' - ' + translate('minimum') + ': ' + formatFileSize(minMemory) + ', ' + translate('maximum') + ': ' + formatFileSize(maxMemory)">
+                <span class="usage-data-item-label fa fa-microchip"></span>
+                <span class="usage-data-item-value memory-usage-value">
+                    <span class="usage-data-item-bar-outer">
+                        <span class="usage-data-item-bar-inner-value-below" v-html="formatFileSize(current.memory)"></span>
+                        <span class="usage-data-item-bar-inner-value-extremes" :style="memoryExtremesBarStyle"></span>
+                        <span class="usage-data-item-bar-inner" :style="memoryInnerBarStyle">
+                            <span class="usage-data-item-bar-inner-value" v-html="formatFileSize(current.memory)"></span>
+                        </span>
+                    </span>
+                </span>
+
+                <span class="usage-data-item-change">
+                    <transition name="width" v-on:after-enter="itemChangeAfterEnter" v-on:after-leave="itemChangeAfterLeave">
+                        <div key="memory-change" v-if="!appState.config.debug.usageGraphs" class="usage-data-item-change-value memory-usage-change" :class="{'usage-down': change.memory < 0, 'usage-up': change.memory > 0}">
+                            <span :title="translate('Change')" class="fa" :class="{'fa-minus': change.memory == 0, 'fa-caret-down': change.memory < 0, 'fa-caret-up': change.memory > 0}"></span>
+                            {{ formatFileSize(change.memory) }}
+                        </div>
+                        <div key="memory-graph" v-else class="usage-data-item-change-value usage-data-item-change-graph usage-data-item-change-graph-memory">
+                            <span class="usage-graph memory-usage-change-graph">
+                                <canvas style="width: 100%;" class="memory-usage-change-graph-canvas"></canvas>
+                            </span>
+                            <a v-if="graphStarted('memory')" class="graph-control fa fa-pause" @click.prevent="pauseGraph('memory')"></a>
+                            <a v-else class="graph-control fa fa-play" @click.prevent="resumeGraph('memory')"></a>
+                        </div>
+                    </transition>
+                </span>
+            </div>
+        </div>
+        <div class="usage-data-section usage-data-tools usage-data-polling-interval" :title="translate('Usage polling interval')">
+            <div class="usage-data-tool">
+                <label class="fa fa-clock-o"></label>
+                <select v-model="appState.config.debug.usageInterval" @change="usageIntervalChange">
+                    <template v-for="n in 20">
+                        <option v-if="(n < 4) || n == 6 || n % 4 == 0" :value="n * 250" v-html="formatDuration(n/4, true, true, 2, true) + ' ' + (n == 4 ? translate('second') : translate('seconds'))"></option>
+                    </template>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

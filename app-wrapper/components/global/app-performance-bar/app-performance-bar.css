@@ -1,0 +1,206 @@
+.app-debug-wrapper .app-debug-header .app-debug-tool.toggle-usage-data {
+    padding: 0 5px;
+    border-radius: 5px 5px 0 0;
+    border: var(--app-performance-bar-toggle-usage-data-border);
+    border-bottom: none;
+    transition-property: color, background, text-shadow, margin-top, padding, border;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+    transition-delay: var(--medium-animation-duration);
+}
+.app-debug-wrapper .app-debug-header .app-debug-tool.toggle-usage-data.active {
+    padding: 4px 5px 9px 5px;
+    margin-top: -4px;
+    color: var(--app-debug-header-tool-link-color-hovered);
+    text-shadow: var(--app-debug-header-tool-text-shadow-hovered);
+    text-decoration: none;
+    background: var(--app-performance-bar-background-color-top);
+    border: var(--app-performance-bar-toggle-usage-data-border-active);
+    border-bottom: none;
+}
+
+.usage-data-wrapper {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--app-performance-bar-background);
+    color: var(--app-performance-bar-text-color);
+    font-size: var(--app-performance-bar-font-size);
+    border-bottom: 1px solid var(--app-performance-bar-text-color);
+    height: calc(0.1rem + var(--app-performance-bar-font-size) + 15px);
+}
+
+.usage-data {
+    padding: 3px 5px;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.usage-data .usage-data-section,
+.usage-data .usage-data-item,
+.usage-data .usage-data-item-value,
+.usage-data .usage-data-item-change {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    flex-flow: row;
+    justify-content: center;
+    align-content: center;
+}
+
+.usage-data .usage-data-section.usage-data-settings,
+.usage-data .usage-data-section.usage-data-tools {
+    align-items: center;
+    align-content: space-between;
+    justify-content: space-between;
+}
+
+.usage-data .usage-data-section.usage-data-settings {
+    justify-content: flex-start;
+}
+.usage-data .usage-data-section.usage-data-tools {
+    justify-content: flex-end;
+}
+
+.usage-data .usage-data-section.usage-data-tools .usage-data-tool {
+    display: flex;
+    align-items: center;
+}
+
+.usage-data .usage-data-section.usage-data-tools .usage-data-tool label {
+    margin-right: 5px;
+}
+
+.usage-data .usage-data-section.usage-data-values {
+    display: flex;
+    flex: 10 1 auto;
+    justify-content: space-around;
+}
+
+.usage-data .usage-data-section.usage-data-values .usage-data-item {
+    flex: 1 1 auto;
+    margin: 0 3px;
+}
+
+.usage-data .usage-data-item-value {
+    flex: 0 1 auto;
+}
+
+.usage-data a {
+    transition-property: color;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+    color: var(--app-performance-bar-settings-link-color);
+}
+
+.usage-data a:hover {
+    color: var(--app-performance-bar-settings-link-hover-color);
+}
+
+.usage-data a.active {
+    color: var(--app-performance-bar-settings-link-active-color);
+}
+
+.usage-data a.active:hover {
+    color: var(--app-performance-bar-settings-link-color);
+}
+
+.usage-data .usage-data-item-label {
+    color: var(--app-performance-bar-usage-item-label-color);
+    margin-right: 5px;
+}
+
+.usage-data .usage-data-item-bar-outer {
+    display: inline-block;
+    width: var(--app-performance-bar-usage-bar-width);
+    height: calc(0.1rem + var(--app-performance-bar-font-size) + 2px);
+    border: 1px solid var(--app-performance-bar-text-color);
+    position: relative;
+    background-color: var(--app-performance-bar-usage-bar-background-color);
+    margin-right: 5px;
+}
+
+.usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: var(--app-performance-bar-usage-bar-background);
+    height: calc(0.1rem + var(--app-performance-bar-font-size));
+    overflow: hidden;
+    transition-property: width;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+    opacity: 0.5;
+}
+
+.usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner-value-below {
+    width: var(--app-performance-bar-usage-bar-width);
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
+
+.usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner-value-extremes {
+    position: absolute;
+    top: 0.1rem;
+    left: 0;
+    height: calc(var(--app-performance-bar-font-size) - 0.2rem);
+    border-left: 2px solid var(--app-performance-bar-usage-bar-extremes-min-color);
+    border-right: 2px solid var(--app-performance-bar-usage-bar-extremes-max-color);
+    transition-property: width, left;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--short-animation-duration);
+}
+
+
+.usage-data .usage-data-item-bar-outer .usage-data-item-bar-inner .usage-data-item-bar-inner-value {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--app-performance-bar-usage-bar-width);
+    text-align: center;
+    color: var(--app-performance-bar-inner-bar-text-color);
+}
+
+.usage-data .usage-data-item-change .fa {
+    margin-right: 3px;
+}
+.usage-data .usage-data-item-change-value {
+    flex: 1 1 auto;
+    width: var(--app-performance-bar-usage-bar-width);
+    white-space: nowrap;
+}
+
+.usage-data .usage-data-item-change-value.usage-up {
+    color: var(--app-performance-bar-usage-item-change-up-color);
+}
+
+.usage-data .usage-data-item-change-value.usage-down {
+    color: var(--app-performance-bar-usage-item-change-down-color);
+}
+
+.usage-data .usage-data-item-change .usage-data-item-change-graph {
+    height: calc(0.1rem + var(--app-performance-bar-font-size) + 2px);
+    /* hacks for js values */
+    border-bottom: 0px solid var(--app-performance-bar-chart-line-color);
+    letter-spacing: var(--app-performance-bar-chart-line-width);
+
+    border-top: 0px solid var(--app-performance-bar-chart-grid-color);
+    line-height: var(--app-performance-bar-chart-grid-line-width);
+    display: flex;
+    align-items: center;
+}
+
+.usage-data .usage-data-item-change .usage-data-item-change-graph .graph-control {
+    margin-left: 5px;
+}
+.usage-data .usage-data-item-change .usage-data-item-change-graph canvas {
+    border: var(--app-performance-bar-chart-border);
+    background: var(--app-performance-bar-chart-background);
+    height: calc(0.1rem + var(--app-performance-bar-font-size) + 2px);
+}

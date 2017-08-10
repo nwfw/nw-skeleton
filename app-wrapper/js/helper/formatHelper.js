@@ -37,13 +37,14 @@ class FormatHelper extends AppBaseClass {
     /**
      * Formats duration to human-readable format
      *
-     * @param  {Number}  duration        Duration in milliseconds
-     * @param  {Boolean} omitEmpty       Flag to indicate whether to omit empty values
-     * @param  {Boolean} omitZeros       Flag to indicate whether to omit zeros in one-digit values
-     * @param  {Boolean} secondFractions Flag to indicate whether to display second fractions
+     * @param  {Number}             duration        Duration in milliseconds
+     * @param  {Boolean}            omitEmpty       Flag to indicate whether to omit empty values
+     * @param  {Boolean}            omitZeros       Flag to indicate whether to omit zeros in one-digit values
+     * @param  {(Boolean|Number)}   roundDecimals   Toggle (and set decimals) for value rounding (seconds only)
+     * @param  {Boolean}            secondFractions Flag to indicate whether to display second fractions
      * @return {string}                  Formatted duration
      */
-    formatDuration (duration, omitEmpty, omitZeros, secondFractions) {
+    formatDuration (duration, omitEmpty, omitZeros, roundDecimals, secondFractions) {
         if (isNaN(duration)){
             duration = 0;
         }
@@ -108,7 +109,6 @@ class FormatHelper extends AppBaseClass {
             }
         }
 
-
         if ((milliseconds + '').match(/\./)){
             milliseconds = parseInt((milliseconds + '').replace(/[^.]+/, ''), 10);
         }
@@ -120,8 +120,15 @@ class FormatHelper extends AppBaseClass {
                     milliseconds = '0' + milliseconds;
                 }
             }
+            if (omitZeros){
+                milliseconds = (milliseconds + '').replace(/0+?$/, '');
+            } else if (roundDecimals){
+                milliseconds = (milliseconds + '').substring(0, roundDecimals);
+            }
             formattedTime += '.' + milliseconds;
         }
+
+
 
 
         return formattedTime;

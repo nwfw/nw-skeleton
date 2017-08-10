@@ -1,49 +1,15 @@
 <div class="app-debug-wrapper" v-bind:class="{ 'message-list-expanded': appState.config.debug.messagesExpanded, 'message-list-collapsed': !appState.config.debug.messagesExpanded  }">
-	<div class="app-debug" v-if="!appState.config.debug.hideDebug">
-		<div class="app-debug-header">
-			<h2>
+    <div class="app-debug" v-if="!appState.config.debug.hideDebug">
+        <div class="app-debug-header">
+            <h2>
                 <span class="fa fa-comment-o"></span>
                 <span v-html="translate('Debug') + ' (' + appState.debugMessages.length + ') ' + translate('messages')"></span>
             </h2>
             <app-debug-controls v-bind:debugMessageCount="debugMessageCount" ref="appDebugControls"></app-debug-controls>
         </div>
-        <transition name="size-height">
-            <div v-if="appState.config.debug.usage" class="usage-data-wrapper">
-                <div class="usage-data">
-                    <span class="usage-data-item cpu-usage" :title="translate('maximum') + ':' + appState.usageData.maxCpu + '%'">
-                        <span class="usage-data-item-label" v-html="translate('CPU') + ':'"></span>
-                        <span class="usage-data-item-value cpu-usage-value">
-                            <span class="usage-data-item-bar-outer">
-                                <span class="usage-data-item-bar-inner-value-below" v-html="appState.usageData.current.cpu + '%'"></span>
-                                <span class="usage-data-item-bar-inner" :style="cpuInnerBarStyle">
-                                    <span class="usage-data-item-bar-inner-value" v-html="appState.usageData.current.cpu + '%'"></span>
-                                </span>
-                            </span>
-                        </span>
-                    </span>
-                    <span class="usage-data-item-change cpu-usage-change">
-                        <span :title="translate('Change')" class="fa fa-arrow-up" :class="{'fa-arrow-down' : appState.usageData.change.cpu < 0}"></span> {{ appState.usageData.change.cpu + '%'}}
-                    </span>
-
-                    <span class="usage-data-item memory-usage" :title="translate('maximum') + ':' + formatFileSize(appState.usageData.maxMemory)">
-                        <span class="usage-data-item-label" v-html="translate('Memory') + ':'"></span>
-                        <span class="usage-data-item-value memory-usage-value">
-                            <span class="usage-data-item-bar-outer">
-                                <span class="usage-data-item-bar-inner-value-below" v-html="formatFileSize(appState.usageData.current.memory)"></span>
-                                <span class="usage-data-item-bar-inner" :style="memoryInnerBarStyle">
-                                    <span class="usage-data-item-bar-inner-value" v-html="formatFileSize(appState.usageData.current.memory)"></span>
-                                </span>
-                            </span>
-                        </span>
-                        <span class="usage-data-item-change memory-usage-change">
-                            <span :title="translate('Change')" class="fa fa-arrow-up" :class="{'fa-arrow-down' : appState.usageData.change.memory < 0}"></span> {{ formatFileSize(appState.usageData.change.memory) }}
-                        </span>
-                    </span>
-                </div>
-            </div>
+        <transition name="height-long">
+            <app-performance-bar v-if="appState.config.debug.usage" ref="appPerformanceBar"></app-performance-bar>
         </transition>
-        <div class="app-debug-body">
-         <message-list v-bind:messages="appState.debugMessages" v-bind:config="appState.config.debug" ref="messageList"></message-list>
-     </div>
- </div>
+        <message-list v-bind:messages="appState.debugMessages" v-bind:config="appState.config.debug" ref="messageList"></message-list>
+    </div>
 </div>

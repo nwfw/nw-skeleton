@@ -39,7 +39,7 @@ exports.component = {
             }
         },
         beforeEnter: function(el){
-            let dims = el.getRealDimensions();
+            let dims = el.getCloneRealDimensions();
             el.setElementStyles({height: dims.height + 'px'});
         },
         afterEnter: function(el){
@@ -49,6 +49,19 @@ exports.component = {
             el.setFixedSize();
         },
         afterLeave: function(el){
+            el.unsetFixedSize();
+        },
+        beforeEnterWidth: function(el){
+            let dims = el.getCloneRealDimensions();
+            el.setElementStyles({width: dims.width + 'px'});
+        },
+        afterEnterWidth: function(el){
+            el.removeElementStyles(['width']);
+        },
+        beforeLeaveWidth: function(el){
+            el.setFixedSize();
+        },
+        afterLeaveWidth: function(el){
             el.unsetFixedSize();
         },
         toggleStackVisible: function() {

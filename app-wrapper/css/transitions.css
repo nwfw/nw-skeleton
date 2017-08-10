@@ -74,9 +74,8 @@
 .width-delayed-enter,
 .width-delayed-leave-to {
     flex-basis: unset !important;
-    overflow: hidden !important;
-    max-width: 0 !important;
-    min-width: 0 !important;
+    max-width: unset !important;
+    min-width: unset !important;
     width: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -93,8 +92,7 @@
 .width-delayed-enter-active,
 .width-delayed-leave-active {
     overflow: hidden !important;
-    flex-basis: unset !important;
-    transition-property: width, max-width, min-width, margin-left, margin-right, padding-left, padding-right !important;
+    transition-property: width, max-width, min-width, flex-basis, margin-left, margin-right, padding-left, padding-right !important;
     transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
@@ -136,8 +134,8 @@
 .height-delayed-leave-to {
     flex-basis: unset !important;
     overflow: hidden !important;
-    max-height: 0 !important;
-    min-height: 0 !important;
+    max-height: unset !important;
+    min-height: unset !important;
     height: 0 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
@@ -154,8 +152,7 @@
 .height-delayed-enter-active,
 .height-delayed-leave-active {
     overflow: hidden !important;
-    flex-basis: unset !important;
-    transition-property: height, max-height, min-height, margin-top, margin-bottom, padding-top, padding-bottom !important;
+    transition-property: height, max-height, min-height, flex-basis, margin-top, margin-bottom, padding-top, padding-bottom !important;
     transition-timing-function: ease-in-out !important;
     transition-duration: var(--medium-animation-duration) !important;
 }
