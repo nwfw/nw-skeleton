@@ -67,7 +67,7 @@ class MenuHelper extends MainBaseClass {
                     if (menuData && menuData.mainItemName && menuData.options){
                         if (!this.menu){
                             this.menu = new nw.Menu({type: 'menubar'});
-                            if (!this.hasMacBuiltin){
+                            if (utilHelper.isMac() && !this.hasMacBuiltin){
                                 this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
                                 this.hasMacBuiltin = true;
                             }
@@ -119,12 +119,13 @@ class MenuHelper extends MainBaseClass {
      */
     async setupAppMenu() {
         if (!this.menuSetup){
-            this.log('Setting up app menu', 'debug', []);
+            this.log('Setfting up app menu', 'debug', []);
             let utilHelper = this.getAppWrapper().getHelper('util');
             let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
             if (hasAppMenu){
-                if (!utilHelper.isMac() && !appState.windowState.frame){
+                if (!utilHelper.isMac() && !mainScript.mainWindow.window.appState.windowState.frame){
                     this.log('You should not be using frameless window with app menus.', 'warning', [], false, true);
+                    return;
                 }
                 let menuData = this.getConfig('appConfig.menuData');
                 this.menuMethodMap = [];

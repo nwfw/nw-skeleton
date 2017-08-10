@@ -67,7 +67,7 @@ class StaticFilesHelper extends AppBaseClass {
         if (asset.url && asset.url.match(/^#/)){
             return asset.url;
         } else {
-            return 'file://' + asset.absolutePath;
+            return 'file://' + asset.absolutePath.replace(/\\/g, '/');
         }
     }
 
