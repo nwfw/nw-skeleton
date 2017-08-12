@@ -60,31 +60,24 @@ class UserDataHelper extends AppBaseClass {
      *
      * @async
      * @param  {Object}     userData    User data object
-     * @param  {Boolean}    notSilent   Flag to control message output
      * @return {Boolean}                Saving result
      */
-    async saveUserData (userData, notSilent) {
+    async saveUserData (userData) {
         let saved = false;
         if (this.userDataChanged(userData)){
             this.previousUserData = _.cloneDeep(appState.userData);
             appState.userData = userData;
-            if (notSilent){
-                this.log('Saving user data', 'info', []);
-            }
+            this.log('Saving user data', 'info', []);
             let userDataName = this.getUserDataStorageName();
             saved = await this.getHelper('storage').set(userDataName, userData);
             if (!saved){
                 this.addUserMessage('Could not save user data!', 'error', [], false, false);
             } else {
                 this.previousUserData = _.cloneDeep(appState.userData);
-                if (notSilent){
-                    this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
-                }
+                this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
             }
         } else {
-            if (notSilent){
-                this.log('Not saving user data - data unchanged', 'info', []);
-            }
+            this.log('Not saving user data - data unchanged', 'info', []);
         }
         return saved;
     }

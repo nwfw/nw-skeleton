@@ -148,6 +148,10 @@ class AppBaseClass extends BaseClass {
         }
 
         if (appState && appState.allDebugMessages && _.isArray(appState.allDebugMessages)){
+            let maxDebugMessages = this.getConfig('debug.maxDebugMessages', 1000);
+            if (appState.allDebugMessages.length > maxDebugMessages){
+                appState.allDebugMessages = [];
+            }
             appState.allDebugMessages.push(debugMessage);
         }
     }
@@ -177,11 +181,11 @@ class AppBaseClass extends BaseClass {
             console.log(debugMessage.message);
         }
 
-        let maxDebugMessages = this.getConfig('debug.maxDebugMessages', 30);
+        let maxVisibleDebugMessages = this.getConfig('debug.maxVisibleDebugMessages', 30);
         let messageCount = this.getStateVar('debugMessages.length', 0);
 
-        if (messageCount > maxDebugMessages){
-            let startIndex = messageCount - (maxDebugMessages + 1);
+        if (messageCount > maxVisibleDebugMessages){
+            let startIndex = messageCount - (maxVisibleDebugMessages + 1);
             if (appState && appState.debugMessages && _.isArray(appState.debugMessages)){
                 appState.debugMessages = appState.debugMessages.slice(startIndex);
             }
@@ -316,11 +320,11 @@ class AppBaseClass extends BaseClass {
         }
 
         if (force || typeLevel >= userMessageLevel){
-            let maxUserMessages = this.getConfig('userMessages.maxUserMessages', 30);
+            let maxVisibleUserMessages = this.getConfig('userMessages.maxVisibleUserMessages', 30);
             let messageCount = this.getStateVar('userMessages.length', 30);
 
-            if (messageCount > maxUserMessages){
-                let startIndex = messageCount - (maxUserMessages + 1);
+            if (messageCount > maxVisibleUserMessages){
+                let startIndex = messageCount - (maxVisibleUserMessages + 1);
                 if (appState && appState.userMessages && _.isArray(appState.userMessages)){
                     appState.userMessages = appState.userMessages.slice(startIndex);
                 }
@@ -346,6 +350,10 @@ class AppBaseClass extends BaseClass {
         }
 
         if (appState && appState.allUserMessages && _.isArray(appState.allUserMessages)){
+            let maxUserMessages = this.getConfig('userMessages.maxUserMessages', 1000);
+            if (appState.allUserMessages.length > maxUserMessages){
+                appState.allUserMessages = [];
+            }
             appState.allUserMessages.push(userMessage);
         }
 

@@ -56,18 +56,18 @@ class UserMessageHelper extends AppBaseClass {
         let intervalDuration = 1;
 
         let queueCount = appState.userMessageQueue.length;
-        let maxUserMessages = this.getConfig('userMessages.maxUserMessages', 30);
+        let maxVisibleUserMessages = this.getConfig('userMessages.maxVisibleUserMessages', 30);
         let messageCount = this.getStateVar('userMessages.length', 30);
 
-        if ((messageCount + queueCount) > maxUserMessages){
-            let startIndex = (messageCount + queueCount) - (maxUserMessages + 1);
+        if ((messageCount + queueCount) > maxVisibleUserMessages){
+            let startIndex = (messageCount + queueCount) - (maxVisibleUserMessages + 1);
             if (appState && appState.userMessages && _.isArray(appState.userMessages)){
                 appState.userMessages = appState.userMessages.slice(startIndex);
             }
             if (appState.userMessages.length == 0){
                 messageCount = this.getStateVar('userMessages.length', 30);
-                if ((messageCount + queueCount) > maxUserMessages){
-                    let startIndex = (messageCount + queueCount) - (maxUserMessages + 1);
+                if ((messageCount + queueCount) > maxVisibleUserMessages){
+                    let startIndex = (messageCount + queueCount) - (maxVisibleUserMessages + 1);
                     appState.userMessageQueue = appState.userMessageQueue.slice(startIndex);
                 }
             }
