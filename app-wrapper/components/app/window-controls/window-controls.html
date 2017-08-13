@@ -70,6 +70,19 @@
 						</div>
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
 						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-message-info"  @click.prevent="messageInfo">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-envelope-o"></span>
+								<span v-html="translate('See messages info')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper">
+							<a class="window-control window-control-async-message-info"  @click.prevent="asyncMessageInfo">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-envelope"></span>
+								<span v-html="translate('See async messages info')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
+						</div>
+						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
+						<div class="window-control-submenu-item-wrapper">
 							<a class="window-control window-control-reload-css " @click.prevent="callViewHandler" data-click-handler="helpers.staticFilesHelper.reloadCss">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-retweet"></span>
 								<span v-html="translate('Reload CSS')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>

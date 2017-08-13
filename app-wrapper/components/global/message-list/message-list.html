@@ -3,14 +3,14 @@
 		<template v-if="config.animateMessages">
 			<transition-group name="highlight" tag="ul" class="message-list">
 				<li class="message-list-item" v-bind:key="i" v-for="(message, i) in messages" v-bind:class="message.type">
-					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" v-bind:message-index="i" :ref="'messageLine_' + i"></message-line>
 				</li>
 			</transition-group>
 		</template>
 		<template v-else>
 			<ul class="message-list">
 				<li class="message-list-item" v-bind:key="i" v-for="(message, i) in messages" v-bind:class="message.type">
-					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" :ref="'messageLine_' + i"></message-line>
+					<message-line v-bind:hide-stacks="hideStacks" v-bind:message="message" v-bind:config="config" v-bind:message-index="i" :ref="'messageLine_' + i"></message-line>
 				</li>
 			</ul>
 		</template>

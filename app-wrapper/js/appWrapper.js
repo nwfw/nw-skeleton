@@ -67,7 +67,6 @@ class AppWrapper extends AppBaseClass {
             onWindowClose: null,
             onDebugWindowClose: null,
             handleMessageResponse: null,
-            handleAsyncMessageResponse: null,
             handleMainMessage: null,
         };
 
@@ -262,7 +261,7 @@ class AppWrapper extends AppBaseClass {
         if (!appState.isDebugWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
             this.windowManager.win.globalEmitter.on('messageResponse', this.boundMethods.handleMessageResponse);
-            this.windowManager.win.globalEmitter.on('asyncMessageResponse', this.boundMethods.handleAsyncMessageResponse);
+            this.windowManager.win.globalEmitter.on('asyncMessageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.on('mainMessage', this.boundMethods.handleMainMessage);
         } else {
             this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
@@ -279,7 +278,7 @@ class AppWrapper extends AppBaseClass {
         if (!appState.isDebugWindow){
             this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
             this.windowManager.win.globalEmitter.removeListener('messageResponse', this.boundMethods.handleMessageResponse);
-            this.windowManager.win.globalEmitter.removeListener('asyncMessageResponse', this.boundMethods.handleAsyncMessageResponse);
+            this.windowManager.win.globalEmitter.removeListener('asyncMessageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.removeListener('mainMessage', this.boundMethods.handleMainMessage);
         } else {
             this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
@@ -1142,27 +1141,70 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     handleMessageResponse (messageData) {
-        if (messageData._result_){
-            this.log('Message "{1}" succeeded', 'info', [messageData.uuid]);
+        if (messageData){
+            this.messageResponseLog(messageData);
+            let messageIdentifierChunks = [];
+            if (messageData.instruction){
+                messageIdentifierChunks.push(messageData.instruction);
+            }
+            if (messageData.uuid){
+                messageIdentifierChunks.push(messageData.uuid);
+            }
+            let messageType = 'Message ';
+            if (messageData._async_){
+                messageType = 'Async message ';
+            }
+            if (messageData._result_){
+                this.log(messageType + ' "{1}" succeeded', 'info', [messageIdentifierChunks.join(' - ')]);
+            } else {
+                this.log(messageType + ' "{1}" failed', 'error', [messageIdentifierChunks.join(' - ')]);
+            }
+            this.log(messageData, 'debug', []);
+            this.log(messageData, 'debug', []);
         } else {
-            this.log('Message "{1}" failed', 'error', [messageData.uuid]);
+            this.log('Message failed - no message data returned', 'error', []);
         }
-        this.log(messageData, 'debug', []);
     }
 
     /**
-     * Handles async message responses from main script
+     * Logs eventual user and debug messages and displays eventual notifications from message response
      *
      * @param  {Object} messageData Message response data
      * @return {undefined}
      */
-    handleAsyncMessageResponse (messageData) {
-        if (messageData._result_){
-            this.log('Async message "{1}" succeeded', 'info', [messageData.uuid]);
-        } else {
-            this.log('Async message "{1}" failed', 'error', [messageData.uuid]);
+    messageResponseLog (messageData) {
+        if (messageData._messages_ && _.isArray(messageData._messages_)){
+            messageData._messages_.forEach( (message) => {
+                let msgMessage = message.message || '';
+                let msgType = message.type || 'info';
+                let msgData = message.data || [];
+                let msgForce = message.force || false;
+                if (msgMessage){
+                    this.log(msgMessage, msgType, msgData, msgForce);
+                }
+            });
         }
-        this.log(messageData, 'debug', []);
+        if (messageData._userMessages_ && _.isArray(messageData._userMessages_)){
+            messageData._userMessages_.forEach( (message) => {
+                let msgMessage = message.message || '';
+                let msgType = message.type || 'info';
+                let msgData = message.data || [];
+                let msgForce = message.force || false;
+                if (msgMessage){
+                    this.addUserMessage(msgMessage, msgType, msgData, false, true, msgForce);
+                }
+            });
+        }
+        if (messageData._notifications_ && _.isArray(messageData._notifications_)){
+            messageData._notifications_.forEach( (message) => {
+                let msgMessage = message.message || '';
+                let msgType = message.type || 'info';
+                let msgData = message.data || [];
+                if (msgMessage){
+                    this.addNotification(msgMessage, msgType, msgData, true);
+                }
+            });
+        }
     }
 
 

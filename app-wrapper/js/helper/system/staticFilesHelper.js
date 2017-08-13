@@ -757,9 +757,12 @@ class StaticFilesHelper extends AppBaseClass {
      */
     async doReloadCss () {
         clearTimeout(this.timeouts.reloadCss);
-        await this.unwatchFiles();
-        await this.generateCss(false, true);
-        await this.refreshCss();
+        try {
+            await this.generateCss(true, true);
+            await this.refreshCss();
+        } catch (ex){
+            this.log('Problem reloading CSS - "{1}"', 'error', [ex.message]);
+        }
     }
 
 

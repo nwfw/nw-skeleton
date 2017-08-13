@@ -23,7 +23,7 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'message-line',
     template: '',
-    props: ['message', 'config', 'hideStacks'],
+    props: ['message', 'config', 'hideStacks', 'messageIndex'],
     methods: {
         getIconClass: function(message){
             if (message.iconClass){

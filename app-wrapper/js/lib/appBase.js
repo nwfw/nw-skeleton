@@ -15,7 +15,7 @@ let appState;
  * App base class for extending when creating other app classes
  *
  * @class
- * @extends {BaseClass}
+ * @extends {appWrapper.BaseClass}
  * @memberOf appWrapper
  * @property {Boolean}  forceUserMessages   Flag to force user message output
  * @property {Boolean}  forceDebug          Flag to force debug message output
@@ -30,7 +30,7 @@ class AppBaseClass extends BaseClass {
      * Creates class instance, setting basic properties, and returning the instance itself
      *
      * @constructor
-     * @return {AppBaseClass} Instance of current class
+     * @return {appWrapper.AppBaseClass} Instance of current class
      */
     constructor () {
         super();
@@ -49,7 +49,7 @@ class AppBaseClass extends BaseClass {
      *
      * @async
      * @param {BaseInitializationOptions} options Initialization options
-     * @return {AppBaseClass} Instance of current class
+     * @return {appWrapper.AppBaseClass} Instance of current class
      */
     async initialize (options) {
         return await super.initialize(options);
@@ -62,7 +62,7 @@ class AppBaseClass extends BaseClass {
      *
      * @async
      * @param  {Object} options Options for logging initialization (currently only 'silent' property is used, determining whether warnings should be printed if no config found)
-     * @return {AppBaseClass}      Instance of the current class
+     * @return {appWrapper.AppBaseClass}      Instance of the current class
      */
     async initializeLogging(options) {
         let className = this.constructor.name;
@@ -177,6 +177,22 @@ class AppBaseClass extends BaseClass {
             console.error(debugMessage.message);
         } else if (debugMessage.type == 'warning'){
             console.warn(debugMessage.message);
+        } else if (debugMessage.type == 'table'){
+            if (debugMessage.originalMessage){
+                if (!_.isArray(debugMessage.originalMessage)){
+                    console.table([debugMessage.originalMessage]);
+                } else {
+                    console.table(debugMessage.originalMessage);
+                }
+            } else {
+                console.log(debugMessage.message);
+            }
+        } else if (debugMessage.type == 'dir'){
+            if (debugMessage.originalMessage){
+                console.dir(debugMessage.originalMessage);
+            } else {
+                console.log(debugMessage.message);
+            }
         } else {
             console.log(debugMessage.message);
         }
@@ -218,6 +234,11 @@ class AppBaseClass extends BaseClass {
             delete msg.count;
             delete msg.timestamps;
         }
+        if (msg.type == 'table'){
+            // msg.type = 'debug';
+        }
+        delete msg.originalMessage;
+        delete msg.tableData;
         delete msg.iconClass;
         delete msg.force;
         delete msg.important;
@@ -383,6 +404,8 @@ class AppBaseClass extends BaseClass {
         let typeLevel = debugLevels && debugLevels[type] ? debugLevels[type] : 0;
         let timestamp = new Date().toString();
         let iconClass = 'fa fa-info-circle';
+        let originalMessage = _.cloneDeep(message);
+        let tableData;
 
         if (type == 'warning'){
             iconClass = 'fa fa-exclamation-circle';
@@ -390,10 +413,13 @@ class AppBaseClass extends BaseClass {
             iconClass = 'fa fa-exclamation-triangle';
         }
 
+        if (type == 'table' && (_.isObject(message) || _.isArray(message))) {
+            tableData = await this.getTableMessageData(message);
+        }
+
         if (message && !dontTranslate && window && window.getAppWrapper() && window.getAppWrapper().appTranslations && window.getAppWrapper().appTranslations.translate){
             message = window.getAppWrapper().appTranslations.translate(message);
         }
-
 
         if (message && message.match && message.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             message = message.replace(/{(\d+)}/g, (match, number) => {
@@ -409,6 +435,8 @@ class AppBaseClass extends BaseClass {
             timestamps: [timestamp],
             timestamp: timestamp,
             message: message,
+            originalMessage: originalMessage,
+            tableData: tableData,
             iconClass: iconClass,
             type: type,
             important: important,
@@ -421,12 +449,89 @@ class AppBaseClass extends BaseClass {
 
         if (!message){
             userMessage.message = ' ';
+            userMessage.originalMessage = ' ';
             userMessage.type = 'delimiter';
             userMessage.timestamp = '';
             userMessage.iconClass = '';
         }
 
         return userMessage;
+    }
+
+    /**
+     * Prepares table data for tabular message logging
+     *
+     * @async
+     * @param  {Object} message Tabular data
+     * @return {Object}         Table data with tableColumns and tableRows properties
+     */
+    async getTableMessageData(message){
+        let localMessage = _.cloneDeep(message);
+        if (!_.isArray(localMessage)){
+            localMessage = [localMessage];
+        }
+
+
+        let messageRows = [];
+        for (let name in localMessage){
+            messageRows.push(await this.getMessageObjectRow(name, localMessage[name]));
+        }
+
+        let tableData = {
+            tableRows: messageRows
+        };
+        // console.log(JSON.stringify(tableData, ' ', 4));
+
+        return tableData;
+    }
+
+    /**
+     * Gets single row for tabular message logging
+     *
+     * @async
+     * @param  {mixed} index            Key or array index
+     * @param  {Object} messageRowData  Message row data for logging
+     * @return {Object}                 Object with row data
+     */
+    async getMessageObjectRow(index, messageRowData) {
+        let rowContents = {
+            __columns: [],
+            __type: 'table',
+            __data: {}
+        };
+        if (_.isObject(messageRowData) || _.isArray(messageRowData)){
+            for (let name in messageRowData){
+                let namedRowData = messageRowData[name];
+                if (_.isObject(namedRowData)){
+                    let newRows = await this.getMessageObjectRow(name, namedRowData);
+                    rowContents.__type = 'table';
+                    rowContents.__columns.push(name);
+                    rowContents.__data[name] = newRows;
+                } else if (_.isArray(namedRowData)){
+                    let newRows = [];
+                    for (let i=0; i<namedRowData.length; i++){
+                        let newRow = await this.getMessageObjectRow(i, namedRowData[i]);
+                        newRows.push(newRow);
+                    }
+                    rowContents.__type = 'row';
+                    rowContents.__columns.push(name);
+                    rowContents.__data[name] = newRows;
+
+                } else {
+                    let newData = {
+                        __type: 'cell',
+                    };
+                    newData.__data = namedRowData;
+                    rowContents.__columns.push(name);
+                    rowContents.__data[name] = newData;
+                }
+            }
+        } else {
+            rowContents.__type = 'cell';
+            rowContents.__data[index] = messageRowData[index];
+            rowContents.__columns.push(index);
+        }
+        return rowContents;
     }
 
     /**
@@ -599,10 +704,16 @@ class AppBaseClass extends BaseClass {
     /**
      * Emits 'message' global event, listened by main script
      *
+     * @async
      * @param  {Object} data      Event data object
      * @return {undefined}
      */
-    message (data){
+    async message (data){
+        let returnPromise;
+        let resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
         if (data){
             if (!data.uuid){
                 data.uuid = this.getHelper('util').uuid();
@@ -614,16 +725,27 @@ class AppBaseClass extends BaseClass {
         }
         data._async_ = false;
         if (!_appWrapper.windowManager.win.globalEmitter){
-            console.trace('a');
+            this.log('Can not send message - globalEmitter not available', 'error', []);
+            return false;
+        } else {
+            let listener = (messageData) => {
+                if (messageData && messageData.uuid && messageData.uuid == data.uuid){
+                    _appWrapper.windowManager.win.globalEmitter.removeListener('messageResponse', listener);
+                    resolveReference(messageData);
+                }
+            };
+
+            _appWrapper.windowManager.win.globalEmitter.on('messageResponse', listener);
+            _appWrapper.windowManager.win.globalEmitter.emit('message', data);
+            return returnPromise;
         }
-        _appWrapper.windowManager.win.globalEmitter.emit('message', data);
     }
 
     /**
      * Emits 'asyncMessage' global event, listened by main script
      *
      * @async
-     * @param  {Object} data      Event data object
+     * @param  {Object} data      Message data object
      * @return {mixed}            Returns data returned by main script async message handler for given message instruction
      */
     async asyncMessage (data){
@@ -652,6 +774,109 @@ class AppBaseClass extends BaseClass {
         _appWrapper.windowManager.win.globalEmitter.on('asyncMessageResponse', listener);
         _appWrapper.windowManager.win.globalEmitter.emit('asyncMessage', data);
         return returnPromise;
+    }
+
+    /**
+     * Returns info on messages that can be passed to mainScript
+     *
+     * @async
+     * @param  {Object}  data            Message data.data object
+     * @param  {Boolean} verboseOutput   Toggles verbose output
+     * @return {Object}                  Object with handlerMethods property containing all handler method names
+     */
+    async messageInfo (data, verboseOutput) {
+        let returnPromise;
+        let resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        let uuid = this.getHelper('util').uuid();
+
+        let listener = (messageData) => {
+            if (messageData && messageData.uuid && messageData.uuid == uuid){
+                _appWrapper.windowManager.win.globalEmitter.removeListener('messageResponse', listener);
+                this.messageInfoOutput(messageData, verboseOutput);
+                resolveReference(messageData);
+            }
+        };
+
+        _appWrapper.windowManager.win.globalEmitter.on('messageResponse', listener);
+        this.message({instruction: 'info', uuid: uuid, data: data});
+
+        return returnPromise;
+    }
+
+    /**
+     * Returns info on async messages that can be passed to mainScript
+     *
+     * @async
+     * @param  {Object}  data            Message data.data object
+     * @param  {Boolean} verboseOutput   Toggles verbose output
+     * @return {Object}                  Object with handlerMethods property containing all handler method names
+     */
+    async asyncMessageInfo (data, verboseOutput) {
+        let responseData = await this.asyncMessage({instruction: 'info', data: data});
+        this.messageInfoOutput(responseData, verboseOutput);
+        return responseData;
+    }
+
+    /**
+     * Logs messages info to console
+     * @param  {Object} messageData   Message response data
+     * @param {Boolean} verboseOutput   Toggles verbose output
+     * @return {[type]}               [description]
+     */
+    messageInfoOutput (messageData, verboseOutput) {
+        if (messageData && messageData.data && messageData.data.handlerMethods){
+            let handlerMethodNames = Object.keys(messageData.data.handlerMethods);
+            let handlerMethodsData = [];
+            this.log('Handler methods: "{1}"', 'info', [handlerMethodNames.join('", "')], true);
+            if (verboseOutput){
+                for (let name in messageData.data.handlerMethods){
+                    let requiredParams = messageData.data.handlerMethods[name].join('\n');
+                    let exampleCallData = [];
+                    let exampleCallProps = [];
+                    let exampleCall = [];
+                    let exampleCallString = '\nappWrapper.message({';
+                    if (messageData._async_){
+                        exampleCallString = '\nappWrapper.asyncMessage({';
+                    }
+                    exampleCallProps.push('instruction: \'' + name + '\'');
+                    if (requiredParams){
+                        messageData.data.handlerMethods[name].forEach((paramName) => {
+                            if (paramName.match(/^data\./)){
+                                exampleCallData.push(paramName.replace(/^data\./, '') + ': \'_value_\'');
+                            } else {
+                                exampleCallProps.push(paramName + ': \'_value_\'');
+                            }
+                        });
+                    }
+                    if (exampleCallProps && exampleCallProps.length){
+                        exampleCall.push('\n    ' + exampleCallProps.join(',\n    '));
+                    }
+                    if (exampleCallData && exampleCallData.length){
+                        exampleCall.push('\n    data: {');
+                        exampleCall.push('\n        ' + exampleCallData.join(',\n        '));
+                        exampleCall.push('\n    }');
+                    }
+
+                    exampleCallString += exampleCall.join('');
+                    exampleCallString += '\n});';
+
+                    handlerMethodsData.push({
+                        'Message instruction': name,
+                        'Example call': exampleCallString,
+                        'Required parameters': requiredParams
+                    });
+                }
+                if (handlerMethodsData.length == 1){
+                    this.log(handlerMethodsData[0], 'table', [], true);
+                } else {
+                    this.log(handlerMethodsData, 'table', [], true);
+                }
+            }
+        }
     }
 
     /**

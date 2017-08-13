@@ -566,7 +566,17 @@ class FormatHelper extends AppBaseClass {
      * @return {string}       Text with replaced line breaks
      */
     nl2br (value) {
-        return value.replace(/\r?\n/g, '<br />');
+        return value.replace(/\r?\n/g, '<br/>');
+    }
+
+    /**
+     * Converts spaces into non-breaking space entities for html
+     *
+     * @param  {string} value Text for conversion
+     * @return {string}       Text with replaced spaces
+     */
+    forceSpacing (value) {
+        return value.replace(/'\t'/g, '&nbsp;&nbsp;&nbsp;&nbsp;').replace(/\s/g, '&nbsp;');
     }
 
     /**

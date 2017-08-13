@@ -5,16 +5,16 @@
  */
 
 const _ = require('lodash');
-const MainBaseClass = require('./mainBase').MainBaseClass;
+const MessageHandlersBase = require('./messageHandlersBase').MessageHandlersBase;
 
 /**
  * A Utility class for handling main script messages
  *
  * @class
- * @extends {MainBaseClass}
+ * @extends {MessageHandlersBase}
  * @memberOf mainScript
  */
-class MainAsyncMessageHandlers extends MainBaseClass {
+class MainAsyncMessageHandlers extends MessageHandlersBase {
 
     /**
      * Creates MainAsyncMessageHandlers instance
@@ -24,162 +24,274 @@ class MainAsyncMessageHandlers extends MainBaseClass {
      */
     constructor() {
         super();
+        this.responseMessageIdentifier = 'asyncMessageResponse';
         return this;
     }
 
     /**
-     * Executes received async message based on message data
+     * Returns this handlers instance method names
      *
-     * @param  {string} instruction Message instruction
-     * @param  {string} uuid        UUID of the message
-     * @param  {Object} messageData        Data passed with message
-     * @return {Boolean}            True if handler is found, false otherwise
-     */
-    execute (instruction, uuid, messageData){
-        let methodName = instruction + 'Handler';
-        if (this[methodName] && _.isFunction(this[methodName])){
-            this[methodName](uuid, messageData);
-            return true;
-        } else {
-            return false;
-        }
-
+     * @return {string[]} An array of method names
+    */
+    getMethodNames () {
+        let superNames = super.getMethodNames();
+        let methodNames = _.concat(superNames, Object.getOwnPropertyNames(MainAsyncMessageHandlers.prototype));
+        return _.uniqWith(methodNames, _.isEqual);
     }
 
     /**
      * Basic handler for 'test' instruction - just returns same passed data after 5 seconds
      *
-     * @param  {string} uuid    UUID of the message
-     * @param  {Object} messageData    Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    testHandler (uuid, messageData) {
+    testHandler (uuid, messageData, simulate) {
         let duration = 5000;
         if (messageData.data && messageData.data.duration && _.isInteger(messageData.data.duration)){
             duration = messageData.data.duration;
         }
-        let responseData = _.extend({_result_: true}, messageData);
-        setTimeout( () => {
-            mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
-        }, duration);
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        if (!simulate){
+            setTimeout( () => {
+                return this.respond(responseData, simulate);
+            }, duration);
+        } else {
+            return this.respond(responseData, simulate);
+        }
     }
 
     /**
      * Configuration setting handler - sets current config to data from message
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async setConfigHandler(uuid, messageData){
-        let responseData;
+    async setConfigHandler (uuid, messageData, simulate){
+        let responseData = this.getResponseData(messageData);
         if (messageData && messageData.data && messageData.data.config){
-            mainScript.setNewConfig(messageData.data.config);
-            responseData = _.extend({_result_: true}, messageData);
+            if (!simulate){
+                mainScript.setNewConfig(messageData.data.config);
+            }
+            responseData._result_ = true;
         } else {
-            this.log('setConfigHandler called "{1}" with no data.config', 'warning', [messageData.uuid]);
-            responseData = _.extend({_result_: false}, messageData);
+            let message = {
+                message: 'setConfigHandler called "{1}" with no data.config',
+                type: 'warning',
+                data: [messageData.uuid]
+            };
+            responseData._missingParams_.push('data.config');
+            responseData._result_ = false;
+            responseData._messages_ = [message];
         }
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for tray icon initialization
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async initializeTrayIconHandler (uuid, messageData) {
-        await mainScript.menuHelper.initializeTrayIcon();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async initializeTrayIconHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.initializeTrayIcon();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for app menu setup
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async setupAppMenuHandler (uuid, messageData) {
-        await mainScript.menuHelper.setupAppMenu();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async setupAppMenuHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.setupAppMenu();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for app menu removal
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async removeAppMenuHandler (uuid, messageData) {
-        await mainScript.menuHelper.removeAppMenu();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async removeAppMenuHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.removeAppMenu();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for tray icon removal
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async removeTrayIconHandler (uuid, messageData) {
-        await mainScript.menuHelper.removeTrayIcon();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async removeTrayIconHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.removeTrayIcon();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for app menu initialization
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async initializeAppMenuHandler (uuid, messageData) {
-        await mainScript.menuHelper.initializeAppMenu();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async initializeAppMenuHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.initializeAppMenu();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for app menu reinitialization
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async reinitializeAppMenuHandler (uuid, messageData) {
-        await mainScript.menuHelper.reinitializeAppMenu();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async reinitializeAppMenuHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.reinitializeAppMenu();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Handler for app tray icon reinitialization
      *
      * @async
-     * @param  {string} uuid            UUID of the message
-     * @param  {Object} messageData     Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    async reinitializeTrayIconHandler (uuid, messageData) {
-        await mainScript.menuHelper.reinitializeTrayIcon();
-        let responseData = _.extend({_result_: true}, messageData);
-        mainScript.mainWindow.globalEmitter.emit('asyncMessageResponse', responseData);
+    async reinitializeTrayIconHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            await mainScript.menuHelper.reinitializeTrayIcon();
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
+    }
+
+    /**
+     * Handler for updating menu items
+     *
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
+     * @return {undefined}
+     */
+    updateMenuItemHandler (uuid, messageData, simulate) {
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = false;
+        if (messageData.data){
+            let data = messageData.data;
+            if (data.type && _.includes(['app', 'tray'], data.type) && data.menuItemIndex && data.menuItemUpdates){
+                let ms = this.getMainScript();
+                if (!simulate && ms && ms.menuHelper){
+                    if (data.type == 'tray'){
+                        ms.menuHelper.updateTrayMenuItem(data.menuItemIndex, data.menuItemUpdates);
+                    } else if (data.type == 'app'){
+                        ms.menuHelper.updateAppMenuItem(data.menuItemIndex, data.menuItemUpdates);
+                    }
+                }
+                responseData._messages_.push({
+                    message: 'Menu item updated',
+                    type: 'info',
+                    data: [],
+                    force: false
+                });
+                responseData._result_ = true;
+            } else {
+                if (!data.type){
+                    responseData._messages_.push({
+                        message: 'Missing "data.type" value for updateMenuItem message handler',
+                        type: 'error',
+                        data: []
+                    });
+                    responseData._missingParams_.push('data.type');
+                } else if (!_.includes(['app', 'tray'], data.type)){
+                    responseData._messages_.push({
+                        message: 'Type "{1}" passed for updateMenuItem message is not supported. Supported types are "app" and "tray"',
+                        type: 'error',
+                        data: []
+                    });
+                    responseData._missingParams_.push('data.type');
+                }
+                if (!data.menuItemIndex){
+                    responseData._messages_.push({
+                        message: 'Missing "data.menuItemIndex" value for updateMenuItem message handler',
+                        type: 'error',
+                        data: []
+                    });
+                    responseData._missingParams_.push('data.menuItemIndex');
+                }
+                if (!data.menuItemUpdates){
+                    responseData._messages_.push({
+                        message: 'Missing "data.menuItemUpdates" value for updateMenuItem message handler',
+                        type: 'error',
+                        data: []
+                    });
+                    responseData._missingParams_.push('data.menuItemUpdates');
+                }
+            }
+        } else {
+            responseData._messages_.push({
+                message: 'No message data passed for updateMenuItem message handler',
+                type: 'error',
+                data: []
+            });
+            responseData._missingParams_.push('data');
+            responseData._missingParams_.push('data.type');
+            responseData._missingParams_.push('data.menuItemIndex');
+            responseData._missingParams_.push('data.menuItemUpdates');
+        }
+        return this.respond(responseData, simulate);
     }
 }
 

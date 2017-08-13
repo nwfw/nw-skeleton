@@ -159,6 +159,12 @@ exports.component = {
         },
         reinitializeTrayIcon: async function(){
             await _appWrapper.asyncMessage({instruction: 'reinitializeTrayIcon', data: {}});
+        },
+        messageInfo: function(){
+            _appWrapper.messageInfo({}, true);
+        },
+        asyncMessageInfo: function(){
+            _appWrapper.asyncMessageInfo({}, true);
         }
 
     },

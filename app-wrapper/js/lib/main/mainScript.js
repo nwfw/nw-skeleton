@@ -19,7 +19,7 @@ const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsync
  *
  * @class
  * @memberOf mainScript
- * @extends {appWrapper.MainBaseClass}
+ * @extends {mainScript.MainBaseClass}
  * @property {Object}                   config                  App configuration
  * @property {Object}                   inspectOptions          Util.inspect default options
  * @property {Window}                   mainWindow              Reference to main nw.Window
@@ -230,7 +230,7 @@ class MainScript extends MainBaseClass {
                 if (data._async_){
                     result = this.asyncMessageHandlers.execute(instruction, uuid, data);
                 } else {
-                    result = this.messageHandlers.execute(instruction, data);
+                    result = this.messageHandlers.execute(instruction, uuid, data);
                 }
                 if (!result){
                     this.log('{1} "{2}" handler for instruction "{3}" not found!', 'error', [messageType, uuid, instruction]);

@@ -924,6 +924,7 @@ class WindowManager extends AppBaseClass {
      */
     windowBlur (){
         appState.status.windowFocused = false;
+        _appWrapper.emit('window:blur');
     }
 
     /**
@@ -933,6 +934,7 @@ class WindowManager extends AppBaseClass {
      */
     windowFocus (){
         appState.status.windowFocused = true;
+        _appWrapper.emit('window:focus');
     }
 
     /**
@@ -942,8 +944,7 @@ class WindowManager extends AppBaseClass {
      */
     showWindow () {
         this.win.show();
-        this.win.focus();
-        this.window.focus();
+        this.focusWindow();
     }
 
     /**
@@ -999,6 +1000,16 @@ class WindowManager extends AppBaseClass {
                 }, 2000);
             }
         }
+    }
+
+    /**
+     * Focuses main window
+     *
+     * @return {undefined}
+     */
+    focusWindow () {
+        this.win.focus();
+        this.window.focus();
     }
 }
 

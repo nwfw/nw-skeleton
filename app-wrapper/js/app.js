@@ -125,6 +125,8 @@ class App extends AppBaseClass {
         let returnValue = true;
         this.addUserMessage('Shutting application down', 'debug', []);
         await this.shutdownSubFiles();
+        this.initialized = false;
+        this.finalized = false;
         await _appWrapper.wait(appState.config.mediumPauseDuration);
         this.addUserMessage('Application shutdown complete.', 'info', []);
         return returnValue;

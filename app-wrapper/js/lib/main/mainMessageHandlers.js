@@ -5,16 +5,16 @@
  */
 
 const _ = require('lodash');
-const MainBaseClass = require('./mainBase').MainBaseClass;
+const MessageHandlersBase = require('./messageHandlersBase').MessageHandlersBase;
 
 /**
  * A Utility class for handling main script messages
  *
  * @class
- * @extends {MainBaseClass}
+ * @extends {MessageHandlersBase}
  * @memberOf mainScript
  */
-class MainMessageHandlers extends MainBaseClass {
+class MainMessageHandlers extends MessageHandlersBase {
 
     /**
      * Creates MainMessageHandlers instance
@@ -24,89 +24,120 @@ class MainMessageHandlers extends MainBaseClass {
      */
     constructor() {
         super();
+        this.responseMessageIdentifier = 'messageResponse';
         return this;
     }
 
     /**
-     * Executes received message based on message data
+     * Returns this handlers instance method names
      *
-     * @param  {string} instruction Message instruction
-     * @param  {Object} messageData        Data passed with message
-     * @return {Boolean}            True if handler is found, false otherwise
+     * @return {string[]} An array of method names
      */
-    execute (instruction, messageData){
-        let methodName = instruction + 'Handler';
-        if (this[methodName] && _.isFunction(this[methodName])){
-            this[methodName](messageData);
-            return true;
-        } else {
-            return false;
-        }
+    getMethodNames () {
+        let superNames = super.getMethodNames();
+        let methodNames = _.concat(superNames, Object.getOwnPropertyNames(MainMessageHandlers.prototype));
+        return _.uniqWith(methodNames, _.isEqual);
     }
 
     /**
      * Simple ping handler - responds with 'pong' instruction
      *
-     * @param  {Object} messageData        Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    pingHandler (messageData) {
+    pingHandler (uuid, messageData, simulate) {
         let duration = 500;
         if (messageData.data && messageData.data.duration && _.isInteger(messageData.data.duration)){
             duration = messageData.data.duration;
         }
+        let responseData = this.getResponseData(messageData);
+        responseData.instruction = 'pong';
+        responseData._result_ = true;
         setTimeout( () =>{
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend(messageData, {instruction: 'pong', _result_: true}));
+            return this.respond(responseData, simulate);
         }, duration);
     }
 
     /**
      * Logging handler - logs message data to console
      *
-     * @param  {Object} messageData        Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    logHandler (messageData) {
+    logHandler (uuid, messageData, simulate) {
+        let responseData = this.getResponseData(messageData);
         if (messageData && messageData.data){
             if (messageData.data.message){
                 let type = messageData.data.type || 'info';
                 let force = messageData.data.force || false;
                 let forceToWindow = messageData.data.forceToWindow || false;
-                this.log(messageData.data.message, type, messageData.data.data, force, forceToWindow);
-                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+                if (!simulate){
+                    this.log(messageData.data.message, type, messageData.data.data, force, forceToWindow);
+                }
+                responseData._result_ = true;
             } else {
-                this.log('Can not log message - no message supplied', 'error', []);
-                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+                responseData._messages_.push({
+                    message: 'Can not log message - no message supplied',
+                    type: 'error',
+                    data: []
+                });
+                responseData._missingParams_.push('data.message');
+                responseData._result_ = false;
             }
         } else {
-            this.log('Can not log message - no data supplied', 'error', []);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+            responseData._messages_.push({
+                message: 'Can not log message - no data supplied',
+                type: 'error',
+                data: []
+            });
+            responseData._missingParams_.push('data');
+            responseData._result_ = false;
         }
+        return this.respond(responseData, simulate);
     }
 
     /**
      * Property logging handler - logs mainScript property from message data to console
      *
-     * @param  {Object} messageData        Data passed with message
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
      * @return {undefined}
      */
-    logMainScriptPropertyHandler (messageData) {
+    logMainScriptPropertyHandler (uuid, messageData, simulate) {
+        let responseData = this.getResponseData(messageData);
         if (messageData.data && messageData.data.property) {
             let prop = _.get(mainScript, messageData.data.property);
             if (prop){
                 let type = messageData.data.type || 'info';
                 let force = messageData.data.force || false;
                 let forceToWindow = messageData.data.forceToWindow || false;
-                this.log(prop, type, messageData.data.data, force, forceToWindow);
-                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: true}, messageData));
+                if (!simulate){
+                    this.log(prop, type, messageData.data.data, force, forceToWindow);
+                }
+                responseData._result_ = true;
             } else {
-                this.log('Can not find mainScript property "{1}"', 'error', [messageData.data.property]);
-                mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+                responseData._messages_.push({
+                    message: 'Can not find mainScript property "{1}"',
+                    type: 'error',
+                    data: [messageData.data.property]
+                });
+                responseData._result_ = false;
             }
         } else {
-            this.log('Can not find mainScript property - no property supplied', 'error', []);
-            mainScript.mainWindow.globalEmitter.emit('messageResponse', _.extend({_result_: false}, messageData));
+            responseData._messages_.push({
+                message: 'Can not find mainScript property - no property supplied',
+                type: 'error',
+                data: []
+            });
+            responseData._missingParams_.push('data.property');
+            responseData._result_ = false;
         }
+        return this.respond(responseData, simulate);
     }
 }
 

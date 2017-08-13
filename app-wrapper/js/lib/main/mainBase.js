@@ -15,8 +15,8 @@ const BaseClass = require('../base').BaseClass;
  * Base class for extending when creating other classes
  *
  * @class
- * @memberOf appWrapper
- * @extends {BaseClass}
+ * @memberOf mainScript
+ * @extends {appWrapper.BaseClass}
  * @property {Object}   colors            Terminal color escape sequences
  */
 class MainBaseClass extends BaseClass {
@@ -25,7 +25,7 @@ class MainBaseClass extends BaseClass {
      * Creates class instance, setting basic properties, and returning the instance itself
      *
      * @constructor
-     * @return {MainBaseClass} Instance of current class
+     * @return {mainScript.MainBaseClass} Instance of current class
      */
     constructor () {
         super();
@@ -218,6 +218,21 @@ class MainBaseClass extends BaseClass {
     }
 
     /**
+     * Logs to window console
+     *
+     * @return {undefined}
+     */
+    windowLog(){
+        let mw = this.getMainWindow();
+        if (mw && mw.window && mw.window.console){
+            mw.window.console.log.apply(mw.window.console, arguments);
+        } else {
+            this.log('Can not log to window console!', 'error', []);
+        }
+    }
+
+
+    /**
      * Returns configuration var value
      *
      * @param  {string} name            String representing path to requested var (i.e. 'appConfig.appInfo.name')
@@ -391,13 +406,32 @@ class MainBaseClass extends BaseClass {
      * @return {(Window|Boolean)} nw.Window or false if not available
      */
     getMainWindow () {
-        if (this.mainWindow){
-            return this.mainWindow;
-        } else if (mainScript && mainScript.mainWindow){
-            return mainScript.mainWindow;
-        } else {
-            return false;
+        let ms = this.getMainScript();
+        let mw;
+        if (ms && ms.mainWindow){
+            mw = ms.mainWindow;
         }
+        if (!mw){
+            this.log('Can not find mainWindow!', 'error', []);
+        }
+        return mw;
+    }
+
+    /**
+     * Gets appState if available
+     *
+     * @return {appWrapper.AppState} appState object
+     */
+    getAppState () {
+        let appState;
+        let mainWindow = this.getMainWindow();
+        if (mainWindow && mainWindow.window && mainWindow.window.appState){
+            appState = mainWindow.window.appState;
+        }
+        if (!appState){
+            this.log('Can not find appState!', 'error', []);
+        }
+        return appState;
     }
 
     /**
@@ -411,7 +445,24 @@ class MainBaseClass extends BaseClass {
         if (mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper)){
             _appWrapper = mainWindow.window.getAppWrapper();
         }
+        if (!_appWrapper){
+            this.log('Can not find appWrapper!', 'error', []);
+        }
         return _appWrapper;
+    }
+
+    /**
+     * Returns main script object
+     *
+     * @return {mainScript.MainScript} mainScript class instance
+     */
+    getMainScript () {
+        if (mainScript){
+            return mainScript;
+        } else {
+            this.log('Can not find mainScript!', 'error', []);
+            return false;
+        }
     }
 }
 

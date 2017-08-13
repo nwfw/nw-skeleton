@@ -1,0 +1,19 @@
+<table class="message-line-data-table">
+    <tr class="table-heading-row">
+        <th :title="column" v-for="column in row.__columns" v-html="column"></th>
+    </tr>
+    <tr class="table-data-row">
+        <template v-for="rowColumn in row.__columns" :title="rowColumn">
+                <template v-if="row.__data[rowColumn] && row.__data[rowColumn].__type && row.__data[rowColumn].__type == 'table'">
+                <td :title="row.__data[rowColumn].__data | dump" valign="middle" class="table-wrapper-cell">
+                    <message-line-table v-bind:message="message" v-bind:row="row.__data[rowColumn]" v-bind:message-index="messageIndex"></message-line-table>
+                </td>
+                </template>
+                <template v-else>
+                    <td valign="middle" :title="row.__data[rowColumn].__data | dump" class="table-data-cell" v-html="row.__data[rowColumn].__data">
+                    </td>
+                </template>
+            </td>
+        </template>
+    </tr>
+</table>

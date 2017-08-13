@@ -1,0 +1,8 @@
+<div class="message-body" :class="{'important-message': message.important, 'body-table-wrapper': message.type == 'table'}">
+	<span v-if="message.type !== 'table'" v-html="message.message"></span>
+    <template v-else>
+        <template v-for="row in message.tableData.tableRows">
+            <message-line-table v-if="row.__type == 'table'" v-bind:message="message" v-bind:row="row" v-bind:message-index="messageIndex"></message-line-table>
+        </template>
+    </template>
+</div>

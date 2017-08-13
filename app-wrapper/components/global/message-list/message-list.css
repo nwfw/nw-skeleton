@@ -74,6 +74,7 @@
 
 .message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body {
     flex: 1 1 auto;
+    overflow: auto;
     border-left: 1px solid;
     margin-left: 5px;
     padding-left: 5px;
@@ -86,6 +87,53 @@
     border-color: var(--app-message-list-background);
     padding-left: 0;
 }
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table {
+    border-collapse: collapse;
+    margin: 2px auto 10px auto;
+    font-family: Inconsolata, monospace;
+    width: 90%;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table th,
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td {
+    border: 1px dashed;
+    padding: 2px 5px;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table th {
+    text-align: center;
+    background: var(--app-message-list-message-text-color);
+    color: var(--app-message-list-background);
+    padding: 5px;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td.index-key-cell {
+    text-align: center;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table th.index-key-cell-heading {
+    padding: 5px;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td ul {
+    margin: 0;
+    padding: 0;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td ul ul {
+    margin-left: 10px;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td ul li {
+    list-style: none;
+    padding: 1px 0;
+}
+
+.message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body .message-line-data-table td ul ul li:before {
+    content: '| ';
+}
+
 
 .message-list-wrapper .message-list li.message-list-item .message .message-line-data .message-body.important-message {
     font-weight: bold;

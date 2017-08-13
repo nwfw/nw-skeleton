@@ -180,12 +180,12 @@ class MenuHelper extends MainBaseClass {
      * @return {Object}              Instance of nw.menuItem - see {@link http://docs.nwjs.io/en/latest/References/MenuItem/}
      */
     async initializeAppMenuItem (menuItemData, menuIndex) {
-        var menuItem;
-        var menuItemObj = _.extend(menuItemData.menuItem, {
-            click: this.handleMenuClick.bind(this, menuIndex)
+        let menuItem;
+        let menuItemObj = _.extend(menuItemData.menuItem, {
+            click: this.handleMenuClick.bind(this, menuIndex, menuItemData.menuItem)
         });
         if (menuItemData.menuItem.shortcut){
-            var modifiers = [];
+            let modifiers = [];
             if (menuItemData.menuItem.shortcut.key){
                 menuItemObj.key = menuItemData.menuItem.shortcut.key;
             }
@@ -220,7 +220,7 @@ class MenuHelper extends MainBaseClass {
                 submenu.append(await this.initializeAppMenuItem(menuItemData.children[i], menuIndex + '_' + i));
             }
 
-            menuItem = new nw.MenuItem(_.extend(menuItemObj, {submenu: submenu, click: this.handleMenuClick.bind(this, menuIndex)}));
+            menuItem = new nw.MenuItem(_.extend(menuItemObj, {submenu: submenu}));
         } else {
             menuItem = new nw.MenuItem(_.extend(menuItemObj));
         }
@@ -236,7 +236,7 @@ class MenuHelper extends MainBaseClass {
      * @return {Object[]}            Array with single member - menuItemData object
      */
     async initializeAppMenuItemData (menuItemData, menuIndex) {
-        var menuData = [];
+        let menuData = [];
         menuIndex = menuIndex + '';
         if (menuItemData.menuItem.type != 'separator'){
             let menuMethod;
@@ -283,6 +283,7 @@ class MenuHelper extends MainBaseClass {
         }
         return menuItem;
     }
+
 
     /**
      * Gets menu item by its parent index, returning children as well
@@ -406,9 +407,9 @@ class MenuHelper extends MainBaseClass {
         let originalMenuIndex = menuIndex;
         let methodIdentifier = this.getMenuItemMethodName(menuIndex);
         let menuItem = this.getMenuItem(menuIndex);
-        var objectIdentifier;
-        var method;
-        var object = this.getAppWrapper();
+        let objectIdentifier;
+        let method;
+        let object = this.getAppWrapper();
         if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
             objectIdentifier = methodIdentifier.replace(/\.[^.]+$/, '');
         }
@@ -447,8 +448,10 @@ class MenuHelper extends MainBaseClass {
         let methodIdentifier = trayMenuItem.method;
         let objectIdentifier;
         let method;
+
+        this.log(this.getTrayMenuItem('1_0'));
         if (methodIdentifier){
-            var object = this.getAppWrapper();
+            let object = this.getAppWrapper();
             if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
                 objectIdentifier = methodIdentifier.replace(/\.[^.]+$/, '');
             }
@@ -469,9 +472,16 @@ class MenuHelper extends MainBaseClass {
 
             if (object && method && _.isFunction(method)){
                 this.log('Calling tray menu click handler "{1}" for menuItem "{2}"', 'debug', [methodIdentifier, trayMenuItem.label]);
+                let appState = this.getAppState();
+                let appWrapper = this.getAppWrapper();
+                if (appWrapper && appState){
+                    if (!appState.status.windowFocused){
+                        appWrapper.windowManager.focusWindow();
+                    }
+                }
                 return method.call(object, trayMenuItem);
             } else {
-                this.log('Can\'t call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label], false, true);
+                this.log('Can not call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label], false, true);
                 return false;
             }
         }
@@ -485,7 +495,7 @@ class MenuHelper extends MainBaseClass {
      * @return {Object}              Instance of nw.menuItem - see {@link http://docs.nwjs.io/en/latest/References/MenuItem/}
      */
     async initializeTrayMenuItem (menuItemData) {
-        var menuItem;
+        let menuItem;
         if (menuItemData.type != 'separator'){
             if (menuItemData.label){
                 menuItemData.label = this.getAppWrapper().appTranslations.translate(menuItemData.label);
@@ -494,7 +504,7 @@ class MenuHelper extends MainBaseClass {
                 menuItemData.tooltip = this.getAppWrapper().appTranslations.translate(menuItemData.tooltip);
             }
         }
-        var menuItemObj = _.extend(menuItemData, {
+        let menuItemObj = _.extend(menuItemData, {
             click: this.handleTrayClick.bind(this, menuItemData)
         });
         if (menuItemData.children && menuItemData.children.length){
@@ -571,6 +581,94 @@ class MenuHelper extends MainBaseClass {
         }
         await this.initializeTrayIcon();
     }
+
+    /**
+     * Returns tray menu item by its index
+     *
+     * @param  {string}     menuItemIndex   Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @param  {Object[]}   menuItems       Optional menuItems array (for nested calls)
+     * @return {(Object|undefined)}         MenuItem object or undefined if none found
+     */
+    getTrayMenuItem(menuItemIndex, menuItems){
+        if (!menuItems){
+            menuItems = this.trayMenu.items;
+        }
+        let indexChunks = menuItemIndex.split('_');
+        let menuItem;
+        if (indexChunks && indexChunks.length){
+            menuItem = menuItems[indexChunks[0]];
+            if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
+                menuItemIndex = _.tail(indexChunks).join('_');
+                menuItems = menuItem.submenu.items;
+                menuItem = this.getTrayMenuItem(menuItemIndex, menuItems);
+            }
+        }
+        if (!menuItem){
+            this.log('Can not find tray menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+        }
+        return menuItem;
+    }
+
+    /**
+     * Updates tray menu item for given menuIndex by merging it with menuItemUpdates
+     *
+     * @param  {string} menuItemIndex   Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @param  {Object} menuItemUpdates Object with values to update
+     * @return {Object}                 Updated menuItem
+     */
+    updateTrayMenuItem(menuItemIndex, menuItemUpdates){
+        let menuItem = this.getTrayMenuItem(menuItemIndex);
+        let appWrapper = this.getAppWrapper();
+        if (appWrapper && menuItem){
+            _.merge(menuItem, menuItemUpdates);
+        }
+        return menuItem;
+    }
+
+    /**
+     * Returns app menu item by its index
+     *
+     * @param  {string}     menuItemIndex   Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @param  {Object[]}   menuItems       Optional menuItems array (for nested calls)
+     * @return {(Object|undefined)}         MenuItem object or undefined if none found
+     */
+    getAppMenuItem(menuItemIndex, menuItems){
+        if (!menuItems){
+            menuItems = this.menu.items;
+        }
+        let indexChunks = menuItemIndex.split('_');
+        let menuItem;
+        if (indexChunks && indexChunks.length){
+            menuItem = menuItems[indexChunks[0]];
+            if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
+                menuItemIndex = _.tail(indexChunks).join('_');
+                menuItems = menuItem.submenu.items;
+                menuItem = this.getAppMenuItem(menuItemIndex, menuItems);
+            }
+        }
+        if (!menuItem){
+            this.log('Can not find app menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+        }
+        return menuItem;
+    }
+
+    /**
+     * Updates app menu item for given menuIndex by merging it with menuItemUpdates
+     *
+     * @param  {string} menuItemIndex   Menu index in format parentIndex_menuIndex (i.e '1_2')
+     * @param  {Object} menuItemUpdates Object with values to update
+     * @return {Object}                 Updated menuItem
+     */
+    updateAppMenuItem(menuItemIndex, menuItemUpdates){
+        let menuItem = this.getAppMenuItem(menuItemIndex);
+        let appWrapper = this.getAppWrapper();
+        if (appWrapper && menuItem){
+            _.merge(menuItem, menuItemUpdates);
+        }
+        return menuItem;
+    }
+
+
 }
 
 exports.MenuHelper = MenuHelper;

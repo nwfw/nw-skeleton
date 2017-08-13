@@ -9,9 +9,8 @@
 						{{ formatTime(message.timestamp, {}, false) }}
 					</span>
 				</transition>
-				<div class="message-body" :class="{'important-message': message.important}">
-					{{ message.message }}
-				</div>
+				<!-- <div class="message-body" :class="{'important-message': message.important}" v-html="message.message"></div> -->
+				<message-line-body v-bind:message="message" v-bind:message-index="messageIndex" :ref="'messageLine_body_' + messageIndex"></message-line-body>
 				<div class="message-stack-toggle" :class="{'not-visible': !(message.stack && message.stack.length)}">
 					<a href="#" class="message-stack-toggle-link" @click.prevent="toggleStackVisible" :class="{'message-stack-toggle-link-active': message.stackVisible, 'not-visible': hideStacks}">
 						<span :title="translate('Hide call stack')" v-if="message.stackVisible" class="fa fa-close"></span>
