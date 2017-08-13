@@ -223,14 +223,6 @@ class ModalHelper extends AppBaseClass {
             }
             this.modalNotBusy();
             this.modalReady();
-            // setTimeout( () => {
-            //     if (cm.onOpen && _.isFunction(cm.onOpen)){
-            //         this.log('Calling current modal onOpen...', 'info', []);
-            //         cm.onOpen();
-            //     }
-            //     cm.opening = false;
-            //     md.fadeModal = fadeModal;
-            // }, duration);
             md.fadeModal = fadeModal;
         }
         if (cm.autoCloseTime) {

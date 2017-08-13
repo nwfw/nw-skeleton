@@ -247,7 +247,7 @@ class AppWrapper extends AppBaseClass {
         window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
         this.log('Initializing application wrapper.', 'groupend', []);
         if (!appState.isDebugWindow){
-            this.message({instruction: 'log', data: {message: 'Application initialized', force: false}});
+            this.message({instruction: 'log', data: {type: 'debug', message: 'Application initialized', force: false}});
         }
         return retValue;
     }

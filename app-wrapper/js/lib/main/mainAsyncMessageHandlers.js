@@ -242,7 +242,7 @@ class MainAsyncMessageHandlers extends MessageHandlersBase {
                 }
                 responseData._messages_.push({
                     message: 'Menu item updated',
-                    type: 'info',
+                    type: 'debug',
                     data: [],
                     force: false
                 });

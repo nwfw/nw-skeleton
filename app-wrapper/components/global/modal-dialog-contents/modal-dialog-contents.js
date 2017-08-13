@@ -26,12 +26,6 @@ component = {
     name: 'modal-dialog-contents',
     template: '',
     props: ['bodyComponent'],
-    mounted: function(){
-        let activeElement = document.activeElement;
-        if (!(activeElement && activeElement.tagName && activeElement.parentQuerySelector('.modal-dialog-wrapper') && _.includes(['input','textarea','select'], activeElement.tagName.toLowerCase()))){
-            this.setFocus();
-        }
-    },
     methods: {
         confirmModalAction: function(){
             let cm = appState.modalData.currentModal;
@@ -98,9 +92,16 @@ component = {
             // console.log('event modal transition afterEnter');
             this.clearTransitionAttributes(element);
             if (cm.opening && element.hasClass('modal-dialog-content-wrapper') && cm.onOpen && _.isFunction(cm.onOpen)){
-                _appWrapper.getHelper('modal').log('Calling current modal onOpen...', 'info', []);
-                cm.onOpen();
-                cm.opening = false;
+                setTimeout(() => {
+                    this.setFocus();
+                    _appWrapper.getHelper('modal').log('Calling current modal onOpen...', 'info', []);
+                    cm.onOpen();
+                    cm.opening = false;
+                }, 50);
+            } else {
+                setTimeout(() => {
+                    this.setFocus();
+                }, 50);
             }
         },
         beforeLeave: function (element) {
@@ -191,6 +192,9 @@ component = {
                         }
                         if (!(focusElement && !focusElement.getAttribute('disabled'))){
                             focusElement = el.querySelector('input, button');
+                        }
+                        if (!(focusElement && !focusElement.getAttribute('disabled'))){
+                            focusElement = el.querySelector('.modal-dialog-body');
                         }
                         if (!(focusElement && !focusElement.getAttribute('disabled'))){
                             focusElement = el;

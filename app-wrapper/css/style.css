@@ -74,6 +74,10 @@ input[type=range] {
     top: 0.4rem;
 }
 
+input[type=range].reversed-range-input {
+    transform: rotateY(180deg);
+}
+
 button:hover,
 input[type=button]:hover {
 	background: var(--input-hover-background);
