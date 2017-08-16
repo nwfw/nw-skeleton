@@ -1,6 +1,6 @@
 {
     "name": "nw-skeleton",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "Skeleton framework for nwjs based apps with Vue support",
     "main": "index.js",
     "repository": {
