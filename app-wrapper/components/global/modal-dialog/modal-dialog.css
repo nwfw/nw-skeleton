@@ -221,6 +221,24 @@
     flex: 1 1 auto;
 }
 
+.modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper .modal-dialog-inline-confirm {
+    background: var(--modal-dialog-body-background);
+    padding: var(--modal-dialog-body-padding);
+    max-width: 50vw;
+    flex: 1 0 auto;
+    overflow: auto;
+}
+
+.modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper .modal-dialog-content-inner {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+}
+
+.modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper .modal-dialog-inline-confirm .inner-confirm-buttons {
+    margin: 10px 0;
+    text-align: right;
+}
 
 .modal-dialog-wrapper .modal-dialog-busy-indicator {
     position: absolute;
@@ -262,7 +280,8 @@
     cursor:pointer;
 }
 
-.modal-button {
+.modal-button,
+.inner-confirm-button {
     background: var(--modal-dialog-button-background);
     border: var(--modal-dialog-button-border);
     color: var(--modal-dialog-button-color);
@@ -276,23 +295,27 @@
     color: var(--modal-dialog-button-color-hovered);
 }
 
-.modal-button-cancel {
+.modal-button-cancel,
+.inner-confirm-button-cancel {
     border: var(--modal-dialog-button-cancel-border);
     color: var(--modal-dialog-button-cancel-color);
 }
 
-.modal-button-cancel:hover {
+.modal-button-cancel:hover,
+.inner-confirm-button-cancel:hover {
     background: var(--modal-dialog-button-cancel-background-hovered);
     color: var(--modal-dialog-button-cancel-color-hovered);
 }
 
-.modal-button-confirm {
+.modal-button-confirm,
+.inner-confirm-button-confirm {
     border: var(--modal-button-confirm-border);
     color: var(--modal-button-confirm-color);
     margin-left: 5px;
 }
 
-.modal-button-confirm:hover {
+.modal-button-confirm:hover,
+.inner-confirm-button-confirm:hover {
     background: var(--modal-dialog-button-confirm-background-hovered);
     color: var(--modal-dialog-button-confirm-color-hovered);
 }
@@ -329,7 +352,9 @@
 }
 
 .modal-button-confirm[disabled],
-.modal-button-confirm[disabled]:hover {
+.modal-button-confirm[disabled]:hover,
+.inner-confirm-button-confirm[disabled],
+.inner-confirm-button-confirm[disabled]:hover {
     background: var(--modal-dialog-button-confirm-disabled-background);
     border: var(--modal-dialog-button-confirm-disabled-border);
     color: var(--modal-dialog-button-confirm-disabled-color);
@@ -338,10 +363,121 @@
 }
 
 .modal-button-cancel[disabled],
-.modal-button-cancel[disabled]:hover {
+.modal-button-cancel[disabled]:hover,
+.inner-confirm-button-cancel[disabled],
+.inner-confirm-button-cancel[disabled]:hover {
     background: var(--modal-dialog-button-cancel-disabled-background);
     border: var(--modal-dialog-button-cancel-disabled-border);
     color: var(--modal-dialog-button-cancel-disabled-color);
     margin-left: 5px;
     cursor: not-allowed;
+}
+
+
+
+.modal-dialog-wrapper .tabs {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+}
+
+.modal-dialog-wrapper .tabs .tab-links {
+    flex: 0 0 auto;
+    z-index: 1;
+}
+.modal-dialog-wrapper .tabs .tab-items {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+}
+
+.modal-dialog-wrapper .tabs .tab-items .tab-item {
+    overflow: auto;
+    background: var(--modal-dialog-background);
+    flex: 1 1 auto;
+    width: 75vw;
+    display: flex;
+    flex-flow: column;
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper {
+    color: var(--app-tabs-tab-link-color);
+    border: var(--app-tabs-tab-link-border);
+    background: var(--app-tabs-tab-link-background);
+    font-size: var(--app-tabs-tab-link-font-size);
+    padding: 3px 5px;
+    border-radius: 3px 3px 0px 0px;
+    margin-left: 5px;
+    margin-bottom: -1px;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    transition-property: background, color, border;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper:hover {
+    background: var(--app-tabs-tab-link-hover-background);
+    color: var(--app-tabs-tab-link-hover-color);
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper.active:hover ,
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper.active {
+    background: var(--app-tabs-tab-link-active-background);
+    color: var(--app-tabs-tab-link-active-color);
+    border-bottom-color: var(--app-tabs-tab-link-active-background);
+    cursor: default;
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper .tab-link-tools {
+    margin-left: 0;
+    max-width: 0;
+    opacity: 0;
+    white-space: nowrap;
+    pointer-events: none;
+    overflow: hidden;
+    transition-property: max-width, margin, opacity;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper.active .tab-link-tools {
+    margin-left: 10px;
+    max-width: 200px;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper .tab-link-tools a {
+    color: var(--app-tabs-tab-link-tools-color);
+    pointer-events: none;
+    transition-property: text-shadow, color;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper.active .tab-link-tools a {
+    pointer-events: all;
+}
+
+.modal-dialog-wrapper .tabs .tab-links .tab-link-wrapper .tab-link-tools a:hover {
+    color: var(--app-tabs-tab-link-tools-hover-color);
+    text-shadow: var(--app-tabs-tab-link-tools-hover-text-shadow);
+}
+
+.modal-dialog-wrapper .tabs .tab-items {
+    border: var(--app-tabs-tab-items-border);
+}
+
+.modal-dialog-wrapper .tabs .tab-items .tab-item {
+    background: var(--app-tabs-tab-item-background);
+    flex-basis: 0px;
+    padding: 0;
+}
+
+.modal-dialog-wrapper .tabs .tab-items .tab-item.active {
+    flex-basis: auto;
+    background: var(--app-tabs-tab-item-active-background);
 }

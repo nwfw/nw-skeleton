@@ -1,34 +1,48 @@
 <transition appear v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter" v-on:enter-cancelled="enterCancelled" v-on:leave-cancelled="leaveCancelled" v-on:before-leave="beforeLeave" v-on:leave="leave" v-on:after-leave="afterLeave">
     <modal-dialog-busy v-if="currentModal.busy" key="modalBusy" ref="modalDialogBusy"></modal-dialog-busy>
 	<div key="modalFree" v-if="!currentModal.busy && currentModal.ready" class="modal-dialog-content-wrapper">
-		<h2 class="modal-dialog-title" v-html="getTitle()"></h2>
-		<modal-dialog-messages ref="modalDialogMessages"></modal-dialog-messages>
-		<form name="modalDialogForm" v-on:submit.stop.prevent="confirmModalAction" class="modal-dialog-form">
-			<div class="modal-dialog-body">
-				<transition name="width-height">
-					<component v-bind:is="bodyComponent"></component>
-				</transition>
-			</div>
-			<template v-if="currentModal.showCancelButton || currentModal.showConfirmButton">
-				<div class="modal-dialog-buttons">
-					<template v-if="currentModal.showConfirmButton">
-						<template v-if="currentModal.confirmDisabled">
-							<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
-						</template>
-						<template v-else>
-							<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
-						</template>
-					</template>
-					<template v-if="currentModal.showCancelButton">
-						<template v-if="currentModal.cancelDisabled">
-							<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-						</template>
-						<template v-else>
-							<button class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-						</template>
-					</template>
+		<transition name="size" v-bind:css="false" v-on:before-enter="inlineConfirmBeforeEnter" v-on:enter="inlineConfirmEnter" v-on:after-enter="inlineConfirmAfterEnter" v-on:enter-cancelled="inlineConfirmEnterCancelled" v-on:leave-cancelled="inlineConfirmLeaveCancelled" v-on:before-leave="inlineConfirmBeforeLeave" v-on:leave="inlineConfirmLeave" v-on:after-leave="inlineConfirmAfterLeave">
+			<div key="inlineConfirm" class="modal-dialog-inline-confirm" v-show="currentModal.inlineConfirm">
+				<h2 class="modal-dialog-title" v-html="currentModal.inlineConfirmData.title"></h2>
+				<div v-if="currentModal.inlineConfirmData.body" v-html="currentModal.inlineConfirmData.body"></div>
+				<div class="inner-confirm-buttons">
+					<input type="button" class="modal-button inner-confirm-button inner-confirm-button-confirm" :value="currentModal.inlineConfirmData.confirmButtonText" @click.prevent="inlineConfirmConfirm" />
+					<input type="button" class="modal-button inner-confirm-button inner-confirm-button-cancel" :value="currentModal.inlineConfirmData.cancelButtonText" @click.prevent="inlineConfirmCancel" />
 				</div>
-			</template>
-		</form>
+			</div>
+		</transition>
+		<transition name="size" v-bind:css="false" v-on:before-enter="inlineConfirmBeforeEnter" v-on:enter="inlineConfirmEnter" v-on:after-enter="inlineConfirmAfterEnter" v-on:enter-cancelled="inlineConfirmEnterCancelled" v-on:leave-cancelled="inlineConfirmLeaveCancelled" v-on:before-leave="inlineConfirmBeforeLeave" v-on:leave="inlineConfirmLeave" v-on:after-leave="inlineConfirmAfterLeave">
+			<div key="modalContentInner" class="modal-dialog-content-inner" v-show="!currentModal.inlineConfirm">
+				<h2 class="modal-dialog-title" v-html="getTitle()"></h2>
+				<modal-dialog-messages ref="modalDialogMessages"></modal-dialog-messages>
+				<form name="modalDialogForm" v-on:submit.stop.prevent="confirmModalAction" class="modal-dialog-form">
+					<div class="modal-dialog-body">
+						<transition name="width-height">
+							<component ref="currentModalBodyComponent" v-bind:is="bodyComponent"></component>
+						</transition>
+					</div>
+					<template v-if="currentModal.showCancelButton || currentModal.showConfirmButton">
+						<div class="modal-dialog-buttons">
+							<template v-if="currentModal.showConfirmButton">
+								<template v-if="currentModal.confirmDisabled">
+									<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+								</template>
+								<template v-else>
+									<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+								</template>
+							</template>
+							<template v-if="currentModal.showCancelButton">
+								<template v-if="currentModal.cancelDisabled">
+									<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+								</template>
+								<template v-else>
+									<button class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+								</template>
+							</template>
+						</div>
+					</template>
+				</form>
+			</div>
+		</transition>
 	</div>
 </transition>

@@ -1,0 +1,39 @@
+.language-editor {
+
+}
+
+.language-editor .language-editor-tools {
+    position: absolute;
+    right: 10px;
+    z-index: 2;
+}
+
+.language-editor .language-editor-tools .language-editor-new {
+    transition-property: background, color, border;
+    transition-timing-function: ease-in-out;
+    transition-duration: var(--medium-animation-duration);
+    color: var(--app-language-editor-new-link-color);
+}
+
+.language-editor .language-editor-tools .language-editor-new:hover {
+    color: var(--app-language-editor-new-link-hover-color);
+}
+
+.modal-dialog-wrapper .language-editor .tabs .tab-links .tab-link-wrapper .tab-link-tools a.language-editor-remove-language {
+    color: var(--app-language-editor-remove-link-color);
+}
+
+.modal-dialog-wrapper .language-editor .tabs .tab-links .tab-link-wrapper .tab-link-tools a.language-editor-remove-language:hover {
+    color: var(--app-language-editor-remove-link-hover-color);
+}
+
+
+.language-editor .language-fieldset {
+    border: none;
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}

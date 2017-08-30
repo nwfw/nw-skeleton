@@ -1,7 +1,4 @@
 <div class="form-control-field">
-
-	<label class="text-label" v-bind:title="control.path">
-		{{ control.name }}
-	</label>
-	<input type="text" v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
+	<form-control-label ref="controlLabel" v-bind:control="control"></form-control-label>
+	<input class="form-control-input" v-bind:disabled="control.disabled" v-bind:readonly="control.readonly" type="text" v-bind:name="control.name" v-bind:value="control.value" v-nwmodel.eval="control.fullPath" v-bind:data-path="control.path" @focus="inputFocus" />
 </div>

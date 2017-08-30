@@ -1,7 +1,7 @@
 /**
  * @fileOverview nw-model filter file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 const _ = require('lodash');
 
@@ -32,9 +32,9 @@ exports.directive = {
             el.setInputValue(utilHelper.getVar(binding.expression));
             el.unwatch = vnode.context.$root.$watch(binding.expression, el.nwWatcher);
         } else if (binding.modifiers.eval) {
-            el.nwModelData.propName = vnode.context[binding.expression];
+            el.nwModelData.propName = _.get(vnode.context, binding.expression);
             el.setInputValue(utilHelper.getVar(el.nwModelData.propName));
-            el.unwatch = vnode.context.$root.$watch(el.nwModelData.propName, el.nwWatcher);
+            el.unwatch = vnode.context.$root.$watch(() => { return _.get(el.nwModelData.propName); }, el.nwWatcher);
         } else {
             el.setInputValue(utilHelper.getVar(binding.expression, vnode.context));
             el.unwatch = vnode.context.$watch(binding.expression, el.nwWatcher);

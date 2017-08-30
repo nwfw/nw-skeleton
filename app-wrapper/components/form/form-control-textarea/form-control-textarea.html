@@ -1,6 +1,4 @@
 <div class="form-control-field">
-	<label class="textarea-label" v-bind:title="control.path">
-		{{ control.name }}
-	</label>
-	<textarea v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
+	<form-control-label ref="controlLabel" v-bind:control="control"></form-control-label>
+	<textarea class="form-control-input" v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
 </div>

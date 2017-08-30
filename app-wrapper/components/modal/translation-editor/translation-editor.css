@@ -80,6 +80,10 @@
 	border-radius: 4px;
 }
 
+.translation-editor .lang-form-row {
+	display: block;
+}
+
 .translation-editor .lang-form-row-not-translated .translation-editor-textarea {
 	background: var(--input-highlight-background);
 	border: var(--input-highlight-border);
@@ -134,110 +138,6 @@
 	text-align: center;
 }
 
-.translation-editor .tabs {
-	display: flex;
-	flex-flow: column;
-	flex: 1 1 auto;
-}
-
-.translation-editor .tabs .tab-links {
-	flex: 0 0 auto;
-	z-index: 1;
-}
-.translation-editor .tabs .tab-items {
-	display: flex;
-	flex-flow: column;
-	flex: 1 1 auto;
-}
-
-.translation-editor .tabs .tab-items .tab-item {
-	overflow: auto;
-	background: var(--modal-dialog-background);
-	flex: 1 1 auto;
-	height: 75vh;
-	width: 75vw;
-	display: flex;
-	flex-flow: column;
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper {
-	color: var(--app-tabs-tab-link-color);
-	border: var(--app-tabs-tab-link-border);
-	background: var(--app-tabs-tab-link-background);
-	font-size: var(--app-tabs-tab-link-font-size);
-	padding: 3px 5px;
-	border-radius: 3px 3px 0px 0px;
-	margin-left: 5px;
-	margin-bottom: -1px;
-	cursor: pointer;
-	display: inline-flex;
-	flex: 1 1 auto;
-	justify-content: space-between;
-	transition-property: background, color, border;
-	transition-timing-function: ease-in-out;
-	transition-duration: var(--medium-animation-duration);
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper:hover {
-	background: var(--app-tabs-tab-link-hover-background);
-	color: var(--app-tabs-tab-link-hover-color);
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper.active:hover ,
-.translation-editor .tabs .tab-links .tab-link-wrapper.active {
-	background: var(--app-tabs-tab-link-active-background);
-	color: var(--app-tabs-tab-link-active-color);
-	border-bottom-color: var(--app-tabs-tab-link-active-background);
-	cursor: default;
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper .tab-link-tools {
-	margin-left: 0;
-	max-width: 0;
-	opacity: 0;
-	white-space: nowrap;
-	pointer-events: none;
-	overflow: hidden;
-	transition-property: max-width, margin, opacity;
-	transition-timing-function: ease-in-out;
-	transition-duration: var(--medium-animation-duration);
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper.active .tab-link-tools {
-	margin-left: 10px;
-	max-width: 200px;
-	opacity: 1;
-	pointer-events: all;
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper .tab-link-tools a {
-	color: var(--app-tabs-tab-link-tools-color);
-	pointer-events: none;
-	transition-property: text-shadow, color;
-	transition-timing-function: ease-in-out;
-	transition-duration: var(--medium-animation-duration);
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper.active .tab-link-tools a {
-	pointer-events: all;
-}
-
-.translation-editor .tabs .tab-links .tab-link-wrapper .tab-link-tools a:hover {
-	color: var(--app-tabs-tab-link-tools-hover-color);
-	text-shadow: var(--app-tabs-tab-link-tools-hover-text-shadow);
-}
-
-.translation-editor .tabs .tab-items {
-	border: var(--app-tabs-tab-items-border);
-}
-
-.translation-editor .tabs .tab-items .tab-item {
-	background: var(--app-tabs-tab-item-background);
-	flex-basis: 0px;
-	padding: 0;
-}
-
-.translation-editor .tabs .tab-items .tab-item.active {
-	flex-basis: auto;
-	background: var(--app-tabs-tab-item-active-background);
+.modal-dialog-wrapper .translation-editor .tabs .tab-items .tab-item {
+    height: 75vh;
 }

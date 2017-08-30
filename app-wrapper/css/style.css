@@ -61,7 +61,15 @@ select[disabled=true],
 textarea[disabled=disabled],
 textarea[disabled=true],
 button[disabled=disabled],
-button[disabled=true] {
+button[disabled=true],
+input[readonly=readonly],
+input[readonly=true],
+select[readonly=readonly],
+select[readonly=true],
+textarea[readonly=readonly],
+textarea[readonly=true],
+button[readonly=readonly],
+button[readonly=true] {
 	background: var(--input-disabled-background);
 	color: var(--input-disabled-color);
 	border: var(--input-disabled-border);
@@ -158,36 +166,143 @@ a:visited {
 
 
 .form-row {
-	padding: 3px;
+	padding: 3px 5px;
+	margin: 3px 0px;
+	border: var(--form-row-base-border);
+	transition-property: border-color;
+	transition-duration: var(--short-animation-duration);
+	transition-timing-function: ease-in-out;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    flex: 1 1 auto;
+    display: flex;
 }
 
 .form-row.form-row-has-error {
-	border: 1px solid #FF9999;
-	padding: 2px;
+	border: var(--form-row-error-border);
 }
 
 .form-row .form-row-error {
-	display: none;
-	color: #CC0000;
+	transition-property: max-height;
+	transition-duration: var(--short-animation-duration);
+	transition-timing-function: ease-in-out;
+	max-height: 0px;
+	color: var(--form-row-error-text-color);
+	overflow: hidden;
 }
 
 .form-row.form-row-has-error .form-row-error {
-	display: block;
+	max-height: 100px;
+	text-align: right;
+	padding: 3px 5px 3px 0;
+	font-size: 0.8rem;
 }
+
+.form-row.required-row label:after {
+	content: '*';
+}
+
 
 .form-control-field {
 	display: flex;
 	justify-content: space-between;
+	flex: 1 1 auto;
 }
 
 .form-control-field label {
 	flex: 1 1 auto;
 }
 
+
 .form-control-field .form-control-input {
 	flex: 1 1 auto;
 }
 
+.form-control-field .form-control-checkbox-input {
+	align-self: flex-end;
+	flex: 0 1 auto;
+}
+
 .form-control-checkbox {
 	text-align: right;
+}
+
+.form-control-subrow {
+	border: none;
+	border-left: 1px solid;
+	border-right: 1px solid;
+	border-bottom: 1px solid #333333;
+	border-top: 1px solid #CCCCCC;
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+	padding: 0 0 2px 0;
+
+}
+
+.form-control-subrow .form-control-subrow {
+	background: rgba(168,168,168,0.1);
+}
+
+
+.form-control-subrow > label {
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 2px 5px;
+	background: rgba(168,168,168,1);
+	color: #333333;
+}
+
+.form-control-subrow label.object-label,
+.form-control-subrow label.array-label {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.form-control-row label .label-value {
+	flex: 2 1 auto;
+}
+
+.form-control-row label .label-type,
+.form-control-row label .label-tools-link,
+.form-control-row .row-tools-link {
+	font-weight: 400;
+	font-size: 0.9rem;
+}
+
+.form-control-row .row-tools-link {
+	margin-right: 5px;
+}
+
+.form-control-row ul {
+    margin: 0;
+    padding: 0;
+}
+
+.form-control-row li {
+    list-style: none;
+}
+
+.form-control-row li.object-li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-control-row li.object-li.array-li > .form-row > .form-control-field label {
+	text-align: right;
+}
+
+.form-control-row li.object-li.array-li > .form-row > .form-control-field label:before {
+	content: '[';
+}
+.form-control-row li.object-li.array-li > .form-row > .form-control-field label:after {
+	content: '] : ';
+	padding-right: 5px;
+}
+
+.form-row .add-new-row {
+	margin: 0 4px;
 }

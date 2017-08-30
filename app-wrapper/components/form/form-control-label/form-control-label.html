@@ -1,0 +1,9 @@
+<label class="form-row-label" v-bind:title="control.path" :class="[control.formControl.replace(/form-control-/, '') + '-label']">
+	<span class="label-value">
+        {{ control.name }}
+    </span>
+    <span v-if="showType" class="label-type">
+        {{ control.formControl.replace(/form-control-/, '') }}
+    </span>
+    <slot name="tools"></slot>
+</label>

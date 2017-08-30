@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppTranslations class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 
@@ -14,10 +14,13 @@ const AppBaseClass = require('./appBase').AppBaseClass;
 var Gta;
 try {
     Gta = require('google-translate-api');
+    if (Gta && Gta.languages){
+        Gta.languages['sr-Latn'] = 'Serbian Latin';
+        Gta.languages['sr-Cyrl'] = 'Serbian Cyrillic';
+    }
 } catch (ex) {
     _.noop(ex);
 }
-
 
 var _appWrapper;
 var appState;
@@ -29,8 +32,9 @@ var appState;
  * @extends {appWrapper.AppBaseClass}
  * @memberOf appWrapper
  *
- * @property {Object}           addingLabels        Object that stores labels that are currently being added (prevents double adding)
- * @property {Boolean}          translationsLoaded  Flag to indicate whether translation data is loaded
+ * @property {Object}           addingLabels            Object that stores labels that are currently being added (prevents double adding)
+ * @property {(Object|Boolean)} originalLanguageData    Object that stores original language data
+ * @property {Boolean}          translationsLoaded      Flag to indicate whether translation data is loaded
  */
 class AppTranslations extends AppBaseClass {
     constructor() {
@@ -41,6 +45,7 @@ class AppTranslations extends AppBaseClass {
 
         this.addingLabels = {};
         this.translationsLoaded = false;
+        this.originalLanguageData = null;
 
         return this;
     }
@@ -87,6 +92,9 @@ class AppTranslations extends AppBaseClass {
         var translationData = await this.loadTranslationsFromDir(path.resolve(this.getConfig('wrapper.translationsRoot')), this.getConfig('wrapper.translationExtensionRegex'));
         appState.languageData.availableLanguages = translationData.availableLanguages;
         appState.languageData.translations = translationData.translations;
+        if (!this.originalLanguageData){
+            this.originalLanguageData = _.cloneDeep(appState.languageData);
+        }
         this.log('Translations loaded.', 'info', []);
         return translationData;
     }
@@ -282,7 +290,6 @@ class AppTranslations extends AppBaseClass {
                                 translationData = require(translationFilePath).data;
                                 translations[languageName] = translationData.translations;
                             }
-
                             if (translations[languageName] && (translations[languageName].length || _.keys(translations[languageName]).length)){
                                 this.log('Loaded translations from "{1}"...', 'debug', [translationFilePath]);
                                 if (!translationData.locale){
@@ -534,6 +541,159 @@ class AppTranslations extends AppBaseClass {
     }
 
     /**
+     * Opens translation editor modal
+     *
+     * @param  {Event} e Event that triggered the method
+     * @return {undefined}
+     */
+    openLanguageEditor (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+
+        let modalHelper = _appWrapper.getHelper('modal');
+        let modalOptions = {
+            title: _appWrapper.appTranslations.translate('Language editor'),
+            confirmButtonText: _appWrapper.appTranslations.translate('Save'),
+            cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
+            onCancel: () => {
+                appState.languageData.availableLanguages = _.cloneDeep(this.originalLanguageData.availableLanguages);
+            },
+            busy: true,
+        };
+        appState.modalData.currentModal = modalHelper.getModalObject('languageEditorModal', modalOptions);
+        _appWrapper._confirmModalAction = this.saveLanguages.bind(this);
+        _appWrapper.helpers.modalHelper.openCurrentModal();
+    }
+
+    async saveLanguages (e) {
+        if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+            e.preventDefault();
+        }
+
+        let modalHelper = _appWrapper.getHelper('modal');
+        let saved = null;
+        let shouldClose = true;
+        let availableLanguages = appState.languageData.availableLanguages;
+        let languageVars = appState.modalData.currentModal.modalData.languageVars;
+        for (let i=0; i<languageVars.length; i++){
+            languageVars[i].code.error = false;
+            languageVars[i].name.error = false;
+            languageVars[i].locale.error = false;
+        }
+
+        for (let i=0; i<languageVars.length; i++){
+            let lang = availableLanguages[i];
+            if (languageVars[i].new){
+                if (lang.code && lang.locale && lang.name){
+                    modalHelper.modalBusy();
+                    await _appWrapper.wait(this.getConfig('mediumPauseDuration'));
+                    let newFileName = this.getLanguageFilePath(lang.code);
+                    if (newFileName){
+                        await _appWrapper.fileManager.createDirFileRecursive(newFileName);
+                        let translationKeys = _.without(Object.keys(appState.languageData.translations, lang.code));
+                        let emptyTranslations = _.cloneDeep(appState.languageData.translations[translationKeys[0]]);
+                        for (let label in emptyTranslations){
+                            emptyTranslations[label] = '';
+                        }
+                        appState.languageData.translations[lang.code] = emptyTranslations;
+                        saved = await this.addLabels(lang, emptyTranslations);
+                        await this.loadTranslations();
+                        this.originalLanguageData = _.cloneDeep(appState.languageData);
+                    }
+                } else {
+                    if (!lang.code){
+                        languageVars[i].code.error = true;
+                    }
+                    if (!lang.name){
+                        languageVars[i].name.error = true;
+                    }
+                    if (!lang.locale){
+                        languageVars[i].locale.error = true;
+                    }
+                    shouldClose = false;
+                    modalHelper.addModalMessage({message: 'Please fill in all the fields', type: 'error'});
+                }
+            } else {
+                if (lang.code && lang.locale && lang.name){
+                    await _appWrapper.wait(this.getConfig('mediumPauseDuration'));
+                    let ol = _.find(this.originalLanguageData.availableLanguages, {code: lang.code});
+                    if (ol.name != lang.name || ol.locale != lang.locale){
+                        modalHelper.modalBusy();
+                        let translations = _.cloneDeep(appState.languageData.translations[lang.code]);
+                        saved = await this.addLabels(lang, translations);
+                        await this.loadTranslations();
+                        this.originalLanguageData = _.cloneDeep(appState.languageData);
+                    }
+                } else {
+                    if (!lang.code){
+                        languageVars[i].code.error = true;
+                    }
+                    if (!lang.name){
+                        languageVars[i].name.error = true;
+                    }
+                    if (!lang.locale){
+                        languageVars[i].locale.error = true;
+                    }
+                    shouldClose = false;
+                    modalHelper.addModalMessage({message: 'Please fill in all the fields', type: 'error'});
+                }
+            }
+        }
+        if (saved !== null){
+            if (saved){
+                this.addUserMessage('Language data saved.', 'info', [], false, false, true);
+            } else {
+                this.addUserMessage('Language data saving failed.', 'error', [], false, false, true);
+            }
+        }
+
+        if (shouldClose){
+            modalHelper.modalNotBusy();
+            modalHelper.closeCurrentModal();
+        }
+
+    }
+
+    async removeLanguage(code){
+        let result = false;
+        let modalHelper = _appWrapper.getHelper('modal');
+        let title = this.translate('Are you sure?');
+        let text = this.translate('This will delete language and all its translations and it can not be undone!');
+        let confirmButtonText = this.translate('Delete');
+        let confirmed = await modalHelper.inlineConfirm(title, text, confirmButtonText);
+        if (confirmed){
+            modalHelper.modalBusy();
+            result = await this.doRemoveLanguage(code);
+            await _appWrapper.nextTick();
+            modalHelper.modalNotBusy();
+        }
+        return result;
+    }
+
+    async doRemoveLanguage(code){
+        let deleted = false;
+        if (code){
+            let newFileName = this.getLanguageFilePath(code);
+            deleted = await _appWrapper.fileManager.deleteFile(newFileName);
+            appState.languageData.availableLanguages = _.pickBy(appState.languageData.availableLanguages, (lang) => {
+                return lang.code != code;
+            });
+            delete appState.languageData.translations[code];
+            await this.loadTranslations();
+            this.originalLanguageData = _.cloneDeep(appState.languageData);
+        } else {
+            deleted = true;
+        }
+        if (deleted){
+            this.addUserMessage('Deleted language "{1}".', 'info', [code], false, false, true);
+        } else {
+            this.addUserMessage('Failed deleting language "{1}".', 'error', [code], false, false, true);
+        }
+        return deleted;
+    }
+
+    /**
      * Prepares and returns translation data string for saving in translation file
      *
      * @param  {Object} translationData Object with translation data
@@ -694,7 +854,7 @@ class AppTranslations extends AppBaseClass {
          * 1:1 transliteration - transliterating the text using
          * character maps supplied in options
          */
-            _text = this.charTransliteration(_text);
+            _text = this.charTransliteration(_text, direction);
 
             /*
          * postrocessing - performing all multi-char replacements after
@@ -709,10 +869,14 @@ class AppTranslations extends AppBaseClass {
      * Transliterates char to char using charmap
      *
      * @param {String} text             Text to transliterate
-     * @return {String} transliterated    Transliterated text
+     * @param {String} direction        Direction for transliteration ('c2l', 'l2c' or 'yu2ascii')
+     * @return {String} transliterated  Transliterated text
      */
-    charTransliteration(text){
+    charTransliteration(text, direction){
         let options = this.getTransliterateData();
+        if (direction){
+            options.direction = direction;
+        }
         var _text = new String(text);
         if (_text){
             var fromChars = options.maps[options.direction].charMap[0].split('');

@@ -1,7 +1,7 @@
 /**
  * @fileOverview modal-dialog-contents component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -173,6 +173,85 @@ component = {
                 this.clearTransitionAttributes(element);
             }
         },
+
+
+
+
+        inlineConfirmBeforeEnter: function (element) {
+            let cm = appState.modalData.currentModal;
+            if (cm.animateSize && !cm.showContentImmediately){
+                element.addClass('transition-wh');
+                element.setElementStyles({width: 0, height: 0, opacity: 0});
+            }
+        },
+        inlineConfirmEnter: function (element, done) {
+            let cm = appState.modalData.currentModal;
+
+            if (cm.animateSize && !cm.showContentImmediately){
+                let modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
+                let dimensions = modalDialogWrapper.getCloneRealDimensions('.' + element.className.split(' ')[0]);
+                element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+
+                let duration = element.getTransitionDuration();
+                setTimeout(done, duration);
+            } else {
+                done();
+            }
+        },
+        inlineConfirmAfterEnter: function(element){
+            this.clearTransitionAttributes(element);
+            if (element.hasClass('modal-dialog-inline-confirm')){
+                let button = element.querySelector('.inner-confirm-button-cancel');
+                if (!button){
+                    button = element.querySelector('.inner-confirm-button-confirm');
+                }
+                if (button){
+                    button.focus();
+                }
+            } else {
+                this.setFocus();
+            }
+        },
+        inlineConfirmBeforeLeave: function (element) {
+            let cm = appState.modalData.currentModal;
+            if (cm.animateSize && !cm.showContentImmediately){
+                let modalDialogWrapper = document.querySelector('.modal-dialog-wrapper');
+                let dimensions = modalDialogWrapper.getCloneRealDimensions('.' + element.className.split(' ')[0]);
+                element.addClass('transition-wh');
+                element.setElementStyles({width: dimensions.width + 'px', height: dimensions.height + 'px', opacity: '1'});
+            }
+        },
+        inlineConfirmLeave: function (element, done) {
+            let cm = appState.modalData.currentModal;
+            if (cm.animateSize && !cm.showContentImmediately){
+                let duration = element.getTransitionDuration();
+                element.setElementStyles({width: 0, height: 0, opacity: 0});
+                setTimeout(done, duration);
+            } else {
+                done();
+            }
+        },
+        inlineConfirmAfterLeave: function(element){
+            this.clearTransitionAttributes(element);
+        },
+        inlineConfirmEnterCancelled: function (element) {
+            let cm = appState.modalData.currentModal;
+            if (cm.animateSize){
+                this.clearTransitionAttributes(element);
+            }
+        },
+        inlineConfirmLeaveCancelled: function (element) {
+            let cm = appState.modalData.currentModal;
+            if (cm.animateSize){
+                this.clearTransitionAttributes(element);
+            }
+        },
+
+
+
+
+
+
         setFocus: function(){
             if (appState && appState.modalData.currentModal && appState.modalData.modalVisible){
                 let focusElement;
@@ -209,6 +288,14 @@ component = {
         clearTransitionAttributes: function(element){
             element.removeClass('transition-wh');
             element.removeElementStyles(['height', 'width']);
+        },
+        inlineConfirmConfirm: function(){
+            this.currentModal.inlineConfirm = false;
+            this.currentModal.inlineConfirmData.confirmAction(true);
+        },
+        inlineConfirmCancel: function(){
+            this.currentModal.inlineConfirm = false;
+            this.currentModal.inlineConfirmData.confirmAction(false);
         },
     },
     data: function () {

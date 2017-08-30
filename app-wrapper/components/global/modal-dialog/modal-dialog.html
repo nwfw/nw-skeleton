@@ -1,4 +1,4 @@
-<div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-wrapper-busy': currentModal.busy, 'modal-dialog-wrapper-opening': currentModal.opening, 'modal-dialog-wrapper-closing': currentModal.closing, 'modal-dialog-wrapper-ready': currentModal.ready, 'modal-dialog-wrapper-animated': currentModal.animateSize }]">
+<div v-bind:class="[ 'modal-dialog-wrapper', currentModal.modalClassName, { 'modal-dialog-inner-confirm-active': currentModal.inlineConfirm, 'modal-dialog-wrapper-busy': currentModal.busy, 'modal-dialog-wrapper-opening': currentModal.opening, 'modal-dialog-wrapper-closing': currentModal.closing, 'modal-dialog-wrapper-ready': currentModal.ready, 'modal-dialog-wrapper-animated': currentModal.animateSize }]">
     <transition v-bind:name="fadeModal">
         <template v-if="!currentModal.preventEscClose">
             <div v-show="modalVisible" class="modal-dialog-background" @click.prevent="callViewHandler" data-click-handler="cancelModalAction">
@@ -11,7 +11,7 @@
     </transition>
     <transition v-bind:name="fadeModal">
         <div v-show="modalVisible" class="modal-dialog" :class="{'no-messages': !currentModal.messages.length}">
-            <a v-if="currentModal.showCloseLink && !currentModal.closing" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="closeModalAction">
+            <a v-if="currentModal.showCloseLink && !currentModal.closing && !currentModal.inlineConfirm" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="closeModalAction">
                 <span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime">
                     <template v-if="currentModal.autoClosing">
                         <template v-if="!currentModal.autoCloseTime">

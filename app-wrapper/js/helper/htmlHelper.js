@@ -1,7 +1,7 @@
 /**
  * @fileOverview HtmlHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -330,7 +330,7 @@ class HtmlHelper extends AppBaseClass {
             this.setElementStyles(clonedEl, clonedElStyles);
             this.removeElementStyles(clonedEl, ['width', 'height']);
 
-            if (element && element.parentNode){
+            if (!selector && element && element.parentNode){
                 element.parentNode.appendChild(clonedEl);
             } else {
                 document.body.appendChild(clonedEl);
@@ -341,6 +341,8 @@ class HtmlHelper extends AppBaseClass {
             if (selector && clonedEl.querySelector(selector)){
                 clonedEl = clonedEl.querySelector(selector);
             }
+
+            clonedEl.removeClass('transition-wh');
 
             this.removeElementStyles(clonedEl, ['width', 'height']);
 

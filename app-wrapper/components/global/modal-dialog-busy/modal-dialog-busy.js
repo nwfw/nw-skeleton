@@ -1,7 +1,7 @@
 /**
  * @fileOverview modal-dialog-busy component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 // const _ = require('lodash');

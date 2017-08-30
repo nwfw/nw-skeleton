@@ -1,0 +1,31 @@
+<div class="language-editor">
+	<div class="language-editor-tools">
+		<a :title="translate('New')" class="language-editor-top-tool language-editor-new fa fa-plus" @click.prevent="addLanguage"></a>
+	</div>
+	<div class="tabs">
+		<div class="tab-links">
+			<template v-for="(language, index) in languages">
+				<span :data-index="index" @click.stop.prevent="setTab" class="tab-link-wrapper lang-tab-link-wrapper" :class="{'active': index == activeTabIndex}">
+					<span :data-index="index" class="tab-link-name">
+						{{ language.name }}
+					</span>
+					<span class="tab-link-tools lang-tab-link-tools">
+						<a v-bind:data-index="index" class="fa fa-clone language-editor-clone-language" @click.stop.prevent="cloneLanguage" :title="translate('Clone language')" v-if="!languageVars[index].new"></a>
+						<a v-bind:data-code="language.code" class="fa fa-times language-editor-remove-language" @click.stop.prevent="removeLanguage" :title="translate('Delete language')" v-if="!languageVars[index].new"></a>
+					</span>
+				</span>
+			</template>
+		</div>
+		<div class="tab-items">
+			<template v-for="(language, index) in appState.languageData.availableLanguages">
+				<div class="tab-item lang-tab-item" v-bind:data-code="language.code" :class="{'active': index == activeTabIndex}">
+					<fieldset class="language-fieldset" v-bind:data-code="language.code">
+						<template v-for="langVar in languageVars[index]">
+							<form-control v-if="langVar && langVar.path" v-bind:ref="langVar.name + '_' + index + '_form_control'" v-bind:control="langVar"></form-control>
+						</template>
+					</fieldset>
+				</div>
+			</template>
+		</div>
+	</div>
+</div>

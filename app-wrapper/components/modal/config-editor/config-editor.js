@@ -1,7 +1,7 @@
 /**
  * @fileOverview config-editor component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -25,9 +25,10 @@ exports.component = {
     name: 'config-editor',
     template: '',
     data: function () {
+        let utilHelper = _appWrapper.getHelper('util');
         var appConfig = _.cloneDeep(appState.configEditorData);
         var config = _.map(appConfig, function(value, name){
-            return _appWrapper.getHelper('util').getControlObject(value, name, 'config');
+            return utilHelper.getControlObject(value, name, 'config');
         });
 
         var data = {

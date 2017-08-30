@@ -1,11 +1,11 @@
 /**
  * @fileOverview form-control-text component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
-var _appWrapper = window.getAppWrapper();
-var appState = _appWrapper.getAppState();
+// var _appWrapper = window.getAppWrapper();
+// var appState = _appWrapper.getAppState();
 /**
  * Form control text component
  *
@@ -25,7 +25,12 @@ exports.component = {
     template: '',
     props: ['control'],
     data: function () {
-        return appState.appInfo;
+        return {};
+    },
+    methods: {
+        inputFocus: function(){
+            this.control.error = false;
+        }
     },
     components: []
 };

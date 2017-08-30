@@ -1,11 +1,5 @@
-<div class="form-control-field-wrapper">
-	<label class="form-control-field" v-bind:title="control.path">
-        <span class="form-control-label checkbox-label">
-          {{ control.name }}
-      </span>
-      <span class="form-control-input form-control-checkbox">
-         <input v-if="control.value" type="checkbox" v-bind:value="control.value" v-bind:name="control.name" checked="checked" v-bind:data-path="control.path" />
-         <input v-else type="checkbox" v-bind:name="control.name" v-bind:value="control.value" v-bind:data-path="control.path" />
-     </span>
- </label>
+<div class="form-control-field">
+    <form-control-label ref="controlLabel" v-bind:control="control"></form-control-label>
+    <input v-if="control.value" class="form-control-input form-control-checkbox-input" type="checkbox" v-bind:value="control.value" v-bind:name="control.name" checked="checked" v-nwmodel.eval="control.fullPath" v-bind:data-path="control.path" />
+    <input v-else type="checkbox" class="form-control-input form-control-checkbox-input" v-bind:name="control.name" v-bind:value="control.value" v-nwmodel.eval="control.fullPath" v-bind:data-path="control.path" />
 </div>

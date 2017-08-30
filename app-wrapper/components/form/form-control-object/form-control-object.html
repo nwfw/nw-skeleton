@@ -1,12 +1,13 @@
 <div class="form-control-field">
 	<div class="form-row form-control-row form-control-subrow">
-		<label class="object-label" v-bind:title="control.path">
-			{{ control.name }}
-		</label>
+		<form-control-label ref="controlLabel" v-bind:control="control" v-bind:show-type="true">
+			<a slot="tools" @click="addNewObjectRow" class="label-tools-link add-new-row add-new-row-object fa fa-plus"></a>
+		</form-control-label>
 		<ul>
 			<template v-for="subControl in control.value">
-				<li>
+				<li class="object-li">
 					<form-control v-bind:control="subControl"></form-control>
+					<a @click="removeObjectRow" class="row-tools-link remove-row remove-row-object fa fa-minus"></a>
 				</li>
 			</template>
 		</ul>

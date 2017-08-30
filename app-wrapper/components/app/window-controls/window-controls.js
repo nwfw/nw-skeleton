@@ -1,7 +1,7 @@
 /**
  * @fileOverview window-controls component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 var _appWrapper = window.getAppWrapper();
@@ -106,7 +106,7 @@ exports.component = {
             }
         },
         openConfigEditorHandler: function() {
-            if (!appState.appError.error){
+            if (!appState.appError.error && appState.config.debug.enabled){
                 _appWrapper.appConfig.openConfigEditor();
                 this.closeAllSubmenus();
             }

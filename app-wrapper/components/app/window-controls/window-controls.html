@@ -118,7 +118,7 @@
 				<div class="window-control-submenu" data-submenu="configuration">
 					<div class="fa fa-caret-up window-control-submenu-arrow"></div>
 					<div class="window-control-submenu-inner">
-						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
+						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error && appState.config.debug.enabled">
 							<a class="window-control window-control-edit-configuration" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appConfig.openConfigEditorHandler">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-cog"></span>
 								<span v-html="translate('Edit configuration')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
@@ -139,6 +139,12 @@
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error"></div>
 						<div v-if="appState.config.allowLanguageChange && appState.languageData.availableLanguages.length > 1 && !appState.appError.error" class="window-control-submenu-item-wrapper">
 							<language-select ref="languageSelect"></language-select>
+						</div>
+						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
+							<a class="window-control window-control-open-language-editor" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appTranslations.openLanguageEditor">
+								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-sign-language"></span>
+								<span v-html="translate('Open language editor')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
+							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
 							<a class="window-control window-control-open-translation-editor" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appTranslations.openTranslationEditor">

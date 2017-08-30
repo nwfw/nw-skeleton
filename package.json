@@ -23,7 +23,7 @@
         "smoothie": "^1.29.1"
     },
     "devDependencies": {
-        "google-translate-api": "^2.3.0"
+        "google-translate-api": "git+ssh://git@github.com:nwfw/google-translate-api.git"
     },
     "window": {
         "title": "Nw skeleton",

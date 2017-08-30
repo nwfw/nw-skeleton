@@ -153,12 +153,7 @@ exports.config = {
 
         componentMapping: {},
         componentModules: {
-            component: [
-                // {
-                //     moduleName: 'canvas-playground',
-                //     parentComponent: 'app-window'
-                // }
-            ],
+            component: [],
             globalComponent: [],
             modalComponent: []
         },
@@ -286,6 +281,9 @@ exports.config = {
             'userMessages.forceUserMessages',
             'debug.forceDebug',
             'appInfo',
+            'currentLanguage',
+            'currentLanguageName',
+            'currentLocale',
         ],
         defaultVar: {
             editable: true,
@@ -298,7 +296,7 @@ exports.config = {
                 reload: true
             },
             appConfig: {
-                editable: false,
+                editable: true,
                 reload: false
             },
             logDir: {
@@ -380,8 +378,9 @@ exports.config = {
                 control: 'select',
                 controlData: {
                     items: {
-                        sr_RS: 'Srpski',
-                        en_US: 'English'
+                        'en-US': 'English',
+                        'sr-Latn-RS': 'Srpski',
+                        'sr-Cyrl-RS': 'Српски',
                     }
                 }
             },
@@ -392,8 +391,9 @@ exports.config = {
                 control: 'select',
                 controlData: {
                     items: {
-                        'sr-rs': 'Srpski',
-                        'en-us': 'English'
+                        'en-US': 'English',
+                        'sr-Latn': 'Srpski',
+                        'sr-Cyrl': 'Српски',
                     }
                 }
             },
@@ -425,15 +425,19 @@ exports.config = {
                 editable: true,
                 reload: false
             },
+            liveCss: {
+                editable: true,
+                reload: false
+            },
         }
     },
 
     varDir: './app/var',
     logDir: './app/var/log',
 
-    currentLanguageName: 'Srpski',
-    currentLanguage: 'sr_RS',
-    currentLocale: 'sr-rs',
+    currentLanguageName: 'English',
+    currentLanguage: 'en-US',
+    currentLocale: 'en',
     allowLanguageChange: true,
     autoAddLabels: true,
 
@@ -445,8 +449,8 @@ exports.config = {
     compileCss: false,
 
     appNotifications: {
-        duration: 5000,
         userMessageDuration: 3000,
+        duration: 5000,
     },
     logger: {
         messageLevels: {

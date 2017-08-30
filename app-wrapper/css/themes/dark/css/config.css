@@ -4,6 +4,11 @@
     --app-base-font-size: 0.8rem;
     --font-smoothing: subpixel-antialiased;
 
+    --form-row-base-border: 1px solid transparent;
+    --form-row-error-border: 1px solid #FF0000;
+
+    --form-row-error-text-color: #FF0000;
+
     --input-base-background: #4F4F4F;
     --input-base-color: #EEEEEE;
     --input-base-border: 1px solid #999999;
@@ -307,6 +312,13 @@
 
     --app-tabs-tab-item-background: none;
     --app-tabs-tab-item-active-background: #333333;
+
+    /*language editor*/
+    --app-language-editor-new-link-color: #00CC00;
+    --app-language-editor-new-link-hover-color: #00FF00;
+
+    --app-language-editor-remove-link-color: #CC0000;
+    --app-language-editor-remove-link-hover-color: #FF0000;
 
     /*app translations*/
     --app-translations-text-color: #CCCCCC;

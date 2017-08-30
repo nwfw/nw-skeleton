@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppConfig class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -346,16 +346,18 @@ class AppConfig extends AppBaseClass {
      */
     async prepareConfigEditorData () {
         appState.configEditorData = {};
+        let configData = {};
         let keys = _.keys(appState.config);
         for(let i=0; i<keys.length; i++){
             let key = keys[i];
             let value = appState.config[key];
             if (key !== 'configData'){
                 if (!_.includes(appState.config.configData.uneditableConfig, key)){
-                    appState.configEditorData[key] = await this.prepareConfigEditorDataItem(value, key);
+                    configData[key] = await this.prepareConfigEditorDataItem(value, key);
                 }
             }
         }
+        appState.configEditorData = _appWrapper.getHelper('util').sortObject(configData, true);
     }
 
     /**
@@ -426,7 +428,7 @@ class AppConfig extends AppBaseClass {
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        let form = e.target;
+        let form = appState.modalData.modalElement.querySelector('form');
         let newConfig = {};
         _.each(form, function(input){
             let currentConfig = newConfig;

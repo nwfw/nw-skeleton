@@ -1,7 +1,7 @@
 /**
  * @fileOverview FileManager class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -703,6 +703,22 @@ class FileManager extends AppBaseClass {
             }
         }
         return null;
+    }
+
+    /**
+     * Deletes file from the file system
+     *
+     * @async
+     * @param  {string}     filePath Absolute path to file
+     * @return {Boolean}             Operation result
+     */
+    async deleteFile(filePath) {
+        let deleted = false;
+        if (await this.isFile(filePath)){
+            fs.unlinkSync(filePath);
+        }
+        deleted = !await this.isFile(filePath);
+        return deleted;
     }
 }
 

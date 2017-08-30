@@ -1,7 +1,7 @@
 /**
  * @fileOverview UtilHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -145,10 +145,22 @@ class UtilHelper extends AppBaseClass {
      * @param  {mixed}  configValue     Value of variable
      * @param  {string}  configName     Name of variable
      * @param  {string}  path           Path to variable in configuration
+     * @param  {Object}  options        Object with additional control options
      * @param  {Boolean} isInner        Flag to indicate whether method called itself for complex vars
      * @return {Object}                 Form control object for the var
      */
-    getControlObject (configValue, configName, path, isInner){
+    getControlObject (configValue, configName, path, options, isInner){
+        if (!options){
+            options = {};
+        }
+
+        options = _.defaults(options, {
+            disabled: false,
+            required: false,
+            readonly: false,
+            rowErrorText: ''
+        });
+
         if (!path){
             path = configName;
         } else {
@@ -159,7 +171,13 @@ class UtilHelper extends AppBaseClass {
         }
         let objValue;
         let configVar = {
+            fullPath: 'appState.' + path,
             path: path,
+            readonly: options.readonly,
+            disabled: options.disabled,
+            required: options.required,
+            rowErrorText: options.rowErrorText,
+            error: false,
             name: configName,
             value: _.cloneDeep(configValue),
             controlData: null
@@ -203,7 +221,7 @@ class UtilHelper extends AppBaseClass {
                     } catch (ex){
                         value = configValue[keys[i]];
                     }
-                    let newObjValue = this.getControlObject(value, name, path, true);
+                    let newObjValue = this.getControlObject(value, name, path, {}, true);
                     objValue.push(newObjValue);
                 }
                 configVar.value = _.cloneDeep(objValue);
@@ -809,6 +827,35 @@ class UtilHelper extends AppBaseClass {
      */
     openExternalUrl (url){
         nw.Shell.openExternal(url);
+    }
+
+    /**
+     * Sorts object properties by key and returns sorted copy
+     *
+     * @param  {Object}  object Object to sort
+     * @param  {Boolean} deep   Perform deep sorting
+     * @return {Object}         Sorted object copy
+     */
+    sortObject(object, deep) {
+        let sorted = {};
+        let key;
+        let array = [];
+
+        for (key in object) {
+            if (object.hasOwnProperty(key)) {
+                array.push(key);
+            }
+        }
+
+        array.sort();
+
+        for (key = 0; key < array.length; key++) {
+            sorted[array[key]] = object[array[key]];
+            if (deep && _.isObject(sorted[array[key]])){
+                sorted[array[key]] = this.sortObject(sorted[array[key]], deep);
+            }
+        }
+        return sorted;
     }
 }
 

@@ -1,7 +1,7 @@
 /**
  * @fileOverview translation-editor component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -141,21 +141,50 @@ exports.component = {
 
         },
         copyAllTab: function(e){
-            var target = e.target;
+            let target = e.target;
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
                 e.preventDefault;
             }
-            var langCode = target.getAttribute('data-code');
-            var tabItem = this.$el.querySelector('.tab-item[data-code=' + langCode + ']');
-            var untranslatedRows = tabItem.querySelectorAll('.lang-form-row-not-translated');
+            let langCode = target.getAttribute('data-code');
+            let tabItem = this.$el.querySelector('.tab-item[data-code=' + langCode + ']');
+            let untranslatedRows = tabItem.querySelectorAll('.lang-form-row-not-translated');
             for (let i=0; i<untranslatedRows.length; i++){
                 let formRow = untranslatedRows[i];
-                var textarea = formRow.querySelector('textarea');
-                var label = formRow.getAttribute('data-label');
+                let textarea = formRow.querySelector('textarea');
+                let label = formRow.getAttribute('data-label');
                 textarea.value = label;
                 this.currentModal.translationData[langCode].notTranslated[label] = label;
             }
 
+        },
+        transliterateAllTab: async function(e){
+            let target = e.target;
+            if (e && e.preventDefault && _.isFunction(e.preventDefault)){
+                e.preventDefault;
+            }
+            let langCode = target.getAttribute('data-code');
+            let tabItem = this.$el.querySelector('.tab-item[data-code=' + langCode + ']');
+            let translatedRows = tabItem.querySelectorAll('.lang-form-row-translated');
+            let direction;
+            if (langCode.match(/latn/i)){
+                direction = 'c2l';
+            }
+            if (langCode.match(/cyrl/i)){
+                direction = 'l2c';
+            }
+            if (!direction){
+                return;
+            }
+            for (let i=0; i<translatedRows.length; i++){
+                let formRow = translatedRows[i];
+                let label = formRow.getAttribute('data-label');
+                let textarea = formRow.querySelector('textarea');
+                let originalValue = textarea.value;
+                let value = _appWrapper.appTranslations.transliterateText(originalValue, direction);
+                textarea.value = value;
+
+                this.currentModal.translationData[langCode].translated[label] = value;
+            }
         },
         deleteLabel: async function(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -206,7 +235,7 @@ exports.component = {
                 let target = e.target;
                 target.addClass(['fa-spinner', 'fa-spin']);
                 let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
-                let code = target.getAttribute('data-code').replace(/_.*$/, '');
+                let locale = target.getAttribute('data-locale');
                 let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
                 let total = labels.length;
                 let count = 0;
@@ -217,9 +246,8 @@ exports.component = {
                 for (let i=0; i<total;i++){
                     let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
                     if (textarea){
-                        let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], code);
+                        let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], locale);
                         if (translated){
-                            translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
                             textarea.setInputValue(translated);
                             this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
                             count++;
@@ -238,7 +266,7 @@ exports.component = {
 
         googleTranslate: async function(e) {
             let target = e.target;
-            let code = target.getAttribute('data-code').replace(/_.*$/, '');
+            let locale = target.getAttribute('data-locale');
             let label = target.getAttribute('data-label');
             let textarea;
 
@@ -250,9 +278,8 @@ exports.component = {
             _appWrapper.addModalMessage('Translation in progress...', 'info');
             target.addClass('fa-spinner');
             target.addClass('fa-spinn');
-            let translated = await _appWrapper.appTranslations.googleTranslate(label, code);
+            let translated = await _appWrapper.appTranslations.googleTranslate(label, locale);
             if (translated){
-                translated = _appWrapper.appTranslations.transliterateText(translated, 'c2l');
                 textarea.setInputValue(translated);
                 this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[label] = translated;
                 _appWrapper.addModalMessage('Translation complete.', 'info');
@@ -261,6 +288,18 @@ exports.component = {
             }
             target.removeClass('fa-spinner');
             target.removeClass('fa-spinn');
+        },
+
+        textareaInput: function(e){
+            let label = e.target.getAttribute('name');
+            let code = e.target.getAttribute('data-code');
+            let isTranslated = e.target.getAttribute('data-translated') == '1';
+            let value = e.target.value;
+            if (isTranslated){
+                this.currentModal.translationData[code].translated[label] = value;
+            } else {
+                this.currentModal.translationData[code].notTranslated[label] = value;
+            }
         }
     }
 };

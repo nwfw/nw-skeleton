@@ -1,7 +1,7 @@
 /**
  * @fileOverview form-control-textarea component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 var _appWrapper = window.getAppWrapper();
@@ -26,6 +26,11 @@ exports.component = {
     props: ['control'],
     data: function () {
         return appState.appInfo;
+    },
+    methods: {
+        inputFocus: function(){
+            this.control.error = false;
+        }
     },
     components: []
 };

@@ -1,7 +1,7 @@
 /**
  * @fileOverview ModalHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -321,6 +321,55 @@ class ModalHelper extends AppBaseClass {
     }
 
     /**
+     * Shows inline confirm modal dialog (preserving original modal content) using basic parameters from method arguments
+     *
+     * @async
+     * @param  {string}     title               Modal title
+     * @param  {string}     text                Modal text
+     * @param  {string}     confirmButtonText   Confirm button text
+     * @param  {string}     cancelButtonText    Cancel button text
+     * @param  {Function}   confirmAction       Modal confirm callback
+     * @return {undefined}
+     */
+    async inlineConfirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
+
+        let returnPromise;
+        let resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        let icd = appState.modalData.currentModal.inlineConfirmData;
+
+        if (!text){
+            text = '';
+        }
+
+        if (!confirmButtonText){
+            confirmButtonText = this.translate('Confirm');
+        }
+
+        if (!cancelButtonText){
+            cancelButtonText = this.translate('Cancel');
+        }
+
+        icd.title = title;
+        icd.body = text;
+        icd.confirmButtonText = confirmButtonText;
+        icd.cancelButtonText = cancelButtonText;
+        icd.confirmAction = async (result) => {
+            if (confirmAction){
+                confirmAction();
+            }
+            resolveReference(result);
+        };
+        await _appWrapper.nextTick();
+        appState.modalData.currentModal.inlineConfirm = true;
+
+        return returnPromise;
+    }
+
+    /**
      * Resolve method for query modal
      *
      * @async
@@ -382,8 +431,14 @@ class ModalHelper extends AppBaseClass {
         if (appState.modalData.currentModal && appState.modalData.modalVisible){
             if (appState.modalData.currentModal.messages){
                 if (_.isArray(appState.modalData.currentModal.messages)){
-                    // window.getFeApp().$refs.modalDialog.addModalMessage(messageObject);
-                    window.getFeApp().$refs.modalDialog.$refs.modalDialogContents.$refs.modalDialogMessages.addModalMessage(messageObject);
+                    let feApp = window.getFeApp();
+                    let modalDialogMessagesComponent = _.get(feApp, '$refs.modalDialog.$refs.modalDialogContents.$refs.modalDialogMessages');
+                    if (modalDialogMessagesComponent){
+                        modalDialogMessagesComponent.addModalMessage(messageObject);
+                    } else {
+                        appState.modalData.currentModal.messages.push(messageObject);
+                        appState.modalData.currentModal.currentMessageIndex = appState.modalData.currentModal.messages.length - 1;
+                    }
                 }
             }
         }

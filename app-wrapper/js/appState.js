@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppState app wrapper file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 /**
@@ -365,7 +365,17 @@ exports.appState = {
             modalAction: null,
 
             animating: false,
-            animateSize: false,
+            animateSize: true,
+
+            inlineConfirm: false,
+            inlineConfirmData: {
+                title: '',
+                body: '',
+                confirmButtonText: '',
+                cancelButtonText: '',
+                confirmSelected: true,
+                cancelSelected: false,
+            },
 
             onBeforeOpen: null,
             onOpen: null,

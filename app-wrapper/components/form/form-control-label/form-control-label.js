@@ -1,15 +1,15 @@
 /**
- * @fileOverview message-line-body component file
+ * @fileOverview form-control-label component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.3.0
  */
 
-var _appWrapper = window.getAppWrapper();
-var appState = _appWrapper.getAppState();
+// var _appWrapper = window.getAppWrapper();
+// var appState = _appWrapper.getAppState();
 /**
- * Message line component
+ * Form control label component
  *
- * @name message-line-body
+ * @name form-control-label
  * @memberOf components
  * @property {string}   name        Name of the component
  * @property {string}   template    Component template contents
@@ -21,17 +21,11 @@ var appState = _appWrapper.getAppState();
  * @property {Object}   components  Child components
  */
 exports.component = {
-    name: 'message-line-body',
+    name: 'form-control-label',
     template: '',
-    props: ['message', 'messageIndex'],
-    methods: {
-    },
+    props: ['control', 'showType'],
     data: function () {
         return {};
     },
-    computed: {
-        appState: function(){
-            return appState;
-        }
-    }
+    methods: {}
 };

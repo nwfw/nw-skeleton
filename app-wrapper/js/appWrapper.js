@@ -1,7 +1,7 @@
 /**
  * @fileOverview AppWrapper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.2.1
+ * @version 1.3.0
  */
 
 const _ = require('lodash');
@@ -169,7 +169,11 @@ class AppWrapper extends AppBaseClass {
 
         this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
 
-        appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
+        try {
+            appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
+        } catch (ex) {
+            // console.log(ex);
+        }
 
         appState.userData = await this.getHelper('userData').loadUserData();
 
