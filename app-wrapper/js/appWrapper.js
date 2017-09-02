@@ -9,14 +9,14 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-var App;
+let App;
 const AppBaseClass = require('./lib/appBase').AppBaseClass;
 
-var AppTranslations = require('./lib/appTranslations').AppTranslations;
-var WindowManager = require('./lib/windowManager').WindowManager;
-var FileManager = require('./lib/fileManager').FileManager;
+let AppTranslations = require('./lib/appTranslations').AppTranslations;
+let WindowManager = require('./lib/windowManager').WindowManager;
+let FileManager = require('./lib/fileManager').FileManager;
 
-var AppConfig = require('./lib/appConfig').AppConfig;
+let AppConfig = require('./lib/appConfig').AppConfig;
 
 /**
  * A "wrapper" object for nw-skeleton based apps
@@ -157,6 +157,8 @@ class AppWrapper extends AppBaseClass {
         await this.initializeDebugMessageLog();
         await this.initializeUserMessageLog();
 
+        await this.initializeSystemHelpers();
+
         appState.config = await this.appConfig.loadUserConfig();
         await this.initializeLogging();
         await this.appConfig.initializeLogging();
@@ -165,23 +167,7 @@ class AppWrapper extends AppBaseClass {
         this.windowManager = new WindowManager();
         await this.windowManager.initialize();
 
-        let appFilePath;
-
-        try {
-            appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
-            App = await this.fileManager.loadFile(appFilePath, true);
-            this.app = new App();
-        } catch (ex) {
-            this.log('Error instantiating application - "{1}"', 'error', [ex.stack]);
-            this.setAppError('Error instantiating application', '', ex.stack);
-        }
-
-        try {
-            this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
-        } catch (ex) {
-            this.log('Error initializing wrapper system helpers - "{1}"', 'error', [ex.stack]);
-            this.setAppError('Error initializing wrapper system helpers', '', ex.stack);
-        }
+        await this.setAppInstance();
 
         if (!appState.isDebugWindow) {
             await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
@@ -196,12 +182,7 @@ class AppWrapper extends AppBaseClass {
         await this.helpers.themeHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
-        try {
-            this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
-        } catch (ex) {
-            this.log('Error initializing wrapper helpers - "{1}"', 'error', [ex.stack]);
-            this.setAppError('Error initializing wrapper helpers', '', ex.stack);
-        }
+        await this.initializeWrapperHelpers();
 
         try {
             appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
@@ -213,18 +194,14 @@ class AppWrapper extends AppBaseClass {
 
         await this.helpers.staticFilesHelper.loadCssFiles();
 
-        let globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
-        if (globalKeyHandlers && globalKeyHandlers.length){
-            for(let j=0; j<globalKeyHandlers.length; j++){
-                this.getHelper('keyboard').registerGlobalShortcut(globalKeyHandlers[j]);
-            }
-        }
+        await this.setGlobalKeyHandlers();
 
         if (appState.isDebugWindow){
             this.mainWindow = window.opener;
         }
 
         await this.initializeLanguage();
+
         if (!appState.appError.title){
             appState.appError.title = this.translate(appState.appError.defaultTitle);
         }
@@ -242,12 +219,7 @@ class AppWrapper extends AppBaseClass {
         }
 
         this.addWrapperEventListeners();
-        try {
-            await this.app.initialize();
-        } catch (ex) {
-            this.log('Error initializing application - "{1}"', 'error', [ex.stack]);
-            this.setAppError('Error initializing application', '', ex.stack);
-        }
+        await this.initializeApp();
         await this.initializeFeApp();
 
         if (!appState.isDebugWindow){
@@ -345,6 +317,85 @@ class AppWrapper extends AppBaseClass {
         this.appTranslations = new AppTranslations();
         await this.appTranslations.initialize();
         return await this.appTranslations.initializeLanguage();
+    }
+
+    /**
+     * Loads and instantiates app instance
+     *
+     * @async
+     * @return {undefined}
+     */
+    async setAppInstance(){
+        let appFilePath;
+        try {
+            appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
+            App = await this.fileManager.loadFile(appFilePath, true);
+            this.app = new App();
+        } catch (ex) {
+            this.log('Error instantiating application - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error instantiating application', '', ex.stack);
+        }
+    }
+
+    /**
+     * Sets global key handler listeners for config global keys
+     *
+     * @async
+     * @return {undefined}
+     */
+    async setGlobalKeyHandlers() {
+        let globalKeyHandlers = this.getConfig('appConfig.globalKeyHandlers');
+        if (globalKeyHandlers && globalKeyHandlers.length){
+            let keyboardHelper = this.getHelper('keyboard');
+            for(let j=0; j<globalKeyHandlers.length; j++){
+                keyboardHelper.registerGlobalShortcut(globalKeyHandlers[j]);
+            }
+        }
+    }
+
+    /**
+     * Initializes app object
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeApp(){
+        try {
+            await this.app.initialize();
+        } catch (ex) {
+            this.log('Error initializing application - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing application', '', ex.stack);
+        }
+    }
+
+    /**
+     * Initializes wrapper system helpers
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeSystemHelpers(){
+        try {
+            this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
+        } catch (ex) {
+            this.log('Error initializing wrapper system helpers - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing wrapper system helpers', '', ex.stack);
+        }
+    }
+
+    /**
+     * Initializes wrapper helpers
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeWrapperHelpers(){
+        try {
+            this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
+        } catch (ex) {
+            this.log('Error initializing wrapper helpers - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing wrapper helpers', '', ex.stack);
+        }
     }
 
     /**

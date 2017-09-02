@@ -26,6 +26,15 @@
  */
 
 /**
+ * AppStorageConfig Object that contains app storage configuration
+ * @typedef  {Object}    AppStorageConfig
+ *
+ * @property {string}   type      Storage type ('localStorage' or 'filesystem')
+ * @property {string}   root      Filesystem storage root dir name (under appConfig.tmpDataDir)
+ */
+
+
+/**
  * AppWrapperConfig Object that contains base app config
  * @typedef  {Object}    AppWrapperConfig
  *
@@ -117,6 +126,11 @@ exports.config = {
     longerPauseDuration: 1000,
 
     cancelOperationTimeout: 30000,
+
+    appStorage: {
+        type: 'localStorage',
+        root: 'storageData',
+    },
 
     appConfig: {
         appFile: null,

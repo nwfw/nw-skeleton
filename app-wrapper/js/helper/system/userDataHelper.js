@@ -45,9 +45,9 @@ class UserDataHelper extends AppBaseClass {
     }
 
     /**
-     * Returns user data var name for localStorage
+     * Returns user data var name for storage
      *
-     * @return {string} User data var name for localStorage
+     * @return {string} User data var name for storage
      */
     getUserDataStorageName(){
         let userDataName = this.getConfig('appInfo.name') + '_userData';
@@ -56,7 +56,7 @@ class UserDataHelper extends AppBaseClass {
     }
 
     /**
-     * Saves user data to local storage (if data was changed)
+     * Saves user data to storage (if data was changed)
      *
      * @async
      * @param  {Object}     userData    User data object
@@ -83,7 +83,7 @@ class UserDataHelper extends AppBaseClass {
     }
 
     /**
-     * Loads user data from localStorage
+     * Loads user data from storage
      *
      * @async
      * @param  {Boolean} omitSettingAppState    Flag to prevent setting userData in appState
@@ -97,7 +97,7 @@ class UserDataHelper extends AppBaseClass {
             this.log('Loaded {1} user data variables.', 'info', [_.keys(userData).length]);
             this.log('User data variables: "{1}".', 'debug', [_.keys(userData).join('", "')]);
         } else {
-            if (userData !== null) {
+            if (userData !== null && !_.isUndefined(userData)) {
                 this.log('Could not load user data.', 'warning', []);
             } else {
                 this.log('No user data found.', 'info', []);
@@ -113,7 +113,7 @@ class UserDataHelper extends AppBaseClass {
     }
 
     /**
-     * Clears user data in localStorage
+     * Clears user data in storage
      *
      * @async
      * @return {Boolean} Operation result

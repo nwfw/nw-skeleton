@@ -94,9 +94,9 @@ class AppConfig extends AppBaseClass {
     }
 
     /**
-     * Returns localStorage variable name under which user config for this app is stored
+     * Returns storage variable name under which user config for this app is stored
      *
-     * @return {string} localStorage config variable name
+     * @return {string} storage config variable name
      */
     getConfigStorageName(){
         let configName = this.getConfig('appInfo.name') + '_config';
@@ -104,126 +104,107 @@ class AppConfig extends AppBaseClass {
         return configName;
     }
 
+
     /**
-     * Loads user config from localStorage
+     * Loads user config from storage
      *
+     * @async
      * @return {Object} Application config with user config data (if found)
      */
-    loadUserConfig () {
+    async loadUserConfig () {
         let configName = this.getConfigStorageName();
         this.log('Loading user config...', 'group', []);
-        if (localStorage && localStorage.getItem(configName)){
-            let userConfig = {};
-            try {
-                userConfig = JSON.parse(localStorage.getItem(configName));
-            } catch (e) {
-                this.log('Can\'t parse user config.!', 'warning', []);
-            }
-            if (userConfig && _.keys(userConfig).length){
-                this.log('Loaded {1} user config keys.', 'info', [_.keys(userConfig).length]);
-                this.log('User config keys: "{1}".', 'debug', [_.keys(userConfig).join('", "')]);
-                appState.hasUserConfig = true;
-            } else {
-                this.log('User config empty.', 'info', []);
-                appState.hasUserConfig = false;
-            }
-            this.userConfig = _.cloneDeep(userConfig);
-            appState.userConfig = _.cloneDeep(userConfig);
-            userConfig = _.merge({}, appState.config, userConfig);
-            this.previousConfig = _.cloneDeep(userConfig);
-            this.log('Loading user config...', 'groupend', []);
-            return userConfig;
+        let userConfig = await _appWrapper.getHelper('storage').get(configName);
+        if (userConfig && _.keys(userConfig).length){
+            this.log('Loaded {1} user config keys.', 'info', [_.keys(userConfig).length]);
+            this.log('User config keys: "{1}".', 'debug', [_.keys(userConfig).join('", "')]);
+            appState.hasUserConfig = true;
         } else {
-            this.log('No user config found.', 'info', []);
-            this.config = _.cloneDeep(appState.config);
-            this.previousConfig = _.cloneDeep(appState.config);
-            this.userConfig = {};
-            appState.userConfig = {};
-            this.log('Loading user config...', 'groupend', []);
-            return appState.config;
+            this.log('User config empty.', 'info', []);
+            appState.hasUserConfig = false;
+            userConfig = {};
         }
+        this.userConfig = _.cloneDeep(userConfig);
+        appState.userConfig = _.cloneDeep(userConfig);
+        userConfig = _.merge({}, appState.config, userConfig);
+        this.previousConfig = _.cloneDeep(userConfig);
+        this.log('Loading user config...', 'groupend', []);
+        return userConfig;
     }
 
     /**
-     * Saves user config data to localStorage
+     * Saves user config data to storage
      *
      * @async
      * @return {undefined}
      */
     async saveUserConfig () {
         let configName = this.getConfigStorageName();
-        if (localStorage){
-            let utilHelper = _appWrapper.getHelper('util');
-            let userConfig = utilHelper.difference(this.baseConfig, appState.config);
+        let utilHelper = _appWrapper.getHelper('util');
+        let userConfig = utilHelper.difference(this.baseConfig, appState.config);
 
-            let ignoreUserConfig = this.getConfig('configData.ignoreUserConfig');
-            if (ignoreUserConfig && ignoreUserConfig.length){
-                userConfig = _.omit(userConfig, ignoreUserConfig);
+        let ignoreUserConfig = this.getConfig('configData.ignoreUserConfig');
+        if (ignoreUserConfig && ignoreUserConfig.length){
+            userConfig = _.omit(userConfig, ignoreUserConfig);
+        }
+
+        userConfig = _.omitBy(userConfig, (value) => {
+            let returnValue = false;
+            if (_.isObject(value) && Object.keys(value).length == 0){
+                returnValue = true;
             }
+            return returnValue;
+        });
 
-            userConfig = _.omitBy(userConfig, (value) => {
-                let returnValue = false;
-                if (_.isObject(value) && Object.keys(value).length == 0){
-                    returnValue = true;
-                }
-                return returnValue;
-            });
-
-            let userConfigKeys = _.keys(userConfig);
-            let userConfigKeyMap = utilHelper.propertyMap(userConfig);
-            let oldUserConfigKeyMap = utilHelper.propertyMap(this.userConfig);
-            let keyMapDiff = _.difference(userConfigKeyMap, oldUserConfigKeyMap);
-            keyMapDiff = _.union(keyMapDiff, _.difference(oldUserConfigKeyMap, userConfigKeyMap));
+        let userConfigKeys = _.keys(userConfig);
+        let userConfigKeyMap = utilHelper.propertyMap(userConfig);
+        let oldUserConfigKeyMap = utilHelper.propertyMap(this.userConfig);
+        let keyMapDiff = _.difference(userConfigKeyMap, oldUserConfigKeyMap);
+        keyMapDiff = _.union(keyMapDiff, _.difference(oldUserConfigKeyMap, userConfigKeyMap));
 
 
 
-            let reloadConfig = this.getConfig('configData.reloadConfig');
-            let reloadChanges = _.intersection(keyMapDiff, reloadConfig);
-            let shouldReload = reloadChanges.length > 0;
+        let reloadConfig = this.getConfig('configData.reloadConfig');
+        let reloadChanges = _.intersection(keyMapDiff, reloadConfig);
+        let shouldReload = reloadChanges.length > 0;
 
-            try {
-                if (userConfig && Object.keys(userConfigKeys).length){
-                    this.log('Saving user config...', 'debug', []);
-                    let configString = JSON.stringify(userConfig);
-                    localStorage.setItem(configName, configString);
-                    this.addUserMessage('Configuration data saved', 'debug', []);
-                    appState.hasUserConfig = true;
-                    this.userConfig = _.cloneDeep(userConfig);
-                    appState.userConfig = _.cloneDeep(userConfig);
-                    if (shouldReload){
-                        _appWrapper.getHelper('modal').closeCurrentModal(true);
-                        await _appWrapper.wait(appState.config.mediumPauseDuration);
-                        _appWrapper.windowManager.reloadWindow(null, false);
-                    } else {
-                        this.config = _.cloneDeep(appState.config);
-                    }
+        try {
+            if (userConfig && Object.keys(userConfigKeys).length){
+                this.log('Saving user config...', 'debug', []);
+                await _appWrapper.getHelper('storage').set(configName, userConfig);
+                this.addUserMessage('Configuration data saved', 'debug', []);
+                appState.hasUserConfig = true;
+                this.userConfig = _.cloneDeep(userConfig);
+                appState.userConfig = _.cloneDeep(userConfig);
+                if (shouldReload){
+                    _appWrapper.getHelper('modal').closeCurrentModal(true);
+                    await _appWrapper.wait(appState.config.mediumPauseDuration);
+                    _appWrapper.windowManager.reloadWindow(null, false);
                 } else {
-                    this.log('Removing user config...', 'debug', []);
-                    if (localStorage.getItem(configName)){
-                        localStorage.removeItem(configName);
-                        this.addUserMessage('Removed user config', 'debug', []);
-                        appState.hasUserConfig = false;
-                        this.userConfig = {};
-                        appState.userConfig = {};
-                        if (shouldReload){
-                            _appWrapper.getHelper('modal').closeCurrentModal(true);
-                            await _appWrapper.wait(appState.config.mediumPauseDuration);
-                            _appWrapper.windowManager.reloadWindow(null, false);
-                        } else {
-                            this.config = _.cloneDeep(appState.config);
-                        }
-                    }
+                    this.config = _.cloneDeep(appState.config);
                 }
-            } catch (ex) {
-                this.addUserMessage('Configuration data could not be saved - "{1}"', 'error', [ex.message], false, false);
+            } else {
+                this.log('Removing user config...', 'debug', []);
+                await _appWrapper.getHelper('storage').delete(configName);
+                this.addUserMessage('Removed user config', 'debug', []);
+                appState.hasUserConfig = false;
+                this.userConfig = {};
+                appState.userConfig = {};
+                if (shouldReload){
+                    _appWrapper.getHelper('modal').closeCurrentModal(true);
+                    await _appWrapper.wait(appState.config.mediumPauseDuration);
+                    _appWrapper.windowManager.reloadWindow(null, false);
+                } else {
+                    this.config = _.cloneDeep(appState.config);
+                }
             }
-        } else {
-            this.log('Can not save user config.', 'warning', []);
+        } catch (ex) {
+            this.addUserMessage('Configuration data could not be saved - "{1}"', 'error', [ex.message], false, false);
         }
     }
 
     /**
-     * Clears user config data from localStorage
+     * Clears user config data from storage
      *
      * @async
      * @param  {Boolean} noReload Flag to indicate whether to prevent app window reload
@@ -231,35 +212,31 @@ class AppConfig extends AppBaseClass {
      */
     async clearUserConfig (noReload) {
         let configName = this.getConfigStorageName();
-        if (localStorage){
-            this.log('Clearing user config...', 'debug', []);
-            try {
-                localStorage.removeItem(configName);
-                this.addUserMessage('Configuration data cleared', 'debug', [], false,  false, true);
-                if (!noReload){
-                    this.userConfig = {};
-                    appState.userConfig = {};
-                    appState.hasUserConfig = false;
-                    _appWrapper.getHelper('modal').closeCurrentModal(true);
-                    appState.appShuttingDown = true;
-                    appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
-                    setTimeout(() => {
-                        _appWrapper.windowManager.reloadWindow(null, true, appState.mainLoaderTitle);
-                    }, 500);
-                } else {
-                    appState.hasUserConfig = false;
-                    this.previousConfig = _.cloneDeep(appState.config);
-                    appState.config = _.cloneDeep(this.defaultConfig);
-                    this.userConfig = {};
-                    appState.userConfig = {};
-                    appState.hasUserConfig = false;
-                    _appWrapper.getHelper('modal').closeCurrentModal(true);
-                }
-            } catch (ex) {
-                this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);
+        this.log('Clearing user config...', 'debug', []);
+        try {
+            await _appWrapper.getHelper('storage').delete(configName);
+            this.addUserMessage('Configuration data cleared', 'debug', [], false,  false, true);
+            if (!noReload){
+                this.userConfig = {};
+                appState.userConfig = {};
+                appState.hasUserConfig = false;
+                _appWrapper.getHelper('modal').closeCurrentModal(true);
+                appState.appShuttingDown = true;
+                appState.mainLoaderTitle = _appWrapper.appTranslations.translate('Please wait while application restarts...');
+                setTimeout(() => {
+                    _appWrapper.windowManager.reloadWindow(null, true, appState.mainLoaderTitle);
+                }, 500);
+            } else {
+                appState.hasUserConfig = false;
+                this.previousConfig = _.cloneDeep(appState.config);
+                appState.config = _.cloneDeep(this.defaultConfig);
+                this.userConfig = {};
+                appState.userConfig = {};
+                appState.hasUserConfig = false;
+                _appWrapper.getHelper('modal').closeCurrentModal(true);
             }
-        } else {
-            this.log('Can not clear user config.', 'warning', []);
+        } catch (ex) {
+            this.addUserMessage('Configuration data could not be cleared - "{1}"', 'error', [ex], false,  false);
         }
     }
 
@@ -418,7 +395,7 @@ class AppConfig extends AppBaseClass {
     }
 
     /**
-     * Saves current user config (if it has changed) to localStorage
+     * Saves current user config (if it has changed) to storage
      *
      * @async
      * @param  {Event} e  Event that triggered the method
