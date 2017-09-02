@@ -5,7 +5,7 @@
  */
 
 const _ = require('lodash');
-const os = require('os');
+// const os = require('os');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -231,67 +231,6 @@ class UtilHelper extends AppBaseClass {
             }
         }
         return configVar;
-    }
-
-    /**
-     * Returns platform data for current platform
-     *
-     * @return {Object} Platform data
-     */
-    getPlatformData (){
-        let name = os.platform();
-        let platform = {
-            isLinux: false,
-            isMac: false,
-            isWindows: false,
-            isWindows8: false,
-            version: os.release()
-        };
-
-        if(name === 'darwin'){
-            platform.name = 'mac';
-            platform.isMac = true;
-        } else if(name === 'linux'){
-            platform.name = 'linux';
-            platform.isLinux = true;
-        } else {
-            platform.name = 'windows';
-            platform.isWindows = true;
-        }
-
-        platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
-
-        return {
-            platform: platform,
-            versions: process.versions
-        };
-    }
-
-    /**
-     * Checks whether current platform is mac
-     *
-     * @return {Boolean} True if mac, false otherwise
-     */
-    isMac (){
-        return this.getPlatformData().platform.isMac;
-    }
-
-    /**
-     * Checks whether current platform is windows
-     *
-     * @return {Boolean} True if windows, false otherwise
-     */
-    isWindows (){
-        return this.getPlatformData().platform.isWindows;
-    }
-
-    /**
-     * Checks whether current platform is linux
-     *
-     * @return {Boolean} True if linux, false otherwise
-     */
-    isLinux (){
-        return this.getPlatformData().platform.isLinux;
     }
 
     /**

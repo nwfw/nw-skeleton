@@ -94,8 +94,8 @@ class AppNotificationsHelper extends AppBaseClass {
             title: notification.message,
             type: 'image',
             message: '',
-            iconUrl: 'file://' + path.join(appState.appDir, '/images/tray-icon.png'),
-            imageUrl: 'file://' + path.join(appState.appDir, '/images/logo.png'),
+            iconUrl: 'file://' + path.join(_appWrapper.getExecPath(), this.getConfig('appNotifications.defaultIcon')),
+            imageUrl: 'file://' + path.join(_appWrapper.getExecPath(), this.getConfig('appNotifications.defaultImage')),
             requireInteraction: true,
             isClickable: false,
             priority: 0,
@@ -204,9 +204,9 @@ class AppNotificationsHelper extends AppBaseClass {
         }
         options = _.defaultsDeep(options, {
             body: '',
-            icon: 'file://' + path.join(appState.appDir, '/images/tray-icon.png'),
-            badge: 'file://' + path.join(appState.appDir, '/images/logo.png'),
-            image: 'file://' + path.join(appState.appDir, '/images/logo.png'),
+            icon: 'file://' + path.join(_appWrapper.getExecPath(), this.getConfig('appNotifications.defaultIcon')),
+            badge: 'file://' + path.join(_appWrapper.getExecPath(), this.getConfig('appNotifications.defaultBadge')),
+            image: 'file://' + path.join(_appWrapper.getExecPath(), this.getConfig('appNotifications.defaultImage')),
             vibrate: [200, 100, 200],
             requireInteraction: true,
             tag: _appWrapper.getHelper('util').uuid(),

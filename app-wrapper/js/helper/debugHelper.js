@@ -58,7 +58,6 @@ class DebugHelper extends AppBaseClass {
      */
     openDebugWindow (){
         this.log('Opening standalone debug window', 'info', []);
-        appState.hasDebugWindow = true;
         _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debug.debugWindowFile'), {
             id: 'debugWindow',
             frame: false
@@ -79,6 +78,7 @@ class DebugHelper extends AppBaseClass {
         _appWrapper.debugWindow.appState.hasDebugWindow = false;
         _appWrapper.debugWindow.appState.config = appState.config;
         _appWrapper.debugWindow.document.body.className += ' nw-body-initialized';
+        appState.hasDebugWindow = true;
         return _appWrapper.debugWindow;
     }
 

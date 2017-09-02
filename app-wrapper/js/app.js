@@ -157,7 +157,7 @@ class App extends AppBaseClass {
                         this.log('App sub file "{1}" loaded', 'debug', [subFileData.file]);
                     } catch (ex) {
                         this.addUserMessage('Error loading app sub file "{1}" - "{2}"', 'error', [subFileData.file, ex.message]);
-                        this.setAppError('Error loading sub class', 'Error loading app sub class file "{1}" - "{2}"', '', [subFileData.file, ex.message]);
+                        this.setAppError('Error loading sub class', 'Error loading app sub class file "{1}" - "{2}"', ex.stack, [subFileData.file, ex.message]);
                     }
                 }
             }
@@ -184,7 +184,7 @@ class App extends AppBaseClass {
                         this.addUserMessage('App sub class "{1}" initialized.', 'debug', [subFileData.className], false, false);
                     } catch (ex) {
                         this.addUserMessage('Error initializing app sub class "{1}" - "{2}"', 'error', [subFileData.className, ex.message]);
-                        this.setAppError('Error initializing sub class', 'Error initializing app sub class "{1}" - "{2}"', '', [subFileData.className, ex.message]);
+                        this.setAppError('Error initializing sub class', 'Error initializing app sub class "{1}" - "{2}"', ex.stack, [subFileData.className, ex.message]);
                     }
                 }
             }
@@ -211,7 +211,7 @@ class App extends AppBaseClass {
                         this.addUserMessage('App sub class "{1}" finalized.', 'debug', [subFileData.className], false, false);
                     } catch (ex) {
                         this.addUserMessage('Error finalizing app sub class "{1}" - "{2}"', 'error', [subFileData.className, ex.message]);
-                        this.setAppError('Error finalizing sub class', 'Error finalizing app sub class "{1}" - "{2}"', '', [subFileData.className, ex.message]);
+                        this.setAppError('Error finalizing sub class', 'Error finalizing app sub class "{1}" - "{2}"', ex.stack, [subFileData.className, ex.message]);
                     }
                 }
             }

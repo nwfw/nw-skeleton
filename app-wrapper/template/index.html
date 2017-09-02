@@ -9,33 +9,25 @@
             <modal-dialog ref="modalDialog"></modal-dialog>
         </div>
         <script type="text/javascript">
-            var initialConfigData;
-            var initialConfig;
-            var nws;
-            var appWrapper;
-            async function _nwsInit(){
-                let fs = require('fs');
-                let path = require('path');
-                let configFilePath = path.resolve('./config/config.js');
-                let configFileExists = fs.existsSync(configFilePath);
-                if (configFileExists){
-                    initialConfigData = require(configFilePath);
-                    initialConfig = initialConfigData.config;
-                    nws = require('nw-skeleton');
-                    appWrapper = new nws.AppWrapper(initialConfig);
-                    await appWrapper.initialize();
-                } else {
-                    document.querySelector('body').setAttribute('style', 'background-color: #FFFFFF; color:#CC0000; text-align: center;');
-                    let html = '<h1>Problem loading config "' + configFilePath + '"</h1>';
-                    html += '<a onclick="window.close()" style="color:#0000FF; border: 1px solid #333333; display: inline-block; padding: 3px 5px; cursor:pointer; margin: 0 auto;" href="#">Close</a>';
-                    document.querySelector('.nw-app-wrapper').innerHTML = html;
-                    return;
-                }
-            }
-
-            window.onload = async function(){
-                await _nwsInit();
-            };
+var nws = require('nw-skeleton');
+var appWrapper;
+async function _nwsInit(){
+    try {
+        appWrapper = new nws.AppWrapper();
+        await appWrapper.initialize();
+    } catch (ex) {
+        document.querySelector('body').setAttribute('style', 'font-family: Arial, Helvetica, sans-serif; background-color: #FFFFFF; color:#CC0000; text-align: center;');
+        let html = '<h1>Error</h1>';
+        html += '<pre style="margin: 10px 0; border: 1px solid #CC0000; padding: 10px; max-width: 90vw; overflow: auto">' + ex.stack.replace(/^[\s\t\r\n]+?/, '') + '</pre>';
+        html += '<a onclick="window.close()" style="color:#CC0000; border: 1px solid #333333; display: inline-block; padding: 3px 5px; cursor:pointer; margin: 0 auto;" href="#">Close</a>';
+        document.querySelector('.nw-app-wrapper').innerHTML = html;
+        nw.Window.get().show();
+        return;
+    }
+}
+window.onload = async function(){
+    await _nwsInit();
+};
         </script>
     </body>
 </html>

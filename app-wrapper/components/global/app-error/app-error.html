@@ -9,7 +9,11 @@
                 <div v-if="icon" class="app-error-icon"></div>
             </transition>
             <p class="app-error-text" v-if="text" v-html="text"></p>
-            <p class="app-error-debug-text" v-if="isDebugEnabled() && debugText" v-html="debugText"></p>
+            <p class="app-error-debug-text" v-if="isDebugEnabled() && debugText">
+                <pre>
+                    {{ debugText }}
+                </pre>
+            </p>
             <transition name="size-height">
                 <div key="userMessages" v-if="messages == 'user'" class="app-error-message-list">
                     <h3 class="app-error-messages-title" v-html="translate('User messages')"></h3>

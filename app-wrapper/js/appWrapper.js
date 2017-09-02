@@ -5,6 +5,8 @@
  */
 
 const _ = require('lodash');
+const os = require('os');
+const fs = require('fs');
 const path = require('path');
 
 var App;
@@ -52,6 +54,22 @@ class AppWrapper extends AppBaseClass {
         this.windowManager = null;
         this.fileManager = null;
         this.appConfig = null;
+
+        let isDebugWindow = false;
+
+        if (_.isUndefined(initialAppConfig) || !_.isObject(initialAppConfig)){
+            initialAppConfig = {};
+        } else {
+            if (initialAppConfig.isDebugWindow){
+                isDebugWindow = true;
+            }
+        }
+
+        initialAppConfig = this.getInitialAppConfig(initialAppConfig);
+
+        if (isDebugWindow){
+            initialAppConfig.isDebugWindow = true;
+        }
 
         if (initialAppConfig && initialAppConfig.debug && initialAppConfig.debug.forceDebug && !_.isUndefined(initialAppConfig.debug.forceDebug.AppWrapper)){
             this.forceDebug = initialAppConfig.debug.forceDebug.AppWrapper;
@@ -147,13 +165,24 @@ class AppWrapper extends AppBaseClass {
         this.windowManager = new WindowManager();
         await this.windowManager.initialize();
 
-        let appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
+        let appFilePath;
 
-        App = await this.fileManager.loadFile(appFilePath, true);
+        try {
+            appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
+            App = await this.fileManager.loadFile(appFilePath, true);
+            this.app = new App();
+        } catch (ex) {
+            this.log('Error instantiating application - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error instantiating application', '', ex.stack);
+        }
 
-        this.app = new App();
+        try {
+            this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
+        } catch (ex) {
+            this.log('Error initializing wrapper system helpers - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing wrapper system helpers', '', ex.stack);
+        }
 
-        this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
         if (!appState.isDebugWindow) {
             await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
         }
@@ -167,7 +196,12 @@ class AppWrapper extends AppBaseClass {
         await this.helpers.themeHelper.initializeThemes();
         await this.helpers.staticFilesHelper.loadJsFiles();
 
-        this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
+        try {
+            this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
+        } catch (ex) {
+            this.log('Error initializing wrapper helpers - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing wrapper helpers', '', ex.stack);
+        }
 
         try {
             appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
@@ -208,8 +242,12 @@ class AppWrapper extends AppBaseClass {
         }
 
         this.addWrapperEventListeners();
-
-        await this.app.initialize();
+        try {
+            await this.app.initialize();
+        } catch (ex) {
+            this.log('Error initializing application - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error initializing application', '', ex.stack);
+        }
         await this.initializeFeApp();
 
         if (!appState.isDebugWindow){
@@ -243,7 +281,13 @@ class AppWrapper extends AppBaseClass {
         this.windowManager.showWindow();
         appState.status.appLoaded = true;
         await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
-        let retValue = await this.app.finalize();
+        let retValue;
+        try {
+            retValue = await this.app.finalize();
+        } catch (ex) {
+            this.log('Error finalizing application - "{1}"', 'error', [ex.stack]);
+            this.setAppError('Error finalizing application', '', ex.stack);
+        }
         if (retValue){
             appState.status.appInitialized = true;
             appState.status.appReady = true;
@@ -767,7 +811,7 @@ class AppWrapper extends AppBaseClass {
         appState.languageData.currentLanguageName = this.getConfig('currentLanguageName');
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
-        appState.platformData = this.getHelper('util').getPlatformData();
+        appState.platformData = this.getPlatformData();
         appState.appDir = await this.getAppDir();
         appState.manifest = require(path.join(appState.appDir, '../package.json'));
         appState.wrapperManifest = require(path.join(appState.appDir, '../node_modules/nw-skeleton/package.json'));
@@ -914,10 +958,11 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeUserMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
-            if (!await this.fileManager.isFile(this.getConfig('userMessages.userMessagesFilename')) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
-                this.fileManager.createDirFileRecursive(this.getConfig('userMessages.userMessagesFilename'));
+            let userMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            if (!await this.fileManager.isFile(userMessageFilePath) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
+                this.fileManager.createDirFileRecursive(userMessageFilePath);
             } else if (this.getConfig('userMessages.userMessagesToFileAppend')) {
-                let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
+                let messageLogFile = path.resolve(userMessageFilePath);
                 let messageLogContents = await this.fileManager.readFileSync(messageLogFile);
                 if (messageLogContents){
                     messageLogContents = messageLogContents.replace(/\n?\[\n/g, '');
@@ -938,7 +983,8 @@ class AppWrapper extends AppBaseClass {
      */
     async finalizeUserMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
-            let messageLogFile = path.resolve(this.getConfig('userMessages.userMessagesFilename'));
+            let userMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            let messageLogFile = path.resolve(userMessageFilePath);
             let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]\n';
             messageLogContents = messageLogContents.replace(/\n,\n/g, '\n');
             await this.fileManager.writeFileSync(messageLogFile, messageLogContents, {flag: 'w'});
@@ -956,10 +1002,11 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
-            if (!await this.fileManager.isFile(this.getConfig('debug.debugMessagesFilename')) || !this.getConfig('debug.debugToFileAppend')) {
-                this.fileManager.createDirFileRecursive(this.getConfig('debug.debugMessagesFilename'));
+            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            if (!await this.fileManager.isFile(debugMessageFilePath) || !this.getConfig('debug.debugToFileAppend')) {
+                this.fileManager.createDirFileRecursive(debugMessageFilePath);
             } else if (this.getConfig('debug.debugToFileAppend')) {
-                let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
+                let debugLogFile = path.resolve(debugMessageFilePath);
                 let debugLogContents = await this.fileManager.readFileSync(debugLogFile);
                 if (debugLogContents){
                     debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
@@ -980,7 +1027,8 @@ class AppWrapper extends AppBaseClass {
      */
     async finalizeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
-            let debugLogFile = path.resolve(this.getConfig('debug.debugMessagesFilename'));
+            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]\n';
             debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
             await this.fileManager.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
@@ -1116,25 +1164,23 @@ class AppWrapper extends AppBaseClass {
      * @return {string} Absolute path to app directory
      */
     async getAppDir(){
-        let utilHelper = this.getHelper('util');
         let appDir;
         let processPath = path.dirname(process.execPath);
         let workingDir = path.resolve('./');
 
-        if (utilHelper.isWindows()){
+        if (this.isWindows()){
             if (process.execPath.match(/nw\.exe/)){
                 appDir = path.join(workingDir, 'app');
             } else {
                 appDir = processPath;
             }
-        } else if (utilHelper.isMac()){
+        } else if (this.isMac()){
             if (process.execPath.match(/nwjs\sHelper$/)){
                 appDir = path.join(workingDir, 'app');
             } else {
                 appDir = processPath;
             }
         }
-
         return appDir;
     }
 
@@ -1271,6 +1317,112 @@ class AppWrapper extends AppBaseClass {
                 this.exitApp(true);
             }
         }
+    }
+
+    /**
+     * Returns platform data for current platform
+     *
+     * @return {Object} Platform data
+     */
+    getPlatformData (){
+        let name = os.platform();
+        let platform = {
+            isLinux: false,
+            isMac: false,
+            isWindows: false,
+            isWindows8: false,
+            version: os.release()
+        };
+
+        if(name === 'darwin'){
+            platform.name = 'mac';
+            platform.isMac = true;
+        } else if(name === 'linux'){
+            platform.name = 'linux';
+            platform.isLinux = true;
+        } else {
+            platform.name = 'windows';
+            platform.isWindows = true;
+        }
+
+        platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+
+        return {
+            platform: platform,
+            versions: process.versions
+        };
+    }
+
+    /**
+     * Checks whether current platform is mac
+     *
+     * @return {Boolean} True if mac, false otherwise
+     */
+    isMac (){
+        return this.getPlatformData().platform.isMac;
+    }
+
+    /**
+     * Checks whether current platform is windows
+     *
+     * @return {Boolean} True if windows, false otherwise
+     */
+    isWindows (){
+        return this.getPlatformData().platform.isWindows;
+    }
+
+    /**
+     * Checks whether current platform is linux
+     *
+     * @return {Boolean} True if linux, false otherwise
+     */
+    isLinux (){
+        return this.getPlatformData().platform.isLinux;
+    }
+
+    /**
+     * Returns base exec path (root dir of the app)
+     *
+     * @return {string} Root app dir
+     */
+    getExecPath () {
+        let execPath = nw.__dirname;
+        if (this.isMac()){
+            if (execPath.match(/app\.nw$/)){
+                execPath = path.join(execPath, '../../../..');
+            }
+        }
+        return execPath;
+    }
+
+    /**
+     * Loads config overrides if present, and returns config object for the app
+     *
+     * @param  {Object} defaultAppConfig Default application config
+     * @return {Object}                  Application config object
+     */
+    getInitialAppConfig(defaultAppConfig){
+        let initialAppConfig = defaultAppConfig;
+        let execPath = this.getExecPath();
+
+        let configFilePath = path.resolve(path.join(execPath, 'config', 'config.js'));
+        let configFileExists = fs.existsSync(configFilePath);
+
+        if (!configFileExists){
+            configFilePath = path.resolve(path.join(execPath, 'config.js'));
+            configFileExists = fs.existsSync(configFilePath);
+        }
+
+        if (configFileExists){
+            let initialConfigData;
+            try {
+                initialConfigData = require(configFilePath);
+                initialAppConfig = initialConfigData.config;
+            } catch (ex) {
+                console.error(ex);
+            }
+        }
+        return initialAppConfig;
     }
 }
 exports.AppWrapper = AppWrapper;

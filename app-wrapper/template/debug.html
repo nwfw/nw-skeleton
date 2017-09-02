@@ -9,21 +9,26 @@
             <modal-dialog ref="modalDialog"></modal-dialog>
         </div>
         <script>
-            var initialConfig = require('../../../../config/config').config;
-            var nws = require('nw-skeleton');
-            var appWrapper;
-
-            initialConfig.isDebugWindow = true;
-
-            var _parentWrapper = window.opener.getAppWrapper();
-
-            async function _nwsInit(){
-                _parentWrapper.debugWindow = window;
-                await _parentWrapper.helpers.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
-                appWrapper = new nws.AppWrapper(initialConfig);
-                await appWrapper.initialize();
-            }
-            _nwsInit();
+var nws = require('nw-skeleton');
+var appWrapper;
+var _parentWrapper;
+async function _nwsInit(){
+    try {
+        _parentWrapper = window.opener.getAppWrapper();
+        _parentWrapper.debugWindow = window;
+        appWrapper = new nws.AppWrapper({ isDebugWindow: true });
+        await appWrapper.initialize();
+        await _parentWrapper.helpers.debugHelper.prepareDebugWindow.call(_parentWrapper.debugHelper);
+    } catch (ex) {
+        document.querySelector('body').setAttribute('style', 'font-family: Arial, Helvetica, sans-serif; background-color: #FFFFFF; color:#CC0000; text-align: center;');
+        let html = '<h1>Error</h1>';
+        html += '<pre style="margin: 10px 0; border: 1px solid #CC0000; padding: 10px; max-width: 90vw; overflow: auto">' + ex.stack.replace(/^[\s\t\r\n]+?/, '') + '</pre>';
+        html += '<a onclick="window.close()" style="color:#CC0000; border: 1px solid #333333; display: inline-block; padding: 3px 5px; cursor:pointer; margin: 0 auto;" href="#">Close</a>';
+        document.querySelector('.nw-app-wrapper').innerHTML = html;
+    }
+    return;
+}
+_nwsInit();
         </script>
     </body>
 </html>

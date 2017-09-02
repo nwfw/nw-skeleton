@@ -144,7 +144,8 @@ class AppBaseClass extends BaseClass {
         }
         if (debugMessage && debugMessage.message && this.getConfig('debug.debugToFile')){
             let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
-            await _appWrapper.fileManager.writeFileSync(path.resolve(this.getConfig('debug.debugMessagesFilename')), messageLine, {flag: 'a'});
+            let debugMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            await _appWrapper.fileManager.writeFileSync(path.resolve(debugMessageFilePath), messageLine, {flag: 'a'});
         }
 
         if (appState && appState.allDebugMessages && _.isArray(appState.allDebugMessages)){
@@ -366,7 +367,8 @@ class AppBaseClass extends BaseClass {
 
         if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessages.userMessagesToFile')){
             let messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
-            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(this.getConfig('userMessages.userMessagesFilename')), messageLine, {flag: 'a'});
+            let userMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            await window.getAppWrapper().fileManager.writeFileSync(path.resolve(userMessageFilePath), messageLine, {flag: 'a'});
 
         }
 
@@ -825,7 +827,7 @@ class AppBaseClass extends BaseClass {
      * Logs messages info to console
      * @param  {Object} messageData   Message response data
      * @param {Boolean} verboseOutput   Toggles verbose output
-     * @return {[type]}               [description]
+     * @return {undefined}               [description]
      */
     messageInfoOutput (messageData, verboseOutput) {
         if (messageData && messageData.data && messageData.data.handlerMethods){
@@ -908,9 +910,6 @@ class AppBaseClass extends BaseClass {
             }
             if (text){
                 text = this.translate(text);
-            }
-            if (debugText){
-                debugText = this.translate(debugText);
             }
         }
 

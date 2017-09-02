@@ -82,8 +82,8 @@ class StaticFilesHelper extends AppBaseClass {
     async loadCss (href, noWatch) {
         let cssFilePath = href;
         let cssContents = '';
-        let compiledCssFile = this.getConfig('appConfig.cssCompiledFile');
-        let compiledCssPath = path.resolve(path.join('.', compiledCssFile));
+        let compiledCssPath = this.getCompiledCssPath();
+
 
         if (!await _appWrapper.fileManager.isFile(cssFilePath)){
             cssFilePath  = path.resolve(path.join('.' + href));
@@ -286,7 +286,7 @@ class StaticFilesHelper extends AppBaseClass {
     async loadCssFiles(silent) {
         this.log('Preparing css files...', 'group', []);
         await this.generateCss(false, silent);
-        let cssFile = this.getConfig('appConfig.cssCompiledFile');
+        let cssFile = this.getCompiledCssPath(true);
         if (this.getConfig('compileCss')){
             let result = await this.addCss(cssFile, true, silent);
             if (!result){
@@ -311,7 +311,8 @@ class StaticFilesHelper extends AppBaseClass {
         if (this.getConfig('compileCss')){
             let compiledCss = await this.compileCss(noWatch, silent);
             if (compiledCss) {
-                let compiledCssPath = path.resolve(path.join('.', this.getConfig('appConfig.cssCompiledFile')));
+                // let compiledCssPath = path.resolve(path.join('.', this.getConfig('appConfig.cssCompiledFile')));
+                let compiledCssPath = this.getCompiledCssPath();
                 await this.writeCss(compiledCssPath, compiledCss);
             }
         } else {
@@ -817,6 +818,20 @@ class StaticFilesHelper extends AppBaseClass {
             }
         }
         return missingVariables;
+    }
+
+    /**
+     * Returns path to compiled css file (relative or absolute, based on parameter)
+     *
+     * @param  {Boolean} relativePath Flag to indicate that relative path should be returned
+     * @return {string}               Compiled css file path
+     */
+    getCompiledCssPath (relativePath){
+        let compiledCssPath = path.join(_appWrapper.getExecPath(), this.getConfig('varDir'), this.getConfig('appConfig.cssCompiledFile'));
+        if (!relativePath){
+            compiledCssPath = path.resolve(compiledCssPath);
+        }
+        return compiledCssPath;
     }
 }
 

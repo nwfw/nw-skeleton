@@ -59,7 +59,7 @@ class MenuHelper extends MainBaseClass {
     async initializeAppMenu() {
         if (!this.menuInitialized){
             this.log('Initializing app menu', 'debug', []);
-            let utilHelper = this.getAppWrapper().getHelper('util');
+            let _appWrapper = this.getAppWrapper();
             if (!(!_.isUndefined(this.menu) && this.menu)){
                 let menuData = this.getConfig('appConfig.menuData');
                 let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
@@ -67,7 +67,7 @@ class MenuHelper extends MainBaseClass {
                     if (menuData && menuData.mainItemName && menuData.options){
                         if (!this.menu){
                             this.menu = new nw.Menu({type: 'menubar'});
-                            if (utilHelper.isMac() && !this.hasMacBuiltin){
+                            if (_appWrapper.isMac() && !this.hasMacBuiltin){
                                 this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
                                 this.hasMacBuiltin = true;
                             }
@@ -76,7 +76,7 @@ class MenuHelper extends MainBaseClass {
                         }
                     }
                 } else {
-                    if (utilHelper.isMac()){
+                    if (_appWrapper.isMac()){
                         if (menuData && menuData.mainItemName && menuData.options){
                             if (!this.menu){
                                 this.menu = new nw.Menu({type: 'menubar'});
@@ -120,10 +120,10 @@ class MenuHelper extends MainBaseClass {
     async setupAppMenu() {
         if (!this.menuSetup){
             this.log('Setfting up app menu', 'debug', []);
-            let utilHelper = this.getAppWrapper().getHelper('util');
+            let _appWrapper = this.getAppWrapper();
             let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
             if (hasAppMenu){
-                if (!utilHelper.isMac() && !mainScript.mainWindow.window.appState.windowState.frame){
+                if (!_appWrapper.isMac() && !mainScript.mainWindow.window.appState.windowState.frame){
                     this.log('You should not be using frameless window with app menus.', 'warning', [], false, true);
                     return;
                 }
@@ -131,7 +131,7 @@ class MenuHelper extends MainBaseClass {
                 this.menuMethodMap = [];
                 if (menuData && menuData.menus && _.isArray(menuData.menus) && menuData.menus.length){
 
-                    if (utilHelper.isMac()){
+                    if (_appWrapper.isMac()){
                         let firstMenuChunk = [];
                         let secondMenuChunk = [];
                         let thirdMenuChunk = [];
@@ -161,9 +161,9 @@ class MenuHelper extends MainBaseClass {
                         this.menu.append(await this.initializeAppMenuItem(menuData.menus[i], i));
                     }
                 }
-                this.getAppWrapper().windowManager.setMenu(this.menu);
-            } else if (utilHelper.isMac()){
-                this.getAppWrapper().windowManager.setMenu(this.menu);
+                _appWrapper.windowManager.setMenu(this.menu);
+            } else if (_appWrapper.isMac()){
+                _appWrapper.windowManager.setMenu(this.menu);
             }
             this.menuSetup = true;
         } else {
@@ -191,7 +191,7 @@ class MenuHelper extends MainBaseClass {
             }
             if (menuItemData.menuItem.shortcut.modifiers){
                 if (menuItemData.menuItem.shortcut.modifiers.ctrl){
-                    if (this.getAppWrapper().getHelper('util').isMac()){
+                    if (this.getAppWrapper().isMac()){
                         modifiers.push('cmd');
                     } else {
                         modifiers.push('ctrl');

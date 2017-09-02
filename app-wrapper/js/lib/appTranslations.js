@@ -60,7 +60,7 @@ class AppTranslations extends AppBaseClass {
         this.log('Initializing languages...', 'group', []);
         this.translationData = await this.loadTranslations();
 
-        var availableLanguageCodes = _.map(appState.languageData.availableLanguages, (item) => {
+        let availableLanguageCodes = _.map(appState.languageData.availableLanguages, (item) => {
             return item.code;
         });
 
@@ -88,14 +88,15 @@ class AppTranslations extends AppBaseClass {
      * @return {Object} Translation data with populated languages and translations
      */
     async loadTranslations () {
-        this.log('Loading translations.', 'info', []);
-        var translationData = await this.loadTranslationsFromDir(path.resolve(this.getConfig('wrapper.translationsRoot')), this.getConfig('wrapper.translationExtensionRegex'));
+        this.log('Loading translations.', 'group', []);
+        let translationsDir = await this.getTranslationsDir();
+        let translationData = await this.loadTranslationsFromDir(translationsDir, this.getConfig('wrapper.translationExtensionRegex'));
         appState.languageData.availableLanguages = translationData.availableLanguages;
         appState.languageData.translations = translationData.translations;
         if (!this.originalLanguageData){
             this.originalLanguageData = _.cloneDeep(appState.languageData);
         }
-        this.log('Translations loaded.', 'info', []);
+        this.log('Loading translations.', 'groupend', []);
         return translationData;
     }
 
@@ -105,10 +106,10 @@ class AppTranslations extends AppBaseClass {
      * @return {Object} Config editor data object for config-editor component
      */
     getTranslationEditorData (){
-        var translations = _.cloneDeep(appState.languageData.translations);
-        var translationObject = {};
-        var codes = _.keys(translations);
-        for(var i=0; i<codes.length; i++){
+        let translations = _.cloneDeep(appState.languageData.translations);
+        let translationObject = {};
+        let codes = _.keys(translations);
+        for(let i=0; i<codes.length; i++){
             translationObject[codes[i]] = {
                 translated: {},
                 notTranslated: {}
@@ -116,8 +117,8 @@ class AppTranslations extends AppBaseClass {
             let labels = _.sortBy(_.keys(translations[codes[i]]), (key) => {
                 return key.replace(/^(\*\s*)/, '');
             });
-            for (var j=0; j<labels.length; j++){
-                var value = translations[codes[i]][labels[j]];
+            for (let j=0; j<labels.length; j++){
+                let value = translations[codes[i]][labels[j]];
                 if (value.match(/^--.*--$/)){
                     value = '';
                     translationObject[codes[i]].notTranslated[labels[j]] = value;
@@ -185,40 +186,40 @@ class AppTranslations extends AppBaseClass {
             e.preventDefault();
         }
         let modalHelper = _appWrapper.getHelper('modal');
-        let autoAdd = appState.config.autoAddLabels;
+        let autoAdd = this.getConfig('autoAddLabels');
         appState.config.autoAddLabels = false;
-        var modalElement = window.document.querySelector('.modal-dialog-wrapper');
-        var allSaved = true;
-        var savedLangs = [];
-        var translationsCount = 0;
+        let modalElement = window.document.querySelector('.modal-dialog-wrapper');
+        let allSaved = true;
+        let savedLangs = [];
+        let translationsCount = 0;
         if (modalElement){
-            var modalForm = modalElement.querySelector('form');
+            let modalForm = modalElement.querySelector('form');
             if (modalForm){
                 this.log('Saving translations.', 'info', []);
                 modalForm = modalForm.cloneNode(true);
                 modalHelper.modalBusy();
                 await _appWrapper.wait(this.getConfig('mediumPauseDuration'));
-                var fieldsets = modalForm.querySelectorAll('fieldset');
-                for (var i=0; i<fieldsets.length; i++){
-                    var fieldset = fieldsets[i];
-                    var currentCode = fieldset.getAttribute('data-code');
+                let fieldsets = modalForm.querySelectorAll('fieldset');
+                for (let i=0; i<fieldsets.length; i++){
+                    let fieldset = fieldsets[i];
+                    let currentCode = fieldset.getAttribute('data-code');
 
-                    var currentLanguage;
+                    let currentLanguage;
                     if (appState.languageData.availableLanguages[i].code == currentCode){
                         currentLanguage = appState.languageData.availableLanguages[i];
                     }
 
                     if (currentLanguage){
-                        var textareas = fieldset.querySelectorAll('textarea');
-                        var translations = {};
+                        let textareas = fieldset.querySelectorAll('textarea');
+                        let translations = {};
                         translationsCount = textareas.length;
 
-                        for (var j=0; j<translationsCount; j++) {
-                            var textarea = textareas[j];
+                        for (let j=0; j<translationsCount; j++) {
+                            let textarea = textareas[j];
                             translations[textarea.name] = textarea.value;
                         }
 
-                        var saved = await this.addLabels(currentLanguage, translations);
+                        let saved = await this.addLabels(currentLanguage, translations);
                         if (saved){
                             savedLangs.push(currentLanguage.name);
                         } else {
@@ -269,20 +270,20 @@ class AppTranslations extends AppBaseClass {
      * @return {Object}                           Object containing loaded translation data
      */
     async loadTranslationsFromDir (translationsPath, translationExtensionRegex, asString){
-        var translations = {};
-        var availableLanguages = [];
+        let translations = {};
+        let availableLanguages = [];
         if (fs.existsSync(translationsPath)){
-            var stats = fs.statSync(translationsPath);
+            let stats = fs.statSync(translationsPath);
             if (stats.isDirectory()){
-                var files = fs.readdirSync(translationsPath);
+                let files = fs.readdirSync(translationsPath);
                 _.each(files, (filePath) => {
-                    var translationFilePath = path.join(translationsPath, filePath);
-                    var fileStat = fs.statSync(translationFilePath);
+                    let translationFilePath = path.join(translationsPath, filePath);
+                    let fileStat = fs.statSync(translationFilePath);
                     if (fileStat.isFile()){
                         if (filePath.match(translationExtensionRegex)){
-                            var languageName = filePath.replace(translationExtensionRegex, '');
+                            let languageName = filePath.replace(translationExtensionRegex, '');
                             this.log('Loading translations from "{1}"...', 'debug', [translationFilePath]);
-                            var translationData = null;
+                            let translationData = null;
                             if (asString){
                                 translationData = fs.readFileSync(translationFilePath, {encoding: 'utf8'}).toString();
                                 translations[languageName] = translationData;
@@ -307,7 +308,7 @@ class AppTranslations extends AppBaseClass {
 
                     }
                 });
-                var returnObj = {
+                let returnObj = {
                     translations: translations,
                     availableLanguages: availableLanguages
                 };
@@ -336,11 +337,11 @@ class AppTranslations extends AppBaseClass {
      * @return {string}                 Translated label with interpolated data
      */
     translate (label, currentLanguage, data){
-        var languageData = appState.languageData;
+        let languageData = appState.languageData;
         if (!currentLanguage){
             currentLanguage = languageData.currentLanguage;
         }
-        var translation = label;
+        let translation = label;
         if (!data){
             data = [];
         }
@@ -366,7 +367,7 @@ class AppTranslations extends AppBaseClass {
 
         if (translation && translation.match && translation.match(/{(\d+)}/) && _.isArray(data) && data.length) {
             translation = translation.replace(/{(\d+)}/g, (match, number) => {
-                var index = number - 1;
+                let index = number - 1;
                 return !_.isUndefined(data[index]) ? data[index] : match;
             });
         }
@@ -376,14 +377,16 @@ class AppTranslations extends AppBaseClass {
     /**
      * Returns absolute path to translations data file for given langauge code
      *
+     * @async
      * @param  {string} languageCode Language code to get path for
      * @return {string}              Absolute path to translation data file
      */
-    getLanguageFilePath(languageCode){
-        var translationFileName = (this.getConfig('wrapper.translationExtensionRegex') + '');
+    async getLanguageFilePath(languageCode){
+        let translationFileName = (this.getConfig('wrapper.translationExtensionRegex') + '');
         translationFileName = translationFileName.replace(/\\./g, '.').replace(/\$/, '').replace(/^\//, '').replace(/\/$/, '');
         translationFileName = languageCode + translationFileName;
-        var translationFilePath = path.join(path.resolve(this.getConfig('wrapper.translationsRoot')), translationFileName);
+        let translationsDir = await this.getTranslationsDir();
+        let translationFilePath = path.join(translationsDir, translationFileName);
         return translationFilePath;
     }
 
@@ -401,33 +404,32 @@ class AppTranslations extends AppBaseClass {
             this.addingLabels[label] = true;
         }
         this.log('Auto-adding label "{1}"...', 'debug', [label]);
-        var self = this;
-        var languageData = appState.languageData;
+        let languageData = appState.languageData;
 
-        var translationData = appState.languageData;
+        let translationData = appState.languageData;
 
-        var newLabel = this.getNewLabel(label);
+        let newLabel = this.getNewLabel(label);
 
-        for (var i =0; i< languageData.availableLanguages.length; i++){
-            var availableLanguage = languageData.availableLanguages[i];
-            var currentCode = availableLanguage.code;
-            var currentName = availableLanguage.name;
-            var currentLocale = availableLanguage.locale;
-            var currentTranslations = translationData.translations[currentCode];
+        for (let i =0; i< languageData.availableLanguages.length; i++){
+            let availableLanguage = languageData.availableLanguages[i];
+            let currentCode = availableLanguage.code;
+            let currentName = availableLanguage.name;
+            let currentLocale = availableLanguage.locale;
+            let currentTranslations = translationData.translations[currentCode];
 
             appState.languageData.translations[currentCode][label] = newLabel;
 
-            var translationFilePath = self.getLanguageFilePath(currentCode);
+            let translationFilePath = await this.getLanguageFilePath(currentCode);
 
             currentTranslations[label] = newLabel;
 
-            var newTranslationData = {
+            let newTranslationData = {
                 name: currentName,
                 code: currentCode,
                 locale: currentLocale,
                 translations: currentTranslations
             };
-            var newTranslationDataString = this.getTranslationDataString(newTranslationData);
+            let newTranslationDataString = this.getTranslationDataString(newTranslationData);
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, currentName]);
         }
@@ -444,24 +446,24 @@ class AppTranslations extends AppBaseClass {
      * @return {undefined}
      */
     async addLabels (language, labelData) {
-        var translationData = {};
-        var translationFilePath = this.getLanguageFilePath(language.code);
+        let translationData = {};
+        let translationFilePath = await this.getLanguageFilePath(language.code);
         translationData.code = language.code;
         translationData.name = language.name;
         translationData.locale = language.locale;
         translationData.translations = {};
-        var labels = _.keys(labelData);
-        for(var i =0; i<labels.length; i++){
-            var label = labels[i];
-            var value = labelData[label];
+        let labels = _.keys(labelData);
+        for(let i =0; i<labels.length; i++){
+            let label = labels[i];
+            let value = labelData[label];
             if (!value){
                 value = '--' + label + '--';
             }
             translationData.translations[label] = value;
             this.log('- Label "{1}" for language "{2}" has been added to translation file.', 'debug', [label, language.name]);
         }
-        var newTranslationDataString = this.getTranslationDataString(translationData);
-        var saved = false;
+        let newTranslationDataString = this.getTranslationDataString(translationData);
+        let saved = false;
         try {
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             saved = true;
@@ -488,11 +490,11 @@ class AppTranslations extends AppBaseClass {
      * @return {undefined}
      */
     changeLanguage (e){
-        var target = e.target;
-        var selectedCode = false;
-        var selectedName = '';
-        var selectedLocale = '';
-        var options = target.querySelectorAll('option');
+        let target = e.target;
+        let selectedCode = false;
+        let selectedName = '';
+        let selectedLocale = '';
+        let options = target.querySelectorAll('option');
         _.each(options, (option) => {
             if (option.selected){
                 selectedCode = option.getAttribute('value');
@@ -588,7 +590,7 @@ class AppTranslations extends AppBaseClass {
                 if (lang.code && lang.locale && lang.name){
                     modalHelper.modalBusy();
                     await _appWrapper.wait(this.getConfig('mediumPauseDuration'));
-                    let newFileName = this.getLanguageFilePath(lang.code);
+                    let newFileName = await this.getLanguageFilePath(lang.code);
                     if (newFileName){
                         await _appWrapper.fileManager.createDirFileRecursive(newFileName);
                         let translationKeys = _.without(Object.keys(appState.languageData.translations, lang.code));
@@ -674,7 +676,7 @@ class AppTranslations extends AppBaseClass {
     async doRemoveLanguage(code){
         let deleted = false;
         if (code){
-            let newFileName = this.getLanguageFilePath(code);
+            let newFileName = await this.getLanguageFilePath(code);
             deleted = await _appWrapper.fileManager.deleteFile(newFileName);
             appState.languageData.availableLanguages = _.pickBy(appState.languageData.availableLanguages, (lang) => {
                 return lang.code != code;
@@ -701,7 +703,7 @@ class AppTranslations extends AppBaseClass {
      */
     getTranslationDataString (translationData) {
         let tab = '    ';
-        var newTranslationDataString = 'exports.data = {\n';
+        let newTranslationDataString = 'exports.data = {\n';
         newTranslationDataString += tab + '\'name\': \'' + translationData.name + '\',\n';
         newTranslationDataString += tab + '\'code\': \'' + translationData.code + '\',\n';
         newTranslationDataString += tab + '\'locale\': \'' + translationData.locale + '\',\n';
@@ -793,6 +795,27 @@ class AppTranslations extends AppBaseClass {
         return labels;
     }
 
+    /**
+     * Returns current translations directory
+     *
+     * @async
+     * @return {string} Current translation files directory
+     */
+    async getTranslationsDir () {
+        let translationsDir = path.resolve(path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.tmpDataDir'), this.getConfig('wrapper.translationsRoot')));
+        if (!await _appWrapper.fileManager.isDir(translationsDir)){
+            let originalTranslationsDir = path.resolve(path.join(appState.appDir, this.getConfig('appConfig.dataDir'), this.getConfig('wrapper.translationsRoot')));
+            this.log('Copying original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
+            let copied = await _appWrapper.fileManager.copyDirRecursive(originalTranslationsDir, translationsDir);
+            if (!copied){
+                this.log('Failed copying original translations from "{1}" to "{2}"....', 'error', [originalTranslationsDir, translationsDir]);
+                translationsDir = originalTranslationsDir;
+            } else {
+                this.log('Copied original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
+            }
+        }
+        return translationsDir;
+    }
 
     /**
      * Translates text using google-translate-api module
@@ -814,20 +837,14 @@ class AppTranslations extends AppBaseClass {
             options.from = from;
         }
 
-        var returnPromise;
-        var resolveReference;
-        returnPromise = new Promise((resolve) => {
-            resolveReference = resolve;
+        return new Promise((resolve) => {
+            Gta(text, options).then(res => {
+                resolve(res.text);
+            }).catch(err => {
+                this.log('Error translating "{1}" - "{2}"', 'error', [text, err]);
+                resolve(text);
+            });
         });
-
-        Gta(text, options).then(res => {
-            resolveReference(res.text);
-        }).catch(err => {
-            this.log('Error translating "{1}" - "{2}"', 'error', [text, err]);
-            resolveReference(text);
-        });
-
-        return returnPromise;
     }
 
 
@@ -843,7 +860,7 @@ class AppTranslations extends AppBaseClass {
         if (direction){
             options.direction = direction;
         }
-        var _text = new String(text);
+        let _text = new String(text);
         if (_text){
             /*
          * preprocessing - performing all multi-char replacements
@@ -877,16 +894,16 @@ class AppTranslations extends AppBaseClass {
         if (direction){
             options.direction = direction;
         }
-        var _text = new String(text);
+        let _text = new String(text);
         if (_text){
-            var fromChars = options.maps[options.direction].charMap[0].split('');
-            var toChars = options.maps[options.direction].charMap[1].split('');
-            var charMap = {};
-            for(var i = 0; i < fromChars.length; i++) {
-                var c = i < toChars.length ? toChars[i] : fromChars[i];
+            let fromChars = options.maps[options.direction].charMap[0].split('');
+            let toChars = options.maps[options.direction].charMap[1].split('');
+            let charMap = {};
+            for(let i = 0; i < fromChars.length; i++) {
+                let c = i < toChars.length ? toChars[i] : fromChars[i];
                 charMap[fromChars[i]] = c;
             }
-            var re = new RegExp(fromChars.join('|'), 'g');
+            let re = new RegExp(fromChars.join('|'), 'g');
             _text = _text.replace(re, function(c) {
                 if (charMap[c]){
                     return charMap[c];
@@ -907,20 +924,20 @@ class AppTranslations extends AppBaseClass {
      */
     multiReplace(text, multiMap){
         if (multiMap[0]){
-            var len = multiMap[0].length;
-            for(var i=0;i<len;i++){
-                var tempReplacements = [];
-                var pattern = multiMap[0][i];
-                var regex = new RegExp(pattern);
-                var replacement = multiMap[1][i];
+            let len = multiMap[0].length;
+            for(let i=0;i<len;i++){
+                let tempReplacements = [];
+                let pattern = multiMap[0][i];
+                let regex = new RegExp(pattern);
+                let replacement = multiMap[1][i];
                 if (replacement.match(regex)){
-                    var _tempReplacement = (new Date).getTime();
+                    let _tempReplacement = (new Date).getTime();
                     while (_tempReplacement == (new Date).getTime()){
                         _.noop();
                     }
-                    var _tempReplacements = tempReplacements;
+                    let _tempReplacements = tempReplacements;
                     tempReplacements = [];
-                    for(var k=0; k<_tempReplacements.length;k++){
+                    for(let k=0; k<_tempReplacements.length;k++){
                         if (_tempReplacements[k][0] == multiMap[0][i]){
                             continue;
                         } else {
@@ -932,8 +949,8 @@ class AppTranslations extends AppBaseClass {
                         text = text.replace(regex, _tempReplacement);
                     }
                 } else if (pattern.match(new RegExp(replacement))){
-                    for(var j=0;j<tempReplacements.length;j++){
-                        var tempRegex = new RegExp(tempReplacements[j][1]);
+                    for(let j=0;j<tempReplacements.length;j++){
+                        let tempRegex = new RegExp(tempReplacements[j][1]);
                         while(text.match(tempRegex)){
                             text = text.replace(tempRegex, tempReplacements[j][0]);
                         }

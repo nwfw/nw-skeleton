@@ -5,6 +5,7 @@
  */
 
 const _ = require('lodash');
+const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const EventEmitter = require('events');
@@ -84,9 +85,11 @@ class MainScript extends MainBaseClass {
     async initialize (options){
         await super.initialize(options);
 
+
         if (this.getConfig('main.debug.debugToFile')){
-            if (!await this.isFile(this.getConfig('main.debug.debugLogFilename')) || !this.getConfig('main.debug.debugToFileAppend')) {
-                this.createDirFileRecursive(this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            if (!await this.isFile(debugMessageFilePath) || !this.getConfig('main.debug.debugToFileAppend')) {
+                this.createDirFileRecursive(debugMessageFilePath);
             } else if (this.getConfig('main.debug.debugToFileAppend')) {
                 await this.initializeDebugMessageLog();
             }
@@ -385,7 +388,8 @@ class MainScript extends MainBaseClass {
      */
     async initializeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
-            let debugLogFile = path.resolve(this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = fs.readFileSync(debugLogFile) + '';
             if (debugLogContents){
                 debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
@@ -405,12 +409,119 @@ class MainScript extends MainBaseClass {
      */
     async finalizeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
-            let debugLogFile = path.resolve(this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = '[\n' + fs.readFileSync(debugLogFile) + '\n]\n';
             debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
             fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
         }
         return true;
+    }
+
+    /**
+     * Returns platform data for current platform
+     *
+     * @return {Object} Platform data
+     */
+    getPlatformData (){
+        let name = os.platform();
+        let platform = {
+            isLinux: false,
+            isMac: false,
+            isWindows: false,
+            isWindows8: false,
+            version: os.release()
+        };
+
+        if(name === 'darwin'){
+            platform.name = 'mac';
+            platform.isMac = true;
+        } else if(name === 'linux'){
+            platform.name = 'linux';
+            platform.isLinux = true;
+        } else {
+            platform.name = 'windows';
+            platform.isWindows = true;
+        }
+
+        platform.is64Bit = os.arch() === 'x64' || process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432');
+
+        return {
+            platform: platform,
+            versions: process.versions
+        };
+    }
+
+    /**
+     * Checks whether current platform is mac
+     *
+     * @return {Boolean} True if mac, false otherwise
+     */
+    isMac (){
+        return this.getPlatformData().platform.isMac;
+    }
+
+    /**
+     * Checks whether current platform is windows
+     *
+     * @return {Boolean} True if windows, false otherwise
+     */
+    isWindows (){
+        return this.getPlatformData().platform.isWindows;
+    }
+
+    /**
+     * Checks whether current platform is linux
+     *
+     * @return {Boolean} True if linux, false otherwise
+     */
+    isLinux (){
+        return this.getPlatformData().platform.isLinux;
+    }
+
+    /**
+     * Returns base exec path (root dir of the app)
+     *
+     * @return {string} Root app dir
+     */
+    getExecPath () {
+        let execPath = nw.__dirname;
+        if (this.isMac()){
+            if (execPath.match(/app\.nw$/)){
+                execPath = path.join(execPath, '../../../..');
+            }
+        }
+        return execPath;
+    }
+
+    /**
+     * Loads config overrides if present, and returns config object for the app
+     *
+     * @param  {Object} defaultAppConfig Default application config
+     * @return {Object}                  Application config object
+     */
+    getInitialAppConfig(defaultAppConfig){
+        let initialAppConfig = defaultAppConfig;
+        let execPath = this.getExecPath();
+
+        let configFilePath = path.resolve(path.join(execPath, 'config', 'config.js'));
+        let configFileExists = fs.existsSync(configFilePath);
+
+        if (!configFileExists){
+            configFilePath = path.resolve(path.join(execPath, 'config.js'));
+            configFileExists = fs.existsSync(configFilePath);
+        }
+
+        if (configFileExists){
+            let initialConfigData;
+            try {
+                initialConfigData = require(configFilePath);
+                initialAppConfig = initialConfigData.config;
+            } catch (ex) {
+                console.error(ex);
+            }
+        }
+        return initialAppConfig;
     }
 }
 

@@ -49,7 +49,7 @@ exports.config = {
             debugToFile: true,
             saveStacksToFile: true,
             debugToFileAppend: false,
-            debugLogFilename: './app/var/log/main-debug.log',
+            debugLogFilename: 'main-debug.log',
         },
     },
     wrapper : {
@@ -77,7 +77,7 @@ exports.config = {
         filterExtensionRegex: /\.js$/,
 
         translationExtensionRegex: /\.i18n\.js$/,
-        translationsRoot: './app/data/translations/',
+        translationsRoot: 'translations',
 
         componentMapping: {
             'app-window' : {
@@ -122,13 +122,26 @@ exports.config = {
         appFile: null,
         appSubFiles: [],
         mainComponent: 'app-main',
-        tmpDataDir: './app/var',
+        tmpDataDir: './var/data',
+        logDir: './var/log',
+        dataDir: './data',
         showInitializationStatus: true,
         showInitializationProgress: true,
 
+        allowFullscreen: true,
+        hideFullscreenHeader: true,
+        hideFullscreenFooter: true,
+        windowConfig: {
+            left: null,
+            top: null,
+            width: null,
+            height: null,
+            fullscreen: false,
+        },
+
         themeBaseDir: './app/css/themes',
 
-        cssCompiledFile: '/app/var/css/dist.css',
+        cssCompiledFile: 'css/dist.css',
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
@@ -256,17 +269,7 @@ exports.config = {
             }
         },
         hasTrayIcon: false,
-        trayData: {},
-        allowFullscreen: true,
-        hideFullscreenHeader: true,
-        hideFullscreenFooter: true,
-        windowConfig: {
-            left: null,
-            top: null,
-            width: null,
-            height: null,
-            fullscreen: false,
-        },
+        trayData: {}
     },
 
     configData: {
@@ -432,8 +435,8 @@ exports.config = {
         }
     },
 
-    varDir: './app/var',
-    logDir: './app/var/log',
+    varDir: './var',
+    logDir: './var/log',
 
     currentLanguageName: 'English',
     currentLanguage: 'en-US',
@@ -451,6 +454,9 @@ exports.config = {
     appNotifications: {
         userMessageDuration: 3000,
         duration: 5000,
+        defaultIcon: 'node_modules/nw-skeleton/app-wrapper/images/tray-icon.png',
+        defaultBadge: 'node_modules/nw-skeleton/app-wrapper/images/logo.png',
+        defaultImage: 'node_modules/nw-skeleton/app-wrapper/images/logo.png'
     },
     logger: {
         messageLevels: {
@@ -469,7 +475,7 @@ exports.config = {
         userMessagesToFile: true,
         saveStacksToFile: true,
         userMessagesToFileAppend: false,
-        userMessagesFilename: './app/var/log/user-messages.log',
+        userMessagesFilename: 'user-messages.log',
         messagesExpanded: false,
         displayTimestamps: true,
         forceUserMessages: {
@@ -510,7 +516,7 @@ exports.config = {
         debugToFile: true,
         saveStacksToFile: true,
         debugToFileAppend: false,
-        debugMessagesFilename: './app/var/log/debug-messages.log',
+        debugMessagesFilename: 'debug-messages.log',
         messagesExpanded: false,
         displayTimestamps: true,
         devTools: true,
