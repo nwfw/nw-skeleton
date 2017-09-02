@@ -215,6 +215,9 @@ exports.appState = {
     preventReload: false,
     preventClose: false,
 
+    initializationTime: null,
+    initializationTimeRaw: null,
+
     appOperation: {
         cancelable: false,
         cancelling: false,

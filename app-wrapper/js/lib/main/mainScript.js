@@ -22,6 +22,7 @@ const MainAsyncMessageHandlers = require('./mainAsyncMessageHandlers').MainAsync
  * @memberOf mainScript
  * @extends {mainScript.MainBaseClass}
  * @property {Object}                   config                  App configuration
+ * @property {Date}                     startTime               App starting time
  * @property {Object}                   inspectOptions          Util.inspect default options
  * @property {Window}                   mainWindow              Reference to main nw.Window
  * @property {Object}                   manifest                Manifest file data
@@ -41,6 +42,7 @@ class MainScript extends MainBaseClass {
         super();
 
         this.config = null;
+        this.startTime = null;
 
         this.inspectOptions = {
             showHidden: true,
@@ -85,9 +87,10 @@ class MainScript extends MainBaseClass {
     async initialize (options){
         await super.initialize(options);
 
+        this.startTime = new Date();
 
         if (this.getConfig('main.debug.debugToFile')){
-            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             if (!await this.isFile(debugMessageFilePath) || !this.getConfig('main.debug.debugToFileAppend')) {
                 this.createDirFileRecursive(debugMessageFilePath);
             } else if (this.getConfig('main.debug.debugToFileAppend')) {
@@ -132,6 +135,7 @@ class MainScript extends MainBaseClass {
             this.mainWindow = win;
             this.addMainWindowEventListeners();
             this.initializeGlobalEmitter();
+            this.mainWindow.window.appStartTime = this.startTime;
             resolveReference(true);
         });
         return returnPromise;
@@ -272,8 +276,8 @@ class MainScript extends MainBaseClass {
      */
     async windowClosed (e, noExit) {
         _.noop(e);
-        await this.finalizeDebugMessageLog();
         this.log('Main window closed, exiting', 'info');
+        await this.finalizeDebugMessageLog();
         if (!noExit){
             process.exit(0);
         }
@@ -388,7 +392,7 @@ class MainScript extends MainBaseClass {
      */
     async initializeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
-            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = fs.readFileSync(debugLogFile) + '';
             if (debugLogContents){
@@ -409,7 +413,7 @@ class MainScript extends MainBaseClass {
      */
     async finalizeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
-            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = '[\n' + fs.readFileSync(debugLogFile) + '\n]\n';
             debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');

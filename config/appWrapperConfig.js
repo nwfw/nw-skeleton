@@ -31,6 +31,7 @@
  *
  * @property {string}   type      Storage type ('localStorage' or 'filesystem')
  * @property {string}   root      Filesystem storage root dir name (under appConfig.tmpDataDir)
+ * @property {Boolean}  minify    Force minified json saving
  */
 
 
@@ -52,13 +53,14 @@ exports.config = {
     main : {
         debug: {
             enabled: true,
+            rotateLogs: true,
             debugToWindow: false,
             debugLevel: 2,
             displayTimestamps: true,
             debugToFile: true,
             saveStacksToFile: true,
             debugToFileAppend: false,
-            debugLogFilename: 'main-debug.log',
+            debugLogFilename: 'main-debug',
         },
     },
     wrapper : {
@@ -125,11 +127,14 @@ exports.config = {
     longPauseDuration: 700,
     longerPauseDuration: 1000,
 
+    mindOsUsers: true,
+
     cancelOperationTimeout: 30000,
 
     appStorage: {
         type: 'localStorage',
         root: 'storageData',
+        minify: false,
     },
 
     appConfig: {
@@ -481,6 +486,7 @@ exports.config = {
         },
     },
     userMessages: {
+        rotateLogs: true,
         animateMessages: true,
         hideUserMessages: false,
         userMessageLevel: 3,
@@ -489,7 +495,7 @@ exports.config = {
         userMessagesToFile: true,
         saveStacksToFile: true,
         userMessagesToFileAppend: false,
-        userMessagesFilename: 'user-messages.log',
+        userMessagesFilename: 'user-messages',
         messagesExpanded: false,
         displayTimestamps: true,
         forceUserMessages: {
@@ -523,6 +529,7 @@ exports.config = {
         animateMessages: true,
         hideDebug: false,
         enabled: true,
+        rotateLogs: true,
         usage: false,
         usageInterval: 500,
         usageGraphs: false,
@@ -530,7 +537,7 @@ exports.config = {
         debugToFile: true,
         saveStacksToFile: true,
         debugToFileAppend: false,
-        debugMessagesFilename: 'debug-messages.log',
+        debugMessagesFilename: 'debug-messages',
         messagesExpanded: false,
         displayTimestamps: true,
         devTools: true,

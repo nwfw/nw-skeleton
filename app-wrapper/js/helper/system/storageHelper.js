@@ -248,13 +248,19 @@ class StorageHelper extends AppBaseClass {
      */
     async filesystemSet (name, value, notSilent){
         let savedValue;
+        let minify = this.getConfig('appStorage.minify');
         if (notSilent){
             this.log('Setting filesystem storage value "{1}".', 'info', [name]);
         }
-        savedValue = JSON.stringify(value);
+        if (!minify){
+            savedValue = JSON.stringify(value, ' ', 4);
+        } else {
+            savedValue = JSON.stringify(value);
+        }
         let storageRoot = await this.getStorageRootDir();
         let storageFile = path.join(storageRoot, name + '.json');
-        return await _appWrapper.fileManager.writeFileSync(storageFile, savedValue);
+        await _appWrapper.fileManager.writeFileSync(storageFile, savedValue);
+        return await _appWrapper.fileManager.isFile(storageFile);
     }
 
     /**
@@ -270,7 +276,6 @@ class StorageHelper extends AppBaseClass {
         let storageFile = path.join(storageRoot, name + '.json');
         return await _appWrapper.fileManager.deleteFile(storageFile);
     }
-
 
 }
 

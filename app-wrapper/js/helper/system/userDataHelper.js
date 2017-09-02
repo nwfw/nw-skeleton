@@ -50,7 +50,17 @@ class UserDataHelper extends AppBaseClass {
      * @return {string} User data var name for storage
      */
     getUserDataStorageName(){
+        let mindOsUsers = this.getConfig('mindOsUsers');
         let userDataName = this.getConfig('appInfo.name') + '_userData';
+
+        let username = '';
+        if (mindOsUsers){
+            username = _appWrapper.getPlatformData().platform.userInfo.username;
+        }
+        if (username){
+            userDataName += '_' + username;
+        }
+
         userDataName = userDataName.replace(/[^A-Za-z0-9]+/g, '_');
         return userDataName;
     }

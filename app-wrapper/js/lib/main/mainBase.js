@@ -159,9 +159,24 @@ class MainBaseClass extends BaseClass {
                 mainScript.debugToFileStarted = true;
             }
             line += JSON.stringify(messageObj);
-            let debugMessageFilePath = path.join(mainScript.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             fs.writeFileSync(path.resolve(debugMessageFilePath), line, {flag: 'a'});
         }
+    }
+
+    /**
+     * Returns path to debug message log file
+     *
+     * @return {string} Path to debug message log file
+     */
+    getDebugMessageFilePath () {
+        let debugMessageFilePath = path.join(mainScript.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+        let rotateLogs = this.getConfig('main.debug.rotateLogs');
+        if (rotateLogs){
+            debugMessageFilePath += '-' + mainScript.startTime.toISOString().replace(/T.*$/, '');
+        }
+        debugMessageFilePath += '.json';
+        return debugMessageFilePath;
     }
 
     /**

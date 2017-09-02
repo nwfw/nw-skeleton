@@ -9,14 +9,13 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-let App;
 const AppBaseClass = require('./lib/appBase').AppBaseClass;
+const AppTranslations = require('./lib/appTranslations').AppTranslations;
+const WindowManager = require('./lib/windowManager').WindowManager;
+const FileManager = require('./lib/fileManager').FileManager;
+const AppConfig = require('./lib/appConfig').AppConfig;
 
-let AppTranslations = require('./lib/appTranslations').AppTranslations;
-let WindowManager = require('./lib/windowManager').WindowManager;
-let FileManager = require('./lib/fileManager').FileManager;
-
-let AppConfig = require('./lib/appConfig').AppConfig;
+let App;
 
 /**
  * A "wrapper" object for nw-skeleton based apps
@@ -186,6 +185,7 @@ class AppWrapper extends AppBaseClass {
 
         try {
             appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
+            appState.initializationTimeRaw = new Date();
         } catch (ex) {
             // console.log(ex);
         }
@@ -602,6 +602,7 @@ class AppWrapper extends AppBaseClass {
                 await this.asyncMessage({instruction: 'removeAppMenu', data: {}});
                 await this.asyncMessage({instruction: 'removeTrayIcon', data: {}});
                 this.windowManager.closeWindowForce();
+                await this.finalizeLogs();
             }
         } else {
             return;
@@ -628,7 +629,7 @@ class AppWrapper extends AppBaseClass {
                 document.body.removeEventListener('contextmenu', utilHelper.boundMethods.prevent);
             }
             await this.shutdownApp();
-            await this.finalizeLogs();
+            // await this.finalizeLogs();
             this.windowManager.hideWindow();
             if (window && window.feApp && window.feApp.$destroy && _.isFunction(window.feApp.$destroy)){
                 window.feApp.$destroy();
@@ -710,6 +711,7 @@ class AppWrapper extends AppBaseClass {
             await this.cleanup();
             if (!appState.isDebugWindow){
                 this.resetAppError();
+                await this.finalizeLogs();
                 this.windowManager.reloadWindow(null, true);
             }
         } else {
@@ -1009,7 +1011,7 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeUserMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
-            let userMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            let userMessageFilePath = this.getUserMessageFilePath();
             if (!await this.fileManager.isFile(userMessageFilePath) || !this.getConfig('userMessages.userMessagesToFileAppend')) {
                 this.fileManager.createDirFileRecursive(userMessageFilePath);
             } else if (this.getConfig('userMessages.userMessagesToFileAppend')) {
@@ -1034,7 +1036,7 @@ class AppWrapper extends AppBaseClass {
      */
     async finalizeUserMessageLog(){
         if (this.getConfig('userMessages.userMessagesToFile')){
-            let userMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            let userMessageFilePath = this.getUserMessageFilePath();
             let messageLogFile = path.resolve(userMessageFilePath);
             let messageLogContents = '[\n' + await this.fileManager.readFileSync(messageLogFile) + '\n]\n';
             messageLogContents = messageLogContents.replace(/\n,\n/g, '\n');
@@ -1053,7 +1055,7 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
-            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             if (!await this.fileManager.isFile(debugMessageFilePath) || !this.getConfig('debug.debugToFileAppend')) {
                 this.fileManager.createDirFileRecursive(debugMessageFilePath);
             } else if (this.getConfig('debug.debugToFileAppend')) {
@@ -1078,7 +1080,7 @@ class AppWrapper extends AppBaseClass {
      */
     async finalizeDebugMessageLog(){
         if (this.getConfig('debug.debugToFile')){
-            let debugMessageFilePath = path.join(this.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             let debugLogFile = path.resolve(debugMessageFilePath);
             let debugLogContents = '[\n' + await this.fileManager.readFileSync(debugLogFile) + '\n]\n';
             debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
@@ -1382,7 +1384,8 @@ class AppWrapper extends AppBaseClass {
             isMac: false,
             isWindows: false,
             isWindows8: false,
-            version: os.release()
+            version: os.release(),
+            userInfo: os.userInfo(),
         };
 
         if(name === 'darwin'){

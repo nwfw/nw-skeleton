@@ -99,7 +99,16 @@ class AppConfig extends AppBaseClass {
      * @return {string} storage config variable name
      */
     getConfigStorageName(){
+        let mindOsUsers = this.getConfig('mindOsUsers');
         let configName = this.getConfig('appInfo.name') + '_config';
+
+        let username = '';
+        if (mindOsUsers){
+            username = _appWrapper.getPlatformData().platform.userInfo.username;
+        }
+        if (username){
+            configName += '_' + username;
+        }
         configName = configName.replace(/[^A-Za-z0-9]+/g, '_');
         return configName;
     }

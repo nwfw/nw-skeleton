@@ -144,7 +144,7 @@ class AppBaseClass extends BaseClass {
         }
         if (debugMessage && debugMessage.message && this.getConfig('debug.debugToFile')){
             let messageLine = await this.getDebugMessageFileLine(_.cloneDeep(debugMessage));
-            let debugMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+            let debugMessageFilePath = this.getDebugMessageFilePath();
             await _appWrapper.fileManager.writeFileSync(path.resolve(debugMessageFilePath), messageLine, {flag: 'a'});
         }
 
@@ -367,7 +367,7 @@ class AppBaseClass extends BaseClass {
 
         if (userMessage && userMessage.type && userMessage.type != 'delimiter' && userMessage.message && this.getConfig('userMessages.userMessagesToFile')){
             let messageLine = await this.getUserMessageFileLine(_.cloneDeep(userMessage));
-            let userMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+            let userMessageFilePath = this.getUserMessageFilePath();
             await window.getAppWrapper().fileManager.writeFileSync(path.resolve(userMessageFilePath), messageLine, {flag: 'a'});
 
         }
@@ -534,6 +534,38 @@ class AppBaseClass extends BaseClass {
             rowContents.__columns.push(index);
         }
         return rowContents;
+    }
+
+    /**
+     * Returns path to user message log file
+     *
+     * @return {string} Path to user message log file
+     */
+    getUserMessageFilePath () {
+        let userMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
+        let rotateLogs = this.getConfig('userMessages.rotateLogs');
+        if (rotateLogs){
+            userMessageFilePath += '-' + window.appStartTime.toISOString().replace(/T.*$/, '');
+        }
+        userMessageFilePath += '.json';
+
+        return userMessageFilePath;
+    }
+
+    /**
+     * Returns path to debug message log file
+     *
+     * @return {string} Path to debug message log file
+     */
+    getDebugMessageFilePath () {
+        let debugMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
+        let rotateLogs = this.getConfig('debug.rotateLogs');
+        if (rotateLogs){
+            debugMessageFilePath += '-' + window.appStartTime.toISOString().replace(/T.*$/, '');
+        }
+        debugMessageFilePath += '.json';
+
+        return debugMessageFilePath;
     }
 
     /**
