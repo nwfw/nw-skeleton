@@ -720,6 +720,100 @@ class FileManager extends AppBaseClass {
         deleted = !await this.isFile(filePath);
         return deleted;
     }
+
+    /**
+     * Copies single file from source to destination
+     *
+     * @async
+     * @param  {string} sourceFile      Source file path
+     * @param  {string} destinationFile Destination file path
+     * @return {Boolean}                Operation result
+     */
+    async copyFile(sourceFile, destinationFile){
+        let canCopy = true;
+        sourceFile = path.resolve(sourceFile);
+        destinationFile = path.resolve(destinationFile);
+        if (sourceFile !== destinationFile && this.isFile(sourceFile)){
+            if (!this.fileExists(destinationFile)){
+                let destinationFileDir = path.dirname(destinationFile);
+                if (!this.isDir(destinationFileDir)){
+                    await this.createDirRecursive(destinationFileDir);
+                }
+                canCopy = true;
+            } else {
+                if (this.isFile(destinationFile) && this.isFileWritable(destinationFile)){
+                    canCopy = true;
+                }
+            }
+            if (canCopy){
+                let sourceStream = fs.createReadStream(sourceFile);
+                let destinationStream = fs.createWriteStream(destinationFile);
+                return new Promise((resolve, reject) => {
+                    sourceStream.on('error', copyFailed);
+                    destinationStream.on('error', copyFailed);
+                    function copyFailed(err) {
+                        sourceStream.destroy();
+                        destinationStream.end();
+                        reject(err);
+                    }
+                    destinationStream.on('finish', () => {
+                        resolve(true);
+                    });
+                    sourceStream.pipe(destinationStream);
+                });
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Copies source directory (with subdirs and files) to destination directory
+     *
+     * @async
+     * @param  {string} sourceDir      Source directory
+     * @param  {string} destinationDir Destination directory
+     * @return {Boolean}               Operation result
+     */
+    async copyDirRecursive(sourceDir, destinationDir){
+        let copied = false;
+        let canCopy = true;
+
+        sourceDir = path.resolve(sourceDir);
+        destinationDir = path.resolve(destinationDir);
+
+        if (sourceDir == destinationDir){
+            canCopy = false;
+        }
+
+        if (!await this.fileExists(destinationDir)){
+            await this.createDirRecursive(destinationDir);
+        } else {
+            if (!this.isDir(destinationDir)){
+                canCopy = false;
+            }
+        }
+        let totalFiles = 0;
+        let copiedFiles = 0;
+        if (canCopy && this.isDir(sourceDir)){
+            let relativePath = path.relative(sourceDir, destinationDir);
+            let fileList = await this.readDirRecursive(sourceDir);
+            totalFiles = fileList.length;
+            for (let i=0; i<totalFiles;i++){
+                let sourceFile = fileList[i];
+                let destinationFile = path.resolve(path.join(path.dirname(sourceFile), relativePath, path.basename(sourceFile)));
+                if (await this.copyFile(sourceFile, destinationFile)){
+                    copiedFiles++;
+                }
+            }
+            if (totalFiles == 0 || copiedFiles > 0){
+                copied = true;
+            }
+        }
+        return copied;
+    }
 }
 
 exports.FileManager = FileManager;
