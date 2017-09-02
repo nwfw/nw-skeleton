@@ -545,7 +545,7 @@ class AppBaseClass extends BaseClass {
         let userMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('userMessages.userMessagesFilename'));
         let rotateLogs = this.getConfig('userMessages.rotateLogs');
         if (rotateLogs){
-            userMessageFilePath += '-' + window.appStartTime.toISOString().replace(/T.*$/, '');
+            userMessageFilePath += '-' + new Date(sessionStorage.getItem('appStartTime')).toISOString().replace(/T.*$/, '');
         }
         userMessageFilePath += '.json';
 
@@ -561,7 +561,7 @@ class AppBaseClass extends BaseClass {
         let debugMessageFilePath = path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('debug.debugMessagesFilename'));
         let rotateLogs = this.getConfig('debug.rotateLogs');
         if (rotateLogs){
-            debugMessageFilePath += '-' + window.appStartTime.toISOString().replace(/T.*$/, '');
+            debugMessageFilePath += '-' + new Date(sessionStorage.getItem('appStartTime')).toISOString().replace(/T.*$/, '');
         }
         debugMessageFilePath += '.json';
 

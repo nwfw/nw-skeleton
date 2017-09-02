@@ -135,7 +135,7 @@ class MainScript extends MainBaseClass {
             this.mainWindow = win;
             this.addMainWindowEventListeners();
             this.initializeGlobalEmitter();
-            this.mainWindow.window.appStartTime = this.startTime;
+            this.mainWindow.window.sessionStorage.setItem('appStartTime', this.startTime);
             resolveReference(true);
         });
         return returnPromise;
