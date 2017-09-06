@@ -603,6 +603,7 @@ class AppWrapper extends AppBaseClass {
                 this.resetAppError();
                 await this.asyncMessage({instruction: 'removeAppMenu', data: {}});
                 await this.asyncMessage({instruction: 'removeTrayIcon', data: {}});
+                appState.preventClose = false;
                 this.windowManager.closeWindowForce();
                 await this.finalizeLogs();
             }

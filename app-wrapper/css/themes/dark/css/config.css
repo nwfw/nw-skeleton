@@ -392,6 +392,10 @@
     --app-live-info-background-error: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
     --app-live-info-border-error: 1px solid #660000;
 
+    --app-live-info-box-shadow-warning: 0px 0px 10px #FFCC33;
+    --app-live-info-background-warning: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
+    --app-live-info-border-warning: 1px solid #AA8800;
+
     --app-live-info-box-shadow-working: 0px 0px 10px #FFCC33;
     --app-live-info-background-working: -webkit-linear-gradient(top, var(--app-live-info-background-color-top) 0%, var(--app-live-info-background-color-bottom) 100%);
     --app-live-info-border-working: 1px solid #AA8800;
@@ -412,6 +416,9 @@
 
     --app-live-info-item-error-background: var(--app-live-info-item-background);
     --app-live-info-item-error-box-shadow: var(--app-live-info-item-box-shadow);
+
+    --app-live-info-item-warning-background: var(--app-live-info-item-background);
+    --app-live-info-item-warning-box-shadow: var(--app-live-info-item-box-shadow);
 
     --app-live-info-item-working-background: var(--app-live-info-item-background);
     --app-live-info-item-working-box-shadow: var(--app-live-info-item-box-shadow);
@@ -444,6 +451,12 @@
     --app-live-info-error-operation-text-text-stroke-color: #990000;
     --app-live-info-error-operation-text-text-shadow: 0 0 1px #660000;
     --app-live-info-error-operation-text-font-size: var(--app-live-info-operation-text-font-size);
+
+    --app-live-info-warning-operation-text-color: #FFCC33;
+    --app-live-info-warning-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
+    --app-live-info-warning-operation-text-text-stroke-color: #000000;
+    --app-live-info-warning-operation-text-text-shadow: 0 0 2px #000000;
+    --app-live-info-warning-operation-text-font-size: var(--app-live-info-operation-text-font-size);
 
     --app-live-info-working-operation-text-color: #FFCC33;
     --app-live-info-working-operation-text-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
@@ -489,6 +502,12 @@
     --app-live-info-error-status-text-stroke-color: #660000;
     --app-live-info-error-status-text-shadow: none;
     --app-live-info-error-status-font-size: var(--app-live-info-status-font-size);
+
+    --app-live-info-warning-status-color: #FFCC33;
+    --app-live-info-warning-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);
+    --app-live-info-warning-status-text-stroke-color: #441100;
+    --app-live-info-warning-status-text-shadow: none;
+    --app-live-info-warning-status-font-size: var(--app-live-info-status-font-size);
 
     --app-live-info-working-status-color: #FFCC33;
     --app-live-info-working-status-text-stroke-width: var(--app-live-info-status-text-stroke-width);

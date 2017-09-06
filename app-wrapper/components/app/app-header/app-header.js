@@ -32,18 +32,7 @@ exports.component = {
     computed: {
         appState: function(){
             return appState;
-        },
-        appStatusWrapperClassObject: function () {
-            var appState = _appWrapper.getAppState();
-            return {
-                'idle': appState.status.appStatus == 'idle',
-                'busy': appState.status.appStatus == 'busy',
-                'success': appState.status.appStatus == 'success',
-                'working': appState.status.appStatus == 'working',
-                'error': appState.status.appStatus == 'error',
-                'offline': appState.status.appStatus == 'offline'
-            };
-        },
+        }
     },
     components: {}
 };

@@ -7,6 +7,7 @@
     transition-property: margin-top;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
+    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
 }
 
 
@@ -21,28 +22,33 @@
 
 }
 
-.live-info .live-info-inner.success {
+.live-info .live-info-inner.app-operation-success {
     box-shadow: var(--app-live-info-box-shadow-success);
     background: var(--app-live-info-background-success);
     border: var(--app-live-info-border-success);
 }
 
-.live-info .live-info-inner.offline {
+.live-info .live-info-inner.app-operation-offline {
     box-shadow: var(--app-live-info-box-shadow-offline);
     background: var(--app-live-info-background-offline);
     border: var(--app-live-info-border-offline);
 }
-.live-info .live-info-inner.error {
+.live-info .live-info-inner.app-operation-error {
     box-shadow: var(--app-live-info-box-shadow-error);
     background: var(--app-live-info-background-error);
     border: var(--app-live-info-border-error);
 }
-.live-info .live-info-inner.working {
+.live-info .live-info-inner.app-operation-warning {
+    box-shadow: var(--app-live-info-box-shadow-warning);
+    background: var(--app-live-info-background-warning);
+    border: var(--app-live-info-border-warning);
+}
+.live-info .live-info-inner.app-operation-working {
     box-shadow: var(--app-live-info-box-shadow-working);
     background: var(--app-live-info-background-working);
     border: var(--app-live-info-border-working);
 }
-.live-info .live-info-inner.busy {
+.live-info .live-info-inner.app-operation-busy {
     box-shadow: var(--app-live-info-box-shadow-busy);
     background: var(--app-live-info-background-busy);
     border: var(--app-live-info-border-busy);
@@ -58,27 +64,32 @@
     box-shadow: var(--app-live-info-item-box-shadow);
 }
 
-.live-info .live-info-inner.success .live-info-item {
+.live-info .live-info-inner.app-operation-success .live-info-item {
     background: var(--app-live-info-item-success-background);
     box-shadow: var(--app-live-info-item-success-box-shadow);
 }
 
-.live-info .live-info-inner.offline .live-info-item {
+.live-info .live-info-inner.app-operation-offline .live-info-item {
     background: var(--app-live-info-item-offline-background);
     box-shadow: var(--app-live-info-item-offline-box-shadow);
 }
 
-.live-info .live-info-inner.error  .live-info-item {
+.live-info .live-info-inner.app-operation-error  .live-info-item {
     background: var(--app-live-info-item-error-background);
     box-shadow: var(--app-live-info-item-error-box-shadow);
 }
 
-.live-info .live-info-inner.working  .live-info-item {
+.live-info .live-info-inner.app-operation-warning  .live-info-item {
+    background: var(--app-live-info-item-warning-background);
+    box-shadow: var(--app-live-info-item-warning-box-shadow);
+}
+
+.live-info .live-info-inner.app-operation-working  .live-info-item {
     background: var(--app-live-info-item-working-background);
     box-shadow: var(--app-live-info-item-working-box-shadow);
 }
 
-.live-info .live-info-inner.busy  .live-info-item {
+.live-info .live-info-inner.app-operation-busy  .live-info-item {
     background: var(--app-live-info-item-busy-background);
     box-shadow: var(--app-live-info-item-busy-box-shadow);
 }
@@ -122,7 +133,7 @@
     transition-duration: var(--short-animation-duration) !important;
 }
 
-.live-info .live-info-inner.success .status {
+.live-info .live-info-inner.app-operation-success .status {
     color: var(--app-live-info-success-status-color);
     text-shadow: var(--app-live-info-success-status-text-shadow);
     font-size: var(--app-live-info-success-status-font-size);
@@ -130,7 +141,7 @@
     -webkit-text-stroke-color: var(--app-live-info-success-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.offline .status {
+.live-info .live-info-inner.app-operation-offline .status {
     color: var(--app-live-info-offline-status-color);
     text-shadow: var(--app-live-info-offline-status-text-shadow);
     font-size: var(--app-live-info-offline-status-font-size);
@@ -138,7 +149,7 @@
     -webkit-text-stroke-color: var(--app-live-info-offline-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.online .status {
+.live-info .live-info-inner.app-operation-online .status {
     color: var(--app-live-info-online-status-color);
     text-shadow: var(--app-live-info-online-status-text-shadow);
     font-size: var(--app-live-info-online-status-font-size);
@@ -146,7 +157,7 @@
     -webkit-text-stroke-color: var(--app-live-info-online-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.error .status {
+.live-info .live-info-inner.app-operation-error .status {
     color: var(--app-live-info-error-status-color);
     text-shadow: var(--app-live-info-error-status-text-shadow);
     font-size: var(--app-live-info-error-status-font-size);
@@ -154,7 +165,15 @@
     -webkit-text-stroke-color: var(--app-live-info-error-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.working .status {
+.live-info .live-info-inner.app-operation-warning .status {
+    color: var(--app-live-info-warning-status-color);
+    text-shadow: var(--app-live-info-warning-status-text-shadow);
+    font-size: var(--app-live-info-warning-status-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-warning-status-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-warning-status-text-stroke-color);
+}
+
+.live-info .live-info-inner.app-operation-working .status {
     color: var(--app-live-info-working-status-color);
     text-shadow: var(--app-live-info-working-status-text-shadow);
     font-size: var(--app-live-info-working-status-font-size);
@@ -162,7 +181,7 @@
     -webkit-text-stroke-color: var(--app-live-info-working-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.busy .status {
+.live-info .live-info-inner.app-operation-busy .status {
     color: var(--app-live-info-busy-status-color);
     text-shadow: var(--app-live-info-busy-status-text-shadow);
     font-size: var(--app-live-info-busy-status-font-size);
@@ -170,7 +189,7 @@
     -webkit-text-stroke-color: var(--app-live-info-busy-status-text-stroke-color);
 }
 
-.live-info .live-info-inner.success .app-operation-text  {
+.live-info .live-info-inner.app-operation-success .app-operation-text  {
     color: var(--app-live-info-success-operation-text-color);
     text-shadow: var(--app-live-info-success-operation-text-text-shadow);
     font-size: var(--app-live-info-success-operation-text-font-size);
@@ -178,28 +197,35 @@
     -webkit-text-stroke-color: var(--app-live-info-success-operation-text-text-stroke-color);
 }
 
-.live-info .live-info-inner.offline .app-operation-text  {
+.live-info .live-info-inner.app-operation-offline .app-operation-text  {
     color: var(--app-live-info-offline-operation-text-color);
     text-shadow: var(--app-live-info-offline-operation-text-text-shadow);
     font-size: var(--app-live-info-offline-operation-text-font-size);
     -webkit-text-stroke-width: var(--app-live-info-offline-operation-text-text-stroke-width);
     -webkit-text-stroke-color: var(--app-live-info-offline-operation-text-text-stroke-color);
 }
-.live-info .live-info-inner.error .app-operation-text  {
+.live-info .live-info-inner.app-operation-error .app-operation-text  {
     color: var(--app-live-info-error-operation-text-color);
     text-shadow: var(--app-live-info-error-operation-text-text-shadow);
     font-size: var(--app-live-info-error-operation-text-font-size);
     -webkit-text-stroke-width: var(--app-live-info-error-operation-text-text-stroke-width);
     -webkit-text-stroke-color: var(--app-live-info-error-operation-text-text-stroke-color);
 }
-.live-info .live-info-inner.working .app-operation-text  {
+.live-info .live-info-inner.app-operation-warning .app-operation-text  {
+    color: var(--app-live-info-warning-operation-text-color);
+    text-shadow: var(--app-live-info-warning-operation-text-text-shadow);
+    font-size: var(--app-live-info-warning-operation-text-font-size);
+    -webkit-text-stroke-width: var(--app-live-info-warning-operation-text-text-stroke-width);
+    -webkit-text-stroke-color: var(--app-live-info-warning-operation-text-text-stroke-color);
+}
+.live-info .live-info-inner.app-operation-working .app-operation-text  {
     color: var(--app-live-info-working-operation-text-color);
     text-shadow: var(--app-live-info-working-operation-text-text-shadow);
     font-size: var(--app-live-info-working-operation-text-font-size);
     -webkit-text-stroke-width: var(--app-live-info-working-operation-text-text-stroke-width);
     -webkit-text-stroke-color: var(--app-live-info-working-operation-text-text-stroke-color);
 }
-.live-info .live-info-inner.busy .app-operation-text  {
+.live-info .live-info-inner.app-operation-busy .app-operation-text  {
     color: var(--app-live-info-busy-operation-text-color);
     text-shadow: var(--app-live-info-busy-operation-text-text-shadow);
     font-size: var(--app-live-info-busy-operation-text-font-size);

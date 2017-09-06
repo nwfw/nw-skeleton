@@ -22,19 +22,6 @@ header.app-header .header-top {
     padding: 3px 0 5px 0;
 }
 
-header.app-header .header-bottom {
-    position: absolute;
-    flex: 1 1 auto;
-    display: flex;
-    flex-flow: column;
-    top: 26px;
-    left: 50%;
-    transform: translateX(-50%);
-    overflow: visible;
-    width: 240px;
-    height: 0px;
-}
-
 header.app-header .header-app-title {
     flex: 0 1 auto;
     font-size: 1rem;

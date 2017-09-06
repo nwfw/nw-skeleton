@@ -14,48 +14,48 @@
  * @property {Integer}  y               Window y coordinate
  * @property {Integer}  width           Window width
  * @property {Integer}  height          Window height
- * @property {boolean}  maximized       Flag to indicate whether window is maximized
- * @property {boolean}  devTools        Flag to indicate whether window has devTools opened
- * @property {boolean}  showInTaskbar   Flag to indicate whether window should be shown in taskbar
- * @property {boolean}  resizable       Flag to indicate whether window is resizable
- * @property {boolean}  menu            Flag to indicate whether window has menu
- * @property {boolean}  icon            Flag to indicate whether window has icon
- * @property {boolean}  transparent     Flag to indicate whether window is transparent
- * @property {boolean}  show            Flag to indicate whether window is displayed by default
- * @property {boolean}  kiosk           Flag to indicate whether window is in kiosk mode
- * @property {boolean}  frame           Flag to indicate whether window has frame
- * @property {boolean}  fullscreen      Flag to indicate whether window is in fullscreen
+ * @property {Boolean}  maximized       Flag to indicate whether window is maximized
+ * @property {Boolean}  devTools        Flag to indicate whether window has devTools opened
+ * @property {Boolean}  showInTaskbar   Flag to indicate whether window should be shown in taskbar
+ * @property {Boolean}  resizable       Flag to indicate whether window is resizable
+ * @property {Boolean}  menu            Flag to indicate whether window has menu
+ * @property {Boolean}  icon            Flag to indicate whether window has icon
+ * @property {Boolean}  transparent     Flag to indicate whether window is transparent
+ * @property {Boolean}  show            Flag to indicate whether window is displayed by default
+ * @property {Boolean}  kiosk           Flag to indicate whether window is in kiosk mode
+ * @property {Boolean}  frame           Flag to indicate whether window has frame
+ * @property {Boolean}  fullscreen      Flag to indicate whether window is in fullscreen
  */
 
 /**
  * StatusData Object that contains current app status variables
  * @typedef  {Object}   StatusData
  *
- * @property {boolean}  appLoaded           Flag to indicate whether app has been loaded
- * @property {boolean}  appReady            Flag to indicate whether app is ready
- * @property {boolean}  appInitialized      Flag to indicate whether app has been initialized
- * @property {boolean}  appShuttingDown     Flag to indicate whether app is shutting down
- * @property {boolean}  appBusy             Flag to indicate whether app is busy
+ * @property {Boolean}  appLoaded           Flag to indicate whether app has been loaded
+ * @property {Boolean}  appReady            Flag to indicate whether app is ready
+ * @property {Boolean}  appInitialized      Flag to indicate whether app has been initialized
+ * @property {Boolean}  appShuttingDown     Flag to indicate whether app is shutting down
+ * @property {Boolean}  appBusy             Flag to indicate whether app is busy
  * @property {string}   appStatus           Current app indicator status (idle, busy, success, working, offline, error)
- * @property {boolean}  appStatusChanging   Flag to indicate whether app status is changing
- * @property {boolean}  languageInitialized Flag to indicate whether languages and translation system has been initialized
- * @property {boolean}  feAppInitialized    Flag to indicate whether frontend app is initalized
- * @property {boolean}  windowMaximized     Flag to indicate whether window is maximized
- * @property {boolean}  devToolsOpened      Flag to indicate whether dev tools are opened
- * @property {boolean}  movingWindow        Flag to indicate whether window is being moved
- * @property {boolean}  ctrlPressed         Flag to indicate whether ctrl/cmd button is pressed
- * @property {boolean}  shiftPressed        Flag to indicate whether shift button is pressed
- * @property {boolean}  altPressed          Flag to indicate whether alt button is pressed
- * @property {boolean}  noHandlingKeys      Flag to indicate whether to listen to key events for app shortcuts
- * @property {boolean}  windowFocused       Flag to indicate whether window is focused
+ * @property {Boolean}  appStatusChanging   Flag to indicate whether app status is changing
+ * @property {Boolean}  languageInitialized Flag to indicate whether languages and translation system has been initialized
+ * @property {Boolean}  feAppInitialized    Flag to indicate whether frontend app is initalized
+ * @property {Boolean}  windowMaximized     Flag to indicate whether window is maximized
+ * @property {Boolean}  devToolsOpened      Flag to indicate whether dev tools are opened
+ * @property {Boolean}  movingWindow        Flag to indicate whether window is being moved
+ * @property {Boolean}  ctrlPressed         Flag to indicate whether ctrl/cmd button is pressed
+ * @property {Boolean}  shiftPressed        Flag to indicate whether shift button is pressed
+ * @property {Boolean}  altPressed          Flag to indicate whether alt button is pressed
+ * @property {Boolean}  noHandlingKeys      Flag to indicate whether to listen to key events for app shortcuts
+ * @property {Boolean}  windowFocused       Flag to indicate whether window is focused
  */
 
 /**
  * ErrorData Object that contains app error data
  * @typedef  {Object}   ErrorData
  *
- * @property {boolean}  error           Flag to indicate whether app has error
- * @property {boolean}  userMessages    Flag to indicate whether app-error component should display user messages
+ * @property {Boolean}  error           Flag to indicate whether app has error
+ * @property {Boolean}  userMessages    Flag to indicate whether app-error component should display user messages
  * @property {string}   defaultTitle    Default app-error component title
  * @property {string}   defaultText     Default app-error component text
  * @property {string}   title           Current app-error component title
@@ -67,18 +67,20 @@
  * OperationData Object that contains app operation data
  * @typedef  {Object}   OperationData
  *
- * @property {boolean}  cancelable                  Flag to indicate whether operation is cancelable
- * @property {boolean}  cancelling                  Flag to indicate whether operation is being cancelled
- * @property {boolean}  cancelled                   Flag to indicate whether operation is cancelled
- * @property {boolean}  operationActive             Flag to indicate whether operation is active
- * @property {boolean}  operationVisible            Flag to indicate whether operation is visible
- * @property {boolean}  notify                      Flag to indicate whether user should be notified when operation finishes
- * @property {boolean}  appBusy                     Flag to indicate whether app status should be set to busy
- * @property {boolean}  useProgress                 Flag to indicate whether to use progress bar for operation
+ * @property {Boolean}  cancelable                  Flag to indicate whether operation is cancelable
+ * @property {Boolean}  cancelling                  Flag to indicate whether operation is being cancelled
+ * @property {Boolean}  cancelled                   Flag to indicate whether operation is cancelled
+ * @property {Boolean}  operationActive             Flag to indicate whether operation is active
+ * @property {Boolean}  operationVisible            Flag to indicate whether operation is visible
+ * @property {Boolean}  appBusy                     Flag to indicate whether app status should be set to busy
+ * @property {Boolean}  useProgress                 Flag to indicate whether to use progress bar for operation
  * @property {Integer}  operationStartedTimestamp   Operation start timestamp
  * @property {string}   operationText               Operation text
  * @property {string}   progressText                Progress bar text
  * @property {string}   operationId                 Unique operation ID
+ * @property {Boolean}  notify                      Flag to indicate whether user should be notified when operation finishes
+ * @property {Boolean}  hideLiveInfo                Flag that controls live-info component display
+ * @property {Boolean}  hideProgressBar             Flag that controls progress-bar component display
  */
 
 /**
@@ -95,12 +97,13 @@
  * ProgressData Object that contains app error data
  * @typedef  {Object}   ProgressData
  *
- * @property {boolean}  animated            Flag to indicate whether progress bar is animated
- * @property {boolean}  inProgress          Flag to indicate whether progress has started
+ * @property {Boolean}  animated            Flag to indicate whether progress bar is animated
+ * @property {Boolean}  inProgress          Flag to indicate whether progress has started
  * @property {string}   percentComplete     Current progress text displayed in progress-bar component
  * @property {Float}    percentNumber       Current progress in percents
+ * @property {Integer}  currentStep         Current operation step
+ * @property {Integer}  totalSteps          Total operation steps
  * @property {string}   operationText       Operation text displayed in progress-bar component
- * @property {string}   detailText          Detail text displayed in progress-bar component
  * @property {string}   progressBarClass    Additional progress-bar component CSS class
  * @property {Object}   styleObject         Style object for progress-bar component (has only 'width' property, representing CSS width for progress bar)
  */
@@ -120,18 +123,18 @@
  * @property {ErrorData}        appError                    Object holding current app error variables
  * @property {OperationData}    appOperation                Object holding current app operation variables
  * @property {string}           mainLoaderTitle             App main loader title
- * @property {boolean}          preventClose                Flag to indicate whether closing app window is permitted
- * @property {boolean}          preventReload               Flag to indicate whether reloading app window is permitted
- * @property {boolean}          hasUserConfig               Flag to indicate whether app has saved user config
+ * @property {Boolean}          preventClose                Flag to indicate whether closing app window is permitted
+ * @property {Boolean}          preventReload               Flag to indicate whether reloading app window is permitted
+ * @property {Boolean}          hasUserConfig               Flag to indicate whether app has saved user config
  * @property {array}            allDebugMessages            An array holding all debug messages
  * @property {array}            debugMessages               An array holding displayed debug messages
- * @property {boolean}          hasDebugWindow              Flag to indicate whether current window has debug window
- * @property {boolean}          isDebugWindow               Flag to indicate whether current window is debug window
- * @property {boolean}          debugToFileStarted          Flag to indicate whether debugging to file has already started
+ * @property {Boolean}          hasDebugWindow              Flag to indicate whether current window has debug window
+ * @property {Boolean}          isDebugWindow               Flag to indicate whether current window is debug window
+ * @property {Boolean}          debugToFileStarted          Flag to indicate whether debugging to file has already started
  * @property {array}            allUserMessages             An array holding all user messages
  * @property {array}            userMessages                An array holding displayed user messages
  * @property {array}            userMessageQueue            An array holding pending user messages
- * @property {boolean}          userMessagesToFileStarted   Flag to indicate whether
+ * @property {Boolean}          userMessagesToFileStarted   Flag to indicate whether
  * @property {LanguageData}     languageData                Object containing language data and translations
  * @property {array}            availableThemes             An array holding available theme names
  * @property {Object}           appInfo                     Object containing app info variables
@@ -230,7 +233,9 @@ exports.appState = {
         operationVisible: false,
         operationStartedTimestamp: false,
         operationId: null,
-        notify: false
+        notify: false,
+        hideLiveInfo: false,
+        hideProgressBar: false,
     },
 
     hasUserConfig: false,
@@ -261,17 +266,15 @@ exports.appState = {
         inProgress: false,
         percentComplete: 0,
         percentNumber: 0,
+        currentStep: 0,
+        totalSteps: 0,
         operationText: '',
-        detailText: '',
         progressBarClass: '',
         styleObject: {
             width: '0%'
         }
     },
-    headerData: {
-        hideLiveInfo: false,
-        hideProgressBar: false,
-    },
+    headerData: {},
 
     debugData: {},
     footerData: {},

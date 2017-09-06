@@ -1,0 +1,13 @@
+.app-operation-wrapper {
+    position: fixed;
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    top: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: visible;
+    width: 240px;
+    height: 0px;
+    z-index: 12;
+}

@@ -1,5 +1,5 @@
 /**
- * @fileOverview live-info component file
+ * @fileOverview app-operation component file
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.3.0
  */
@@ -7,9 +7,9 @@
 var _appWrapper = window.getAppWrapper();
 var appState = _appWrapper.getAppState();
 /**
- * Live info component
+ * App operation component
  *
- * @name live-info
+ * @name app-operation
  * @memberOf components
  * @property {string}   name        Name of the component
  * @property {string}   template    Component template contents
@@ -21,26 +21,30 @@ var appState = _appWrapper.getAppState();
  * @property {Object}   components  Child components
  */
 exports.component = {
-    name: 'live-info',
+    name: 'app-operation',
     template: '',
-    props: ['dontDisplay', 'appStatusWrapperClassObject'],
+    props: [],
+    data: function () {
+        return appState.appOperation;
+    },
+    methods: {},
+    watch: {},
     computed: {
-        appStatusClassObject: function () {
-            let status = appState.status.appStatus;
-            return {
-                'fa-spin fa-refresh': status == 'busy',
-                'fa-spin fa-cog': status == 'working',
-                'fa-exclamation-triangle': status == 'error' || status == 'warning',
-                'fa-check': status == 'success',
-                'fa-ban': status == 'offline',
-                'fa-check app-status-icon-placeholder': status == 'idle'
-            };
-        },
         appState: function(){
             return appState;
-        }
+        },
+        appStatusWrapperClassObject: function () {
+            let status = appState.status.appStatus;
+            return {
+                'app-operation-idle': status == 'idle',
+                'app-operation-busy': status == 'busy',
+                'app-operation-success': status == 'success',
+                'app-operation-working': status == 'working',
+                'app-operation-warning': status == 'warning',
+                'app-operation-error': status == 'error',
+                'app-operation-offline': status == 'offline'
+            };
+        },
     },
-    data: function () {
-        return appState.appInfo;
-    }
+    components: {}
 };

@@ -1,0 +1,4 @@
+<div v-show="appState.status.appLoaded" class="app-operation-wrapper" v-bind:class="[appStatusWrapperClassObject, {'has-progress-bar': !appState.appOperation.hideProgressBar && appState.progressData.inProgress}]">
+    <live-info v-bind:app-status-wrapper-class-object="appStatusWrapperClassObject" v-bind:dont-display="appState.appOperation.hideLiveInfo" ref="appOperationLiveInfo"></live-info>
+	<progress-bar v-bind:app-status-wrapper-class-object="appStatusWrapperClassObject" v-bind:dont-display="appState.appOperation.hideProgressBar" ref="appOperationProgressBar"></progress-bar>
+</div>

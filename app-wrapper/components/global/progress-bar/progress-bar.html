@@ -5,8 +5,8 @@
 				<div class="progress-detail-text" v-bind:title="progressData.operationText">
 					{{ progressData.operationText }}
 				</div>
-				<div v-if="progressData.detailText" class="progress-detail">
-					({{ progressData.detailText }})
+				<div v-if="progressData.totalSteps" class="progress-detail">
+					({{ progressData.currentStep }} / {{ progressData.totalSteps }})
 				</div>
 			</div>
 			<div class="progress-bar" v-bind:class="progressData.progressBarClass">

@@ -4,7 +4,7 @@
  * @version 1.3.0
  */
 
-var _ = require('lodash');
+const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -114,6 +114,9 @@ class AppOperationHelper extends AppBaseClass {
         let operationId = utilHelper.getRandomString(10);
         let operationStartTimestamp = parseInt((+ new Date()) / 1000, 10);
 
+        let hideLiveInfo = appState.appOperation.hideLiveInfo;
+        let hideProgressBar = appState.appOperation.hideProgressBar;
+
         appState.appOperation = {
             operationText,
             useProgress,
@@ -125,7 +128,9 @@ class AppOperationHelper extends AppBaseClass {
             operationActive,
             operationStartTimestamp,
             operationId,
-            notify
+            notify,
+            hideLiveInfo,
+            hideProgressBar
         };
 
         if (_.isUndefined(appBusy)){
@@ -232,9 +237,9 @@ class AppOperationHelper extends AppBaseClass {
             return;
         }
         appState.appOperation.cancelling = true;
-        appState.appOperation.operationText = _appWrapper.appTranslations.translate('Cancelling...');
-        var returnPromise;
-        var resolveReference;
+        appState.appOperation.operationText = this.translate('Cancelling...');
+        let returnPromise;
+        let resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
@@ -279,7 +284,8 @@ class AppOperationHelper extends AppBaseClass {
      * @return {undefined}
      */
     async updateProgress (completed, total, progressText) {
-        if (!appState.progressData.inProgress){
+        let pd = appState.progressData;
+        if (!pd.inProgress){
             this.log('Trying to update progress while appState.progressData.inProgress is false', 'info', []);
             return;
         }
@@ -292,7 +298,8 @@ class AppOperationHelper extends AppBaseClass {
         if (completed < 0){
             completed = 0;
         }
-        var percentComplete = Math.ceil((completed / total) * 100);
+
+        let percentComplete = Math.ceil((completed / total) * 100);
 
         //TODO fix notification
 
@@ -318,19 +325,24 @@ class AppOperationHelper extends AppBaseClass {
         //         }
         //     }
         // }
-        var remainingTime = this.calculateTime(percentComplete);
+
+        let remainingTime = this.calculateTime(percentComplete);
         percentComplete = parseInt(percentComplete);
         if (progressText){
-            appState.progressData.operationText = progressText;
+            pd.operationText = progressText;
         }
-        appState.progressData.detailText = completed + ' / ' + total;
-        var formattedDuration = _appWrapper.appTranslations.translate('calculating');
+        let formattedDuration = this.translate('calculating');
         if (percentComplete >= this.minPercentComplete){
             formattedDuration = _appWrapper.getHelper('format').formatDuration(remainingTime);
         }
-        appState.progressData.percentComplete = percentComplete + '% (ETA: ' + formattedDuration + ')';
-        appState.progressData.percentNumber = percentComplete;
-        appState.progressData.styleObject = {
+        pd.percentComplete = percentComplete + '%';
+        if (percentComplete < 100){
+            pd.percentComplete += ' (ETA: ' + formattedDuration + ')';
+        }
+        pd.percentNumber = percentComplete;
+        pd.currentStep = completed;
+        pd.totalSteps = total;
+        pd.styleObject = {
             width: percentComplete + '%'
         };
     }
@@ -346,8 +358,9 @@ class AppOperationHelper extends AppBaseClass {
             inProgress: false,
             percentComplete: 0,
             percentNumber: 0,
+            currentStep: 0,
+            totalSteps: 0,
             operationText: '',
-            detailText: '',
             progressBarClass: '',
             styleObject: {
                 width: '0%'
@@ -366,13 +379,13 @@ class AppOperationHelper extends AppBaseClass {
      * @return {Number}         Remaining seconds
      */
     calculateTimeOld(percent){
-        var currentTime = (+ new Date()) / 1000;
-        var remainingTime = null;
+        let currentTime = (+ new Date()) / 1000;
+        let remainingTime = null;
         if (percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
-            var remaining = 100 - percent;
+            let remaining = 100 - percent;
             this.lastTimeCalculation = currentTime;
-            var elapsedTime = currentTime - this.operationStartTime;
-            var timePerPercent = elapsedTime / percent;
+            let elapsedTime = currentTime - this.operationStartTime;
+            let timePerPercent = elapsedTime / percent;
             remainingTime = remaining * timePerPercent;
             this.lastTimeValue = remainingTime;
         } else {
@@ -388,13 +401,13 @@ class AppOperationHelper extends AppBaseClass {
      * @return {Number}         Remaining seconds
      */
     calculateTime(percent){
-        var currentTime = (+ new Date()) / 1000;
-        var remainingTime = null;
-        var change = percent - this.lastCalculationPercent;
+        let currentTime = (+ new Date()) / 1000;
+        let remainingTime = null;
+        let change = percent - this.lastCalculationPercent;
         if (this.lastTimeCalculation){
             if (change > 0 && percent && percent > this.minPercentComplete && (!this.lastTimeValue || (currentTime - this.lastTimeCalculation > this.timeCalculationDelay))){
                 let remaining = 100 - percent;
-                var elapsedSinceLastCalculation = currentTime - this.lastTimeCalculation;
+                let elapsedSinceLastCalculation = currentTime - this.lastTimeCalculation;
                 let timePerPercent = elapsedSinceLastCalculation / change;
                 remainingTime = remaining * timePerPercent;
                 this.lastTimeCalculation = currentTime;
@@ -478,6 +491,8 @@ class AppOperationHelper extends AppBaseClass {
             operationStartTimestamp: false,
             operationId: '',
             notify: false,
+            hideLiveInfo: false,
+            hideProgressBar: false,
         }, data);
     }
 
@@ -493,16 +508,18 @@ class AppOperationHelper extends AppBaseClass {
         let modalOptions = {};
         modalOptions.reloading = reloading ? true : false;
         modalOptions.closing = reloading ? false : true;
+        if (modalOptions.closing){
+            appState.preventClose = true;
+        }
         modalOptions.cancelable = appState.appOperation.cancelable;
 
         appState.modalData.currentModal = modalHelper.getModalObject('cancelAndExitModal', modalOptions);
         let cm = appState.modalData.currentModal;
+        cm.onCancel = this.boundMethods.stopCancelAndExit;
         _appWrapper.once('appOperation:finish', this.boundMethods.cancelOperationComplete);
         _appWrapper.once('appOperation:progressDone', this.boundMethods.cancelProgressDone);
-        appState.headerData.hideLiveInfo = true;
-        appState.headerData.hideProgressBar = true;
         if (appState.appOperation.cancelable){
-            cm.title = _appWrapper.appTranslations.translate('Are you sure?');
+            cm.title = this.translate('Are you sure?');
             if (cm.reloading){
                 await modalHelper.queryModal(this.boundMethods.cancelAndReload, this.boundMethods.stopCancelAndExit);
             } else {
@@ -510,8 +527,9 @@ class AppOperationHelper extends AppBaseClass {
             }
             return;
         } else {
-            cm.title = _appWrapper.appTranslations.translate('Operation in progress');
+            cm.title = this.translate('Operation in progress');
             cm.showCancelButton = false;
+            cm.confirmButtonText = this.translate('Ok');
             cm.autoCloseTime = 10000;
             await modalHelper.queryModal(this.boundMethods.stopCancelAndExit, this.boundMethods.stopCancelAndExit);
             this.stopCancelAndExit();
@@ -530,7 +548,7 @@ class AppOperationHelper extends AppBaseClass {
         cm.showConfirmButton = false;
         cm.hideProgress = true;
         cm.success = true;
-        cm.title = _appWrapper.appTranslations.translate('Operation finished');
+        cm.title = this.translate('Operation finished');
     }
 
     /**
@@ -585,7 +603,7 @@ class AppOperationHelper extends AppBaseClass {
         let success = result;
         let cm = appState.modalData.currentModal;
         if (success){
-            cm.title = _appWrapper.appTranslations.translate('Please wait while operation is cancelled.');
+            cm.title = this.translate('Please wait while operation is cancelled.');
             cm.body = '';
             cm.showCancelButton = false;
             cm.showConfirmButton = false;
@@ -602,6 +620,7 @@ class AppOperationHelper extends AppBaseClass {
             cm.remainingTime = 0;
             clearInterval(this.intervals.cancelCountdown);
             if (success){
+                appState.preventClose = false;
                 modalHelper.closeCurrentModal(true);
                 await _appWrapper.cleanup();
                 if (!appState.isDebugWindow){
@@ -612,11 +631,12 @@ class AppOperationHelper extends AppBaseClass {
             }
         }
         if (!success){
-            cm.title = _appWrapper.appTranslations.translate('Problem cancelling operation');
+            cm.title = this.translate('Problem cancelling operation');
             cm.fail = true;
             cm.success = false;
+            cm.showCancelButton = false;
             cm.showConfirmButton = true;
-            cm.confirmButtonText = 'Ok';
+            cm.confirmButtonText = this.translate('Ok');
             cm.hideProgress = true;
             cm.autoCloseTime = 10000;
             modalHelper.autoCloseModal();
@@ -630,13 +650,13 @@ class AppOperationHelper extends AppBaseClass {
      * @return {undefined}
      */
     async stopCancelAndExit(){
-        appState.headerData.hideLiveInfo = false;
-        appState.headerData.hideProgressBar = false;
+        let modalHelper = _appWrapper.getHelper('modal');
         _appWrapper.removeAllListeners('appOperation:finish');
         _appWrapper.removeAllListeners('appOperation:progressDone');
-        _appWrapper._confirmModalAction = _appWrapper.__confirmModalAction;
-        _appWrapper._cancelModalAction = _appWrapper.__cancelModalAction;
-        _appWrapper.getHelper('modal').closeCurrentModal();
+        modalHelper.resetModalActions();
+        if (!appState.modalData.currentModal.busy){
+            modalHelper.closeCurrentModal();
+        }
     }
 }
 
