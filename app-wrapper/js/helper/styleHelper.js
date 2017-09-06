@@ -1,7 +1,7 @@
 /**
  * @fileOverview StyleHelper class file
  * @author Dino Ivankov <dinoivankov@gmail.com>
- * @version 1.3.0
+ * @version 1.3.1
  */
 
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
