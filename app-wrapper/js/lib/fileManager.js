@@ -615,7 +615,7 @@ class FileManager extends AppBaseClass {
             if (notSilent) {
                 this.log('Failed loading file "{1}" from "{2}"...', 'error', [fileName, directory]);
             }
-            throw new Error('Failed loading file');
+            throw new Error('Failed loading file ' + filePath);
         }
         if (notSilent){
             this.log('Loading file "{1}" from "{2}"...', 'groupend', [fileName, directory]);

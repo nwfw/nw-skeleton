@@ -4,28 +4,21 @@
             <app-header ref="appHeader"></app-header>
             <template v-if="!isDebug">
                 <div class="main">
-                    <template v-if="appState.status.appShuttingDown">
-                        <app-loader ref="appShutdownLoader"></app-loader>
-                    </template>
-                    <template v-else-if="appState.appError.error">
-                        <app-error ref="appError"></app-error>
-                    </template>
-                    <template v-else-if="appState.status.appInitialized">
-                        <component v-bind:is="appState.config.appConfig.mainComponent" ref="mainComponent"></component>
-                    </template>
-                    <template v-else>
-                        <app-loader ref="appMainLoader"></app-loader>
-                    </template>
+                    <transition name="fade-fast" mode="out-in">
+                        <app-loader key="shutdownLoader" v-if="appState.status.appShuttingDown" ref="appShutdownLoader"></app-loader>
+                        <app-error key="appError" v-else-if="appState.appError.error" ref="appError"></app-error>
+                        <component key="mainComponent" v-else-if="appState.status.appInitialized" v-bind:is="appState.config.appConfig.mainComponent" ref="mainComponent"></component>
+                        <app-loader key="mainLoader" v-else ref="appMainLoader"></app-loader>
+                    </transition>
                 </div>
                 <app-debug v-if="appState.config.debug.enabled && !appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
             <template v-else>
                 <app-debug v-if="!appState.hasDebugWindow && !appState.status.appShuttingDown" ref="appDebug"></app-debug>
             </template>
-            <user-messages v-if="!appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized"></user-messages>
+            <user-messages v-if="!appState.status.appShuttingDown && !appState.appError.error && appState.status.appInitialized" ref="userMessages"></user-messages>
             <app-footer ref="appFooter"></app-footer>
             <app-notifications v-if="!appState.isDebugWindow && !appState.modalData.modalVisible" ref="appNotifications"></app-notifications>
-        </template>
+        </div>
     </div>
-</div>
 </transition>

@@ -222,17 +222,19 @@ class AppWrapper extends AppBaseClass {
         await this.initializeApp();
         await this.initializeFeApp();
 
+        let showInitializationStatus = this.getConfig('appConfig.showInitializationStatus');
+        let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
+
+        if (showInitializationStatus){
+            this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
+        }
+
         if (!appState.isDebugWindow){
             await this.asyncMessage({instruction: 'setupAppMenu', data: {}});
         }
 
-        if (this.getConfig('appConfig.showInitializationStatus')){
-            let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
-            this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
-        }
-
-        if (this.getConfig('appConfig.showInitializationStatus')){
-            if (this.getConfig('appConfig.showInitializationProgress')){
+        if (showInitializationStatus){
+            if (showInitializationProgress){
                 this.getHelper('appOperation').operationUpdate(100, 100);
             }
             this.getHelper('appOperation').operationFinish(this.appTranslations.translate('Application initialized'));
@@ -865,7 +867,7 @@ class AppWrapper extends AppBaseClass {
         appState.languageData.currentLanguage = this.getConfig('currentLanguage');
         appState.languageData.currentLocale = this.getConfig('currentLocale');
         appState.platformData = this.getPlatformData();
-        appState.appDir = await this.getAppDir();
+        appState.appDir = this.getAppDir();
         appState.manifest = require(path.join(appState.appDir, '../package.json'));
         appState.wrapperManifest = require(path.join(appState.appDir, '../node_modules/nw-skeleton/package.json'));
         appState.appRootDir = path.join(appState.appDir, '../');
@@ -1213,10 +1215,9 @@ class AppWrapper extends AppBaseClass {
      * Takes into consideration OS platform and way that app is
      * being run (whether by calling nwjs or running finished packaged app)
      *
-     * @async
      * @return {string} Absolute path to app directory
      */
-    async getAppDir(){
+    getAppDir(){
         let appDir;
         let processPath = path.dirname(process.execPath);
         let workingDir = path.resolve('./');
@@ -1457,7 +1458,9 @@ class AppWrapper extends AppBaseClass {
      */
     getInitialAppConfig(defaultAppConfig){
         let initialAppConfig = defaultAppConfig;
+        let appStateConfig = require('../../config/appWrapperConfig').config;
         let execPath = this.getExecPath();
+        let appDir = this.getAppDir();
 
         let configFilePath = path.resolve(path.join(execPath, 'config', 'config.js'));
         let configFileExists = fs.existsSync(configFilePath);
@@ -1467,15 +1470,21 @@ class AppWrapper extends AppBaseClass {
             configFileExists = fs.existsSync(configFilePath);
         }
 
+        if (!configFileExists){
+            configFilePath = path.join(appDir, '../config/config.js');
+            configFileExists = fs.existsSync(configFilePath);
+        }
+
         if (configFileExists){
             let initialConfigData;
             try {
                 initialConfigData = require(configFilePath);
-                initialAppConfig = initialConfigData.config;
+                initialAppConfig = this.mergeDeep(defaultAppConfig, initialConfigData.config);
             } catch (ex) {
                 console.error(ex);
             }
         }
+        initialAppConfig = this.mergeDeep(appStateConfig, initialAppConfig);
         return initialAppConfig;
     }
 }
