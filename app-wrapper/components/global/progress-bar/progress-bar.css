@@ -19,7 +19,7 @@
     margin: -1px auto 0 auto;
 }
 
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow {
+.progress-bar-wrapper .progress-bar-shadow {
     clip-path: inset(1px -20px -20px -20px);
     box-shadow: var(--app-progress-bar-box-shadow-idle);
     padding: 0px 10px 5px 10px;
@@ -27,34 +27,34 @@
     border-radius: 0 0 var(--app-progress-bar-wrapper-border-radius) var(--app-progress-bar-wrapper-border-radius);
     transition-property: box-shadow, background, border;
     transition-timing-function: ease-in-out;
-    transition-duration: var(--medium-animation-duration);
+    transition-duration: var(--long-animation-duration);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-offline {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-offline {
     box-shadow: var(--app-progress-bar-box-shadow-offline);
     background: var(--app-live-info-background-offline);
     border: var(--app-live-info-border-offline);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-success {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-success {
     box-shadow: var(--app-progress-bar-box-shadow-success);
     background: var(--app-live-info-background-success);
     border: var(--app-live-info-border-success);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-error {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-error {
     box-shadow: var(--app-progress-bar-box-shadow-error);
     background: var(--app-live-info-background-error);
     border: var(--app-live-info-border-error);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-warning {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-warning {
     box-shadow: var(--app-progress-bar-box-shadow-warning);
     background: var(--app-live-info-background-warning);
     border: var(--app-live-info-border-warning);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-working {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-working {
     box-shadow: var(--app-progress-bar-box-shadow-working);
     background: var(--app-live-info-background-working);
     border: var(--app-live-info-border-working);
 }
-.has-progress-bar .progress-bar-wrapper .progress-bar-shadow.app-operation-busy {
+.progress-bar-wrapper .progress-bar-shadow.app-operation-busy {
     box-shadow: var(--app-progress-bar-box-shadow-busy);
     background: var(--app-live-info-background-busy);
     border: var(--app-live-info-border-busy);

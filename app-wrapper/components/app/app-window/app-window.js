@@ -61,7 +61,7 @@ exports.component = {
                 if (appState.appOperation){
                     if (appState.appOperation.operationVisible){
                         classes.push('has-app-operation');
-                        if (appState.appOperation.operationActive && appState.appOperation.useProgress){
+                        if (appState.appOperation.operationActive && appState.appOperation.useProgress && !appState.appOperation.hideProgressBar){
                             classes.push('has-active-app-operation');
                         }
                     }

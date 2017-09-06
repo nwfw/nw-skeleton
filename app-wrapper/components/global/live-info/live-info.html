@@ -1,10 +1,14 @@
 <transition name="size-height">
 	<div class="live-info" v-if="appState.appOperation.operationVisible && !dontDisplay">
         <div class="live-info-inner" v-bind:class="appStatusWrapperClassObject">
-           <span class="live-info-item app-status">
-              <span class="app-operation-text" v-html="appState.appOperation.operationText"></span>
-              <span class="status fa app-status" v-bind:title="appState.status.appStatus" v-bind:class="appStatusClassObject"></span>
-          </span>
-      </div>
-  </div>
+            <span class="live-info-item app-status">
+                <transition name="all" mode="out-in" type="transition">
+                    <span class="app-operation-text" v-html="appState.appOperation.operationText" v-bind:key="appState.appOperation.operationText + '_' + appState.status.appStatus"></span>
+                </transition>
+                <transition name="fade" mode="out-in" type="transition">
+                    <span class="status fa app-status" v-bind:title="appState.status.appStatus" v-bind:key="appState.status.appStatus" v-bind:class="appStatusClassObject"></span>
+                </transition>
+            </span>
+        </div>
+    </div>
 </transition>

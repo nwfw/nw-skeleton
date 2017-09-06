@@ -1,4 +1,49 @@
 /*
+    all:
+        variants:
+            all-slow       slow all       (long-animation-duration)
+            all            normal all     (medium-animation-duration)
+            all-fast       fast all       (short-animation-duration)
+            all-delayed    delayed all    (medium-animation-duration, delayed by medium-animation-duration)
+ */
+.all-fast-enter,
+.all-fast-leave-to,
+.all-enter,
+.all-leave-to,
+.all-delayed-enter,
+.all-delayed-leave-to,
+.all-slow-enter,
+.all-slow-leave-to,
+.all-preset-enter,
+.all-preset-leave-to {
+    opacity: 0 !important;
+}
+.all-fast-enter-active,
+.all-fast-leave-active,
+.all-delayed-enter-active,
+.all-delayed-leave-active,
+.all-enter-active,
+.all-leave-active,
+.all-slow-enter-active,
+.all-slow-leave-active {
+    transition-property: all !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.all-fast-enter-active,
+.all-fast-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.all-slow-enter-active,
+.all-slow-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+/*
     fade:
         variants:
             fade-slow       slow fade       (long-animation-duration)

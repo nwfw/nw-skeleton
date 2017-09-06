@@ -7,13 +7,13 @@
     transition-property: margin-top;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);
-    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
+    border-radius: var(--app-live-info-border-radius);
 }
 
 
 .live-info .live-info-inner {
     border: var(--app-live-info-border);
-    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
+    border-radius: var(--app-live-info-border-radius);
     padding: 2px 0 3px 0;
     box-shadow: var(--app-live-info-box-shadow-offline);
     transition-property: box-shadow, background, border;
@@ -54,8 +54,10 @@
     border: var(--app-live-info-border-busy);
 }
 
+.has-progress-bar .live-info .live-info,
 .has-progress-bar .live-info .live-info-inner {
     border-bottom: none;
+    border-radius: var(--app-live-info-border-radius) var(--app-live-info-border-radius) 0 0;
 }
 
 .live-info-item {
@@ -102,9 +104,6 @@
     font-size: var(--app-live-info-operation-text-font-size);
     -webkit-text-stroke-width: var(--app-live-info-operation-text-text-stroke-width);
     -webkit-text-stroke-color: var(--app-live-info-operation-text-text-stroke-color);
-    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
-    transition-timing-function: ease-out !important;
-    transition-duration: var(--short-animation-duration) !important;
 }
 
 .live-info .status {
@@ -113,24 +112,20 @@
     font-size: var(--app-live-info-status-font-size);
     -webkit-text-stroke-width: var(--app-live-info-status-text-stroke-width);
     -webkit-text-stroke-color: var(--app-live-info-status-text-stroke-color);
-    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
-    transition-timing-function: ease-out !important;
-    transition-duration: var(--short-animation-duration) !important;
+    transition-property: opacity, text-shadow, color, -webkit-text-stroke-color !important;
 }
 
 .live-info .status:hover {
     text-decoration: none;
 }
 
-.live-info .status::before {
+.live-info .status:before {
     display: block;
     width: var(--app-live-info-status-font-size);
     height: var(--app-live-info-status-font-size);
     line-height: var(--app-live-info-status-font-size);
     overflow: visible;
-    transition-property: text-shadow, color, -webkit-text-stroke-color !important;
-    transition-timing-function: ease-out !important;
-    transition-duration: var(--short-animation-duration) !important;
+    transition-property: opacity, text-shadow, color, -webkit-text-stroke-color !important;
 }
 
 .live-info .live-info-inner.app-operation-success .status {
