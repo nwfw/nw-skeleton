@@ -243,10 +243,15 @@ exports.component = {
                     _appWrapper.addModalMessage('Translation in progress...', 'info');
                     this.tabTranslationInProgress = true;
                 }
+                _appWrapper.getHelper('appOperation').operationStart(_appWrapper.translate('Translating'), false, true, true, _appWrapper.translate('Label'));
+                _appWrapper.getHelper('appOperation').operationUpdate(0, total);
+
                 for (let i=0; i<total;i++){
                     let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
                     if (textarea){
                         let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], locale);
+                        _appWrapper.getHelper('appOperation').operationUpdate(i+1, total);
+                        await _appWrapper.wait(100);
                         if (translated){
                             textarea.setInputValue(translated);
                             this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
@@ -259,6 +264,9 @@ exports.component = {
                     }
                 }
                 target.removeClass(['fa-spinner', 'fa-spin']);
+                _appWrapper.setAppStatus(false, 'success');
+                _appWrapper.getHelper('appOperation').operationUpdate(total, total);
+                _appWrapper.getHelper('appOperation').operationFinish(_appWrapper.translate('Translation finished'));
                 _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
                 this.tabTranslationInProgress = false;
             }

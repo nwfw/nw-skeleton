@@ -22,6 +22,4 @@
             <span class="cancel-and-exit-timer-time" v-html="formatDuration(parseInt(currentModal.remainingTime / 1000, 10))"></span>
         </div>
     </div>
-    <live-info v-bind:dont-display="currentModal.hideProgress" ref="modalLiveInfo"></live-info>
-    <progress-bar v-bind:dont-display="currentModal.hideProgress" ref="modalProgressBar"></progress-bar>
 </div>

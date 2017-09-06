@@ -34,7 +34,7 @@ component = {
                 cm.onConfirm();
             }
             cm.cancelOnClose = false;
-            _appWrapper.confirmModalAction();
+            _appWrapper.confirmModalAction(true);
         },
 
         cancelModalAction: function(){

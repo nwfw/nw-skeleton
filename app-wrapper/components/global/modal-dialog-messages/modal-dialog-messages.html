@@ -5,10 +5,10 @@
 		</div>
 	</transition-group>
 	<div class="modal-dialog-message-controls" v-if="currentModal.messages.length">
-		<a v-bind:class="{'hide-control': currentModal.currentMessageIndex <= 0}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageUp">
+		<a :title="translate('Previous message')" v-bind:class="{'hide-control': currentModal.currentMessageIndex <= 0}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageUp">
 			<span class="fa fa-arrow-up"></span>
 		</a>
-		<a v-bind:class="{'hide-control': currentModal.currentMessageIndex >= (currentModal.messages.length - 1)}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageDown">
+		<a :title="translate('Next message')" v-bind:class="{'hide-control': currentModal.currentMessageIndex >= (currentModal.messages.length - 1)}" href="#" class="modal-dialog-message-control" @click.prevent="scrollModalMessageDown">
 			<span class="fa fa-arrow-down"></span>
 		</a>
 	</div>
