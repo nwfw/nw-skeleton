@@ -667,7 +667,7 @@ class FormatHelper extends AppBaseClass {
             bytes = Math.abs(bytes);
         }
         let size = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        if (size >= 3){
+        if (size >= 2){
             size -= 1;
         }
         let value = Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];

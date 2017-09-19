@@ -3,7 +3,7 @@
     /* basic variables */
 
     --app-base-text-color: #333333;
-    --app-base-font-size: 0.8rem;
+    --app-base-font-size: 1rem;
     --font-smoothing: subpixel-antialiased;
 
     --form-row-base-border: 1px solid transparent;
@@ -45,19 +45,19 @@
 
     /* links */
 
-    --link-base-color: #6666CC;
+    --link-base-color: #4655B7;
     --link-base-cursor: pointer;
     --link-base-text-decoration: none;
 
-    --link-base-color-hovered: #000066;
+    --link-base-color-hovered: #151A37;
     --link-base-cursor-hovered: var(--link-base-cursor);
     --link-base-text-decoration-hovered: var(--link-base-text-decoration);
 
-    --link-base-color-active: #9999FF;
+    --link-base-color-active: #858DC3;
     --link-base-cursor-active: var(--link-base-cursor);
     --link-base-text-decoration-active: var(--link-base-text-decoration);
 
-    --link-base-color-visited: #3333CC;
+    --link-base-color-visited: #333D84;
     --link-base-cursor-visited: var(--link-base-cursor);
     --link-base-text-decoration-visited: var(--link-base-text-decoration);
 
@@ -682,6 +682,16 @@
     --app-info-modal-subtitle-border: 1px solid #999999;
     --app-info-modal-name-border-right: 1px solid #999999;
     --app-info-modal-icon-color: #333333;
+
+    /* svg circular loader */
+    --app-circular-loader-text-color: #000000;
+    --app-circular-loader-background-color: #FFFFFF;
+    --app-circular-loader-progress-background-color: #CCCCCC;
+    --app-circular-loader-progress-color: #4655B7;
+    --app-circular-loader-progress-front-color: #858DC3;
+    --app-circular-loader-progress-front-2-color: #636890;
+    --app-circular-loader-stroke-width: 3;
+
 
     /* user messages */
     --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);

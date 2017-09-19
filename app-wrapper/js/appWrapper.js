@@ -633,6 +633,7 @@ class AppWrapper extends AppBaseClass {
             }
             await this.shutdownApp();
             // await this.finalizeLogs();
+            this.beforeWindowClose();
             this.windowManager.hideWindow();
             if (window && window.feApp && window.feApp.$destroy && _.isFunction(window.feApp.$destroy)){
                 window.feApp.$destroy();

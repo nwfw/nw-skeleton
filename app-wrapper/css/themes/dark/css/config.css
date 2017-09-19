@@ -1,7 +1,7 @@
 :root {
 
     --app-base-text-color: #CCCCCC;
-    --app-base-font-size: 0.8rem;
+    --app-base-font-size: 1rem;
     --font-smoothing: subpixel-antialiased;
 
     --form-row-base-border: 1px solid transparent;
@@ -630,9 +630,26 @@
     --app-performance-bar-chart-border: 1px solid #787878;
     --app-performance-bar-chart-background: rgba(255, 255, 255, 0.1);
 
+    --app-circular-loader-background-color: #CCCCCC;
+    --app-circular-loader-progress-color: #999999;
+
     /* app info modal */
     --app-info-modal-subtitle-border: 1px solid #999999;
     --app-info-modal-name-border-right: 1px solid #999999;
     --app-info-modal-icon-color: #FFFFFF;
 
+    /* svg circular loader */
+    --app-circular-loader-text-color: #FFFFFF;
+    --app-circular-loader-background-color: #666666;
+    --app-circular-loader-progress-background-color: #999999;
+    --app-circular-loader-progress-color: #4A89AA;
+    --app-circular-loader-progress-front-color: #6199FA;
+    --app-circular-loader-progress-front-2-color: #588AE0;
+    --app-circular-loader-stroke-width: 3;
+
+
+    /* user messages */
+    --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);
+
+    --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
 }

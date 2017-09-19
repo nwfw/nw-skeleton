@@ -262,6 +262,33 @@ class FileManager extends AppBaseClass {
     }
 
     /**
+     * Deletes directory recursively
+     *
+     * @async
+     * @param  {String}     directory   Absolute path of directory that should be deleted
+     * @return {Boolean}                Operation result
+     */
+    async deleteDir (directory) {
+        let result = true;
+        if(await this.isDir(directory)) {
+            let files = await this.readDir(directory);
+            for (let i=0; i<files.length; i++){
+                let currentFile = path.join(directory, files[i]);
+                if (await this.isDir(currentFile)) {
+                    result = result && await this.deleteDir(currentFile);
+                } else {
+                    result = result && await this.deleteFile(currentFile);
+                }
+            }
+            fs.rmdirSync(directory);
+            result = result && !await this.isDir(directory);
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
      * Creates directory recursively
      *
      * @async

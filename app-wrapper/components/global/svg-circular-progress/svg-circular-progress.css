@@ -1,0 +1,82 @@
+.svg-circular-progress-wrapper {
+    position: relative;
+}
+
+.svg-circular-progress-wrapper  .progress-circle {
+    transform: rotate(-90deg);
+    display: block;
+}
+
+.svg-circular-progress-wrapper .progress-circle .arc-background {
+    fill: var(--app-circular-loader-background-color);
+    stroke: var(--app-circular-loader-progress-background-color);
+    stroke-width: var(--app-circular-loader-stroke-width);
+}
+
+.svg-circular-progress-wrapper .progress-circle .arc-value {
+    stroke: var(--app-circular-loader-progress-color);
+    fill: none;
+    transition-property: stroke-dashoffset;
+    transition-timing-function: linear;
+    transition-duration: 0.2s;
+    stroke-width: var(--app-circular-loader-stroke-width);
+}
+
+.svg-circular-progress-wrapper .progress-circle .arc-value-front-2,
+.svg-circular-progress-wrapper .progress-circle .arc-value-front {
+    stroke: var(--app-circular-loader-progress-front-color);
+    fill: none;
+    transition-property: stroke-dashoffset;
+    transition-timing-function: linear;
+    transition-duration: 0.2s;
+    stroke-width: var(--app-circular-loader-stroke-width);
+    animation-name: pulse;
+    animation-duration: var(--long-animation-duration);
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+    animation-delay: var(--short-animation-duration);
+}
+
+.svg-circular-progress-wrapper .progress-circle .arc-value-front-2 {
+    stroke: var(--app-circular-loader-progress-front-2-color);
+    animation-delay: 0s;
+}
+
+.svg-circular-progress-wrapper .progress-data {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    color: var(--app-circular-loader-text-color);
+    width: 70%;
+}
+
+.svg-circular-progress-wrapper .progress-data .progress-value {
+    font-size: 2em;
+}
+
+.svg-circular-progress-wrapper .progress-data .progress-text {
+    font-size: 0.7em;
+    min-height: 1em;
+    margin-top: 5px;
+}
+
+.svg-circular-progress-wrapper .progress-data .progress-title {
+    font-size: 0.9em;
+    height: 1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    overflow: ellipsis;
+}
+
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
