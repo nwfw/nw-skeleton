@@ -615,7 +615,7 @@ class StaticFilesHelper extends AppBaseClass {
             this.log('No <head> element found for adding js file!', 'error');
             return false;
         } else {
-            var returnPromise = new Promise((resolve) => {
+            let returnPromise = new Promise((resolve) => {
                 this.jsFileLoadResolves[jsFile] = resolve;
             });
             this.log('Adding JS file "{1}"...', 'debug', [jsFile]);

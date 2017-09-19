@@ -55,11 +55,10 @@ class AppWrapper extends AppBaseClass {
         this.appConfig = null;
 
         let isDebugWindow = false;
-
         if (_.isUndefined(initialAppConfig) || !_.isObject(initialAppConfig)){
             initialAppConfig = {};
         } else {
-            if (initialAppConfig.isDebugWindow){
+            if (initialAppConfig && initialAppConfig.isDebugWindow){
                 isDebugWindow = true;
             }
         }
@@ -70,27 +69,15 @@ class AppWrapper extends AppBaseClass {
             initialAppConfig.isDebugWindow = true;
         }
 
-        if (initialAppConfig && initialAppConfig.debug && initialAppConfig.debug.forceDebug && !_.isUndefined(initialAppConfig.debug.forceDebug.AppWrapper)){
-            this.forceDebug = initialAppConfig.debug.forceDebug.AppWrapper;
-        }
-
-        if (initialAppConfig && initialAppConfig.userMessages && initialAppConfig.userMessages.forceUserMessages && !_.isUndefined(initialAppConfig.userMessages.forceUserMessages.AppWrapper)){
-            this.forceUserMessages = initialAppConfig.userMessages.forceUserMessages.AppWrapper;
-        }
+        this.forceDebug = _.get(initialAppConfig, 'debug.forceDebug.AppWrapper') || false;
+        this.forceUserMessages = _.get(initialAppConfig, 'userMessages.forceUserMessages.AppWrapper') || false;
 
         this.boundMethods = {
             cleanup: null,
-            saveUserConfig: null,
             onWindowClose: null,
             onDebugWindowClose: null,
             handleMessageResponse: null,
             handleMainMessage: null,
-        };
-
-        this.timeouts = {
-            cleanupTimeout: null,
-            windowCloseTimeout: null,
-            modalContentVisibleTimeout: null,
         };
 
         this.debugWindow = null;
@@ -108,7 +95,6 @@ class AppWrapper extends AppBaseClass {
 
         this.noop = _.noop;
         appState = this.getAppState();
-        this.appTemplate = '';
         return this;
     }
 
@@ -120,53 +106,30 @@ class AppWrapper extends AppBaseClass {
      * @return {AppWrapper} Instance of AppWrapper class
      */
     async initialize(){
-        let isDebugWindow = false;
-        if (this.initialAppConfig.isDebugWindow){
-            isDebugWindow = true;
-            delete this.initialAppConfig.isDebugWindow;
-        }
+        let staticFilesHelper;
 
-        this.appConfig = new AppConfig(this.initialAppConfig);
-        await this.appConfig.initialize({silent: true});
-        // appState is available from here;
-
+        await this.initializeAppConfig();
         await super.initialize();
 
-        if (isDebugWindow){
-            appState.isDebugWindow = true;
-            isDebugWindow = null;
-        }
+        this.checkDebugWindow();
 
-        this.fileManager = new FileManager();
-        await this.fileManager.initialize();
-
-        appState.config = await this.appConfig.initializeConfig();
-        await this.initializeLogging();
-        await this.appConfig.initializeLogging();
-        await this.fileManager.initializeLogging();
-
-        let tmpDataDir = this.getConfig('appConfig.tmpDataDir');
-        if (tmpDataDir){
-            tmpDataDir = path.resolve(tmpDataDir);
-            await this.fileManager.createDirRecursive(tmpDataDir);
-        }
+        await this.initializeFileManager();
+        await this.initializeConfig();
+        await this.initializeTempDirs();
+        await this.initializeLogs();
 
         this.log('Initializing application wrapper.', 'group', []);
 
-        await this.initializeDebugMessageLog();
-        await this.initializeUserMessageLog();
-
         await this.initializeSystemHelpers();
 
-        appState.config = await this.appConfig.loadUserConfig();
-        await this.initializeLogging();
-        await this.appConfig.initializeLogging();
-        await this.fileManager.initializeLogging();
+        staticFilesHelper = this.getHelper('staticFiles');
 
-        this.windowManager = new WindowManager();
-        await this.windowManager.initialize();
+        await this.loadUserConfig();
+        await this.initializeWindowManager();
 
-        await this.setAppInstance();
+        if (!await this.setAppInstance()){
+            return;
+        }
 
         if (!appState.isDebugWindow) {
             await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
@@ -174,12 +137,8 @@ class AppWrapper extends AppBaseClass {
 
         await this.setDynamicAppStateValues();
 
-        if (!appState.isDebugWindow) {
-            await this.asyncMessage({instruction: 'initializeAppMenu', data: {}});
-        }
-
-        await this.helpers.themeHelper.initializeThemes();
-        await this.helpers.staticFilesHelper.loadJsFiles();
+        await this.getHelper('theme').initializeThemes();
+        await staticFilesHelper.loadJsFiles();
 
         await this.initializeWrapperHelpers();
 
@@ -187,58 +146,25 @@ class AppWrapper extends AppBaseClass {
             appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);
             appState.initializationTimeRaw = new Date();
         } catch (ex) {
-            // console.log(ex);
+            console.error(ex);
         }
 
-        appState.userData = await this.getHelper('userData').loadUserData();
+        await this.loadUserData();
 
-        await this.helpers.staticFilesHelper.loadCssFiles();
+        await staticFilesHelper.loadCssFiles();
 
         await this.setGlobalKeyHandlers();
-
-        if (appState.isDebugWindow){
-            this.mainWindow = window.opener;
-        }
-
         await this.initializeLanguage();
+        this.setBaseAppErrorValues();
 
-        if (!appState.appError.title){
-            appState.appError.title = this.translate(appState.appError.defaultTitle);
-        }
-        if (!appState.appError.text){
-            appState.appError.text = this.translate(appState.appError.defaultText);
+        if (!await this.processCommandParams()){
+            return;
         }
 
-        await this.processCommandParams();
-
-        if (!appState.isDebugWindow){
-            await this.asyncMessage({instruction: 'initializeTrayIcon', data: {}});
-        }
-        if (this.getConfig('debug.devTools')){
-            this.windowManager.winState.devTools = true;
-        }
+        await this.setupMenuAndTray();
 
         this.addWrapperEventListeners();
         await this.initializeApp();
-        await this.initializeFeApp();
-
-        let showInitializationStatus = this.getConfig('appConfig.showInitializationStatus');
-        let showInitializationProgress = this.getConfig('appConfig.showInitializationProgress');
-
-        if (showInitializationStatus){
-            this.getHelper('appOperation').operationStart(this.appTranslations.translate('Initializing application'), false, true, showInitializationProgress);
-        }
-
-        if (!appState.isDebugWindow){
-            await this.asyncMessage({instruction: 'setupAppMenu', data: {}});
-        }
-
-        if (showInitializationStatus){
-            if (showInitializationProgress){
-                this.getHelper('appOperation').operationUpdate(100, 100);
-            }
-            this.getHelper('appOperation').operationFinish(this.appTranslations.translate('Application initialized'));
-        }
 
         return this;
     }
@@ -275,7 +201,7 @@ class AppWrapper extends AppBaseClass {
     }
 
     /**
-     * Adds event listeners for the AppWrapper instance
+     * Adds event listeners for the AppWrapper instance as well as globalEmitter listeners
      *
      * @return {undefined}
      */
@@ -292,7 +218,7 @@ class AppWrapper extends AppBaseClass {
     }
 
     /**
-     * Removes event listeners for the AppWrapper instance
+     * Removes event listeners for the AppWrapper instance as well as globalEmitter listeners
      *
      * @return {undefined}
      */
@@ -307,6 +233,107 @@ class AppWrapper extends AppBaseClass {
         }
 
     }
+
+    /**
+     * Initializes appConfig object
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeAppConfig () {
+        this.appConfig = new AppConfig(this.initialAppConfig);
+        await this.appConfig.initialize({silent: true});
+    }
+
+    /**
+     * Initializes base application config
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeConfig () {
+        appState.config = await this.appConfig.initializeConfig();
+        await this.initializeLogging();
+        await this.appConfig.initializeLogging();
+        await this.fileManager.initializeLogging();
+    }
+
+    /**
+     * Loads user config if present
+     *
+     * @async
+     * @return {undefined}
+     */
+    async loadUserConfig () {
+        appState.config = await this.appConfig.loadUserConfig();
+        await this.initializeLogging();
+        await this.appConfig.initializeLogging();
+        await this.fileManager.initializeLogging();
+    }
+
+    /**
+     * Initializes fileManager instance
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeFileManager() {
+        this.fileManager = new FileManager();
+        await this.fileManager.initialize();
+    }
+
+    /**
+     * Initializes WindowManager instance
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeWindowManager() {
+        this.windowManager = new WindowManager();
+        await this.windowManager.initialize();
+        if (this.getConfig('debug.devTools')){
+            this.windowManager.winState.devTools = true;
+        } else {
+            this.windowManager.winState.devTools = false;
+        }
+    }
+
+    async setupMenuAndTray(){
+        if (!appState.isDebugWindow){
+            await this.asyncMessage({instruction: 'initializeTrayIcon', data: {}});
+            await this.asyncMessage({instruction: 'initializeAppMenu', data: {}});
+            await this.asyncMessage({instruction: 'setupAppMenu', data: {}});
+        }
+    }
+
+
+    /**
+     * Loads user data to appState if present
+     *
+     * @async
+     * @return {undefined}
+     */
+    async loadUserData() {
+        appState.userData = await this.getHelper('userData').loadUserData();
+    }
+
+    setBaseAppErrorValues () {
+        if (!appState.appError.title){
+            appState.appError.title = this.translate(appState.appError.defaultTitle);
+        }
+        if (!appState.appError.text){
+            appState.appError.text = this.translate(appState.appError.defaultText);
+        }
+    }
+
+    checkDebugWindow () {
+        if (this.initialAppConfig.isDebugWindow){
+            appState.isDebugWindow = true;
+            delete this.initialAppConfig.isDebugWindow;
+            this.mainWindow = window.opener;
+        }
+    }
+
 
     /**
      * Loads language and translation data and initializes language and
@@ -325,18 +352,20 @@ class AppWrapper extends AppBaseClass {
      * Loads and instantiates app instance
      *
      * @async
-     * @return {undefined}
+     * @return {Boolean} Operation result
      */
     async setAppInstance(){
+        let result = false;
         let appFilePath;
-        try {
-            appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
-            App = await this.fileManager.loadFile(appFilePath, true);
+        appFilePath = path.join(process.cwd(), this.getConfig('appConfig.appFile', this.getConfig('wrapper.appFile')));
+        App = await this.fileManager.loadFile(appFilePath, true);
+        if (App && App.constructor && _.isFunction(App.constructor)){
             this.app = new App();
-        } catch (ex) {
-            this.log('Error instantiating application - "{1}"', 'error', [ex.stack]);
-            this.setAppError('Error instantiating application', '', ex.stack);
+            result = true;
+        } else {
+            throw new Error('Error instantiating app!');
         }
+        return result;
     }
 
     /**
@@ -359,15 +388,21 @@ class AppWrapper extends AppBaseClass {
      * Initializes app object
      *
      * @async
-     * @return {undefined}
+     * @return {Boolean} App initialization result
      */
     async initializeApp(){
+        let result = true;
         try {
             await this.app.initialize();
+            if (!(this.app && this.app.initialized)) {
+                result = false;
+            }
         } catch (ex) {
             this.log('Error initializing application - "{1}"', 'error', [ex.stack]);
             this.setAppError('Error initializing application', '', ex.stack);
+            result = false;
         }
+        return result;
     }
 
     /**
@@ -377,12 +412,14 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     async initializeSystemHelpers(){
+        this.log('Initializing wrapper system helpers', 'group');
         try {
             this.helpers = await this.initializeHelpers(this.getConfig('wrapper.systemHelperDirectories'));
         } catch (ex) {
             this.log('Error initializing wrapper system helpers - "{1}"', 'error', [ex.stack]);
             this.setAppError('Error initializing wrapper system helpers', '', ex.stack);
         }
+        this.log('Initializing wrapper system helpers', 'groupend');
     }
 
     /**
@@ -392,12 +429,14 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     async initializeWrapperHelpers(){
+        this.log('Initializing wrapper helpers', 'group');
         try {
             this.helpers = _.merge(this.helpers, await this.initializeHelpers(this.getConfig('wrapper.helperDirectories')));
         } catch (ex) {
             this.log('Error initializing wrapper helpers - "{1}"', 'error', [ex.stack]);
             this.setAppError('Error initializing wrapper helpers', '', ex.stack);
         }
+        this.log('Initializing wrapper helpers', 'groupend');
     }
 
     /**
@@ -448,91 +487,6 @@ class AppWrapper extends AppBaseClass {
         }
 
         return helpers;
-    }
-
-    /**
-     * Initializes frontend part of the app, creating Vue instance
-     *
-     * @async
-     * @param {Boolean} noFinalize Flag to prevent finalization (used when reinitializing)
-     * @return {Vue} An object representing Vue app instance
-     */
-    async initializeFeApp(noFinalize){
-        this.log('Initializing Vue app...', 'debug', []);
-        let utilHelper = this.getHelper('util');
-        if (!this.appTemplate){
-            this.appTemplate = document.querySelector('.nw-app-wrapper').innerHTML;
-        } else {
-            document.querySelector('.nw-app-wrapper').innerHTML = this.appTemplate;
-        }
-
-        let returnPromise;
-        let resolveReference;
-        returnPromise = new Promise((resolve) => {
-            resolveReference = resolve;
-        });
-
-        window.feApp = new Vue({
-            el: '.nw-app-wrapper',
-            template: window.indexTemplate,
-            data: appState,
-            mixins: this.helpers.componentHelper.vueMixins,
-            filters: this.helpers.componentHelper.vueFilters,
-            components: this.helpers.componentHelper.vueComponents,
-            translations: appState.translations,
-            mounted: async () => {
-                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
-                    document.body.addEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
-                }
-                this.addUserMessage('Application initialized.', 'info', []);
-                if (!noFinalize){
-                    await this.finalize();
-                }
-                if (appState.isDebugWindow){
-                    this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
-                } else {
-                    if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
-                        this.log('Active config file: "{1}"', 'info', [appState.activeConfigFile], true);
-                    }
-                }
-
-                resolveReference(window.feApp);
-            },
-            beforeDestroy: async () => {
-                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
-                    document.body.removeEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
-                }
-            },
-            destroyed: async () => {
-                this.emit('feApp:destroyed');
-            }
-        });
-
-        return returnPromise;
-    }
-
-    /**
-     * Reinitializes frontend app by destroying it and initializing it again
-     *
-     * @async
-     * @return {Vue} An object representing Vue app instance
-     */
-    async reinitializeFeApp(){
-        this.once('feApp:destroyed', async () => {
-            window.feApp = null;
-            appState.debugMessages = [];
-            appState.allDebugMessages = [];
-            appState.userMessages = [];
-            appState.allUserMessages = [];
-            await this.wait(appState.config.shortPauseDuration);
-            await this.getHelper('component').initializeComponents();
-            await this.initializeFeApp();
-            this.getHelper('staticFiles').reloadCss();
-        });
-        // appState.status.appLoaded = false;
-        appState.status.appInitialized = false;
-        // appState.status.appReady = false;
-        window.getFeApp().$destroy();
     }
 
     /**
@@ -1050,6 +1004,18 @@ class AppWrapper extends AppBaseClass {
         return true;
     }
 
+    /**
+     * Initializes user and debug messag logs, checking and creating logs files and dirs if necessary
+     *
+     * @async
+     * @return {Boolean} Result of logs initialization
+     */
+    async initializeLogs () {
+        let result = true;
+        result = result && await this.initializeDebugMessageLog();
+        result = result && await this.initializeUserMessageLog();
+        return result;
+    }
 
     /**
      * Initializes debug message log file if debug message logging to file is enabled
@@ -1349,11 +1315,13 @@ class AppWrapper extends AppBaseClass {
     /**
      * Process eventual command line params
      *
-     * @return {undefined}
+     * @return {Boolean} True if app loading should continue, false otherwise
      */
     async processCommandParams () {
+        let shouldContinue = true;
         if (nw.App.argv && nw.App.argv.length){
             if (_.includes(nw.App.argv, 'resetAll')){
+                shouldContinue = false;
                 await this.appConfig.clearUserConfig(true);
                 await this.getHelper('userData').clearUserData();
                 appState.userData = {};
@@ -1361,18 +1329,21 @@ class AppWrapper extends AppBaseClass {
                 this.message({instruction:'log', data: {message: 'All data reset', force: true}});
                 this.exitApp(true);
             } else if (_.includes(nw.App.argv, 'resetData')){
+                shouldContinue = false;
                 await this.getHelper('userData').clearUserData();
                 appState.userData = {};
                 this.log('User data reset', 'info', [], true);
                 this.message({instruction:'log', data: {message: 'User data reset', force: true}});
                 this.exitApp(true);
             } else if (_.includes(nw.App.argv, 'resetConfig')){
+                shouldContinue = false;
                 await this.appConfig.clearUserConfig(true);
                 this.log('Config data reset', 'info', [], true);
                 this.message({instruction:'log', data: {message: 'Config data reset', force: true}});
                 this.exitApp(true);
             }
         }
+        return shouldContinue;
     }
 
     /**
@@ -1488,6 +1459,20 @@ class AppWrapper extends AppBaseClass {
         }
         initialAppConfig = this.mergeDeep(appStateConfig, initialAppConfig);
         return initialAppConfig;
+    }
+
+    /**
+     * Initializes temp dirs, creating them if necessary
+     *
+     * @async
+     * @return {undefined}
+     */
+    async initializeTempDirs () {
+        let tmpDataDir = this.getConfig('appConfig.tmpDataDir');
+        if (tmpDataDir){
+            tmpDataDir = path.resolve(tmpDataDir);
+            await this.fileManager.createDirRecursive(tmpDataDir);
+        }
     }
 }
 exports.AppWrapper = AppWrapper;

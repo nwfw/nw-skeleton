@@ -62,9 +62,12 @@ exports.config = {
             debugToFileAppend: false,
             debugLogFilename: 'main-debug',
         },
+        mainTemplate: 'node_modules/nw-skeleton/app-wrapper/template/index.html',
     },
     wrapper : {
         appFile: './node_modules/nw-skeleton/app-wrapper/js/app',
+
+        appErrorTemplatePartial: 'node_modules/nw-skeleton/app-wrapper/template/partial/error.html',
 
         themeBaseDir: './node_modules/nw-skeleton/app-wrapper/css/themes',
 
@@ -144,8 +147,6 @@ exports.config = {
         tmpDataDir: './var/data',
         logDir: './var/log',
         dataDir: './data',
-        showInitializationStatus: true,
-        showInitializationProgress: true,
 
         allowFullscreen: true,
         hideFullscreenHeader: true,
@@ -161,6 +162,7 @@ exports.config = {
         themeBaseDir: './app/css/themes',
 
         cssCompiledFile: 'css/dist.css',
+
         initCssFiles: [
             '/node_modules/nw-skeleton/app-wrapper/css/config.css',
         ],
@@ -171,16 +173,14 @@ exports.config = {
             '/node_modules/nw-skeleton/app-wrapper/css/transitions.css'
         ],
         overrideCssFiles: [],
+        debugCssFiles: [
+            '/node_modules/nw-skeleton/app-wrapper/css/debug.css'
+        ],
 
         initJsFiles: [],
         jsFiles: [
             '/node_modules/nw-skeleton/app-wrapper/js/lib/ext/vue.js'
         ],
-
-        debugCssFiles: [
-            '/node_modules/nw-skeleton/app-wrapper/css/debug.css'
-        ],
-
         debugJsFiles: [],
 
         componentMapping: {},

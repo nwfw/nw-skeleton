@@ -1,0 +1,90 @@
+<style type="text/css">
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+    .error-wrapper {
+        padding: 10px;
+        width: calc(100vw - 20px);
+        height: calc(100vh - 20px);
+        display: flex;
+        flex-flow:column;
+        justify-content:center;
+        font-family: Arial, Helvetica, sans-serif;
+        color:#FFFFFF;
+        background: #990000;
+        position: relative;
+    }
+    .error-wrapper .close-link {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        display: block;
+        color: #FFFFFF;
+        background: none;
+        font-size: 1.5rem;
+        line-height: 1.5rem;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    .error-wrapper .close-link:hover {
+        text-decoration: none;
+        color: #FF0000;
+    }
+    .error-wrapper h1 {
+        font-size: 2rem;
+        text-align:center;
+    }
+    .error-wrapper h2 {
+        margin: 20px auto;
+        max-width: 90%;
+        word-break: break-word;
+        font-size: 1.2rem;
+        text-align:center;
+    }
+    .error-wrapper .stack {
+        font-size: 1rem;
+        background: #CC0000;
+        padding: 10px;
+        overflow: auto;
+        max-width: 80%;
+        margin: 0 auto;
+    }
+    .error-wrapper .stack div {
+        font-family: monospace;
+        padding: 3px 0;
+    }
+    .error-wrapper .close-button {
+        font-size: 1rem;
+        text-align: center;
+        display:inline-block;
+        margin: 10px auto;
+        color: #990000;
+        font-weight: bold;
+        border: 1px solid #FFFFFF;
+        border-radius: 5px;
+        padding: 5px 10px;
+        background: #FFFFFF;
+        text-decoration: none;
+    }
+    .error-wrapper .close-button:hover {
+        background: #FF0000;
+        color: #FFFFFF;
+        text-decoration: none;
+    }
+</style>
+<div class="error-wrapper">
+    <a href="#" onclick="window.close();" class="close-link">x</a>
+    <h1>
+        Error
+    </h1>
+    <h2>
+        <%= message %>
+    </h2>
+    <div class="stack">
+        <%= stack %>
+    </div>
+    <a class="close-button" href="#" onclick="window.close();">
+        Exit
+    </a>
+</div>

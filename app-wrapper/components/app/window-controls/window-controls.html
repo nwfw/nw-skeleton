@@ -90,7 +90,7 @@
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
-							<a class="window-control window-control-destructive window-control-reinitialize-fe-app " @click.prevent="callViewHandler" data-click-handler="reinitializeFeApp">
+							<a class="window-control window-control-destructive window-control-reinitialize-fe-app " @click.prevent="callViewHandler" data-click-handler="app.reinitializeFeApp">
 								<span data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-repeat"></span>
 								<span v-html="translate('Reinitialize app')" data-event-target="parent" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 								<span v-html="(appState.platformData.platform.isMac ? '⌘' : 'Ctrl') + ' + ⇧ + u'" data-event-target="parent" class="window-control-submenu-item-shortcut"></span>

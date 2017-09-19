@@ -35,6 +35,7 @@ var appState;
  * @memberOf appWrapper
  * @property {Boolean}  initialized     Flag to indicate whether app instance is initialized
  * @property {Boolean}  finalized       Flag to indicate whether app instance is finalized
+ * @property {String}   appTemplate     Html contents of main app template
  */
 class App extends AppBaseClass {
 
@@ -55,6 +56,7 @@ class App extends AppBaseClass {
 
         this.initialized = false;
         this.finalized = false;
+        this.appTemplate = '';
 
         return this;
     }
@@ -83,6 +85,7 @@ class App extends AppBaseClass {
             await this.loadSubFiles();
             await this.initializeSubFiles();
             this.initialized = true;
+            await this.initializeFeApp();
         }
         return this;
     }
@@ -244,6 +247,90 @@ class App extends AppBaseClass {
             }
             this.log('Shutting down {1} app sub classes', 'groupend', [subFileCount]);
         }
+    }
+
+    /**
+     * Initializes frontend part of the app, creating Vue instance
+     *
+     * @async
+     * @param {Boolean} noFinalize Flag to prevent finalization (used when reinitializing)
+     * @return {Vue} An object representing Vue app instance
+     */
+    async initializeFeApp(noFinalize){
+        this.log('Initializing Vue app...', 'debug', []);
+        let utilHelper = this.getHelper('util');
+        let componentHelper = this.getHelper('component');
+        if (!this.appTemplate){
+            this.appTemplate = document.querySelector('.nw-app-wrapper').innerHTML;
+        } else {
+            document.querySelector('.nw-app-wrapper').innerHTML = this.appTemplate;
+        }
+
+        let returnPromise;
+        let resolveReference;
+        returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        window.feApp = new Vue({
+            el: '.nw-app-wrapper',
+            template: window.indexTemplate,
+            data: appState,
+            mixins: componentHelper.vueMixins,
+            filters: componentHelper.vueFilters,
+            components: componentHelper.vueComponents,
+            translations: appState.translations,
+            mounted: async () => {
+                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
+                    document.body.addEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
+                }
+                this.addUserMessage('Application initialized.', 'info', []);
+                if (!noFinalize){
+                    await _appWrapper.finalize();
+                }
+                if (appState.isDebugWindow){
+                    this.addUserMessage('Debug window application initialized', 'info', [], false,  false);
+                } else {
+                    if (appState.activeConfigFile && appState.activeConfigFile != '../../config/config.js'){
+                        this.log('Active config file: "{1}"', 'info', [appState.activeConfigFile], true);
+                    }
+                }
+
+                resolveReference(window.feApp);
+            },
+            beforeDestroy: async () => {
+                if (this.getConfig('appConfig.disableRightClick') && !this.getConfig('debug.enabled')){
+                    document.body.removeEventListener('contextmenu', utilHelper.boundMethods.prevent, false);
+                }
+            },
+            destroyed: async () => {
+                _appWrapper.emit('feApp:destroyed');
+            }
+        });
+
+        return returnPromise;
+    }
+
+    /**
+     * Reinitializes frontend app by destroying it and initializing it again
+     *
+     * @async
+     * @return {Vue} An object representing Vue app instance
+     */
+    async reinitializeFeApp(){
+        _appWrapper.once('feApp:destroyed', async () => {
+            window.feApp = null;
+            appState.debugMessages = [];
+            appState.allDebugMessages = [];
+            appState.userMessages = [];
+            appState.allUserMessages = [];
+            await _appWrapper.wait(appState.config.shortPauseDuration);
+            await _appWrapper.getHelper('component').initializeComponents();
+            await this.initializeFeApp();
+            this.getHelper('staticFiles').reloadCss();
+        });
+        appState.status.appInitialized = false;
+        window.getFeApp().$destroy();
     }
 
     /**

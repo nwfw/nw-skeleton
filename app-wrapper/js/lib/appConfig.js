@@ -19,7 +19,6 @@ var appState;
  *
  * @property {Object}           initialAppConfig    Object that stores initial app config that wrapper was initialized with
  * @property {Object}           baseConfig          Object that stores base app config
- * @property {Object}           appStateConfig      Object that stores app state config
  * @property {Object}           defaultConfig       Object that stores default config
  * @property {Object}           config              Object that stores app config
  * @property {Object}           userConfig          Object that stores user config
@@ -48,7 +47,6 @@ class AppConfig extends AppBaseClass {
 
         this.initialAppConfig = initialAppConfig;
         this.baseConfig = {};
-        this.appStateConfig = {};
         this.defaultConfig = {};
         this.config = {};
         this.userConfig = {};
@@ -72,9 +70,7 @@ class AppConfig extends AppBaseClass {
      */
     async initializeConfig () {
 
-        this.appStateConfig = require('../../../config/appWrapperConfig').config;
-
-        let theConfig = _appWrapper.mergeDeep({}, this.appStateConfig, this.initialAppConfig);
+        let theConfig = _.cloneDeep(this.initialAppConfig);
         _.each(theConfig.configData.vars, function(value, key){
             if (!value.editable){
                 theConfig.configData.uneditableConfig.push(key);

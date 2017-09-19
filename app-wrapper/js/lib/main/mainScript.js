@@ -131,8 +131,9 @@ class MainScript extends MainBaseClass {
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
-        nw.Window.open(this.manifest.mainTemplate, this.manifest.window, (win)=>{
+        nw.Window.open(this.config.main.mainTemplate, this.manifest.window, (win) => {
             this.mainWindow = win;
+            win.__initialMainConfig = this.config;
             this.addMainWindowEventListeners();
             this.initializeGlobalEmitter();
             this.mainWindow.window.sessionStorage.setItem('appStartTime', this.startTime);

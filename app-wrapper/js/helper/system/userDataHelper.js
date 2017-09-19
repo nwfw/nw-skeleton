@@ -87,7 +87,7 @@ class UserDataHelper extends AppBaseClass {
                 this.addUserMessage('Saved {1} user data variables.', 'info', [_.keys(userData).length], false,  false);
             }
         } else {
-            this.log('Not saving user data - data unchanged', 'info', []);
+            // this.log('Not saving user data - data unchanged', 'info', []);
         }
         return saved;
     }
