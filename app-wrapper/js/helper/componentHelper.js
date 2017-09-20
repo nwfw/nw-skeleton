@@ -44,6 +44,7 @@ class ComponentHelper extends AppBaseClass {
         _appWrapper = this.getAppWrapper();
         appState = _appWrapper.getAppState();
 
+        this.componentNames = [];
         this.allComponents = {};
         this.vueComponents = {};
         this.vueGlobalComponents = {};
@@ -348,6 +349,7 @@ class ComponentHelper extends AppBaseClass {
                             let currentMappingData = typeMapping[j];
 
                             for (let currentMappingName in currentMappingData){
+                                this.componentNames.push(currentMappingName);
                                 let currentMapping = currentMappingData[currentMappingName];
                                 if (type == 'component' && componentModuleData[type][i].parentComponent){
                                     let parentMapping = this.getComponentMapping(mapping, componentModuleData[type][i].parentComponent);
@@ -457,8 +459,6 @@ class ComponentHelper extends AppBaseClass {
             this.vueModalComponents = _.merge(this.vueModalComponents, await this.processComponents(modalDir, modalMapping, null, 'app modal'));
         }
 
-
-
         let globalDirs = this.getConfig('wrapper.componentDirectories.globalComponent');
         for(let i=0; i<globalDirs.length; i++){
             let globalDir = path.resolve(globalDirs[i]);
@@ -495,6 +495,7 @@ class ComponentHelper extends AppBaseClass {
         }
 
         this.allComponents = _.merge(this.vueComponents, this.vueGlobalComponents, this.vueModalComponents);
+        this.componentNames = _.uniq(this.componentNames);
 
         for(let globalComponentName in this.vueGlobalComponents){
             Vue.component(globalComponentName, this.vueGlobalComponents[globalComponentName]);
@@ -551,7 +552,7 @@ class ComponentHelper extends AppBaseClass {
      * @return {Object}                             Initialized component
      */
     async initializeComponent(componentBaseDir, componentName, componentMapping, parentName, additionalSubComponents, overrideDirs){
-
+        this.componentNames.push(componentName);
         let componentOverrideDirs = [];
         if (!overrideDirs){
             overrideDirs = [];
@@ -636,6 +637,7 @@ class ComponentHelper extends AppBaseClass {
      */
     async prepareComponentArray(params) {
         let component = await this.prepareComponent(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
+        this.allComponents[component.name] = component;
         await _appWrapper.getHelper('staticFiles').unwatchFiles();
         await _appWrapper.getHelper('staticFiles').generateCss(false, true);
         _appWrapper.getHelper('staticFiles').reloadCss();

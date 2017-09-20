@@ -17,7 +17,6 @@ const BaseClass = require('../base').BaseClass;
  * @class
  * @memberOf mainScript
  * @extends {appWrapper.BaseClass}
- * @property {Object}   colors            Terminal color escape sequences
  */
 class MainBaseClass extends BaseClass {
 
@@ -29,13 +28,6 @@ class MainBaseClass extends BaseClass {
      */
     constructor () {
         super();
-        this.colors = {
-            red: '\x1B[1;31m',
-            green: '\x1B[1;32m',
-            yellow: '\x1B[1;33m',
-            gray: '\x1B[0;37m',
-            reset: '\x1B[0m'
-        };
         this.boundMethods = {
             printLog: null,
             consoleLog: null
@@ -207,20 +199,21 @@ class MainBaseClass extends BaseClass {
      * @return {undefined}
      */
     printLog (message, type){
+        let colors = this.getConfig('stdoutColors');
         if (!type){
             type = 'info';
         }
         if (type == 'info'){
-            process.stdout.write(this.colors.green);
+            process.stdout.write(colors.green);
         } else if (type == 'warning'){
-            process.stdout.write(this.colors.yellow);
+            process.stdout.write(colors.yellow);
         } else if (type == 'error'){
-            process.stdout.write(this.colors.red);
+            process.stdout.write(colors.red);
         } else {
-            process.stdout.write(this.colors.gray);
+            process.stdout.write(colors.gray);
         }
         process.stdout.write(message.replace(/\r?\n?$/, ''));
-        process.stdout.write(this.colors.reset + '\n');
+        process.stdout.write(colors.reset + '\n');
     }
 
     /**

@@ -333,6 +333,26 @@ class BaseClass extends eventEmitter {
             clearInterval(this.intervals[name]);
         }
     }
+
+    /**
+     * Logs message to process stdout
+     *
+     * @param  {String} message Message to log
+     * @return {undefined}
+     */
+    stdLog(message) {
+        process.stdout.write(message);
+    }
+
+    /**
+     * Logs message to process stdout with newline at the end
+     *
+     * @param  {String} message Message to log
+     * @return {undefined}
+     */
+    stdLogLine(message) {
+        process.stdout.write(message.replace(/\n?$/, '\n'));
+    }
 }
 exports.BaseClass = BaseClass;
 

@@ -796,6 +796,62 @@ class UtilHelper extends AppBaseClass {
         }
         return sorted;
     }
+
+    /**
+     * Extracts and returns command line params object
+     *
+     * @return {Object} Command line params object
+     */
+    getCommandParams () {
+        let args = {};
+        if (nw.App.argv && nw.App.argv.length){
+            for (let i=0; i<nw.App.argv.length; i++){
+                let arg = nw.App.argv[i];
+                let argChunks = arg.split('=');
+                let argName = argChunks[0];
+                let argValue = true;
+                if (argChunks.length > 1){
+                    argValue = argChunks.slice(1).join('=');
+                    if (argValue === 'true' || argValue === '1'){
+                        argValue = true;
+                    } else if (argValue === 'false' || argValue === '0'){
+                        argValue = false;
+                    }
+                }
+                args[argName] = argValue;
+            }
+        }
+        return args;
+    }
+
+    /**
+     * Checks for command params and executes all their handlers
+     *
+     * @async
+     * @param  {Object} paramsMap Command params map from configuration
+     * @return {undefined}
+     */
+    async executeCommandParams (paramsMap){
+        let args = this.getCommandParams();
+        let argNames = Object.keys(args);
+        if (args && argNames.length){
+            for (let i=0; i<paramsMap.length; i++){
+                let paramData = paramsMap[i];
+                let paramName = paramData.name;
+                if (_.includes(argNames, paramName)) {
+                    let methodName = paramData.method;
+                    let paramValue = args[paramName];
+                    if (paramName && methodName){
+                        let methodParams = [];
+                        if (paramData.value){
+                            methodParams.push(paramValue);
+                        }
+                        await _appWrapper.callObjMethod(methodName, methodParams);
+                    }
+                }
+            }
+        }
+    }
 }
 
 exports.UtilHelper = UtilHelper;

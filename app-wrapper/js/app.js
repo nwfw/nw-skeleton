@@ -100,6 +100,7 @@ class App extends AppBaseClass {
      */
     async finalize() {
         await _appWrapper.nextTick();
+        await this.processCommandParams();
         let returnValue = true;
         this.addUserMessage('Finalizing application', 'debug', []);
         if (!this.finalized){
@@ -341,6 +342,36 @@ class App extends AppBaseClass {
      */
     localRequire (moduleName){
         return require(moduleName);
+    }
+
+    /**
+     * Process eventual command line params
+     *
+     * @async
+     * @return {Boolean} True if app loading should continue, false otherwise
+     */
+    async processCommandParams () {
+        let utilHelper = this.getHelper('util');
+        await utilHelper.executeCommandParams(appState.config.appConfig.commandParamsMap);
+    }
+
+    /**
+     * Handler for --dev param - enables or disables devMode and dev tools
+     *
+     * @param {Boolean} mode Flag to enable or disable dev mode
+     * @return {undefined}
+     */
+    setDevMode (mode) {
+        appState.config.debug.devMode = mode;
+        if (appState.config.debug.devTools != mode){
+            appState.config.debug.devTools = mode;
+            _appWrapper.windowManager.toggleDevTools();
+        }
+        if (mode){
+            this.log('Dev mode enabled', 'info');
+        } else {
+            this.log('Dev mode disabled', 'info');
+        }
     }
 }
 exports.App = App;

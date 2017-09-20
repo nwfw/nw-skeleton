@@ -157,9 +157,7 @@ class AppWrapper extends AppBaseClass {
         await this.initializeLanguage();
         this.setBaseAppErrorValues();
 
-        if (!await this.processCommandParams()){
-            return;
-        }
+        await this.processCommandParams();
 
         await this.setupMenuAndTray();
 
@@ -181,6 +179,7 @@ class AppWrapper extends AppBaseClass {
         this.windowManager.showWindow();
         appState.status.appLoaded = true;
         await this.wait(parseInt(parseFloat(this.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10));
+        window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
         let retValue;
         try {
             retValue = await this.app.finalize();
@@ -192,7 +191,6 @@ class AppWrapper extends AppBaseClass {
             appState.status.appInitialized = true;
             appState.status.appReady = true;
         }
-        window.feApp.$watch('appState.config', this.appConfig.configChanged.bind(this.appConfig), {deep: true});
         this.log('Initializing application wrapper.', 'groupend', []);
         if (!appState.isDebugWindow){
             this.message({instruction: 'log', data: {type: 'debug', message: 'Application initialized', force: false}});
@@ -1315,35 +1313,88 @@ class AppWrapper extends AppBaseClass {
     /**
      * Process eventual command line params
      *
-     * @return {Boolean} True if app loading should continue, false otherwise
+     * @async
+     * @return {undefined}
      */
     async processCommandParams () {
-        let shouldContinue = true;
-        if (nw.App.argv && nw.App.argv.length){
-            if (_.includes(nw.App.argv, 'resetAll')){
-                shouldContinue = false;
-                await this.appConfig.clearUserConfig(true);
-                await this.getHelper('userData').clearUserData();
-                appState.userData = {};
-                this.log('All data reset', 'info', [], true);
-                this.message({instruction:'log', data: {message: 'All data reset', force: true}});
-                this.exitApp(true);
-            } else if (_.includes(nw.App.argv, 'resetData')){
-                shouldContinue = false;
-                await this.getHelper('userData').clearUserData();
-                appState.userData = {};
-                this.log('User data reset', 'info', [], true);
-                this.message({instruction:'log', data: {message: 'User data reset', force: true}});
-                this.exitApp(true);
-            } else if (_.includes(nw.App.argv, 'resetConfig')){
-                shouldContinue = false;
-                await this.appConfig.clearUserConfig(true);
-                this.log('Config data reset', 'info', [], true);
-                this.message({instruction:'log', data: {message: 'Config data reset', force: true}});
-                this.exitApp(true);
-            }
+        let utilHelper = this.getHelper('util');
+        await utilHelper.executeCommandParams(this.getConfig('wrapper.commandParamsMap'));
+    }
+
+    /**
+     * Command param handler for --reset param - resets app config, data or both
+     *
+     * @async
+     * @param  {string} reset String that determines what to reset
+     * @return {undefined}
+     */
+    async dataReset(reset){
+        let userDataHelper = this.getHelper('userData');
+        if (reset == 'config') {
+            await this.appConfig.clearUserConfig(true);
+            this.log('Config data reset', 'info', [], true);
+            this.message({instruction:'log', data: {message: 'Config data reset', force: true}});
+            this.exitApp(true);
+        } else if (reset == 'data') {
+            await userDataHelper.clearUserData();
+            appState.userData = {};
+            this.log('User data reset', 'info', [], true);
+            this.message({instruction:'log', data: {message: 'User data reset', force: true}});
+            this.exitApp(true);
+        } else if (reset == 'all') {
+            await this.appConfig.clearUserConfig(true);
+            await userDataHelper.clearUserData();
+            appState.userData = {};
+            this.log('All data reset', 'info', [], true);
+            this.message({instruction:'log', data: {message: 'User and config data reset', force: true}});
+            this.exitApp(true);
+        } else {
+            this.stdLogLine('App reset parameter "' + reset + '" not recognized, please use either "data", "config" or "all"');
+            this.exitApp(true);
         }
-        return shouldContinue;
+    }
+
+    /**
+     * Command param --help handler - prints command params info to stdout and exits app
+     *
+     * @return {undefined}
+     */
+    showCommandParamsHelp () {
+        let colors = this.getConfig('stdoutColors');
+        let tabSize = 8;
+        let paramData = [];
+        let longestParamNameLength = 0;
+        let paramsMap = _.concat(appState.config.wrapper.commandParamsMap, appState.config.appConfig.commandParamsMap);
+        for (let i=0; i<paramsMap.length; i++){
+            let paramMap = paramsMap[i];
+            let paramName = paramMap.name;
+            let paramNameLength = paramMap.name.length + 6;
+            if (paramMap.value){
+                paramName += colors.reset + '=' + colors.gray + 'value' + colors.reset;
+            } else {
+                paramName += '      ';
+            }
+            if (longestParamNameLength < paramNameLength){
+                longestParamNameLength = paramNameLength;
+            }
+            let paramDescription = paramMap.description || 'No description';
+            paramData.push({
+                paramDescription: paramDescription,
+                paramName: paramName,
+                nameLength: paramNameLength
+            });
+        }
+        let mostTabs = parseInt((longestParamNameLength / tabSize), 10) + 1;
+
+        let helpText = '\n\nUsage: ' + colors.gray + 'command ' + colors.reset + ' [' + colors.yellow + 'params' + colors.reset + ']\n';
+        helpText += '    Available command params:\n';
+        for (let i=0; i<paramData.length; i++){
+            let tabCount = mostTabs - (parseInt((paramData[i].nameLength / tabSize), 10) - 1);
+            let tabs = new Array(tabCount).join('\t');
+            helpText += '\t' + colors.yellow + paramData[i].paramName +  colors.reset + tabs + paramData[i].paramDescription + '\n';
+        }
+        this.stdLog(helpText);
+        this.exitApp(true);
     }
 
     /**
@@ -1430,8 +1481,11 @@ class AppWrapper extends AppBaseClass {
      * @return {Object}                  Application config object
      */
     getInitialAppConfig(defaultAppConfig){
-        let initialAppConfig = defaultAppConfig;
         let appStateConfig = require('../../config/appWrapperConfig').config;
+        let initialAppConfig = defaultAppConfig;
+        if (!(initialAppConfig && (_.isObject(initialAppConfig) && Object.keys(initialAppConfig).length))){
+            initialAppConfig = appStateConfig;
+        }
         let execPath = this.getExecPath();
         let appDir = this.getAppDir();
 
@@ -1452,12 +1506,11 @@ class AppWrapper extends AppBaseClass {
             let initialConfigData;
             try {
                 initialConfigData = require(configFilePath);
-                initialAppConfig = this.mergeDeep(defaultAppConfig, initialConfigData.config);
+                initialAppConfig = this.mergeDeep({}, initialAppConfig, initialConfigData.config);
             } catch (ex) {
                 console.error(ex);
             }
         }
-        initialAppConfig = this.mergeDeep(appStateConfig, initialAppConfig);
         return initialAppConfig;
     }
 

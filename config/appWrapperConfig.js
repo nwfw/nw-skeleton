@@ -69,6 +69,21 @@ exports.config = {
 
         appErrorTemplatePartial: 'node_modules/nw-skeleton/app-wrapper/template/partial/error.html',
 
+        commandParamsMap: [
+            {
+                name: '--reset',
+                method: 'dataReset',
+                value: true,
+                description: 'Resets app data with "data", config with "config" or both with "all"'
+            },
+            {
+                name: '--help',
+                method: 'showCommandParamsHelp',
+                value: false,
+                description: 'Displays this help text'
+            }
+        ],
+
         themeBaseDir: './node_modules/nw-skeleton/app-wrapper/css/themes',
 
         componentCodeRegex: /\.js$/,
@@ -143,6 +158,14 @@ exports.config = {
     appConfig: {
         appFile: null,
         appSubFiles: [],
+        commandParamsMap: [
+            {
+                name: '--dev',
+                method: 'app.setDevMode',
+                value: true,
+                description: 'Sets dev mode to "true" or "false"'
+            }
+        ],
         mainComponent: 'app-main',
         tmpDataDir: './var/data',
         logDir: './var/log',
@@ -302,6 +325,8 @@ exports.config = {
             'appConfig.appSubFiles',
             'userMessages.forceUserMessages',
             'debug.forceDebug',
+            'debug.devTools',
+            'debug.devMode',
             'appInfo',
             'currentLanguage',
             'currentLanguageName',
@@ -540,7 +565,8 @@ exports.config = {
         debugMessagesFilename: 'debug-messages',
         messagesExpanded: false,
         displayTimestamps: true,
-        devTools: true,
+        devMode: false,
+        devTools: false,
         alwaysTrace: false,
         debugLevel: 3,
         maxVisibleDebugMessages: 200,
@@ -574,6 +600,14 @@ exports.config = {
             WindowManager: false,
             WrapperApp: false
         },
+    },
+
+    stdoutColors: {
+        red: '\x1B[1;31m',
+        green: '\x1B[1;32m',
+        yellow: '\x1B[1;33m',
+        gray: '\x1B[0;37m',
+        reset: '\x1B[0m'
     },
 
     windowCloseTimeoutDuration: 15000,
