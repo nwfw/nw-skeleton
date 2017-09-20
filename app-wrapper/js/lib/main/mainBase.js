@@ -421,7 +421,7 @@ class MainBaseClass extends BaseClass {
             mw = ms.mainWindow;
         }
         if (!mw){
-            this.log('Can not find mainWindow!', 'error', []);
+            // this.log('Can not find mainWindow!', 'error', []);
         }
         return mw;
     }

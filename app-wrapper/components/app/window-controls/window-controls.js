@@ -154,12 +154,6 @@ exports.component = {
                 }
             }
         },
-        reinitializeAppMenu: async function(){
-            await _appWrapper.asyncMessage({instruction: 'reinitializeAppMenu', data: {}});
-        },
-        reinitializeTrayIcon: async function(){
-            await _appWrapper.asyncMessage({instruction: 'reinitializeTrayIcon', data: {}});
-        },
         messageInfo: function(){
             _appWrapper.messageInfo({}, true);
         },

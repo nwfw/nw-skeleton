@@ -157,6 +157,10 @@ class AppWrapper extends AppBaseClass {
         await this.initializeLanguage();
         this.setBaseAppErrorValues();
 
+        if (appState.windowState.title){
+            appState.windowState.title = this.translate(appState.windowState.title);
+        }
+
         await this.processCommandParams();
 
         await this.setupMenuAndTray();
@@ -1526,6 +1530,26 @@ class AppWrapper extends AppBaseClass {
             tmpDataDir = path.resolve(tmpDataDir);
             await this.fileManager.createDirRecursive(tmpDataDir);
         }
+    }
+
+    /**
+     * Reinitializes app menu
+     *
+     * @async
+     * @return {undefined}
+     */
+    async reinitializeAppMenu (){
+        await this.asyncMessage({instruction: 'reinitializeAppMenu', data: {}});
+    }
+
+    /**
+     * Reinitializes app tray icon
+     *
+     * @async
+     * @return {undefined}
+     */
+    async reinitializeTrayIcon (){
+        await this.asyncMessage({instruction: 'reinitializeTrayIcon', data: {}});
     }
 }
 exports.AppWrapper = AppWrapper;

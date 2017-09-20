@@ -535,6 +535,8 @@ class AppTranslations extends AppBaseClass {
                 this.addUserMessage('Changing language in debug window to "{1}".', 'info', [selectedName], false, false, true);
                 _appWrapper.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.debugWindow.app, selectedName, selectedCode, selectedLocale, true);
             }
+            _appWrapper.reinitializeAppMenu();
+            _appWrapper.reinitializeTrayIcon();
             return true;
         } else {
             this.addUserMessage('Could not change language!', 'error', [], false, false);

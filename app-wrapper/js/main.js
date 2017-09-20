@@ -23,7 +23,7 @@ var mainScript;
 async function main(){
     try {
         mainScript = new MainScript();
-        await mainScript.initialize({manifest: manifest, config: config, silent: false});
+        await mainScript.initialize({manifest: manifest, config: config, silent: true});
         await mainScript.start();
     } catch (ex) {
         process.stdout.write('\n\n' + ex.stack + '\n\n');

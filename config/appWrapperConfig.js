@@ -328,9 +328,7 @@ exports.config = {
             'debug.devTools',
             'debug.devMode',
             'appInfo',
-            'currentLanguage',
-            'currentLanguageName',
-            'currentLocale',
+            'stdoutColors'
         ],
         defaultVar: {
             editable: true,

@@ -57,13 +57,13 @@
 						</div>
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator"></div>
 						<div class="window-control-submenu-item-wrapper">
-							<a class="window-control window-control-reinitialize-app-menu"  @click.prevent="reinitializeAppMenu">
+							<a class="window-control window-control-reinitialize-app-menu"  @click.prevent="callViewHandler" data-click-handler="reinitializeAppMenu">
 								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-bars"></span>
 								<span v-html="translate('Reinitialize application menu')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>
 						</div>
 						<div class="window-control-submenu-item-wrapper">
-							<a class="window-control window-control-reinitialize-tray-icon"  @click.prevent="reinitializeTrayIcon">
+							<a class="window-control window-control-reinitialize-tray-icon"  @click.prevent="callViewHandler" data-click-handler="reinitializeTrayIcon">
 								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-align-center"></span>
 								<span v-html="translate('Reinitialize application tray icon')" class="window-control-submenu-item-section window-control-submenu-item-text"></span>
 							</a>

@@ -181,9 +181,10 @@ class MenuHelper extends MainBaseClass {
      */
     async initializeAppMenuItem (menuItemData, menuIndex) {
         let menuItem;
-        let menuItemObj = _.extend(menuItemData.menuItem, {
+        let menuItemObj = _.cloneDeep(_.extend(menuItemData.menuItem, {
             click: this.handleMenuClick.bind(this, menuIndex, menuItemData.menuItem)
-        });
+        }));
+        menuItemObj.label = this.getAppWrapper().translate(menuItemObj.label);
         if (menuItemData.menuItem.shortcut){
             let modifiers = [];
             if (menuItemData.menuItem.shortcut.key){
@@ -241,7 +242,13 @@ class MenuHelper extends MainBaseClass {
         if (menuItemData.menuItem.type != 'separator'){
             let menuMethod;
             if (menuItemData.menuItem && menuItemData.menuItem.method) {
-                menuMethod = await this.getAppWrapper().getObjMethod(menuItemData.menuItem.method, [], this.getAppWrapper(), true);
+                let methodChunks = menuItemData.menuItem.method.split(':');
+                let methodIdentifier = methodChunks[0];
+                let methodParams = [];
+                if (methodChunks.length == 2){
+                    methodParams = methodChunks[1].split(',');
+                }
+                menuMethod = await this.getAppWrapper().getObjMethod(methodIdentifier, methodParams, this.getAppWrapper(), true);
             }
             if (!menuMethod){
                 this.log('Can not find method "{1}" for menu item with label "{2}"!', 'error', [menuItemData.menuItem.method, menuItemData.menuItem.label], false, true);
@@ -353,12 +360,28 @@ class MenuHelper extends MainBaseClass {
         let method;
         let menuMethod = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
         if (menuMethod && menuMethod.method) {
-            method = menuMethod.method;
+            method = menuMethod.method.split(':')[0];
         } else {
             this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex], false, true);
         }
         return method;
     }
+
+    getMenuItemMethodParams (menuItemIndex){
+        menuItemIndex = menuItemIndex + '';
+        let methodParams = [];
+        let menuMethod = _.find(this.menuMethodMap, {menuIndex: menuItemIndex});
+        if (menuMethod && menuMethod.method) {
+            let methodChunks = menuMethod.method.split(':');
+            if (methodChunks.length == 2){
+                methodParams = methodChunks[1].split(',');
+            }
+        } else {
+            this.log('Can not find method for menu item {1}', 'warning', [menuItemIndex], false, true);
+        }
+        return methodParams;
+    }
+
 
     /**
      * Removes app menu
@@ -406,7 +429,8 @@ class MenuHelper extends MainBaseClass {
     handleMenuClick (menuIndex) {
         let originalMenuIndex = menuIndex;
         let methodIdentifier = this.getMenuItemMethodName(menuIndex);
-        let menuItem = this.getMenuItem(menuIndex);
+        let methodParams = this.getMenuItemMethodParams(menuIndex);
+        // let menuItem = this.getMenuItem(menuIndex);
         let objectIdentifier;
         let method;
         let object = this.getAppWrapper();
@@ -431,7 +455,7 @@ class MenuHelper extends MainBaseClass {
 
         if (object && method && _.isFunction(method)){
             this.log('Calling menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'debug', [methodIdentifier, label, menuIndex]);
-            return method.call(object, menuItem);
+            return method.apply(object, methodParams);
         } else {
             this.log('Can\'t call menu click handler "{1}" for menuItem "{2}", menuIndex "{3}"!', 'error', [methodIdentifier, label, menuIndex], false, true);
             return false;
@@ -445,11 +469,17 @@ class MenuHelper extends MainBaseClass {
      * @return {mixed}                  Listener return value or false if no listener found
      */
     handleTrayClick (trayMenuItem) {
-        let methodIdentifier = trayMenuItem.method;
+        let methodString = trayMenuItem.method;
         let objectIdentifier;
         let method;
 
-        this.log(this.getTrayMenuItem('1_0'));
+        let methodChunks = methodString.split(':');
+        let methodIdentifier = methodChunks[0];
+        let methodParams = [];
+        if (methodChunks.length == 2){
+            methodParams = methodChunks[1].split(',');
+        }
+
         if (methodIdentifier){
             let object = this.getAppWrapper();
             if (methodIdentifier && _.isFunction(methodIdentifier.match) && methodIdentifier.match(/\./)){
@@ -479,7 +509,7 @@ class MenuHelper extends MainBaseClass {
                         appWrapper.windowManager.focusWindow();
                     }
                 }
-                return method.call(object, trayMenuItem);
+                return method.apply(object, methodParams);
             } else {
                 this.log('Can not call tray menu click handler "{1}" for menuItem "{2}"!', 'error', [methodIdentifier, trayMenuItem.label], false, true);
                 return false;
@@ -491,17 +521,18 @@ class MenuHelper extends MainBaseClass {
      * Initializes single tray menu item
      *
      * @async
-     * @param  {Object} menuItemData Menu item data
+     * @param  {Object} menuItemInfo Menu item data
      * @return {Object}              Instance of nw.menuItem - see {@link http://docs.nwjs.io/en/latest/References/MenuItem/}
      */
-    async initializeTrayMenuItem (menuItemData) {
+    async initializeTrayMenuItem (menuItemInfo) {
         let menuItem;
+        let menuItemData = _.cloneDeep(menuItemInfo);
         if (menuItemData.type != 'separator'){
             if (menuItemData.label){
-                menuItemData.label = this.getAppWrapper().appTranslations.translate(menuItemData.label);
+                menuItemData.label = this.getAppWrapper().translate(menuItemData.label);
             }
             if (menuItemData.tooltip){
-                menuItemData.tooltip = this.getAppWrapper().appTranslations.translate(menuItemData.tooltip);
+                menuItemData.tooltip = this.getAppWrapper().translate(menuItemData.tooltip);
             }
         }
         let menuItemObj = _.extend(menuItemData, {
@@ -532,7 +563,7 @@ class MenuHelper extends MainBaseClass {
             if (hasTrayIcon){
                 let trayData = _.cloneDeep(this.getConfig('appConfig.trayData'));
                 let trayOptions = {
-                    title: trayData.title,
+                    title: this.getAppWrapper().translate(trayData.title),
                     icon: trayData.icon
                 };
                 if (trayData.alticon){
