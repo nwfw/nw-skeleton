@@ -46,9 +46,9 @@ exports.component = {
         },
         allTranslated: function(){
             var allTranslated = true;
-            for (let languageKey in appState.modalData.currentModal.translationData){
-                if (appState.modalData.currentModal.translationData[languageKey].notTranslated){
-                    if (_.keys(appState.modalData.currentModal.translationData[languageKey].notTranslated).length){
+            for (let languageKey in appState.modalData.currentModal.translationData[this.currentModal.currentModule]){
+                if (appState.modalData.currentModal.translationData[this.currentModal.currentModule][languageKey].notTranslated){
+                    if (_.keys(appState.modalData.currentModal.translationData[this.currentModal.currentModule][languageKey].notTranslated).length){
                         allTranslated = false;
                     }
                 }
@@ -124,7 +124,7 @@ exports.component = {
             let textarea = formRow.querySelector('textarea');
             let label = target.getAttribute('data-label');
             textarea.value = label;
-            this.currentModal.translationData[textarea.getAttribute('data-code')].notTranslated[label] = label;
+            this.currentModal.translationData[this.currentModal.currentModule][textarea.getAttribute('data-code')].notTranslated[label] = label;
         },
         copyAll: function(e){
             if (e && e.preventDefault && _.isFunction(e.preventDefault)){
@@ -136,7 +136,7 @@ exports.component = {
                 var textarea = formRow.querySelector('textarea');
                 var label = formRow.getAttribute('data-label');
                 textarea.value = label;
-                this.currentModal.translationData[textarea.getAttribute('data-code')].notTranslated[label] = label;
+                this.currentModal.translationData[this.currentModal.currentModule][textarea.getAttribute('data-code')].notTranslated[label] = label;
             }
 
         },
@@ -153,7 +153,7 @@ exports.component = {
                 let textarea = formRow.querySelector('textarea');
                 let label = formRow.getAttribute('data-label');
                 textarea.value = label;
-                this.currentModal.translationData[langCode].notTranslated[label] = label;
+                this.currentModal.translationData[this.currentModal.currentModule][langCode].notTranslated[label] = label;
             }
 
         },
@@ -183,7 +183,7 @@ exports.component = {
                 let value = _appWrapper.appTranslations.transliterateText(originalValue, direction);
                 textarea.value = value;
 
-                this.currentModal.translationData[langCode].translated[label] = value;
+                this.currentModal.translationData[this.currentModal.currentModule][langCode].translated[label] = value;
             }
         },
         deleteLabel: async function(e){
@@ -236,7 +236,7 @@ exports.component = {
                 target.addClass(['fa-spinner', 'fa-spin']);
                 let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
                 let locale = target.getAttribute('data-locale');
-                let labels = Object.keys(appState.modalData.currentModal.translationData[target.getAttribute('data-code')].notTranslated);
+                let labels = Object.keys(appState.modalData.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated);
                 let total = labels.length;
                 let count = 0;
                 if (total){
@@ -254,7 +254,7 @@ exports.component = {
                         await _appWrapper.wait(100);
                         if (translated){
                             textarea.setInputValue(translated);
-                            this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
+                            this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
                             count++;
                         } else {
                             _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
@@ -289,7 +289,7 @@ exports.component = {
             let translated = await _appWrapper.appTranslations.googleTranslate(label, locale);
             if (translated){
                 textarea.setInputValue(translated);
-                this.currentModal.translationData[target.getAttribute('data-code')].notTranslated[label] = translated;
+                this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[label] = translated;
                 _appWrapper.addModalMessage('Translation complete.', 'info');
             } else {
                 _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [label], false, false, false, true);
@@ -304,9 +304,9 @@ exports.component = {
             let isTranslated = e.target.getAttribute('data-translated') == '1';
             let value = e.target.value;
             if (isTranslated){
-                this.currentModal.translationData[code].translated[label] = value;
+                this.currentModal.translationData[this.currentModal.currentModule][code].translated[label] = value;
             } else {
-                this.currentModal.translationData[code].notTranslated[label] = value;
+                this.currentModal.translationData[this.currentModal.currentModule][code].notTranslated[label] = value;
             }
         }
     }

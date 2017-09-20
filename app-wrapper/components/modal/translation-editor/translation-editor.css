@@ -39,6 +39,7 @@
 
 .translation-editor .translation-editor-tools {
 	flex: 0 0 auto;
+	position: relative;
 }
 
 .translation-editor .translation-fieldset {
@@ -140,4 +141,11 @@
 
 .modal-dialog-wrapper .translation-editor .tabs .tab-items .tab-item {
     height: 75vh;
+}
+
+.module-picker {
+	position: absolute;
+	right: 0;
+	bottom: -30px;
+	z-index: 2;
 }

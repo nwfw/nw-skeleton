@@ -1486,9 +1486,9 @@ class AppWrapper extends AppBaseClass {
      */
     getInitialAppConfig(defaultAppConfig){
         let appStateConfig = require('../../config/appWrapperConfig').config;
-        let initialAppConfig = defaultAppConfig;
-        if (!(initialAppConfig && (_.isObject(initialAppConfig) && Object.keys(initialAppConfig).length))){
-            initialAppConfig = appStateConfig;
+        let initialAppConfig = appStateConfig;
+        if (!(defaultAppConfig && (_.isObject(defaultAppConfig) && Object.keys(defaultAppConfig).length))){
+            initialAppConfig = _.extend({}, appStateConfig, defaultAppConfig);
         }
         let execPath = this.getExecPath();
         let appDir = this.getAppDir();

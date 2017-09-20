@@ -7,6 +7,12 @@
 		<transition name="fade">
 			<a href="#" :title="translate('Reset data')" class="translation-editor-top-tool reset-data fa fa-undo" v-if="dataChanged" @click.prevent="resetData"></a>
 		</transition>
+		<div class="module-picker">
+			<label>{{ translate('Module') }} </label>
+			<select v-model="currentModal.currentModule" class="translation-editor-component-field">
+				<option v-for="(moduleTranslations, moduleName) in currentModal.translationData" :value="moduleName" v-html="moduleName" />
+			</select>
+		</div>
 	</div>
 	<div class="tabs">
 		<div class="tab-links">
@@ -16,22 +22,22 @@
 						{{ language.name }}
 					</span>
 					<span class="tab-link-tools lang-tab-link-tools">
-						<a v-bind:data-code="language.code" class="fa fa-files-o translation-editor-copy-all-tab" @click.stop.prevent="copyAllTab" :title="translate('Copy all untranslated labels in this tab')" v-if="_.keys(currentModal.translationData[language.code].notTranslated).length"></a>
-						<a v-bind:data-code="language.code" class="fa fa-arrows-h translation-editor-transliterate-all-tab" @click.stop.prevent="transliterateAllTab" :title="translate('Transliterate all values in this tab')" v-if="_.keys(currentModal.translationData[language.code].translated).length && (language.code.match(/latn/i) || language.code.match(/cyrl/i))"></a>
-						<a v-bind:data-code="language.code" v-bind:data-locale="language.locale" class="fa fa-globe translation-editor-google-translate-all-tab" @click.stop.prevent="googleTranslateTab" :title="translate('Auto-translate all untranslated labels in this tab')" v-if="language.code != 'en-US' && currentModal.hasGoogleTranslate && _.keys(currentModal.translationData[language.code].notTranslated).length"></a>
+						<a v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" class="fa fa-files-o translation-editor-copy-all-tab" @click.stop.prevent="copyAllTab" :title="translate('Copy all untranslated labels in this tab')" v-if="_.keys(currentModal.translationData[currentModal.currentModule][language.code].notTranslated).length"></a>
+						<a v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" class="fa fa-arrows-h translation-editor-transliterate-all-tab" @click.stop.prevent="transliterateAllTab" :title="translate('Transliterate all values in this tab')" v-if="_.keys(currentModal.translationData[currentModal.currentModule][language.code].translated).length && (language.code.match(/latn/i) || language.code.match(/cyrl/i))"></a>
+						<a v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" v-bind:data-locale="language.locale" class="fa fa-globe translation-editor-google-translate-all-tab" @click.stop.prevent="googleTranslateTab" :title="translate('Auto-translate all untranslated labels in this tab')" v-if="language.code != 'en-US' && currentModal.hasGoogleTranslate && _.keys(currentModal.translationData[currentModal.currentModule][language.code].notTranslated).length"></a>
 					</span>
 				</span>
 			</template>
 		</div>
 		<div class="tab-items">
 			<template v-for="(language, index) in appState.languageData.availableLanguages">
-				<div class="tab-item lang-tab-item" v-bind:data-code="language.code" :class="{'active': index == activeTabIndex, 'empty': appState.modalData.currentModal.searchResults === 0}">
-					<fieldset class="translation-fieldset" v-bind:data-code="language.code">
+				<div class="tab-item lang-tab-item" v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" :class="{'active': index == activeTabIndex, 'empty': appState.modalData.currentModal.searchResults === 0}">
+					<fieldset class="translation-fieldset" v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code">
 						<div class="no-results no-lang-results">
 							{{ translate("No results.") }}
 						</div>
 						<div class="lang-results">
-							<template v-for="(translated, label) in currentModal.translationData[language.code].notTranslated">
+							<template v-for="(translated, label) in currentModal.translationData[currentModal.currentModule][language.code].notTranslated">
 								<div class="form-row modal-form-row lang-form-row lang-form-row-not-translated" v-bind:data-label="label">
 									<label class="textarea-label" :title="label">
 										{{ label }}
@@ -41,13 +47,13 @@
 										<span class="not-translated">
 											({{ currentModal.translations['not translated'] }})
 										</span>
-										<a v-bind:data-code="language.code" v-bind:data-locale="language.locale" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en-US'"></a>
+										<a v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" v-bind:data-locale="language.locale" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en-US'"></a>
 										<a v-if="label !== translated" :title="currentModal.translations['Copy label to translation']" class="copy-translation-label fa fa-files-o" v-bind:data-label="label" v-on:click="copyLabel"></a>
 									</div>
-									<textarea v-bind:data-translated="0" v-bind:data-code="language.code" v-bind:data-locale="language.locale" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" @input="textareaInput" />
+									<textarea v-bind:data-translated="0" v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" v-bind:data-locale="language.locale" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" @input="textareaInput" />
 								</div>
 							</template>
-							<template v-for="(translated, label) in currentModal.translationData[language.code].translated">
+							<template v-for="(translated, label) in currentModal.translationData[currentModal.currentModule][language.code].translated">
 								<div class="form-row modal-form-row lang-form-row lang-form-row-translated" v-bind:data-label="label" v-bind:data-translation="translated">
 									<label class="textarea-label" :title="label">
 										{{ label }}
@@ -56,10 +62,10 @@
 										<a class="remove-translation fa fa-close" v-on:click="deleteLabel" :title="translate('Delete label')"></a>
 										<span class="not-translated">
 										</span>
-										<a v-bind:data-code="language.code" v-bind:data-locale="language.locale" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en-US'"></a>
+										<a v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" v-bind:data-locale="language.locale" v-bind:data-label="label" :title="translate('Auto-translate label')" class="google-translate fa fa-globe" v-on:click="googleTranslate" v-if="currentModal.hasGoogleTranslate && language.code != 'en-US'"></a>
 										<a v-if="label !== translated" :title="currentModal.translations['Copy label to translation']" class="copy-translation-label fa fa-files-o" v-bind:data-label="label" v-on:click="copyLabel"></a>
 									</div>
-									<textarea v-bind:data-translated="1" v-bind:data-code="language.code" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" @input="textareaInput" />
+									<textarea v-bind:data-translated="1" v-bind:data-module="currentModal.currentModule" v-bind:data-code="language.code" class="translation-editor-textarea" v-bind:name="label" v-bind:value="translated" @input="textareaInput" />
 								</div>
 							</template>
 						</div>

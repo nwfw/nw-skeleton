@@ -307,8 +307,21 @@ class ComponentHelper extends AppBaseClass {
                                     }
                                     componentModuleData[componentModulesConfigTypes[i]].push(moduleData);
                                 }
+
                                 if (moduleData.config){
                                     appState.config = _appWrapper.mergeDeep(appState.config, moduleData.config);
+                                }
+
+                                if (moduleData.translations){
+                                    for (let langCode in moduleData.translations){
+                                        if (!appState.languageData.componentTranslations[moduleName]){
+                                            appState.languageData.componentTranslations[moduleName] = {};
+                                        }
+                                        if (!appState.languageData.componentTranslations[moduleName][langCode]){
+                                            appState.languageData.componentTranslations[moduleName][langCode] = {};
+                                        }
+                                        appState.languageData.componentTranslations[moduleName][langCode] = _.merge(moduleData.translations[langCode], appState.languageData.componentTranslations[moduleName][langCode]);
+                                    }
                                 }
                             }
                         } catch (ex){

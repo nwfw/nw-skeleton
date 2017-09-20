@@ -255,7 +255,8 @@ exports.appState = {
         currentLanguage: null,
         currentLocale: null,
         availableLanguages: [],
-        translations: {}
+        translations: {},
+        componentTranslations: {}
     },
 
     availableThemes: [],

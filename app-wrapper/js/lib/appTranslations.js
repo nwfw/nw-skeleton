@@ -59,7 +59,6 @@ class AppTranslations extends AppBaseClass {
     async initializeLanguage(){
         this.log('Initializing languages...', 'group', []);
         this.translationData = await this.loadTranslations();
-
         let availableLanguageCodes = _.map(appState.languageData.availableLanguages, (item) => {
             return item.code;
         });
@@ -76,6 +75,7 @@ class AppTranslations extends AppBaseClass {
             }
         }
         this.log('{1} languages initialized.', 'debug', [appState.languageData.availableLanguages.length]);
+        await this.loadComponentTranslations();
         this.log('Initializing languages...', 'groupend', []);
         appState.status.languageInitialized = true;
         return this.translationData;
@@ -89,15 +89,45 @@ class AppTranslations extends AppBaseClass {
      */
     async loadTranslations () {
         this.log('Loading translations.', 'group', []);
-        let translationsDir = await this.getTranslationsDir();
+        let translationsDir = await this.getTranslationsDir('application');
         let translationData = await this.loadTranslationsFromDir(translationsDir, this.getConfig('wrapper.translationExtensionRegex'));
         appState.languageData.availableLanguages = translationData.availableLanguages;
         appState.languageData.translations = translationData.translations;
+        // for (let moduleName in appState.languageData.componentTranslations){
+        //     appState.languageData.translations = _.merge(appState.languageData.componentTranslations[moduleName], appState.languageData.translations);
+        // }
         if (!this.originalLanguageData){
             this.originalLanguageData = _.cloneDeep(appState.languageData);
         }
         this.log('Loading translations.', 'groupend', []);
         return translationData;
+    }
+
+    /**
+     * Loads component translations from translation files
+     *
+     * @async
+     * @return {Object} Component translations data
+     */
+    async loadComponentTranslations () {
+        let componentTranslations = {};
+        this.log('Loading component translations.', 'group', []);
+        let translationsDir = path.join(await this.getTranslationsDir('application'), 'component');
+        if (await _appWrapper.fileManager.isDir(translationsDir)){
+            let componentDirs = await _appWrapper.fileManager.readDir(translationsDir);
+            for (let i=0; i<componentDirs.length; i++){
+                let componentDir = path.join(translationsDir, componentDirs[i]);
+                if (await _appWrapper.fileManager.isDir(componentDir)){
+                    let translationData = await this.loadTranslationsFromDir(componentDir, this.getConfig('wrapper.translationExtensionRegex'));
+                    if (translationData && translationData.translations){
+                        componentTranslations[componentDirs[i]] = translationData.translations;
+                    }
+                }
+            }
+            appState.languageData.componentTranslations = componentTranslations;
+        }
+        this.log('Loading component translations.', 'groupend', []);
+        return componentTranslations;
     }
 
     /**
@@ -132,6 +162,41 @@ class AppTranslations extends AppBaseClass {
     }
 
     /**
+     * Prepares config editor data object for config-editor component
+     *
+     * @return {Object} Config editor data object for config-editor component
+     */
+    getComponentTranslationEditorData (){
+        let translations = _.cloneDeep(appState.languageData.componentTranslations);
+        let translationObject = {};
+        let moduleNames = _.keys(translations);
+        for(let k=0; k<moduleNames.length; k++){
+            let codes = _.keys(translations[moduleNames[k]]);
+            translationObject[moduleNames[k]] = {};
+            for(let i=0; i<codes.length; i++){
+                translationObject[moduleNames[k]][codes[i]] = {
+                    translated: {},
+                    notTranslated: {}
+                };
+                let labels = _.sortBy(_.keys(translations[moduleNames[k]][codes[i]]), (key) => {
+                    return key.replace(/^(\*\s*)/, '');
+                });
+                for (let j=0; j<labels.length; j++){
+                    let value = translations[moduleNames[k]][codes[i]][labels[j]];
+                    if (value.match(/^--.*--$/)){
+                        value = '';
+                        translationObject[moduleNames[k]][codes[i]].notTranslated[labels[j]] = value;
+                    } else {
+                        translationObject[moduleNames[k]][codes[i]].translated[labels[j]] = value;
+                    }
+
+                }
+            }
+        }
+        return translationObject;
+    }
+
+    /**
      * Opens translation editor modal
      *
      * @param  {Event} e Event that triggered the method
@@ -145,13 +210,20 @@ class AppTranslations extends AppBaseClass {
         // appState.status.noHandlingKeys = true;
 
         let modalHelper = _appWrapper.getHelper('modal');
+        let translationData = _.merge({}, {
+            application: this.getTranslationEditorData()
+        }, this.getComponentTranslationEditorData());
+
         let modalOptions = {
             hasSearch: false,
             title: _appWrapper.appTranslations.translate('Translation editor'),
             confirmButtonText: _appWrapper.appTranslations.translate('Save'),
             cancelButtonText: _appWrapper.appTranslations.translate('Cancel'),
-            translationData: this.getTranslationEditorData(),
+            translationData: translationData,
+            // translationData: this.getTranslationEditorData(),
+            // componentTranslationData: this.getComponentTranslationEditorData(),
             hasGoogleTranslate: false,
+            currentModule: 'application',
             busy: true,
             translations: {
                 'not translated': this.translate('not translated'),
@@ -194,6 +266,7 @@ class AppTranslations extends AppBaseClass {
         let translationsCount = 0;
         if (modalElement){
             let modalForm = modalElement.querySelector('form');
+            let moduleName = appState.modalData.currentModal.currentModule;
             if (modalForm){
                 this.log('Saving translations.', 'info', []);
                 modalForm = modalForm.cloneNode(true);
@@ -219,7 +292,7 @@ class AppTranslations extends AppBaseClass {
                             translations[textarea.name] = textarea.value;
                         }
 
-                        let saved = await this.addLabels(currentLanguage, translations);
+                        let saved = await this.addLabels(currentLanguage, translations, moduleName);
                         if (saved){
                             savedLangs.push(currentLanguage.name);
                         } else {
@@ -341,24 +414,34 @@ class AppTranslations extends AppBaseClass {
         if (!currentLanguage){
             currentLanguage = languageData.currentLanguage;
         }
-        let translation = label;
+        let translation;
         if (!data){
             data = [];
         }
         try {
-            if (languageData.translations[currentLanguage] && (languageData.translations[currentLanguage][label])){
-                translation = languageData.translations[currentLanguage][label];
-                if (languageData.translations[currentLanguage][label].match(/^--.*--$/)){
-                    // this.log('Label "{1}" for language "{2}" is not translated!', 'warning', [label, currentLanguage]);
-
-                    translation = label;
+            let foundComponentTranslation = false;
+            for (let moduleName in languageData.componentTranslations){
+                if (languageData.componentTranslations[moduleName][currentLanguage] && (languageData.componentTranslations[moduleName][currentLanguage][label])){
+                    translation = languageData.componentTranslations[moduleName][currentLanguage][label];
+                    foundComponentTranslation = true;
+                    if (languageData.componentTranslations[moduleName][currentLanguage][label].match(/^--.*--$/)){
+                        translation = label;
+                    }
                 }
-            } else {
-                this.log('No translation found for label "{1}" using language "{2}".', 'warning', [label, currentLanguage]);
-                translation = '__' + label + '__';
-                if (appState.config.autoAddLabels){
-                    this.addLabel(label);
-                    translation = '_' + label + '_';
+            }
+            if (!foundComponentTranslation){
+                if (languageData.translations[currentLanguage] && (languageData.translations[currentLanguage][label])){
+                    translation = languageData.translations[currentLanguage][label];
+                    if (languageData.translations[currentLanguage][label].match(/^--.*--$/)){
+                        translation = label;
+                    }
+                } else {
+                    // this.log('No translation found for label "{1}" using language "{2}".', 'warning', [label, currentLanguage]);
+                    translation = '__' + label + '__';
+                    if (appState.config.autoAddLabels){
+                        this.addLabel(label);
+                        translation = '_' + label + '_';
+                    }
                 }
             }
         } catch(e) {
@@ -379,13 +462,14 @@ class AppTranslations extends AppBaseClass {
      *
      * @async
      * @param  {string} languageCode Language code to get path for
+     * @param  {string} moduleName   Component module name or 'application' for app translations
      * @return {string}              Absolute path to translation data file
      */
-    async getLanguageFilePath(languageCode){
+    async getLanguageFilePath(languageCode, moduleName){
         let translationFileName = (this.getConfig('wrapper.translationExtensionRegex') + '');
         translationFileName = translationFileName.replace(/\\./g, '.').replace(/\$/, '').replace(/^\//, '').replace(/\/$/, '');
         translationFileName = languageCode + translationFileName;
-        let translationsDir = await this.getTranslationsDir();
+        let translationsDir = await this.getTranslationsDir(moduleName);
         let translationFilePath = path.join(translationsDir, translationFileName);
         return translationFilePath;
     }
@@ -443,11 +527,15 @@ class AppTranslations extends AppBaseClass {
      * @async
      * @param {Object} language  Language data object with properties code, name and locale
      * @param {Object} labelData Labels to be added in format { labelText: translationText }
+     * @param  {string} moduleName   Component module name or 'application' for app translations
      * @return {undefined}
      */
-    async addLabels (language, labelData) {
+    async addLabels (language, labelData, moduleName) {
+        if (!moduleName){
+            moduleName = 'application';
+        }
         let translationData = {};
-        let translationFilePath = await this.getLanguageFilePath(language.code);
+        let translationFilePath = await this.getLanguageFilePath(language.code, moduleName);
         translationData.code = language.code;
         translationData.name = language.name;
         translationData.locale = language.locale;
@@ -467,7 +555,11 @@ class AppTranslations extends AppBaseClass {
         try {
             fs.writeFileSync(translationFilePath, newTranslationDataString, {encoding: 'utf8'});
             saved = true;
-            appState.languageData.translations[language.code] = translationData.translations;
+            if (moduleName == 'application'){
+                appState.languageData.translations[language.code] = translationData.translations;
+            } else {
+                appState.languageData.componentTranslations[moduleName][language.code] = translationData.translations;
+            }
         } catch (e) {
             this.log(e, 'error', []);
         }
@@ -801,19 +893,31 @@ class AppTranslations extends AppBaseClass {
      * Returns current translations directory
      *
      * @async
+     * @param  {string} moduleName   Component module name or 'application' for app translations
      * @return {string} Current translation files directory
      */
-    async getTranslationsDir () {
-        let translationsDir = path.resolve(path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.tmpDataDir'), this.getConfig('wrapper.translationsRoot')));
-        if (!await _appWrapper.fileManager.isDir(translationsDir)){
-            let originalTranslationsDir = path.resolve(path.join(appState.appDir, this.getConfig('appConfig.dataDir'), this.getConfig('wrapper.translationsRoot')));
-            this.log('Copying original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
-            let copied = await _appWrapper.fileManager.copyDirRecursive(originalTranslationsDir, translationsDir);
-            if (!copied){
-                this.log('Failed copying original translations from "{1}" to "{2}"....', 'error', [originalTranslationsDir, translationsDir]);
-                translationsDir = originalTranslationsDir;
-            } else {
-                this.log('Copied original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
+    async getTranslationsDir (moduleName) {
+        let translationsDir;
+        if (!moduleName){
+            moduleName = 'application';
+        }
+        if (moduleName == 'application'){
+            translationsDir = path.resolve(path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.tmpDataDir'), this.getConfig('wrapper.translationsRoot')));
+            if (!await _appWrapper.fileManager.isDir(translationsDir)){
+                let originalTranslationsDir = path.resolve(path.join(appState.appDir, this.getConfig('appConfig.dataDir'), this.getConfig('wrapper.translationsRoot')));
+                this.log('Copying original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
+                let copied = await _appWrapper.fileManager.copyDirRecursive(originalTranslationsDir, translationsDir);
+                if (!copied){
+                    this.log('Failed copying original translations from "{1}" to "{2}"....', 'error', [originalTranslationsDir, translationsDir]);
+                    translationsDir = originalTranslationsDir;
+                } else {
+                    this.log('Copied original translations from "{1}" to "{2}"....', 'info', [originalTranslationsDir, translationsDir]);
+                }
+            }
+        } else {
+            translationsDir = path.resolve(path.join(_appWrapper.getExecPath(), this.getConfig('appConfig.tmpDataDir'), this.getConfig('wrapper.translationsRoot'), 'component', moduleName));
+            if (!await _appWrapper.fileManager.isDir(translationsDir)){
+                await _appWrapper.fileManager.createDirRecursive(translationsDir);
             }
         }
         return translationsDir;
