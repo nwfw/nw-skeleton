@@ -141,6 +141,7 @@ class AppWrapper extends AppBaseClass {
         await staticFilesHelper.loadJsFiles();
 
         await this.initializeWrapperHelpers();
+        await this.loadUserConfig();
 
         try {
             appState.initializationTime = this.getHelper('format').formatDate(new Date(), {}, true);

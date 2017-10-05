@@ -204,7 +204,7 @@ class KeyboardHelper extends AppBaseClass {
                     }
                 } else if (appState && appState.status.ctrlPressed && appState.status.shiftPressed && _.includes(this.keyCodes.reinitializeFeAppKeyCodes, keyCode)){
                     if (!this.checkNoHandlingKeys()){
-                        _appWrapper.reinitializeFeApp();
+                        _appWrapper.app.reinitializeFeApp();
                         fulfilled = true;
                     } else {
                         e.stopImmediatePropagation();

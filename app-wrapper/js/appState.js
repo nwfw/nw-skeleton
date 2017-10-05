@@ -299,6 +299,41 @@ exports.appState = {
         currentNotification: null,
         oldNotifications: []
     },
+    fileViewerInstances: {},
+    fileViewerProtoData: {
+        config: {
+            cssFiles: [
+                '/node_modules/nw-skeleton/node_modules/codemirror/lib/codemirror.css',
+                '/node_modules/nw-skeleton/node_modules/codemirror/addon/fold/foldgutter.css',
+                '/node_modules/nw-skeleton/node_modules/codemirror/addon/dialog/dialog.css',
+            ],
+            darkCssFiles: [
+                '/node_modules/nw-skeleton/node_modules/codemirror/theme/blackboard.css',
+            ],
+            jsFiles: [
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/mode/loadmode.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/dialog/dialog.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/search/searchcursor.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/search/search.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/edit/matchbrackets.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/edit/matchtags.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/fold/foldcode.js',
+                './node_modules/nw-skeleton/node_modules/codemirror/addon/fold/foldgutter.js',
+            ],
+            modeUrl: './node_modules/nw-skeleton/node_modules/codemirror/mode/%N/%N.js',
+        },
+        data: {
+            file: '',
+            mode: 'javascript',
+            code: 'function(){ console.log(\'a\'); }',
+            cmOptions: {
+                matchBrackets: true,
+                matchTags: true,
+                gutters: ['CodeMirror-foldgutter'],
+                foldGutter: true,
+            }
+        }
+    },
     modalStatus: {
         animating: false,
         timeouts: {

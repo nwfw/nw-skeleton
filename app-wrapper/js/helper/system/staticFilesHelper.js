@@ -9,6 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const postcssUrl = require('postcss-url');
+const postcssNesting = require('postcss-nesting');
+const postcssNext = require('postcss-cssnext');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -93,7 +95,17 @@ class StaticFilesHelper extends AppBaseClass {
             cssContents = await _appWrapper.fileManager.loadFile(cssFilePath);
 
             if (cssContents){
-                cssContents = await postcss().use(postcssUrl({url: this.rebaseAsset})).process(cssContents, { from: cssFilePath, to: compiledCssPath });
+                let pcu = postcssUrl({url: this.rebaseAsset});
+                let pcn = postcssNesting();
+                let pcNext = postcssNext({
+                    browsers: [
+                        'Chrome >= 60'
+                    ],
+                    features: {
+                        nesting: pcn
+                    }
+                });
+                cssContents = await postcss([pcu,pcNext]).process(cssContents, { from: cssFilePath, to: compiledCssPath });
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){

@@ -424,12 +424,25 @@ class ModalHelper extends AppBaseClass {
     /**
      * Adds modal message to currently visible modal
      *
-     * @param {Object} messageObject Message object
+     * @param {(Object|string)} message Message object or (string) message contents
+     * @param {string}          type    Message type, default 'info'
      * @return {undefined}
      */
-    addModalMessage (messageObject) {
+    addModalMessage (message, type) {
         if (appState.modalData.currentModal && appState.modalData.modalVisible){
             if (appState.modalData.currentModal.messages){
+                let messageObject;
+                if (_.isObject(message)){
+                    messageObject = message;
+                } else {
+                    if (!type){
+                        type = 'info';
+                    }
+                    messageObject = {
+                        message,
+                        type
+                    };
+                }
                 if (_.isArray(appState.modalData.currentModal.messages)){
                     let feApp = window.getFeApp();
                     let modalDialogMessagesComponent = _.get(feApp, '$refs.modalDialog.$refs.modalDialogContents.$refs.modalDialogMessages');

@@ -240,6 +240,7 @@
 
 .size-short-enter,
 .size-long-enter,
+.size-longest-enter,
 .size-enter {
     flex-grow: 1 !important;
     flex-basis: unset !important;
@@ -256,6 +257,7 @@
 
 .size-short-enter-to,
 .size-long-enter-to,
+.size-longest-enter-to,
 .size-enter-to {
     flex-grow: 1 !important;
     overflow: hidden !important;
@@ -263,6 +265,7 @@
 
 .size-short-leave,
 .size-long-leave,
+.size-longest-leave,
 .size-leave {
     flex-shrink: 1 !important;
     overflow: hidden !important;
@@ -270,29 +273,32 @@
 
 .size-short-leave-to,
 .size-long-leave-to,
+.size-longest-leave-to,
 .size-leave-to {
     flex-shrink: 1 !important;
-    width: 0 !important;
-    max-width: 0 !important;
-    min-width: 0 !important;
-    height: 0 !important;
-    max-height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    width: 0px !important;
+    max-width: 0px !important;
+    min-width: 0px !important;
+    height: 0px !important;
+    max-height: 0px !important;
+    min-height: 0px !important;
+    margin: 0px !important;
+    padding: 0px !important;
     flex-basis: 0 !important;
 }
 
-.size-enter-active,
-.size-leave-active,
+
 .size-short-enter-active,
 .size-short-leave-active,
 .size-long-enter-active,
-.size-long-leave-active {
+.size-long-leave-active,
+.size-longest-enter-active,
+.size-longest-leave-active,
+.size-enter-active,
+.size-leave-active {
     overflow: hidden !important;
     transition-property: height,
                 width,
-                height,
                 max-height,
                 max-width,
                 min-height,
@@ -312,6 +318,11 @@
 .size-long-enter-active,
 .size-long-leave-active {
     transition-duration: var(--long-animation-duration) !important;
+}
+
+.size-longest-enter-active,
+.size-longest-leave-active {
+    transition-duration: var(--longest-animation-duration) !important;
 }
 
 /* size-width */

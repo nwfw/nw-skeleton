@@ -1,4 +1,5 @@
 footer {
+    font-size: 0.8rem;
     border-radius: 0 0 var(--app-main-border-radius) var(--app-main-border-radius);
     border-width: 0 var(--app-main-border-width) var(--app-main-border-width) var(--app-main-border-width);
     border-style: var(--app-main-border-style);

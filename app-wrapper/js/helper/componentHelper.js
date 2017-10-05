@@ -290,10 +290,11 @@ class ComponentHelper extends AppBaseClass {
         }
 
         for (let i=0; i<componentModulesConfigTypes.length;i++){
-            componentModules[componentModulesConfigTypes[i]] = {};
-            componentModuleData[componentModulesConfigTypes[i]] = [];
-            for (let j=0; j<componentModulesConfig[componentModulesConfigTypes[i]].length; j++){
-                let moduleConfig = componentModulesConfig[componentModulesConfigTypes[i]][j];
+            let currentType = componentModulesConfigTypes[i];
+            componentModules[currentType] = {};
+            componentModuleData[currentType] = [];
+            for (let j=0; j<componentModulesConfig[currentType].length; j++){
+                let moduleConfig = componentModulesConfig[currentType][j];
                 if (moduleConfig){
                     if (moduleConfig.moduleName){
                         let moduleName = moduleConfig.moduleName;
@@ -305,8 +306,8 @@ class ComponentHelper extends AppBaseClass {
                                     if (moduleConfig.parentComponent){
                                         moduleData.parentComponent = moduleConfig.parentComponent;
                                     }
-                                    componentModuleData[componentModulesConfigTypes[i]].push(moduleData);
                                 }
+                                componentModuleData[currentType].push(moduleData);
 
                                 if (moduleData.config){
                                     appState.config = _appWrapper.mergeDeep(appState.config, moduleData.config);
@@ -330,8 +331,8 @@ class ComponentHelper extends AppBaseClass {
                             this.setAppError('Error loading component', 'Problem loading component module "{1}"', 'Verify appConfig.componentModules config variable to fix this', [moduleName]);
                         }
                     } else {
-                        this.addUserMessage('Problem loading component module of type "{1}" - no "moduleName" config property', 'error', [componentModulesConfigTypes[i]]);
-                        this.setAppError('Error loading component', 'Problem loading component module of type "{1}" - no "moduleName" config property', 'Verify appConfig.componentModules.{1} config variable to fix this', [componentModulesConfigTypes[i]]);
+                        this.addUserMessage('Problem loading component module of type "{1}" - no "moduleName" config property', 'error', [currentType]);
+                        this.setAppError('Error loading component', 'Problem loading component module of type "{1}" - no "moduleName" config property', 'Verify appConfig.componentModules.{1} config variable to fix this', [currentType]);
                     }
                 }
             }

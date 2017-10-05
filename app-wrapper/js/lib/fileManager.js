@@ -8,6 +8,7 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
+const unzip = require('unzipper');
 const AppBaseClass = require('./appBase').AppBaseClass;
 
 /**
@@ -224,26 +225,26 @@ class FileManager extends AppBaseClass {
      * @async
      * @param  {string} archivePath Absolute path to zip archive
      * @param  {string[]} files     An array of file paths to compress
-     * @return {(string|boolean)}     Zip archive path or false if compression failed
+     * @return {(string|Boolean)}     Zip archive path or false if compression failed
      */
     async zipFiles(archivePath, files){
 
-        var resolveReference;
+        let resolveReference;
 
-        var returnPromise = new Promise((resolve) => {
+        let returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
 
-        var output = fs.createWriteStream(archivePath);
-        var archive = archiver('zip', {
+        let output = fs.createWriteStream(archivePath);
+        let archive = archiver('zip', {
             zlib: { level: 9 } // Sets the compression level.
         });
 
-        output.on('close', function() {
+        output.on('close', () => {
             resolveReference(archivePath);
         });
 
-        archive.on('error', function(err) {
+        archive.on('error', (err) => {
             resolveReference(false);
             this.log('Error zipping data: "{1}"', 'error', [err]);
         });
@@ -251,10 +252,208 @@ class FileManager extends AppBaseClass {
         archive.pipe(output);
 
         _.each(files, function(file){
-            var filePath = file;
-            var fileName = path.basename(file);
+            let filePath = file;
+            let fileName = path.basename(file);
             archive.append(fs.createReadStream(filePath), { name: fileName });
         });
+
+        archive.finalize();
+
+        return returnPromise;
+    }
+
+    /**
+     * Compresses file into zip archive
+     *
+     * @async
+     * @param  {string} file        Absolute path to file to zip
+     * @param  {string} archive     Absolute path to zip archive
+     * @return {(string|Boolean)}   Zip archive path or false if compression failed
+     */
+    async compressFile(file, archive){
+        let result = false;
+        if (!await this.isFile(file)){
+            this.log('Error zipping file "{1}" - not a file', 'error', [file]);
+        } else {
+            if (!archive){
+                archive = file.replace(/\.[^.]+$/, '') + '.zip';
+            }
+
+            result = await this.zipFiles(archive, [file]);
+        }
+        return result;
+    }
+
+    /**
+     * Uncompresses (unzips) archive
+     *
+     * @async
+     * @param  {string} archive     Absolute path to zip archive
+     * @param  {string} targetDir   Absolute path to target directory. If omitted, archive directory is used
+     * @return {Boolean}            Operation result
+     */
+    async uncompressFile(archive, targetDir){
+        if (!await this.isFile(archive)){
+            this.log('Error unzipping file "{1}" - not a file', 'error', [archive]);
+            return false;
+        }
+
+        if (!targetDir){
+            targetDir = path.dirname(archive);
+        }
+
+        if (!await this.isDir(targetDir)){
+            this.log('Error unzipping file "{1}" - target dir "{2}" is not a directory', 'error', [archive, targetDir]);
+            return false;
+        }
+
+        let resolveReference;
+
+        let returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        let unzipper = unzip.Extract({
+            path: targetDir
+        });
+
+        unzipper.on('close', function() {
+            resolveReference(true);
+        });
+
+        unzipper.on('error', (err) => {
+            let msg = err.message ? err.message : err;
+            this.log('Error unzipping data: "{1}"', 'error', [msg]);
+            resolveReference(false);
+        });
+
+        fs.createReadStream(archive).pipe(unzipper);
+
+        return returnPromise;
+    }
+
+    /**
+     * Compresses directory into zip archive
+     *
+     * @async
+     * @param  {string} dir         Absolute path to directory
+     * @param  {string} archive     Absolute path to zip archive
+     * @return {(string|Boolean)}   Zip archive path or false if compression failed
+     */
+    async compressDir(dir, archive){
+        if (!await this.isDir(dir)){
+            this.log('Error zipping dir "{1}" - not a directory', 'error', [dir]);
+            return false;
+        }
+
+        if (!archive){
+            archive = dir.replace(/\.[^.]+$/, '').replace(/\/$/, '') + '.zip';
+        }
+
+        let cwd = process.cwd();
+        let baseDir = path.dirname(dir);
+        process.chdir(baseDir);
+
+        let resolveReference;
+
+        let returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        let output = fs.createWriteStream(archive);
+        let archiveFile = archiver('zip', {
+            zlib: {
+                level: 9
+            }
+        });
+
+        output.on('close', function() {
+            process.chdir(cwd);
+            resolveReference(archive);
+        });
+
+        archiveFile.on('error', (err) => {
+            process.chdir(cwd);
+            this.log('Error zipping dir: "{1}"', 'error', [err]);
+            resolveReference(false);
+        });
+
+        archiveFile.pipe(output);
+        let archiveDirName = path.basename(dir).replace(/\/?$/, '/');
+
+        archiveFile.directory(archiveDirName, {
+            name: archiveDirName
+        });
+
+        archiveFile.finalize();
+
+        return returnPromise;
+    }
+
+    /**
+     * Compresses files into zip archive
+     *
+     * @async
+     * @param  {string}     archivePath Absolute path to zip archive
+     * @param  {string[]}   files       An array of file paths to compress
+     * @param  {string}     baseDir     Base common dir path for all files
+     * @return {(string|Boolean)}       Zip archive path or false if compression failed
+     */
+    async compressFiles(archivePath, files, baseDir){
+
+        if (await this.fileExists(archivePath)){
+            this.log('Error zipping archive "{1}" - file exists', 'error', [archivePath]);
+            return false;
+        }
+
+        if (!baseDir){
+            baseDir = path.resolve('/');
+        }
+
+        let cwd = process.cwd();
+        process.chdir(baseDir);
+
+        let resolveReference;
+
+        let returnPromise = new Promise((resolve) => {
+            resolveReference = resolve;
+        });
+
+        let output = fs.createWriteStream(archivePath);
+        let archive = archiver('zip', {
+            zlib: {
+                level: 9
+            }
+        });
+
+        output.on('close', () => {
+            process.chdir(cwd);
+            resolveReference(archivePath);
+        });
+
+        archive.on('error', (err) => {
+            process.chdir(cwd);
+            resolveReference(false);
+            this.log('Error zipping data: "{1}"', 'error', [err]);
+        });
+
+        archive.pipe(output);
+
+        for (let i=0; i<files.length; i++) {
+            let file = files[i];
+            let filePath = file;
+            let fileName = path.basename(file);
+            if (await this.isFile(path.join(baseDir, filePath))){
+                archive.append(fs.createReadStream(filePath), {
+                    name: fileName
+                });
+            } else if (await this.isDir(path.join(baseDir, filePath))){
+                let archiveDirName = filePath.replace(/\/?$/, '/');
+                archive.directory(archiveDirName, {
+                    name: archiveDirName
+                });
+            }
+        }
 
         archive.finalize();
 
@@ -317,7 +516,7 @@ class FileManager extends AppBaseClass {
                 }
             }
         }
-        return fs.existsSync(dirName);
+        return await this.isDir(dirName);
     }
 
     /**
@@ -658,7 +857,7 @@ class FileManager extends AppBaseClass {
      * @param  {string[]}   dirs            An array of absolute directory paths to search
      * @param  {Boolean}    requireFile     Flag to indicate whether to require() file or return its contents as string
      * @param  {Boolean}    notSilent       Flag to force logging output
-     * @return {(string|Object|boolean)}    File contents, exported object or false on failure.
+     * @return {(string|Object|Boolean)}    File contents, exported object or false on failure.
      */
     async loadFileFromDirs (fileName, dirs, requireFile, notSilent){
         let currentFile = await this.getFirstFileFromDirs(fileName, dirs);
@@ -840,6 +1039,50 @@ class FileManager extends AppBaseClass {
             }
         }
         return copied;
+    }
+
+    /**
+     * Renames file or directory
+     *
+     * @async
+     * @param  {string}     oldPath Old path
+     * @param  {string}     newPath New path
+     * @return {Boolean}            Operation result
+     */
+    async rename(oldPath, newPath){
+        return new Promise((resolve) => {
+            fs.rename(oldPath, newPath, (err) => {
+                if (err){
+                    let msg = err;
+                    if (err.message){
+                        msg = err.message;
+                    }
+                    this.log('Error renaming file "{1}" - "{2}"', 'error', [oldPath, msg]);
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    /**
+     * Gets file info (stat) object for given file or dir
+     *
+     * @param  {String} file Absolute path to file or dir
+     * @return {Stats}       Stats object with file or dir info
+     */
+    getFileInfo (file){
+        if (!file){
+            return false;
+        }
+        let filePath = path.resolve(file);
+        let exists = this.fileExists(filePath);
+        let fileStat;
+        if (exists){
+            fileStat = fs.statSync(filePath);
+        }
+        return fileStat;
     }
 }
 

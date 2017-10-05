@@ -596,31 +596,37 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     scrollElementTo (element, to, duration) {
-        var identifier = this.getUniqueElementIdentifier(element, true);
-        var frameDuration = parseInt(1000/60, 10);
-        var maxScrollHeight = element.scrollHeight - element.clientHeight;
+        let identifier = this.getUniqueElementIdentifier(element, true);
+        let frameDuration = parseInt(1000/60, 10);
+        let maxScrollHeight = element.scrollHeight - element.clientHeight;
 
         if (duration <= 0) {
             if (to > maxScrollHeight){
                 to = maxScrollHeight;
             }
             element.scrollTop = to;
+            clearInterval(this.intervals.scrollTo[identifier]);
             return;
         }
 
         if (element.scrollHeight <= element.clientHeight){
+            clearInterval(this.intervals.scrollTo[identifier]);
             return;
         }
 
-        var finalValue = to;
-        var difference = finalValue - element.scrollTop;
+        let finalValue = to;
+        let difference = finalValue - element.scrollTop;
         if (difference > 0 && finalValue >= maxScrollHeight){
             finalValue = maxScrollHeight;
             difference = finalValue - element.scrollTop;
         }
 
-        var frameCount = parseInt(duration/frameDuration, 10);
-        var stepIncrease = parseInt(difference / frameCount, 10);
+        if (finalValue < 0){
+            finalValue = 0;
+        }
+
+        let frameCount = parseInt(duration/frameDuration, 10);
+        let stepIncrease = parseInt(difference / frameCount, 10);
         if (!stepIncrease){
             stepIncrease = difference > 0 ? 1 : -1;
         }

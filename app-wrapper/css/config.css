@@ -6,6 +6,13 @@
     --app-base-font-size: 1rem;
     --font-smoothing: subpixel-antialiased;
 
+    --font-weight-thin: 400;
+    --font-weight-light: 400;
+    --font-weight-normal: 400;
+    --font-weight-medium: 400;
+    --font-weight-bold: 700;
+    --font-weight-black: 700;
+
     --form-row-base-border: 1px solid transparent;
     --form-row-error-border: 1px solid #FF0000;
 
@@ -42,6 +49,7 @@
     --short-animation-duration: 0.2s;
     --medium-animation-duration: 0.4s;
     --long-animation-duration: 0.6s;
+    --longest-animation-duration: 1s;
 
     /* links */
 
@@ -60,6 +68,9 @@
     --link-base-color-visited: #333D84;
     --link-base-cursor-visited: var(--link-base-cursor);
     --link-base-text-decoration-visited: var(--link-base-text-decoration);
+
+    --safe-link-color: #00CC00;
+    --unsafe-link-color: #FF0000;
 
     /* app header */
     --app-header-height: auto;
@@ -697,4 +708,16 @@
     --app-user-messages-header-background: -webkit-linear-gradient(top, var(--app-user-messages-header-background-color-top) 0%, var(--app-user-messages-header-background-color-bottom) 100%);
 
     --transition-size:  height linear var(--long-animation-duration), width linear var(--long-animation-duration), max-height linear var(--long-animation-duration), max-width linear var(--long-animation-duration), min-height linear var(--long-animation-duration), min-width linear var(--long-animation-duration);
+
+    /* file manager */
+    --file-manager-background: var(--app-main-bg-color);
+    --file-manager-text-color: var(--app-base-text-color);
+    --file-manager-selected-background: #CCCCCC;
+    --file-manager-image-preview-background: rgba(255, 255, 255, 0.8);
+    --file-manager-image-preview-close-color: #333333;
+
+    --file-manager-active-link-color: #000000;
+
+    --file-manager-folder-icon-background: linear-gradient(#FFCC33, #996600);
+    --file-manager-file-icon-background: linear-gradient(#CCCCCC, #777777);
 }
