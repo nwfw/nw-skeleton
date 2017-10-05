@@ -7,7 +7,13 @@
 const _ = require('lodash');
 const path = require('path');
 
-let CodeMirror = require(path.resolve('./node_modules/nw-skeleton/node_modules/codemirror/lib/codemirror.js'));
+let CodeMirror;
+try {
+    // used for linked lib (npm link)
+    CodeMirror = require(path.resolve('./node_modules/nw-skeleton/node_modules/codemirror/lib/codemirror.js'));
+} catch (ex) {
+    CodeMirror = require(path.resolve('./node_modules/codemirror/lib/codemirror.js'));
+}
 // require(path.resolve('./node_modules/nw-skeleton/node_modules/codemirror/addon/mode/loadmode.js'));
 
 
