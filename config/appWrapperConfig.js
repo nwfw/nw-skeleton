@@ -311,7 +311,9 @@ exports.config = {
             }
         },
         hasTrayIcon: false,
-        trayData: {}
+        trayData: {},
+        tooltipDelay: 400,
+        tooltipTTL: 100
     },
 
     configData: {

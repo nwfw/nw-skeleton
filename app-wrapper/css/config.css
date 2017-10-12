@@ -715,9 +715,18 @@
     --file-manager-selected-background: #CCCCCC;
     --file-manager-image-preview-background: rgba(255, 255, 255, 0.8);
     --file-manager-image-preview-close-color: #333333;
+    --file-manager-image-preview-shadow-color: #FFFFFF;
+
+    --file-manager-highlighted-color: var(--file-manager-background);
+    --file-manager-highlighted-background: #FFCC33;
 
     --file-manager-active-link-color: #000000;
 
     --file-manager-folder-icon-background: linear-gradient(#FFCC33, #996600);
     --file-manager-file-icon-background: linear-gradient(#CCCCCC, #777777);
+
+    /* nw-tooltip */
+    --tooltip-background-color: #333333;
+    --tooltip-shadow-color: #CCCCCC;
+    --tooltip-text-color: #FFFFFF;
 }

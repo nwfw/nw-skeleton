@@ -11,8 +11,8 @@
     </transition>
     <transition v-bind:name="fadeModal">
         <div v-show="modalVisible" class="modal-dialog" :class="{'no-messages': !currentModal.messages.length}">
-            <a v-if="currentModal.showCloseLink && !currentModal.closing && !currentModal.inlineConfirm" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="closeModalAction">
-                <span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime">
+            <a v-if="currentModal.showCloseLink && !currentModal.closing && !currentModal.inlineConfirm" class="modal-dialog-close" :class="{'modal-dialog-close-has-icon': !currentModal.autoClosing && !currentModal.closeLinkText, 'modal-dialog-close-no-icon': currentModal.autoClosing || currentModal.closeLinkText}" @click.prevent="closeModalAction">
+                <span data-event-target="parent" class="modal-dialog-close-contents" :class="{'modal-dialog-close-timer': currentModal.autoCloseTime, 'modal-dialog-close-text': currentModal.closeLinkText}" v-if="currentModal.closeLinkText || currentModal.autoCloseTime" v-nwtooltip="1" :title="currentModal.autoCloseTime ? translate('Closing in') + ' ' + currentModal.autoCloseTimeText + ' ' + translate('seconds') : translate('Close')">
                     <template v-if="currentModal.autoClosing">
                         <template v-if="!currentModal.autoCloseTime">
                             {{ currentModal.closeLinkText }}
@@ -25,7 +25,7 @@
                         </template>
                     </template>
                 </span>
-                <span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times"></span>
+                <span data-event-target="parent" class="modal-dialog-close-contents modal-dialog-close-icon fa fa-times" v-nwtooltip="1" :title="translate('Close')"></span>
             </a>
             <div class="modal-dialog-content">
                 <modal-dialog-contents v-bind:body-component="currentModal.bodyComponent" ref="modalDialogContents"></modal-dialog-contents>

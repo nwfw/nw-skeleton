@@ -464,6 +464,184 @@
     transition-duration: var(--long-animation-duration) !important;
 }
 
+
+/* transform-scale */
+
+.transform-scale-short-enter,
+.transform-scale-long-enter,
+.transform-scale-enter {
+    overflow: hidden !important;
+    opacity: 1 !important;
+    transform: scale(0.001, 0.001) !important;
+}
+
+.transform-scale-short-enter-to,
+.transform-scale-long-enter-to,
+.transform-scale-enter-to {
+    opacity: 1 !important;
+    transform: scale(1, 1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-short-leave,
+.transform-scale-long-leave,
+.transform-scale-leave {
+    z-index: 0 !important;
+    opacity: 0.8 !important;
+    transform: scale(1, 1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-short-leave-to,
+.transform-scale-long-leave-to,
+.transform-scale-leave-to {
+    z-index: 0 !important;
+    opacity: 0 !important;
+    transform: scale(0.001, 0.001) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-enter-active,
+.transform-scale-leave-active,
+.transform-scale-short-enter-active,
+.transform-scale-short-leave-active,
+.transform-scale-long-enter-active,
+.transform-scale-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform, opacity !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-short-enter-active,
+.transform-scale-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-long-enter-active,
+.transform-scale-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+/* transform-scale-width */
+
+.transform-scale-width-short-enter,
+.transform-scale-width-long-enter,
+.transform-scale-width-enter {
+    overflow: hidden !important;
+    opacity: 1 !important;
+    transform: scaleX(0.001) !important;
+}
+
+.transform-scale-width-short-enter-to,
+.transform-scale-width-long-enter-to,
+.transform-scale-width-enter-to {
+    opacity: 1 !important;
+    transform: scaleX(1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-short-leave,
+.transform-scale-width-long-leave,
+.transform-scale-width-leave {
+    z-index: 0 !important;
+    opacity: 0.8 !important;
+    transform: scaleX(1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-short-leave-to,
+.transform-scale-width-long-leave-to,
+.transform-scale-width-leave-to {
+    z-index: 0 !important;
+    opacity: 0 !important;
+    transform: scaleX(0.001) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-enter-active,
+.transform-scale-width-leave-active,
+.transform-scale-width-short-enter-active,
+.transform-scale-width-short-leave-active,
+.transform-scale-width-long-enter-active,
+.transform-scale-width-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform, opacity !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-width-short-enter-active,
+.transform-scale-width-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-width-long-enter-active,
+.transform-scale-width-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+/* transform-scale-height */
+
+.transform-scale-height-short-enter,
+.transform-scale-height-long-enter,
+.transform-scale-height-enter {
+    overflow: hidden !important;
+    opacity: 1 !important;
+    transform: scaleY(0.001) !important;
+}
+
+.transform-scale-height-short-enter-to,
+.transform-scale-height-long-enter-to,
+.transform-scale-height-enter-to {
+    opacity: 1 !important;
+    transform: scaleY(1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-short-leave,
+.transform-scale-height-long-leave,
+.transform-scale-height-leave {
+    z-index: 0 !important;
+    opacity: 0.8 !important;
+    transform: scaleY(1) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-short-leave-to,
+.transform-scale-height-long-leave-to,
+.transform-scale-height-leave-to {
+    z-index: 0 !important;
+    opacity: 0 !important;
+    transform: scaleY(0.001) !important;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-enter-active,
+.transform-scale-height-leave-active,
+.transform-scale-height-short-enter-active,
+.transform-scale-height-short-leave-active,
+.transform-scale-height-long-enter-active,
+.transform-scale-height-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform, opacity !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-height-short-enter-active,
+.transform-scale-height-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-height-long-enter-active,
+.transform-scale-height-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
 /* custom transition for modals */
 
 .transition-wh {

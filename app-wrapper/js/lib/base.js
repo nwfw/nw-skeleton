@@ -253,6 +253,20 @@ class BaseClass extends eventEmitter {
     }
 
     /**
+     * Sets configuration var value
+     *
+     * @param  {string} path    String representing path to requested var (i.e. 'appConfig.appInfo.name')
+     * @param  {mixed}  value   Default value to be returned if configuration var is not found
+     * @return {Object}         AppState object
+     */
+    setConfig (path, value){
+        if (!path.match(/^config\./)){
+            path = 'config.' + path;
+        }
+        return _.set(appState, path, value);
+    }
+
+    /**
      * Helper method for getting call stack array for debug or user message objects
      *
      * @return {array} An array of objects with properties 'function', 'file', 'line' and 'column', representing stack calls.

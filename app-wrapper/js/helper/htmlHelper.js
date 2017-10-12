@@ -90,7 +90,7 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     setElementStyles (element, styles, merge){
-        if (this instanceof Element){
+        if (!element && this instanceof Element){
             element = this;
         }
         if (element && element.setAttribute && _.isFunction(element.setAttribute) && styles && _.isObject(styles)){
@@ -165,6 +165,9 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     setFixedSize (element, elementHeight, elementWidth) {
+        if (this instanceof Element){
+            element = this;
+        }
         if (element && element.offsetHeight){
             if (_.isUndefined(elementHeight)){
                 elementHeight = parseInt(element.offsetHeight, 10);
@@ -190,6 +193,9 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     unsetFixedSize (element) {
+        if (this instanceof Element){
+            element = this;
+        }
         var propertiesToRemove = ['width', 'height', 'overflow'];
         this.removeElementStyles(element, propertiesToRemove);
     }
@@ -269,7 +275,7 @@ class HtmlHelper extends AppBaseClass {
             height: 0
         };
 
-        if (this instanceof Element){
+        if (!element && this instanceof Element){
             element = this;
         }
 
@@ -321,6 +327,10 @@ class HtmlHelper extends AppBaseClass {
             height: 0
         };
 
+        if (!element && this instanceof Element){
+            element = this;
+        }
+
         if (element && element.cloneNode && _.isFunction(element.cloneNode)){
             let clonedEl = element.cloneNode(true);
 
@@ -344,6 +354,7 @@ class HtmlHelper extends AppBaseClass {
 
             clonedEl.removeClass('transition-wh');
 
+            // this.setElementStyles(clonedEl, {display: 'unset'}, true);
             this.removeElementStyles(clonedEl, ['width', 'height']);
 
             dimensions.height = parseInt(clonedEl.offsetHeight, 10);
@@ -364,15 +375,15 @@ class HtmlHelper extends AppBaseClass {
      * @return {string}             Element unique identifier
      */
     getUniqueElementIdentifier (element, setAttr){
-        var identifier = '';
-
+        let identifier = '';
         if (element.getAttribute('data-identifier')){
             identifier = element.getAttribute('data-identifier');
         } else if (element.getAttribute('id')){
             identifier = element.getAttribute('id');
         } else {
-            identifier = element.tagName + '_' + element.className + '_' + element.offsetTop + '_' + element.offsetHeight;
+            identifier = element.tagName + '_' + element.className.replace(/\s+?/g, '_') + '_' + element.offsetTop + '_' + element.offsetHeight;
         }
+        identifier += _appWrapper.getHelper('util').getRandomString(5);
 
         if (identifier && setAttr){
             element.setAttribute('data-identifier', identifier);
@@ -771,12 +782,43 @@ class HtmlHelper extends AppBaseClass {
      * @return {Object}                  Object with 'offsetTop' and 'offsetLeft' numeric values
      */
     getAbsolutePosition (element){
-        var offsetLeft = element.offsetLeft;
-        var offsetTop = element.offsetTop;
-        var parent = element.parentNode;
+        if (!element && this instanceof Element){
+            element = this;
+        }
+
+        let bcr = element.getBoundingClientRect();
+        let offsetLeft = bcr.left;
+        let offsetTop = bcr.top;
+        // let parent = element;
+
+        // while (parent.offsetParent){
+        //     offsetLeft += parent.offsetLeft;
+        //     offsetTop += parent.offsetTop;
+        //     parent = parent.offsetParent;
+        // }
+
+        return {
+            offsetLeft: offsetLeft,
+            offsetTop: offsetTop
+        };
+    }
+
+    /**
+     * Gets absolute position for element
+     *
+     * @param  {HTMLElement} element     Element to get position for
+     * @return {Object}                  Object with 'offsetTop' and 'offsetLeft' numeric values
+     */
+    _getAbsolutePosition (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let offsetLeft = element.offsetLeft;
+        let offsetTop = element.offsetTop;
+        let parent = element.parentNode;
 
         if (parent && parent.tagName && parent.tagName.toLowerCase() !== 'body'){
-            var parentOffset = this.getAbsolutePosition(parent);
+            let parentOffset = this.getAbsolutePosition(parent);
             offsetLeft += parentOffset.offsetLeft;
             offsetTop += parentOffset.offsetTop;
         }
@@ -785,6 +827,142 @@ class HtmlHelper extends AppBaseClass {
             offsetLeft: offsetLeft,
             offsetTop: offsetTop
         };
+    }
+
+    /**
+     * Gets position for element relative to its first offset parent
+     *
+     * @param  {HTMLElement} element     Element to get position for
+     * @return {Object}                  Object with 'offsetTop' and 'offsetLeft' numeric values
+     */
+    getOffsetPosition (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let offsetLeft = element.offsetLeft;
+        let offsetTop = element.offsetTop;
+
+        let marginLeft = this.getComputedStyle(element, 'margin-left');
+        let marginTop = this.getComputedStyle(element, 'margin-top');
+
+        if (marginLeft && marginLeft.match(/px/)){
+            offsetLeft -= parseInt(marginLeft, 10);
+        }
+
+        if (marginTop && marginTop.match(/px/)){
+            offsetTop -= parseInt(marginTop, 10);
+        }
+
+        return {
+            offsetLeft: offsetLeft,
+            offsetTop: offsetTop
+        };
+    }
+
+    /**
+     * Checks whether element is position:absolute
+     *
+     * @param  {HTMLElement}  element   HTML element to check
+     * @return {Boolean}                Result
+     */
+    isAbsolute (element) {
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let position = this.getComputedStyle(element, 'position');
+        return position && position == 'absolute';
+    }
+
+    /**
+     * Checks whether element is position:relative
+     *
+     * @param  {HTMLElement}  element   HTML element to check
+     * @return {Boolean}                Result
+     */
+    isRelative (element) {
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let position = this.getComputedStyle(element, 'position');
+        return position && position == 'relative';
+    }
+
+    /**
+     * Checks whether element is position:absolute or position: relative
+     *
+     * @param  {HTMLElement}  element   HTML element to check
+     * @return {Boolean}                Result
+     */
+    isPositioned (element) {
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let position = this.getComputedStyle(element, 'position');
+        return position && (position == 'relative' || position == 'absolute');
+    }
+
+    /**
+     * Absolutizes element, leaving it in its current place
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    absolutize (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let position = this.getOffsetPosition(element);
+        let styles = {
+            position: 'absolute',
+            left: position.offsetLeft + 'px',
+            top: position.offsetTop + 'px'
+        };
+        this.setElementStyles(element, styles, true);
+    }
+
+    /**
+     * Unabsolutizes element, returning it to its original place
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    unAbsolutize (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        this.removeElementStyles(element, ['position','left','top']);
+    }
+
+    /**
+     * Relativizes element
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    relativize (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let position = this.getOffsetPosition(element);
+        let styles = {
+            position: 'relative',
+            left: position.offsetLeft + 'px',
+            top: position.offsetTop + 'px'
+        };
+        this.setElementStyles(element, styles, true);
+    }
+
+    /**
+     * Unrelativizes element
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    unRelativize (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        this.removeElementStyles(element, ['position','left','top']);
     }
 
     /**
