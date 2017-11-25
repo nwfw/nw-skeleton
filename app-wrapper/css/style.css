@@ -307,7 +307,7 @@ a:visited {
 	margin: 0 4px;
 }
 
-.nw-tooltip {
+.nw-tooltip-wrapper {
 	font-size: 0.8rem;
 	position: absolute;
 	display: none;
@@ -324,28 +324,72 @@ a:visited {
 	transition-property: opacity, max-height;
 	transition-duration: var(--medium-animation-duration);
 	transition-timing-function: ease-in-out;
+
+	& .nw-tooltip {
+		padding: 5px 0;
+		max-height: 90px;
+		overflow: auto;
+	}
+
+	&.stick-right,
+	&.stick-left {
+		transform: translate(0, 10px);
+	}
+
+	&.prepared-tooltip {
+		display: block;
+		opacity: 0;
+		max-height: 0px;
+	}
+
+	&.visible-tooltip {
+		opacity: 1;
+		max-height: 100px;
+	}
+
+	&.prepared-tooltip:before {
+		content: ' ';
+		width: 0px;
+		height: 0px;
+		position: absolute;
+		top: -8px;
+		left: calc(50% - 8px);
+		display: block;
+		border-left: 8px solid transparent;
+	  	border-right: 8px solid transparent;
+	  	border-bottom: 8px solid var(--tooltip-background-color);
+	}
+
+	&.stick-right:before,
+	&.stick-left:before {
+		display: none;
+	}
+
+	&.align-right {
+	    text-align: right;
+	}
+
+	&.align-left {
+	    text-align: left;
+	}
 }
 
-.nw-tooltip.prepared-tooltip {
-	display: block;
-	opacity: 0;
-	max-height: 0px;
+
+.gu-mirror {
+    position: fixed !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    opacity: 0.8;
 }
 
-.nw-tooltip.visible-tooltip {
-	opacity: 1;
-	max-height: 30px;
+.gu-hide {
+    display: none !important;
 }
 
-.nw-tooltip.prepared-tooltip:before {
-	content: ' ';
-	width: 0px;
-	height: 0px;
-	position: absolute;
-	top: -8px;
-	left: calc(50% - 8px);
-	display: block;
-	border-left: 8px solid transparent;
-  	border-right: 8px solid transparent;
-  	border-bottom: 8px solid var(--tooltip-background-color);
+.gu-unselectable {
+    -webkit-user-select: none !important;
+}
+
+.gu-transit {
+    opacity: 0.2;
 }

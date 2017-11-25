@@ -152,7 +152,9 @@ class MainBaseClass extends BaseClass {
             }
             line += JSON.stringify(messageObj);
             let debugMessageFilePath = this.getDebugMessageFilePath();
-            fs.writeFileSync(path.resolve(debugMessageFilePath), line, {flag: 'a'});
+            if (debugMessageFilePath){
+                fs.writeFileSync(path.resolve(debugMessageFilePath), line, {flag: 'a'});
+            }
         }
     }
 
@@ -162,12 +164,17 @@ class MainBaseClass extends BaseClass {
      * @return {string} Path to debug message log file
      */
     getDebugMessageFilePath () {
-        let debugMessageFilePath = path.join(mainScript.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
-        let rotateLogs = this.getConfig('main.debug.rotateLogs');
-        if (rotateLogs){
-            debugMessageFilePath += '-' + mainScript.startTime.toISOString().replace(/T.*$/, '');
+        let debugMessageFilePath = false;
+        try {
+            debugMessageFilePath = path.join(mainScript.getExecPath(), this.getConfig('appConfig.logDir'), this.getConfig('main.debug.debugLogFilename'));
+            let rotateLogs = this.getConfig('main.debug.rotateLogs');
+            if (rotateLogs){
+                debugMessageFilePath += '-' + mainScript.startTime.toISOString().replace(/T.*$/, '');
+            }
+            debugMessageFilePath += '.json';
+        } catch (ex) {
+            console.log(ex);
         }
-        debugMessageFilePath += '.json';
         return debugMessageFilePath;
     }
 

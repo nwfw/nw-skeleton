@@ -27,14 +27,17 @@ component = {
     template: '',
     props: ['bodyComponent'],
     methods: {
-        confirmModalAction: function(){
+        confirmModalAction: async function(){
             let cm = appState.modalData.currentModal;
+            let doConfirm = true;
             if (cm.onConfirm && _.isFunction(cm.onConfirm)){
                 _appWrapper.getHelper('modal').log('Calling current modal onConfirm...', 'info', []);
-                cm.onConfirm();
+                doConfirm = doConfirm && await cm.onConfirm();
             }
-            cm.cancelOnClose = false;
-            _appWrapper.confirmModalAction(true);
+            if (doConfirm){
+                cm.cancelOnClose = false;
+                _appWrapper.confirmModalAction(true);
+            }
         },
 
         cancelModalAction: function(){

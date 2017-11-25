@@ -175,6 +175,19 @@ var MixinWrapperMethods  = {
         formatFileSize: function(bytes){
             return _appWrapper.getHelper('format').formatFileSize(bytes);
         },
+
+        /**
+         * Formats file size from bytes to human-readable format, returning one lesser unit if file size in default units is larger than minRest param
+         *
+         * @param  {Integer} bytes   File size in bytes
+         * @param  {Boolean} format  Flag to indicate whether to format output (add commas)
+         * @param  {Integer} minRest Minimum file size in default units
+         * @return {string}          Formatted file size
+         */
+        formatLargeFileSize: function(bytes, format, minRest){
+            return _appWrapper.getHelper('format').formatLargeFileSize(bytes, format, minRest);
+        },
+
         /**
          * Checks whether debug is enabled and returns value accordingly
          *

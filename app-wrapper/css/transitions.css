@@ -642,6 +642,154 @@
     transition-duration: var(--long-animation-duration) !important;
 }
 
+/* transform-scale-height-from-top */
+
+.transform-scale-height-from-top-short-enter,
+.transform-scale-height-from-top-long-enter,
+.transform-scale-height-from-top-enter {
+    overflow: hidden !important;
+    transform: scaleY(0.001) !important;
+    transform-origin: top center;
+}
+
+.transform-scale-height-from-top-short-enter-to,
+.transform-scale-height-from-top-long-enter-to,
+.transform-scale-height-from-top-enter-to {
+    transform: scaleY(1) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-top-short-leave,
+.transform-scale-height-from-top-long-leave,
+.transform-scale-height-from-top-leave {
+    transform: scaleY(1) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-top-short-leave-to,
+.transform-scale-height-from-top-long-leave-to,
+.transform-scale-height-from-top-leave-to {
+    transform: scaleY(0.001) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-top-enter-active,
+.transform-scale-height-from-top-leave-active,
+.transform-scale-height-from-top-short-enter-active,
+.transform-scale-height-from-top-short-leave-active,
+.transform-scale-height-from-top-long-enter-active,
+.transform-scale-height-from-top-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-height-from-top-short-enter-active,
+.transform-scale-height-from-top-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-height-from-top-long-enter-active,
+.transform-scale-height-from-top-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+/* transform-scale-height-from-center */
+
+.transform-scale-height-from-center-short-enter,
+.transform-scale-height-from-center-long-enter,
+.transform-scale-height-from-center-enter,
+.transform-scale-height-from-center-delayed-short-enter,
+.transform-scale-height-from-center-delayed-long-enter,
+.transform-scale-height-from-center-delayed-enter {
+    overflow: hidden !important;
+    transform: scaleY(0.001) !important;
+    opacity: 0 !important;
+    transform-origin: center center;
+}
+
+.transform-scale-height-from-center-short-enter-to,
+.transform-scale-height-from-center-long-enter-to,
+.transform-scale-height-from-center-enter-to,
+.transform-scale-height-from-center-delayed-short-enter-to,
+.transform-scale-height-from-center-delayed-long-enter-to,
+.transform-scale-height-from-center-delayed-enter-to {
+    transform: scaleY(1) !important;
+    opacity: 1 !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-center-short-leave,
+.transform-scale-height-from-center-long-leave,
+.transform-scale-height-from-center-leave,
+.transform-scale-height-from-center-delayed-short-leave,
+.transform-scale-height-from-center-delayed-long-leave,
+.transform-scale-height-from-center-delayed-leave {
+    transform: scaleY(1) !important;
+    opacity: 1 !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-center-short-leave-to,
+.transform-scale-height-from-center-long-leave-to,
+.transform-scale-height-from-center-leave-to,
+.transform-scale-height-from-center-delayed-short-leave-to,
+.transform-scale-height-from-center-delayed-long-leave-to,
+.transform-scale-height-from-center-delayed-leave-to {
+    transform: scaleY(0.001) !important;
+    opacity: 0 !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-center-enter-active,
+.transform-scale-height-from-center-leave-active,
+.transform-scale-height-from-center-short-enter-active,
+.transform-scale-height-from-center-short-leave-active,
+.transform-scale-height-from-center-long-enter-active,
+.transform-scale-height-from-center-long-leave-active,
+.transform-scale-height-from-center-delayed-enter-active,
+.transform-scale-height-from-center-delayed-leave-active,
+.transform-scale-height-from-center-delayed-short-enter-active,
+.transform-scale-height-from-center-delayed-short-leave-active,
+.transform-scale-height-from-center-delayed-long-enter-active,
+.transform-scale-height-from-center-delayed-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform, opacity !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-height-from-center-short-enter-active,
+.transform-scale-height-from-center-short-leave-active,
+.transform-scale-height-from-center-delayed-short-enter-active,
+.transform-scale-height-from-center-delayed-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-height-from-center-long-enter-active,
+.transform-scale-height-from-center-long-leave-active,
+.transform-scale-height-from-center-delayed-long-enter-active,
+.transform-scale-height-from-center-delayed-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+.transform-scale-height-from-center-delayed-short-enter-active,
+.transform-scale-height-from-center-delayed-enter-active,
+.transform-scale-height-from-center-delayed-long-enter-active {
+    transition-delay: var(--short-animation-duration);
+}
+
+
+
+
 /* custom transition for modals */
 
 .transition-wh {

@@ -280,8 +280,12 @@ class StaticFilesHelper extends AppBaseClass {
             links = document.querySelectorAll('link');
         }
         for (let i=0; i<links.length;i++){
-            this.log('Removing old CSS file "{1}" tag', 'info', [links[i].href]);
-            links[i].parentNode.removeChild(links[i]);
+            if (links[i] && links[i].parentNode && links[i].parentNode.removeChild && _.isFunction(links[i].parentNode.removeChild)){
+                this.log('Removing old CSS file "{1}" tag', 'info', [links[i].href]);
+                links[i].parentNode.removeChild(links[i]);
+            } else {
+                this.log('Problem Rremoving old CSS file "{1}" tag (no link parent node)', 'warning', [links[i].href]);
+            }
         }
         this.detectMissingVariables();
         this.log('Removing old CSS tags', 'groupend', []);
@@ -766,12 +770,17 @@ class StaticFilesHelper extends AppBaseClass {
      * Handler that reloads all css on page
      *
      * @async
+     * @param {Boolean} noWatch Flag that prevents file watching
+     * @param {Boolean} silent  Flag that prevents logging
      * @return {undefined}
      */
-    async doReloadCss () {
+    async doReloadCss (noWatch = true, silent = true) {
         clearTimeout(this.timeouts.reloadCss);
         try {
-            await this.generateCss(true, true);
+            if (!noWatch){
+                await this.unwatchFiles();
+            }
+            await this.generateCss(noWatch, silent);
             await this.refreshCss();
         } catch (ex){
             this.log('Problem reloading CSS - "{1}"', 'error', [ex.message]);

@@ -24,7 +24,8 @@
         "postcss-nesting": "^4.2.1",
         "postcss-url": "^7.1.2",
         "smoothie": "^1.29.1",
-        "unzipper": "^0.8.9"
+        "unzipper": "^0.8.9",
+        "vue2-dragula": "^2.5.0"
     },
     "devDependencies": {
         "google-translate-api": "git+ssh://git@github.com:nwfw/google-translate-api.git"

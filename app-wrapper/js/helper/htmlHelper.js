@@ -376,16 +376,22 @@ class HtmlHelper extends AppBaseClass {
      */
     getUniqueElementIdentifier (element, setAttr){
         let identifier = '';
+        let found = false;
+        let id = false;
         if (element.getAttribute('data-identifier')){
             identifier = element.getAttribute('data-identifier');
+            found = true;
         } else if (element.getAttribute('id')){
             identifier = element.getAttribute('id');
+            id = true;
         } else {
             identifier = element.tagName + '_' + element.className.replace(/\s+?/g, '_') + '_' + element.offsetTop + '_' + element.offsetHeight;
         }
-        identifier += _appWrapper.getHelper('util').getRandomString(5);
+        if (!found && !id){
+            identifier += _appWrapper.getHelper('util').getRandomString(5);
+        }
 
-        if (identifier && setAttr){
+        if (identifier && setAttr && !found){
             element.setAttribute('data-identifier', identifier);
         }
 
@@ -610,18 +616,17 @@ class HtmlHelper extends AppBaseClass {
         let identifier = this.getUniqueElementIdentifier(element, true);
         let frameDuration = parseInt(1000/60, 10);
         let maxScrollHeight = element.scrollHeight - element.clientHeight;
+        clearInterval(this.intervals.scrollTo[identifier]);
 
         if (duration <= 0) {
             if (to > maxScrollHeight){
                 to = maxScrollHeight;
             }
             element.scrollTop = to;
-            clearInterval(this.intervals.scrollTo[identifier]);
             return;
         }
 
         if (element.scrollHeight <= element.clientHeight){
-            clearInterval(this.intervals.scrollTo[identifier]);
             return;
         }
 
@@ -642,10 +647,11 @@ class HtmlHelper extends AppBaseClass {
             stepIncrease = difference > 0 ? 1 : -1;
         }
 
-        clearInterval(this.intervals.scrollTo[identifier]);
-        this.intervals.scrollTo[identifier] = setInterval(() => {
-            this.scrollElementStep(element, stepIncrease, finalValue);
-        }, frameDuration);
+        if (stepIncrease != 0){
+            this.intervals.scrollTo[identifier] = setInterval(() => {
+                this.scrollElementStep(element, stepIncrease, finalValue, identifier);
+            }, frameDuration);
+        }
     }
 
     /**
@@ -654,14 +660,14 @@ class HtmlHelper extends AppBaseClass {
      * @param {HTMLElement} element    Element to scroll
      * @param {Number} stepIncrease    Value for each scrolling step
      * @param {Number} finalValue      Final element scroll value
+     * @param {String} identifier      Unique element identifier
      * @return {undefined}
      */
-    scrollElementStep (element, stepIncrease, finalValue){
-        var currentValue = element.scrollTop;
-        var nextValue = currentValue + stepIncrease;
-        var maxValue = element.scrollHeight;
-        var minValue = 0;
-        var identifier = this.getUniqueElementIdentifier(element, true);
+    scrollElementStep (element, stepIncrease, finalValue, identifier){
+        let currentValue = element.scrollTop;
+        let nextValue = currentValue + stepIncrease;
+        let maxValue = element.scrollHeight;
+        let minValue = 0;
 
         if (stepIncrease >= 0){
             if (currentValue >= maxValue){
@@ -726,11 +732,58 @@ class HtmlHelper extends AppBaseClass {
      * @return {undefined}
      */
     selectAll (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
         var selection = window.getSelection();
         selection.removeAllRanges();
         var range = document.createRange();
         range.selectNode(element);
         selection.addRange(range);
+    }
+
+    /**
+     * Selects matched part of the text in element
+     *
+     * @param {HTMLElement} element     Element to select
+     * @param {String}      text        Text to match
+     * @return {undefined}
+     */
+    selectMatch (element, text){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        let elementValue = element.value;
+        element.focus();
+        if (elementValue){
+            let utilHelper = this.getHelper('util');
+            let match = elementValue.match(new RegExp(utilHelper.quoteRegex(text, 'i')));
+            if (match && !_.isUndefined(match.index)){
+                let start = match.index;
+                let end = match.index + text.length;
+                element.setSelectionRange(start, end);
+            }
+        }
+    }
+
+    /**
+     * Selects text range in element
+     *
+     * @param {HTMLElement} element     Element to select
+     * @param {Number}      start       Start index
+     * @param {Number}      end         End index
+     * @return {undefined}
+     */
+    selectRange (element, start, end){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        element.focus();
+        element.setSelectionRange(start, end);
     }
 
     /**
@@ -899,6 +952,39 @@ class HtmlHelper extends AppBaseClass {
         }
         let position = this.getComputedStyle(element, 'position');
         return position && (position == 'relative' || position == 'absolute');
+    }
+
+    /**
+     * Fixates element, leaving it in its current place
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    fixate (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        // let position = this.getOffsetPosition(element);
+        let styles = {
+            position: 'fixed',
+            // left: position.offsetLeft + 'px',
+            // top: position.offsetTop + 'px'
+        };
+        this.setElementStyles(element, styles, true);
+    }
+
+    /**
+     * Unfixates element, returning it to its original place
+     *
+     * @param  {HTMLElement}  element   HTML element to modify
+     * @return {undefined}
+     */
+    unFixate (element){
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        // this.removeElementStyles(element, ['position','left','top']);
+        this.removeElementStyles(element, ['position']);
     }
 
     /**

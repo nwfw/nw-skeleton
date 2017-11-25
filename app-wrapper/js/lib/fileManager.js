@@ -566,13 +566,12 @@ class FileManager extends AppBaseClass {
      * @return {Boolean}         True if operation succeeded, false otherwise
      */
     async writeFileSync(file, data, options){
-        var saved = false;
         try {
-            saved = fs.writeFileSync(file, data, options);
+            fs.writeFileSync(file, data, options);
         } catch (ex) {
             console.log(ex);
         }
-        return saved;
+        return await this.isFile(file);
     }
 
     /**

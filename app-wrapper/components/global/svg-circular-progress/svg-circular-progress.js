@@ -25,6 +25,10 @@ exports.component = {
     template: '',
     props: ['circularProgressData'],
     currentData: {},
+    previousProgress: 0,
+    created: function(){
+        this.previousProgress = 0;
+    },
     data: function () {
         return {
             progressData: this.circularProgressData
@@ -35,7 +39,13 @@ exports.component = {
             return radius * 2 * Math.PI;
         },
         getDashOffset: function(radius) {
-            return (radius * 2 * Math.PI * (1 - (this.progressData.progress / 100)));
+            let progress = this.progressData.progress;
+            if (isNaN(Math.floor(progress))){
+                progress = this.previousProgress;
+            } else {
+                this.previousProgress = progress;
+            }
+            return (radius * 2 * Math.PI * (1 - (progress / 100)));
         },
         getDashOffsetFront: function(radius) {
             let dashOffset = this.getDashOffset(radius);
@@ -48,6 +58,14 @@ exports.component = {
             // dashOffset -= 2;
             dashOffset *= 0.995;
             return dashOffset;
+        },
+        getProgressValue: function(){
+            let progress = Math.floor(this.progressData.progress);
+            if (!isNaN(progress)){
+                return progress + '%';
+            } else {
+                return this.progressData.progress;
+            }
         },
     },
     computed: {

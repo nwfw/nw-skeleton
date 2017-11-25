@@ -10,7 +10,7 @@
             <div key="progressTitle" class="progress-title" v-if="progressData.title" v-html="progressData.title"></div>
         </transition>
         <transition name="size">
-            <div key="progressValue" v-if="progressData.progress || progressData.progress === 0" class="progress-value" v-html="Math.floor(progressData.progress) + '%'"></div>
+            <div key="progressValue" v-if="progressData.progress || progressData.progress === 0" class="progress-value" v-html="getProgressValue()"></div>
         </transition>
         <transition name="size">
             <div key="progressInfo" class="progress-text" v-if="progressData.info" v-html="progressData.info"></div>

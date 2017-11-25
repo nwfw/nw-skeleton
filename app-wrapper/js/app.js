@@ -6,6 +6,7 @@
 
 const _ = require('lodash');
 const path = require('path');
+const vd = require('vue2-dragula');
 
 /**
  * AppBaseClass object
@@ -84,6 +85,7 @@ class App extends AppBaseClass {
 
             await this.loadSubFiles();
             await this.initializeSubFiles();
+            Vue.use(vd.Vue2Dragula, {});
             this.initialized = true;
             await this.initializeFeApp();
         }

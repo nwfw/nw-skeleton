@@ -89,29 +89,25 @@ exports.component = {
     mounted: async function(){
         if (this.data.file){
             this.data.code = await _appWrapper.fileManager.loadFile(this.data.file, false);
-            CodeMirror.modeURL = path.resolve(this.config.modeUrl);
-            if (this.data.mode){
-                CodeMirror.requireMode(this.data.mode, async () => {
-                    this.$nextTick(async () => {
-                        let options = _.cloneDeep(this.data.cmOptions);
-                        if (_.isUndefined(options.mode)){
-                            options.mode = this.data.mode;
-                        }
-                        if (_.isUndefined(options.readOnly)){
-                            options.readOnly = true;
-                        }
-                        if (_.isUndefined(options.theme) && _appWrapper.getConfig('theme').match(/dark/)){
-                            options.theme = 'blackboard';
-                        }
-                        await _appWrapper.wait(200);
-                        this.editorInstance = CodeMirror.fromTextArea(this.$el.querySelector('.file-viewer-textarea'), options);
-                    });
+        }
+        CodeMirror.modeURL = path.resolve(this.config.modeUrl);
+        if (this.data.mode){
+            CodeMirror.requireMode(this.data.mode, async () => {
+                this.$nextTick(async () => {
+                    let options = _.cloneDeep(this.data.cmOptions);
+                    if (_.isUndefined(options.mode)){
+                        options.mode = this.data.mode;
+                    }
+                    if (_.isUndefined(options.readOnly)){
+                        options.readOnly = true;
+                    }
+                    if (_.isUndefined(options.theme) && _appWrapper.getConfig('theme').match(/dark/)){
+                        options.theme = 'blackboard';
+                    }
+                    await _appWrapper.wait(1000);
+                    this.editorInstance = CodeMirror.fromTextArea(this.$el.querySelector('.file-viewer-textarea'), options);
                 });
-            } else {
-                this.editorInstance = CodeMirror.fromTextArea(this.$el.querySelector('.file-viewer-textarea'), {
-                    readOnly: true
-                });
-            }
+            });
         } else {
             this.editorInstance = CodeMirror.fromTextArea(this.$el.querySelector('.file-viewer-textarea'), {
                 readOnly: true

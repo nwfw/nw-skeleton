@@ -10,7 +10,7 @@ const MainScript = nwSkeleton.MainScript;
 const appWrapperConfig = nwSkeleton.appWrapperConfig;
 const appConfig = require('./config/config');
 
-var config = _.extend(appWrapperConfig, appConfig);
+var config = _.extend(appWrapperConfig, appConfig.config);
 var mainScript;
 
 /**

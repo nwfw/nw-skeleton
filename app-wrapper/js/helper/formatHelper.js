@@ -653,11 +653,15 @@ class FormatHelper extends AppBaseClass {
     /**
      * Formats raw file size in bytes to human-readable format
      *
-     * @param  {Integer} bytes  File size in bytes
-     * @return {string}         Human-readable file size representation
+     * @param  {Integer} bytes          File size in bytes
+     * @param  {Integer} lesserUnits    Downscale unit by n
+     * @return {string}                 Human-readable file size representation
      */
-    formatFileSize (bytes) {
-        let sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    formatFileSize (bytes, lesserUnits) {
+        if (!lesserUnits){
+            lesserUnits = 0;
+        }
+        let sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
         if (bytes == 0) {
             return '0 B';
         }
@@ -667,14 +671,56 @@ class FormatHelper extends AppBaseClass {
             bytes = Math.abs(bytes);
         }
         let size = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        if (size >= 2){
-            size -= 1;
+        size -= lesserUnits;
+        if (size < 0){
+            size = 0;
         }
         let value = Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];
         if (negative){
             value = '-' + value;
         }
         return value;
+    }
+
+    /**
+     * Formats file size from bytes to human-readable format, returning one lesser unit if file size in default units is larger than minRest param
+     *
+     * @param  {Integer} bytes   File size in bytes
+     * @param  {Boolean} format  Flag to indicate whether to format output (add commas)
+     * @param  {Integer} minRest Minimum file size in default units
+     * @return {string}          Formatted file size
+     */
+    formatLargeFileSize (bytes, format = true, minRest = 100){
+        let formattedSize = '0 B';
+        if (bytes && _.isNumber(bytes)){
+            formattedSize = this.formatFileSize(bytes);
+            let formattedSizeChunks = formattedSize.split(' ');
+            let sizeNumber = +formattedSizeChunks[0];
+            if (sizeNumber < minRest) {
+                formattedSize = this.formatFileSize(bytes, 1);
+            }
+            if (format){
+                formattedSizeChunks = formattedSize.split(' ');
+                sizeNumber = +formattedSizeChunks[0];
+                formattedSize = sizeNumber.toLocaleString() + ' ' + formattedSizeChunks[1];
+            }
+        }
+        return formattedSize;
+    }
+
+    addSeparators (string, inputDecimalChar, outputDecimalChar, separator) {
+        string += '';
+        let decimalPosition = string.indexOf(inputDecimalChar);
+        let stringEnd = '';
+        if (decimalPosition != -1) {
+            stringEnd = outputDecimalChar + string.substring(decimalPosition + 1, string.length);
+            string = string.substring(0, decimalPosition);
+        }
+        let separatorRegex = /(\d+)(\d{3})/;
+        while (separatorRegex.test(string)) {
+            string = string.replace(separatorRegex, '$1' + separator + '$2');
+        }
+        return string + stringEnd;
     }
 }
 

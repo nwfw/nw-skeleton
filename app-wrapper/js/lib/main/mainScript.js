@@ -91,10 +91,12 @@ class MainScript extends MainBaseClass {
 
         if (this.getConfig('main.debug.debugToFile')){
             let debugMessageFilePath = this.getDebugMessageFilePath();
-            if (!await this.isFile(debugMessageFilePath) || !this.getConfig('main.debug.debugToFileAppend')) {
-                this.createDirFileRecursive(debugMessageFilePath);
-            } else if (this.getConfig('main.debug.debugToFileAppend')) {
-                await this.initializeDebugMessageLog();
+            if (debugMessageFilePath) {
+                if (!await this.isFile(debugMessageFilePath) || !this.getConfig('main.debug.debugToFileAppend')) {
+                    this.createDirFileRecursive(debugMessageFilePath);
+                } else if (this.getConfig('main.debug.debugToFileAppend')) {
+                    await this.initializeDebugMessageLog();
+                }
             }
         }
 
@@ -394,13 +396,15 @@ class MainScript extends MainBaseClass {
     async initializeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
             let debugMessageFilePath = this.getDebugMessageFilePath();
-            let debugLogFile = path.resolve(debugMessageFilePath);
-            let debugLogContents = fs.readFileSync(debugLogFile) + '';
-            if (debugLogContents){
-                debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
-                debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',\n');
-                debugLogContents = debugLogContents.replace(/,+/g, ',');
-                fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            if (debugMessageFilePath){
+                let debugLogFile = path.resolve(debugMessageFilePath);
+                let debugLogContents = fs.readFileSync(debugLogFile) + '';
+                if (debugLogContents){
+                    debugLogContents = debugLogContents.replace(/\n?\[\n/g, '');
+                    debugLogContents = debugLogContents.replace(/\n\],?\n/g, ',\n');
+                    debugLogContents = debugLogContents.replace(/,+/g, ',');
+                    fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+                }
             }
         }
         return true;
@@ -415,10 +419,12 @@ class MainScript extends MainBaseClass {
     async finalizeDebugMessageLog(){
         if (this.getConfig('main.debug.debugToFile')){
             let debugMessageFilePath = this.getDebugMessageFilePath();
-            let debugLogFile = path.resolve(debugMessageFilePath);
-            let debugLogContents = '[\n' + fs.readFileSync(debugLogFile) + '\n]\n';
-            debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
-            fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            if (debugMessageFilePath) {
+                let debugLogFile = path.resolve(debugMessageFilePath);
+                let debugLogContents = '[\n' + fs.readFileSync(debugLogFile) + '\n]\n';
+                debugLogContents = debugLogContents.replace(/\n,\n/g, '\n');
+                fs.writeFileSync(debugLogFile, debugLogContents, {flag: 'w'});
+            }
         }
         return true;
     }
