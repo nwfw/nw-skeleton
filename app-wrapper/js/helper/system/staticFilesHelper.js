@@ -253,6 +253,7 @@ class StaticFilesHelper extends AppBaseClass {
                     this.log('Reloaded CSS file "{1}"', 'info', [newLink.href.replace(/^[^/]+\/\/[^/]+/, '').replace(/\?.*$/, '')]);
                     if (loadedLinks >= linkCount){
                         await this.removeOldCssTags(links);
+                        _appWrapper.emit('css:loaded');
                         this.log('Reloading {1} CSS files.', 'groupend', [links.length]);
                     }
                 };
@@ -721,6 +722,7 @@ class StaticFilesHelper extends AppBaseClass {
             await this.loadJsTypeGroup(themeInitJsFiles, 'theme init');
             await this.loadJsTypeGroup(appJsFiles, 'app');
             await this.loadJsTypeGroup(themeJsFiles, 'theme');
+            _appWrapper.emit('js:loaded');
             this.log('Loading {1} JS files', 'groupend', [totalJsFileCount]);
         }
     }
