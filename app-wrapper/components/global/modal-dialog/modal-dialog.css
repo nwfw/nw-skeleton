@@ -230,6 +230,9 @@
     padding: var(--modal-dialog-body-padding);
     text-align: center;
     flex: 1 0 auto;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
     overflow: auto;
 }
 
@@ -239,9 +242,18 @@
     flex: 1 1 auto;
 }
 
+.modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper .modal-dialog-inline-confirm .modal-dialog-inline-confirm-contents {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
 .modal-dialog-wrapper .modal-dialog .modal-dialog-content-wrapper .modal-dialog-inline-confirm .inner-confirm-buttons {
     margin: 10px 0;
     text-align: right;
+    margin-bottom: auto;
+    flex: 0 1 auto;
 }
 
 .modal-dialog-wrapper .modal-dialog-busy-indicator {

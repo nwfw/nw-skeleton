@@ -27,24 +27,27 @@ component = {
     template: '',
     messageAdded: false,
     methods: {
-        closeModalAction: function(){
+        closeModalAction: async function(){
             let modalHelper = _appWrapper.getHelper('modal');
             let cm = appState.modalData.currentModal;
+            let doClose = true;
             if (cm.cancelOnClose && cm.onCancel && _.isFunction(cm.onCancel)){
                 _appWrapper.getHelper('modal').log('Calling current modal onCancel...', 'info', []);
-                cm.onCancel();
+                doClose = doClose && await cm.onCancel();
             }
             if (!cm.animateSize){
                 if (cm.onBeforeClose && _.isFunction(cm.onBeforeClose)){
                     _appWrapper.getHelper('modal').log('Calling current modal onBeforeClose...', 'info', []);
-                    cm.onBeforeClose();
+                    doClose = doClose && await cm.onBeforeClose();
                 }
                 if (cm.onClose && _.isFunction(cm.onClose)){
                     _appWrapper.getHelper('modal').log('Calling current modal onClose...', 'info', []);
-                    cm.onClose();
+                    doClose = doClose && await cm.onClose();
                 }
             }
-            modalHelper.closeCurrentModal();
+            if (doClose){
+                modalHelper.closeCurrentModal();
+            }
         },
 
 

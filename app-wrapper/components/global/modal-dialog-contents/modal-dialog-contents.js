@@ -40,14 +40,17 @@ component = {
             }
         },
 
-        cancelModalAction: function(){
+        cancelModalAction: async function(){
             let cm = appState.modalData.currentModal;
+            let doCancel = true;
             if (cm.onCancel && _.isFunction(cm.onCancel)){
                 _appWrapper.getHelper('modal').log('Calling current modal onCancel...', 'info', []);
-                cm.onCancel();
+                doCancel = doCancel && await cm.onCancel();
             }
-            cm.cancelOnClose = false;
-            _appWrapper.cancelModalAction();
+            if (doCancel){
+                cm.cancelOnClose = false;
+                _appWrapper.cancelModalAction();
+            }
         },
         getTitle: function(){
             let title = '';
@@ -153,6 +156,7 @@ component = {
                     cm.onClose();
                     cm.closing = false;
                 }
+                _appWrapper.emit('modal:closed', cm);
             }
             if (!cm.ready && cm.animateSize){
                 cm.busy = false;
@@ -310,6 +314,9 @@ component = {
             return appState;
         }
     },
+
+    watch: {
+    }
 };
 
 exports.component = component;
