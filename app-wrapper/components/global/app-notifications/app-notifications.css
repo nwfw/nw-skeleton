@@ -122,6 +122,7 @@
 .app-notifications .app-notification-contents .app-notification-pin {
     flex: 0 1 auto;
     cursor: pointer;
+    align-self: center;
     transition-property: opacity, background, color, transform, text-shadow, margin-top;
     transition-timing-function: ease-in-out;
     transition-duration: var(--medium-animation-duration);

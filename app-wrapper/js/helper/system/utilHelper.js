@@ -852,6 +852,21 @@ class UtilHelper extends AppBaseClass {
             }
         }
     }
+
+    /**
+     * Returns unix timestamp for date parameter or current timestamp if parameter is not an instance of Date
+     *
+     * @param  {Date|String=}   date String or Date object for which timestamp should be returned (defaults to current datetime)
+     * @return {Number}         Integer representing unix timestamp
+     */
+    getUnixTimestamp (date) {
+        if (!date){
+            date = new Date();
+        } else if (!_.isDate(date)){
+            date = new Date(date);
+        }
+        return parseInt(date.getTime() / 1000, 10);
+    }
 }
 
 exports.UtilHelper = UtilHelper;

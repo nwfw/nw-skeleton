@@ -1083,6 +1083,67 @@ class FileManager extends AppBaseClass {
         }
         return fileStat;
     }
+
+    /**
+     * Checks whether given file or directory is writable
+     *
+     * @param  {string}     filePath Path to file or directory to check
+     * @return {Boolean}             True if writable, false otherwise
+     */
+    isWritable(filePath) {
+        let result = false;
+        try {
+            fs.accessSync(filePath, fs.constants.F_OK);
+        } catch (ex) {
+            result = true;
+            try {
+                fs.accessSync(path.dirname(filePath), fs.constants.W_OK);
+            } catch (ex) {
+                result = false;
+            }
+        }
+        if (!result){
+            try {
+                fs.accessSync(filePath, fs.constants.W_OK);
+                result = true;
+            } catch (ex) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks whether given file or directory is readable
+     *
+     * @param  {string}     filePath Path to file or directory to check
+     * @return {Boolean}             True if readable, false otherwise
+     */
+    isReadable(filePath) {
+        let result = true;
+        try {
+            fs.accessSync(filePath, fs.constants.R_OK);
+        } catch (ex) {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
+     * Checks whether given file or directory is executable
+     *
+     * @param  {string}     filePath Path to file or directory to check
+     * @return {Boolean}             True if executable, false otherwise
+     */
+    isExecutable(filePath) {
+        let result = true;
+        try {
+            fs.accessSync(filePath, fs.constants.X_OK);
+        } catch (ex) {
+            result = false;
+        }
+        return result;
+    }
 }
 
 exports.FileManager = FileManager;
