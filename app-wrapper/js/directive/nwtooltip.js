@@ -28,7 +28,21 @@ let createTooltip = function(el){
     let title = el.getAttribute('title');
     let identifier = el.getAttribute('data-identifier');
     let tooltip = document.createElement('div');
-    tooltip.className = 'nw-tooltip-wrapper';
+    let tooltipClassNames = ['nw-tooltip-wrapper'];
+    let tooltipData = {};
+    if (el.getAttribute('data-tooltip-data')) {
+        try {
+            tooltipData = JSON.parse(el.getAttribute('data-tooltip-data'));
+        } catch (ex) {
+            // console.log('Tooltip ex', ex);
+        }
+    }
+    if (tooltipData){
+        if (tooltipData.classes && tooltipData.classes.length) {
+            tooltipClassNames = _.concat(tooltipClassNames, tooltipData.classes);
+        }
+    }
+    tooltip.className = tooltipClassNames.join(' ');
     tooltip.setAttribute('data-tooltip-identifier', identifier);
     tooltip.innerHTML = '<div class="nw-tooltip">' + title + '</div>';
     tooltip.el = el;

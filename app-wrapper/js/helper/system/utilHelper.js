@@ -6,6 +6,7 @@
 
 const _ = require('lodash');
 // const os = require('os');
+const randomWords = require('random-words');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -70,6 +71,25 @@ class UtilHelper extends AppBaseClass {
         } while (randomString.length < size);
 
         return randomString.substr(0, size);
+    }
+
+    /**
+     * Returns random sentence
+     *
+     * @param  {Number} minWords   Minimum number of words in the sentence
+     * @param  {Number} maxWords   Maximum number of words in the sentence
+     * @return {string}            Random sentence
+     */
+    getRandomSentence (minWords = 1, maxWords = 6) {
+        if (minWords < 1){
+            minWords = 1;
+        }
+        if (maxWords < minWords){
+            maxWords = minWords;
+        }
+        let randomSentence = randomWords({min: minWords, max: maxWords}).join(' ');
+        randomSentence = randomSentence.substr(0, 1).toUpperCase() + randomSentence.substr(1);
+        return randomSentence;
     }
 
     /**
@@ -856,16 +876,87 @@ class UtilHelper extends AppBaseClass {
     /**
      * Returns unix timestamp for date parameter or current timestamp if parameter is not an instance of Date
      *
-     * @param  {Date|String=}   date String or Date object for which timestamp should be returned (defaults to current datetime)
-     * @return {Number}         Integer representing unix timestamp
+     * @param  {Date|String}    date            String or Date object for which timestamp should be returned (defaults to current datetime)
+     * @param  {Boolean}        milliseconds    Flag to indicate whether to return milliseconds value
+     * @return {Number}         Integer of float representing unix timestamp
      */
-    getUnixTimestamp (date) {
+    getUnixTimestamp (date, milliseconds = false) {
+        let timestamp;
+        if (date === false || date === true){
+            milliseconds = date;
+            date = new Date();
+        }
         if (!date){
             date = new Date();
         } else if (!_.isDate(date)){
             date = new Date(date);
         }
-        return parseInt(date.getTime() / 1000, 10);
+
+        timestamp = date.getTime() / 1000;
+        if (!milliseconds){
+            timestamp = parseInt(timestamp, 10);
+        }
+        return timestamp;
+    }
+
+    /**
+     * Helper method for serializing functions in objects
+     *
+     * @param {String}      key   Function name
+     * @param {Function}    value Function
+     * @return {String}     Serialized function
+     */
+    functionSerializer(key, value) {
+        if (typeof(value) === 'function') {
+            return value.toString();
+        }
+        return value;
+    }
+
+    /**
+     * Helper method for unserializing functions in objects
+     *
+     * @param {String}      key   Function name
+     * @param {String}      value Serialized function
+     * @return {Function}   Unserialized function
+     */
+    functionUnserializer (key, value) {
+        if (key === ''){
+            return value;
+        }
+        if (typeof value === 'string') {
+            // let rfunc = /function[^\(]*\(([^\)]*)\)[^\{]*{([^\}]*)\}/;
+            let rfunc = /function[^(]*\(([^)]*)\)[^{]*{([^}]*)\}/;
+            let match = value.match(rfunc);
+
+            if (match && match.length > 2) {
+                let args = match[1].split(',').map(function(arg) {
+                    return arg.replace(/\s+/, '');
+                });
+                return new Function(args, match[2]);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Helper method to serialize objects with functions
+     *
+     * @param  {Object}     obj Object for serialization
+     * @return {String}     Serialized object
+     */
+    serializeObject (obj) {
+        return JSON.stringify(obj, this.functionSerializer);
+    }
+
+    /**
+     * Helper method to unserialize objects with functions
+     *
+     * @param  {String} objString Serialized object
+     * @return {Object}           Unserialized object
+     */
+    unserializeObject (objString) {
+        return JSON.parse(objString, this.functionUnserializer);
     }
 }
 

@@ -36,7 +36,7 @@ var MixinWrapperMethods  = {
             return _appWrapper.getHelper('util').toJson(value, minified);
         },
         /**
-         * Takes a var and returns default value if no value founr
+         * Takes a var and returns default value if no value found
          *
          * @return {mixed} Value or default value from arguments
          */

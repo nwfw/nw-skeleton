@@ -372,6 +372,51 @@ a:visited {
 	&.align-left {
 	    text-align: left;
 	}
+
+	&.tooltip-success {
+		background: var(--tooltip-success-background-color);
+		color: var(--tooltip-success-text-color);
+
+		& .nw-tooltip {
+			&:before {
+				font-family: FontAwesome;
+				content: "\f00c";
+				display: block;
+				font-size: 1.5em;
+				padding-bottom: 5px;
+			}
+		}
+	}
+
+	&.tooltip-warning {
+		background: var(--tooltip-warning-background-color);
+		color: var(--tooltip-warning-text-color);
+
+		& .nw-tooltip {
+			&:before {
+				font-family: FontAwesome;
+				content: "\f071";
+				display: block;
+				font-size: 1.5em;
+				padding-bottom: 5px;
+			}
+		}
+	}
+
+	&.tooltip-error {
+		background: var(--tooltip-error-background-color);
+		color: var(--tooltip-error-text-color);
+
+		& .nw-tooltip {
+			&:before {
+				font-family: FontAwesome;
+				content: "\f071";
+				display: block;
+				font-size: 1.5em;
+				padding-bottom: 5px;
+			}
+		}
+	}
 }
 
 

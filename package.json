@@ -23,6 +23,7 @@
         "postcss-cssnext": "^3.0.2",
         "postcss-nesting": "^4.2.1",
         "postcss-url": "^7.1.2",
+        "random-words": "0.0.1",
         "smoothie": "^1.29.1",
         "unzipper": "^0.8.9",
         "vue2-dragula": "^2.5.0"

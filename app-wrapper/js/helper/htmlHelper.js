@@ -605,6 +605,37 @@ class HtmlHelper extends AppBaseClass {
     }
 
     /**
+     * Scrolls element to its child element
+     *
+     * @param {HTMLElement} element     Element to scroll
+     * @param  {Number} childSelector   Child element selector to scroll to
+     * @param  {Number} duration        Duration for animated scrolls
+     * @param  {Number} offset          Offset for fine tuning
+     * @return {undefined}
+     */
+    scrollElementToSelector (element, childSelector, duration, offset = 0) {
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let childElement = element.querySelector(childSelector);
+        if (!childElement){
+            return;
+        }
+        let childTop = childElement.getOffsetPosition().offsetTop;
+        let elTop = element.getOffsetPosition().offsetTop;
+        if (childTop && elTop){
+            let finalTop = childTop - elTop;
+            if (_.isNumber(offset)){
+                finalTop += offset;
+            }
+            if (finalTop < 0){
+                finalTop = 0;
+            }
+            this.scrollElementTo(element, finalTop, duration);
+        }
+    }
+
+    /**
      * Scrolls element to given value
      *
      * @param {HTMLElement} element Element to scroll
@@ -702,6 +733,19 @@ class HtmlHelper extends AppBaseClass {
         let newParentScrollTop = parentElement.scrollTop;
         parentElement.scrollTop = currentParentScrollTop;
         return this.scrollElementTo(parentElement, newParentScrollTop, duration);
+    }
+
+    /**
+     * Stops current scrolling animation on element
+     * @param  {HTMLElement} element Element that should stop scrolling
+     * @return {undefined}
+     */
+    stopElementScroll (element) {
+        if (!element && this instanceof Element){
+            element = this;
+        }
+        let identifier = this.getUniqueElementIdentifier(element, true);
+        clearInterval(this.intervals.scrollTo[identifier]);
     }
 
     /**

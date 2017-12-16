@@ -729,4 +729,13 @@
     --tooltip-background-color: #333333;
     --tooltip-shadow-color: #CCCCCC;
     --tooltip-text-color: #FFFFFF;
+
+    --tooltip-success-background-color: var(--app-notification-info-background);
+    --tooltip-success-text-color: var(--app-notification-info-color);
+
+    --tooltip-warning-background-color: var(--app-notification-warning-background);
+    --tooltip-warning-text-color: var(--app-notification-warning-color);
+
+    --tooltip-error-background-color: var(--app-notification-error-background);
+    --tooltip-error-text-color: var(--app-notification-error-color);
 }

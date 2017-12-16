@@ -373,7 +373,7 @@ class FormatHelper extends AppBaseClass {
         let minutes = Math.floor(remaining / oneMinute);
         remaining = remaining % oneMinute;
         let seconds = Math.floor(remaining);
-        let milliseconds = (remaining - seconds) * 1000;
+        let milliseconds = _.round((remaining - seconds), 3) * 1000;
 
         let yearsChunk = '';
         let monthsChunk = '';
@@ -502,6 +502,7 @@ class FormatHelper extends AppBaseClass {
                 months: +monthsString,
                 days: +daysString,
                 hours: +hoursString,
+                minutes: +minutesString,
                 seconds: +secondsString,
                 milliseconds: +millisecondsString
             };
