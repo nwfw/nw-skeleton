@@ -652,6 +652,26 @@ class AppBaseClass extends BaseClass {
     }
 
     /**
+     * Displays delayed app notification
+     *
+     * Notification message is being interpolated by replacing placeholders
+     * such as '{1}', '{2}' etc. by corresponding values from 'data' argument
+     *
+     * @async
+     * @param {Number}   delay          Number of milliseconds to wait before adding notification
+     * @param {string}   message        Notification message
+     * @param {string}   type           Notification message type
+     * @param {array}   data            An array of data strings that are to be applied to notification
+     * @param {Boolean} dontTranslate   Flag to prevent automatic notification translation
+     * @param {Object} options          Additional notification options
+     * @return {undefined}
+     */
+    async addNotificationDelayed (delay = 1000, message, type, data, dontTranslate, options){
+        await _appWrapper.wait(delay);
+        return await this.addNotification(message, type, data, dontTranslate, options);
+    }
+
+    /**
      * Displays desktop notification
      *
      * Notification message is being interpolated by replacing placeholders

@@ -710,6 +710,12 @@ class HtmlHelper extends AppBaseClass {
             }
         }
 
+        if (stepIncrease >= 0 && nextValue >= finalValue){
+            nextValue = finalValue;
+        } else if (stepIncrease < 0 && nextValue <= finalValue){
+            nextValue = finalValue;
+        }
+
         element.scrollTop = nextValue;
 
         if (stepIncrease >= 0 && nextValue >= finalValue){
@@ -762,8 +768,10 @@ class HtmlHelper extends AppBaseClass {
         let parent;
         if (element && element.parentNode){
             parent = element;
-            while (!parent.hasClass(targetClass)) {
-                parent = parent.parentNode;
+            if (parent && parent.hasClass && _.isFunction(parent.hasClass)){
+                while (!parent.hasClass(targetClass)) {
+                    parent = parent.parentNode;
+                }
             }
         }
         return parent;
