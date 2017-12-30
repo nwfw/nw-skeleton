@@ -282,9 +282,10 @@ class ModalHelper extends AppBaseClass {
      * @param  {string}     confirmButtonText   Confirm button text
      * @param  {string}     cancelButtonText    Cancel button text
      * @param  {Function}   confirmAction       Modal confirm callback
+     * @param  {Object}     modalOptions        Modal option overrides
      * @return {undefined}
      */
-    async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction) {
+    async confirm (title, text, confirmButtonText, cancelButtonText, confirmAction, modalOptions = {}) {
         this.log('Opening confirm modal.', 'info', []);
         appState.modalData.currentModal = _.cloneDeep(appState.appModals.defaultModal);
 
@@ -300,7 +301,7 @@ class ModalHelper extends AppBaseClass {
             cancelButtonText = this.translate('Cancel');
         }
 
-        appState.modalData.currentModal = _.cloneDeep(appState.appModals.defaultModal);
+        appState.modalData.currentModal = _.defaults(modalOptions, _.cloneDeep(appState.appModals.defaultModal));
 
         appState.modalData.currentModal.bodyComponent = 'modal-body';
         appState.modalData.currentModal.title = title;
