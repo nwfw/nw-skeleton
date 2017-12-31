@@ -367,6 +367,7 @@ exports.appState = {
 
             ready: false,
 
+            busyComponent: null,
             busyText: 'Please wait...',
             busy: false,
 

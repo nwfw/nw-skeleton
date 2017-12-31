@@ -281,6 +281,13 @@
     white-space: nowrap;
 }
 
+.modal-dialog-wrapper .modal-dialog-busy-indicator .modal-dialog-busy-subtext {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--modal-dialog-busy-text-color);
+}
+
 
 
 .form-row.modal-form-row {
