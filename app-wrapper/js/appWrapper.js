@@ -739,57 +739,62 @@ class AppWrapper extends AppBaseClass {
     /**
      * Placeholder method that handles modal confirm action
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
-    confirmModalAction (e) {
+    async confirmModalAction (e) {
         this.log('Calling appWrapper confirmModalAction', 'info', []);
-        return this._confirmModalAction(e);
+        return await this._confirmModalAction(e);
     }
 
     /**
      * Placeholder method that handles modal cancel/close action
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
-    cancelModalAction (e) {
+    async cancelModalAction (e) {
         this.log('Calling appWrapper cancelModalAction', 'info', []);
-        return this._cancelModalAction(e);
+        return await this._cancelModalAction(e);
     }
 
     /**
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal confirmation
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular confirm modal handler method
      */
-    _confirmModalAction (e) {
+    async _confirmModalAction (e) {
         this.log('Calling appWrapper _confirmModalAction', 'info', []);
-        return this.__confirmModalAction(e);
+        return await this.__confirmModalAction(e);
     }
 
     /**
      * Internal method that is overwritten when particular modal is opened.
      * Overwritten method contains all logic for modal cancelling or closing
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {mixed} Return value depends on particular cancel/close modal handler method
      */
-    _cancelModalAction (e) {
+    async _cancelModalAction (e) {
         this.log('Calling appWrapper _cancelModalAction', 'info', []);
-        return this.__cancelModalAction(e);
+        return await this.__cancelModalAction(e);
     }
 
 
     /**
      * Default confirm modal action - do not change
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {undefined}
      */
-    __confirmModalAction (e) {
+    async __confirmModalAction (e) {
         this.log('Calling appWrapper __confirmModalAction', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
@@ -802,10 +807,11 @@ class AppWrapper extends AppBaseClass {
     /**
      * Default cancel/close modal action - do not change
      *
+     * @async
      * @param  {Event} e Optional event passed to method
      * @return {undefined}
      */
-    __cancelModalAction (e) {
+    async __cancelModalAction (e) {
         this.log('Calling appWrapper __cancelModalAction', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();

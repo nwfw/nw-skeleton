@@ -36,7 +36,7 @@ component = {
             }
             if (doConfirm){
                 cm.cancelOnClose = false;
-                _appWrapper.confirmModalAction(true);
+                await _appWrapper.confirmModalAction(true);
             }
         },
 
@@ -49,7 +49,7 @@ component = {
             }
             if (doCancel){
                 cm.cancelOnClose = false;
-                _appWrapper.cancelModalAction();
+                await _appWrapper.cancelModalAction();
             }
         },
         getTitle: function(){

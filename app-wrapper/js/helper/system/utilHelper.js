@@ -942,11 +942,20 @@ class UtilHelper extends AppBaseClass {
     /**
      * Helper method to serialize objects with functions
      *
-     * @param  {Object}     obj Object for serialization
-     * @return {String}     Serialized object
+     * @param  {Object}         obj         Object for serialization
+     * @param  {Boolean|Number} prettyPrint Pretty JSON format flag (true/false) or number of spaces (default: 4)
+     * @return {String}                     Serialized object
      */
-    serializeObject (obj) {
-        return JSON.stringify(obj, this.functionSerializer);
+    serializeObject (obj, prettyPrint = false) {
+        if (!prettyPrint){
+            return JSON.stringify(obj, this.functionSerializer);
+        } else {
+            let spaces = 4;
+            if (_.isInteger(prettyPrint) && prettyPrint) {
+                spaces = prettyPrint;
+            }
+            return JSON.stringify(obj, this.functionSerializer, spaces);
+        }
     }
 
     /**

@@ -581,7 +581,7 @@ class FileManager extends AppBaseClass {
      * @param  {Object} options  Options object for fs.writeFileSync
      * @return {(string|null)}   File contents if operation succeeded, null otherwise
      */
-    readFileSync(file, options){
+    readFileSync(file, options = {encoding: null, flag: 'r'}){
         var data = null;
         try {
             data = fs.readFileSync(file, options) + '';
