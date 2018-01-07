@@ -352,7 +352,6 @@ exports.appState = {
         modalVisible: false,
         modalContentVisible: false,
         modalElement: null,
-        fadeModal: 'fade-slow',
         currentModal: false
     },
     appModals: {
@@ -409,6 +408,7 @@ exports.appState = {
 
             animating: false,
             animateSize: true,
+            fadeModal: 'fade-slow',
 
             inlineConfirm: false,
             inlineConfirmData: {

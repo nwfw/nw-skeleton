@@ -256,6 +256,12 @@
     flex: 0 1 auto;
 }
 
+.modal-dialog-wrapper .modal-dialog-busy-holder {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+}
 .modal-dialog-wrapper .modal-dialog-busy-indicator {
     position: absolute;
     top: 50%;

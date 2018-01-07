@@ -121,7 +121,7 @@ class ModalHelper extends AppBaseClass {
                 closing: true
             });
             if (force === true){
-                md.fadeModal = 'none';
+                cm.fadeModal = 'none';
             }
             this.stopAutoCloseModal();
             this.resetModalActions();
@@ -177,7 +177,10 @@ class ModalHelper extends AppBaseClass {
      * @return {undefined}
      */
     openCurrentModal () {
-        let fadeModal = appState.modalData.fadeModal;
+        let fadeModal = 'fade-slow';
+        if (appState.modalData.currentModal && appState.modalData.currentModal.fadeModal){
+            fadeModal = appState.modalData.currentModal.fadeModal;
+        }
         let duration = parseInt(parseFloat(_appWrapper.getHelper('style').getCssVarValue('--long-animation-duration'), 10) * 1000, 10);
         let md = appState.modalData;
         let cm = md.currentModal;
@@ -217,13 +220,13 @@ class ModalHelper extends AppBaseClass {
                 this.modalReady();
             }, duration);
         } else {
-            md.fadeModal = 'none';
+            cm.fadeModal = 'none';
             if (cm.bodyComponent != cm.defaultBodyComponent){
                 cm.bodyComponent = cm.defaultBodyComponent;
             }
             this.modalNotBusy();
             this.modalReady();
-            md.fadeModal = fadeModal;
+            cm.fadeModal = fadeModal;
         }
         if (cm.autoCloseTime) {
             this.autoCloseModal();

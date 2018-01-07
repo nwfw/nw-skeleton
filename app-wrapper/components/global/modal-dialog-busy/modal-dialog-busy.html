@@ -1,12 +1,14 @@
-<div class="modal-dialog-busy-indicator">
+<div class="modal-dialog-busy-holder">
     <component v-bind:is="currentModal.busyComponent" v-if="currentModal.busyComponent"></component>
     <template v-else>
-    	<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
-    		{{ currentModal.busyText }}
-    	</h2>
-    	<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
-    		<div class="fa fa-circle-o-notch fa-spin">
-    		</div>
+        <div class="modal-dialog-busy-indicator">
+        	<h2 class="modal-dialog-busy-text" v-if="currentModal.busyText">
+        		{{ currentModal.busyText }}
+        	</h2>
+        	<div class="modal-dialog-busy-wrapper" v-if="currentModal.busy">
+        		<div class="fa fa-circle-o-notch fa-spin">
+        		</div>
+            </div>
     	</div>
     </template>
 </div>
