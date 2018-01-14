@@ -788,6 +788,61 @@
 }
 
 
+/* transform-scale-height-from-bottom */
+
+.transform-scale-height-from-bottom-short-enter,
+.transform-scale-height-from-bottom-long-enter,
+.transform-scale-height-from-bottom-enter {
+    overflow: hidden !important;
+    transform: scaleY(0.001) !important;
+    transform-origin: bottom center;
+}
+
+.transform-scale-height-from-bottom-short-enter-to,
+.transform-scale-height-from-bottom-long-enter-to,
+.transform-scale-height-from-bottom-enter-to {
+    transform: scaleY(1) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-bottom-short-leave,
+.transform-scale-height-from-bottom-long-leave,
+.transform-scale-height-from-bottom-leave {
+    transform: scaleY(1) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-bottom-short-leave-to,
+.transform-scale-height-from-bottom-long-leave-to,
+.transform-scale-height-from-bottom-leave-to {
+    transform: scaleY(0.001) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-height-from-bottom-enter-active,
+.transform-scale-height-from-bottom-leave-active,
+.transform-scale-height-from-bottom-short-enter-active,
+.transform-scale-height-from-bottom-short-leave-active,
+.transform-scale-height-from-bottom-long-enter-active,
+.transform-scale-height-from-bottom-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-height-from-bottom-short-enter-active,
+.transform-scale-height-from-bottom-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-height-from-bottom-long-enter-active,
+.transform-scale-height-from-bottom-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
 
 
 /* custom transition for modals */

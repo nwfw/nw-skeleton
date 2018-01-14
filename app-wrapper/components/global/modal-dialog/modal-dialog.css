@@ -156,6 +156,8 @@
 
 .modal-dialog.no-messages .modal-dialog-messages {
     height: 0;
+    flex: 0 1 auto;
+    padding: 0;
 }
 
 .modal-dialog .modal-dialog-messages .modal-dialog-message-list {
@@ -377,7 +379,7 @@
 .modal-dialog .modal-dialog-buttons {
     text-align: right;
     padding: 5px 10px;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
 }
 
 .modal-button-confirm[disabled],

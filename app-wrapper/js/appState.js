@@ -352,7 +352,8 @@ exports.appState = {
         modalVisible: false,
         modalContentVisible: false,
         modalElement: null,
-        currentModal: false
+        currentModal: false,
+        modalClasses: [],
     },
     appModals: {
         defaultModal: {

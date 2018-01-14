@@ -917,8 +917,24 @@ class AppWrapper extends AppBaseClass {
                     };
                 }
             } else {
-                if (!silent){
-                    this.log('Can\'t find object method "{1}"', 'warning', [methodString]);
+                handlerObj = global;
+                if (methodPath){
+                    handlerObj = _.get(handlerObj, methodPath);
+                }
+                if (handlerObj && handlerObj[targetMethod] && _.isFunction(handlerObj[targetMethod])){
+                    if (context && _.isObject(context)){
+                        objMethod = async function() {
+                            return await handlerObj[targetMethod].apply(context, methodArgs);
+                        };
+                    } else {
+                        objMethod = async function() {
+                            return await handlerObj[targetMethod].apply(handlerObj, methodArgs);
+                        };
+                    }
+                } else {
+                    if (!silent){
+                        this.log('Can\'t find object method "{1}"', 'warning', [methodString]);
+                    }
                 }
             }
         }
