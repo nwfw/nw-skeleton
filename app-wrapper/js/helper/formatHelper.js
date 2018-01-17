@@ -723,6 +723,14 @@ class FormatHelper extends AppBaseClass {
         }
         return string + stringEnd;
     }
+
+    capitalize (text) {
+        let capitalized = '';
+        if (_.isString(text) && text) {
+            capitalized = text.substr(0, 1).toUpperCase() + text.substr(1);
+        }
+        return capitalized;
+    }
 }
 
 exports.FormatHelper = FormatHelper;
