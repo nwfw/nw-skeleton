@@ -9,6 +9,12 @@ const _ = require('lodash');
 /**
  * NW-tooltip directive
  *
+ * Initialized by adding v-nwtooltip="1" to the element. Tooltip will use "title" attribute for its contents.
+ * Additional options can be passed by setting "data-tooltip-data" attribute to JSON object that can contain following properties:
+ *     classes: an array of classes to add to tooltip wrapper
+ *     showCloseLink: bool to set close link rendering (default false)
+ *     noAutoHide: bool to set auto hiding (default true)
+ *
  * @name nw-tooltip
  * @memberOf directives
  */
@@ -24,12 +30,8 @@ let getTooltip = function(identifier){
     }
 };
 
-let createTooltip = function(el){
-    let title = el.getAttribute('title');
-    let identifier = el.getAttribute('data-identifier');
-    let tooltip = document.createElement('div');
-    let tooltipClassNames = ['nw-tooltip-wrapper'];
-    let tooltipData = {};
+let getTooltipData = function(el){
+    let tooltipData;
     if (el.getAttribute('data-tooltip-data')) {
         try {
             tooltipData = JSON.parse(el.getAttribute('data-tooltip-data'));
@@ -37,6 +39,38 @@ let createTooltip = function(el){
             // console.log('Tooltip ex', ex);
         }
     }
+    return tooltipData;
+};
+
+let getTooltipInnerHtml = function(el) {
+    let innerHtml = '';
+    let tooltipData = getTooltipData(el);
+    let showCloseLink = false;
+    if (tooltipData){
+        if (tooltipData.showCloseLink) {
+            showCloseLink = true;
+        }
+    }
+    if (showCloseLink) {
+        innerHtml += '<a href="#" class="close-tooltip fa fa-times"></a>';
+    }
+    innerHtml += '<div class="nw-tooltip">' + getTooltipTextInnerHtml(el) + '</div>';
+    return innerHtml;
+};
+
+let getTooltipTextInnerHtml = function(el) {
+    let innerHtml = '';
+    let title = el.getAttribute('title');
+    innerHtml += title;
+    return innerHtml;
+};
+
+let createTooltip = function(el){
+    // let title = el.getAttribute('title');
+    let identifier = el.getAttribute('data-identifier');
+    let tooltip = document.createElement('div');
+    let tooltipClassNames = ['nw-tooltip-wrapper'];
+    let tooltipData = getTooltipData(el);
     if (tooltipData){
         if (tooltipData.classes && tooltipData.classes.length) {
             tooltipClassNames = _.concat(tooltipClassNames, tooltipData.classes);
@@ -44,11 +78,15 @@ let createTooltip = function(el){
     }
     tooltip.className = tooltipClassNames.join(' ');
     tooltip.setAttribute('data-tooltip-identifier', identifier);
-    tooltip.innerHTML = '<div class="nw-tooltip">' + title + '</div>';
+    tooltip.innerHTML = getTooltipInnerHtml(el);
     tooltip.el = el;
-    tooltip.addEventListener('mouseover', handleTooltipMouseOver, true);
-    tooltip.addEventListener('mouseout', handleTooltipMouseOut, true);
+    tooltip.addEventListener('mouseover', handleTooltipMouseOver, false);
+    tooltip.addEventListener('mouseout', handleTooltipMouseOut, false);
     document.body.appendChild(tooltip);
+    let closeLink = tooltip.querySelector('.close-tooltip');
+    if (closeLink) {
+        closeLink.addEventListener('click', handleTooltipCloseClick);
+    }
     return tooltip;
 };
 
@@ -61,6 +99,10 @@ let removeTooltip = function(el){
         if (tooltip){
             tooltip.removeEventListener('mouseover', handleTooltipMouseOver);
             tooltip.removeEventListener('mouseout', handleTooltipMouseOut);
+            let closeLink = tooltip.querySelector('.close-tooltip');
+            if (closeLink) {
+                closeLink.removeEventListener('click', handleTooltipCloseClick);
+            }
             if (tooltip.parentNode && tooltip.parentNode.removeChild && _.isFunction(tooltip.parentNode.removeChild)){
                 tooltip.parentNode.removeChild(tooltip);
             }
@@ -85,7 +127,7 @@ let handleMouseOver = function(e) {
         let tooltip = createTooltip(el);
         if (tooltip){
             let title = el.getAttribute('title');
-            tooltip.innerHTML = '<div class="nw-tooltip">' + title + '</div>';
+            // tooltip.innerHTML = getTooltipInnerHtml(el);
             htmlHelper.addClass(tooltip, 'prepared-tooltip');
             el.setAttribute('data-title', title);
             el.removeAttribute('title');
@@ -107,9 +149,18 @@ let handleMouseOut = function(e) {
     clearTimeouts(el);
     el.setAttribute('title', el.getAttribute('data-title'));
     el.removeAttribute('data-title');
-    el.outTimeout = setTimeout(() => {
-        hideTooltip(e);
-    }, window.getAppWrapper().getConfig('appConfig.tooltipTTL'));
+    let tooltipData = getTooltipData(el);
+    let autoHide = true;
+    if (tooltipData){
+        if (tooltipData.noAutoHide) {
+            autoHide = false;
+        }
+    }
+    if (autoHide) {
+        el.outTimeout = setTimeout(() => {
+            hideTooltip(el);
+        }, window.getAppWrapper().getConfig('appConfig.tooltipTTL'));
+    }
 };
 
 let handleTooltipMouseOver = function(e) {
@@ -129,9 +180,26 @@ let handleTooltipMouseOut = function(e) {
     if (tooltip.hasClass('nw-tooltip-wrapper')){
         let el = tooltip.el;
         clearTimeout(el.outTimeout);
-        el.outTimeout = setTimeout(() => {
-            hideTooltip(e);
-        }, window.getAppWrapper().getConfig('appConfig.tooltipTTL'));
+        let tooltipData = getTooltipData(el);
+        let autoHide = true;
+        if (tooltipData){
+            if (tooltipData.noAutoHide) {
+                autoHide = false;
+            }
+        }
+        if (autoHide) {
+            el.outTimeout = setTimeout(() => {
+                hideTooltip(el);
+            }, window.getAppWrapper().getConfig('appConfig.tooltipTTL'));
+        }
+    }
+};
+
+let handleTooltipCloseClick = function(e) {
+    e.preventDefault();
+    let tooltip = e.target.getParentByClass(e.target, 'nw-tooltip-wrapper');
+    if (tooltip && tooltip.el) {
+        hideTooltip(tooltip.el);
     }
 };
 
@@ -194,8 +262,7 @@ let showTooltip = function(e){
     }
 };
 
-let hideTooltip = function(e){
-    let el = e.target;
+let hideTooltip = function(el){
     if (el.hasClass('nw-tooltip-wrapper')){
         el = el.el;
     } else if (!el.getAttribute('data-nwtooltip')){
@@ -238,7 +305,10 @@ let updateTooltip = function(el) {
             let title = el.getAttribute('title');
             if (title){
                 el.setAttribute('data-title', title);
-                tooltip.innerHTML = '<div class="nw-tooltip">' + title + '</div>';
+                let tooltipTextEl = tooltip.querySelector('.nw-tooltip');
+                if (tooltipTextEl) {
+                    tooltipTextEl.innerHTML = getTooltipTextInnerHtml(el);
+                }
             }
         }
     }

@@ -219,6 +219,34 @@ class MainAsyncMessageHandlers extends MessageHandlersBase {
     }
 
     /**
+     * Handler for app tray icon update
+     *
+     * @async
+     * @param  {string}     uuid        UUID of the message
+     * @param  {Object}     messageData Data passed with message
+     * @param  {Boolean}    simulate    Just simulate and return responseData, don't actually do or change anything
+     * @return {undefined}
+     */
+    async updateTrayIconIconHandler (uuid, messageData, simulate) {
+        if (!simulate) {
+            let icon = null;
+            let alticon = null;
+            if (messageData && messageData.data) {
+                if (messageData.data.icon){
+                    icon =  messageData.data.icon;
+                }
+                if (messageData.data.alticon){
+                    alticon = messageData.data.alticon;
+                }
+                await mainScript.menuHelper.updateTrayIconIcon(icon, alticon);
+            }
+        }
+        let responseData = this.getResponseData(messageData);
+        responseData._result_ = true;
+        return this.respond(responseData, simulate);
+    }
+
+    /**
      * Handler for updating menu items
      *
      * @param  {string}     uuid        UUID of the message

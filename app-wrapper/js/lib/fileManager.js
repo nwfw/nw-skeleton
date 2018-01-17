@@ -557,7 +557,7 @@ class FileManager extends AppBaseClass {
     }
 
     /**
-     * Writes file to disk
+     * Writes file to disk using writeFileSync
      *
      * @async
      * @param  {string} file  Absolute path to file
@@ -572,6 +572,31 @@ class FileManager extends AppBaseClass {
             console.log(ex);
         }
         return await this.isFile(file);
+    }
+
+    /**
+     * Writes file to disk
+     *
+     * @async
+     * @param  {string}                         file        Absolute path to file
+     * @param  {string|Buffer|Uint8Array}       data        Data to write
+     * @param  {Object}                         options     Options object for fs.writeFileSync
+     * @return {Boolean}                                    True if operation succeeded, false otherwise
+     */
+    async writeFile(file, data, options){
+        return new Promise((resolve, reject) => {
+            try {
+                fs.writeFile(file, data, options, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            } catch (ex) {
+                reject(ex);
+            }
+        });
     }
 
     /**

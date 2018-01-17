@@ -325,6 +325,24 @@ a:visited {
 	transition-duration: var(--medium-animation-duration);
 	transition-timing-function: ease-in-out;
 
+	& .close-tooltip {
+		position: absolute;
+		right: 2px;
+		top: 2px;
+		width: 16px;
+		height: 16px;
+		padding-top: 2px;
+		border-radius: 8px;
+		transform: translate(50%, -50%);
+		background: var(--tooltip-background-color);
+		box-shadow: var(--tooltip-close-box-shadow);
+		color: var(--tooltip-close-color);
+
+		&:hover {
+			color: var(--tooltip-close-hovered-color);
+		}
+	}
+
 	& .nw-tooltip {
 		padding: 5px 0;
 		max-height: 90px;

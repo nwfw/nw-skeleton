@@ -554,22 +554,39 @@ class MenuHelper extends MainBaseClass {
      * Initializes app tray icon
      *
      * @async
+     * @param {Object} trayData Tray data
      * @return {undefined}
      */
-    async initializeTrayIcon(){
+    async initializeTrayIcon(trayData = null){
         if (!this.trayInitialized){
             this.log('Initializing tray icon', 'debug', []);
             let hasTrayIcon = this.getConfig('appConfig.hasTrayIcon');
             if (hasTrayIcon){
-                let trayData = _.cloneDeep(this.getConfig('appConfig.trayData'));
+                let defaultTrayData = _.cloneDeep(this.getConfig('appConfig.trayData'));
+                if (!(trayData && _.isObject(trayData))){
+                    trayData = defaultTrayData;
+                } else {
+                    trayData = _.defaultsDeep(trayData, defaultTrayData);
+                }
+                let iconsAreTemplates = true;
+                if (!_.isUndefined(trayData.iconsAreTemplates)){
+                    iconsAreTemplates = trayData.iconsAreTemplates;
+                }
                 let trayOptions = {
-                    title: this.getAppWrapper().translate(trayData.title),
-                    icon: trayData.icon
+                    title: '',
+                    icon: trayData.icon,
+                    iconsAreTemplates: iconsAreTemplates
                 };
+                if (trayData.title) {
+                    trayOptions.title = this.getAppWrapper().translate(trayData.title);
+                }
                 if (trayData.alticon){
                     trayOptions.alticon = trayData.alticon;
                 }
                 this.tray = new nw.Tray(trayOptions);
+                if (trayData.tooltip){
+                    this.tray.tooltip = this.getAppWrapper().translate(trayData.tooltip);
+                }
                 if (trayData.menus && trayData.menus.length){
                     this.trayMenu = new nw.Menu();
                     for (let i=0; i<trayData.menus.length; i++){
@@ -604,13 +621,33 @@ class MenuHelper extends MainBaseClass {
      * Reinitializes app tray icon
      *
      * @async
+     * @param {Object} trayData Tray data
      * @return {undefined}
      */
-    async reinitializeTrayIcon() {
+    async reinitializeTrayIcon(trayData = null) {
         if (this.trayInitialized){
             await this.removeTrayIcon();
         }
-        await this.initializeTrayIcon();
+        await this.initializeTrayIcon(trayData);
+    }
+
+    /**
+     * Updates app tray icon
+     *
+     * @async
+     * @param {String} icon     Path to tray icon
+     * @param {String} alticon  Path to tray alternate icon
+     * @return {undefined}
+     */
+    async updateTrayIconIcon(icon = null, alticon = null) {
+        if (this.tray){
+            if (icon) {
+                this.tray.icon = icon;
+            }
+            if (alticon) {
+                this.tray.alticon = alticon;
+            }
+        }
     }
 
     /**
@@ -622,22 +659,28 @@ class MenuHelper extends MainBaseClass {
      */
     getTrayMenuItem(menuItemIndex, menuItems){
         if (!menuItems){
-            menuItems = this.trayMenu.items;
-        }
-        let indexChunks = menuItemIndex.split('_');
-        let menuItem;
-        if (indexChunks && indexChunks.length){
-            menuItem = menuItems[indexChunks[0]];
-            if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
-                menuItemIndex = _.tail(indexChunks).join('_');
-                menuItems = menuItem.submenu.items;
-                menuItem = this.getTrayMenuItem(menuItemIndex, menuItems);
+            if (this.trayMenu && this.trayMenu.items){
+                menuItems = this.trayMenu.items;
             }
         }
-        if (!menuItem){
-            this.log('Can not find tray menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+        if (menuItems){
+            let indexChunks = menuItemIndex.split('_');
+            let menuItem;
+            if (indexChunks && indexChunks.length){
+                menuItem = menuItems[indexChunks[0]];
+                if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
+                    menuItemIndex = _.tail(indexChunks).join('_');
+                    menuItems = menuItem.submenu.items;
+                    menuItem = this.getTrayMenuItem(menuItemIndex, menuItems);
+                }
+            }
+            if (!menuItem){
+                this.log('Can not find tray menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+            }
+            return menuItem;
+        } else {
+            return false;
         }
-        return menuItem;
     }
 
     /**
@@ -649,9 +692,11 @@ class MenuHelper extends MainBaseClass {
      */
     updateTrayMenuItem(menuItemIndex, menuItemUpdates){
         let menuItem = this.getTrayMenuItem(menuItemIndex);
-        let appWrapper = this.getAppWrapper();
-        if (appWrapper && menuItem){
-            _.merge(menuItem, menuItemUpdates);
+        if (menuItem) {
+            let appWrapper = this.getAppWrapper();
+            if (appWrapper && menuItem){
+                _.merge(menuItem, menuItemUpdates);
+            }
         }
         return menuItem;
     }

@@ -730,6 +730,10 @@
     --tooltip-shadow-color: #CCCCCC;
     --tooltip-text-color: #FFFFFF;
 
+    --tooltip-close-color: #CC0000;
+    --tooltip-close-hovered-color: #FF0000;
+    --tooltip-close-box-shadow: 0 0 1px #333333;
+
     --tooltip-success-background-color: var(--app-notification-info-background);
     --tooltip-success-text-color: var(--app-notification-info-color);
 
