@@ -89,6 +89,30 @@ class FileManager extends AppBaseClass {
     }
 
     /**
+     * Checks whether given path is a file synchronously
+     *
+     * @param  {string} file Absolute file path
+     * @return {Boolean}     True if file is file, false otherwise
+     */
+    isFileSync(file){
+        if (!file){
+            return false;
+        }
+        var filePath = path.resolve(file);
+        var isFile = true;
+        var exists = this.fileExists(filePath);
+        if (exists){
+            var fileStat = fs.statSync(filePath);
+            if (!fileStat.isFile()){
+                isFile = false;
+            }
+        } else {
+            isFile = false;
+        }
+        return isFile;
+    }
+
+    /**
      * Checks whether given path is a directory
      *
      * @param  {string} dir Absolute directory path
