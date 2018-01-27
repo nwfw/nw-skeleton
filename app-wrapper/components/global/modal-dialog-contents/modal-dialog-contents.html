@@ -7,8 +7,8 @@
 				<div v-if="currentModal.inlineConfirmData.body" v-html="currentModal.inlineConfirmData.body"></div>
 			</div>
 			<div class="inner-confirm-buttons">
-				<input type="button" class="modal-button inner-confirm-button inner-confirm-button-confirm" :value="currentModal.inlineConfirmData.confirmButtonText" @click.prevent="inlineConfirmConfirm" />
 				<input type="button" class="modal-button inner-confirm-button inner-confirm-button-cancel" :value="currentModal.inlineConfirmData.cancelButtonText" @click.prevent="inlineConfirmCancel" />
+				<input type="button" class="modal-button inner-confirm-button inner-confirm-button-confirm" :value="currentModal.inlineConfirmData.confirmButtonText" @click.prevent="inlineConfirmConfirm" />
 			</div>
 		</div>
 		<transition name="size" v-bind:css="false" v-on:before-enter="inlineConfirmBeforeEnter" v-on:enter="inlineConfirmEnter" v-on:after-enter="inlineConfirmAfterEnter" v-on:enter-cancelled="inlineConfirmEnterCancelled" v-on:leave-cancelled="inlineConfirmLeaveCancelled" v-on:before-leave="inlineConfirmBeforeLeave" v-on:leave="inlineConfirmLeave" v-on:after-leave="inlineConfirmAfterLeave">

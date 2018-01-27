@@ -5,6 +5,7 @@
  */
 
 const _ = require('lodash');
+const nodeCrypto = require('crypto');
 // const os = require('os');
 const randomWords = require('random-words');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
@@ -966,6 +967,36 @@ class UtilHelper extends AppBaseClass {
      */
     unserializeObject (objString) {
         return JSON.parse(objString, this.functionUnserializer);
+    }
+
+    /**
+     * Encrypts text and returns encrypted value
+     *
+     * @param  {String} text      Text to encrypt
+     * @param  {String} password  Encryption password
+     * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     * @return {String}           Encrypted text
+     */
+    encryptText(text, password, algorithm = 'aes-256-ctr') {
+        let cipher = nodeCrypto.createCipher(algorithm, password);
+        let encrypted = cipher.update(text, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        return encrypted;
+    }
+
+    /**
+     * Decrypts text and returns decrypted value
+     *
+     * @param  {String} text      Text to decrypt
+     * @param  {String} password  Decryption password
+     * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     * @return {String}           decrypted text
+     */
+    decryptText(text, password, algorithm = 'aes-256-ctr') {
+        let decipher = nodeCrypto.createDecipher(algorithm, password);
+        let decrypted = decipher.update(text, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
     }
 }
 

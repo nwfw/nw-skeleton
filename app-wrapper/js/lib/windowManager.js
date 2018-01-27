@@ -924,6 +924,7 @@ class WindowManager extends AppBaseClass {
      */
     windowBlur (){
         appState.status.windowFocused = false;
+        appState.lastWindowBlurTimestamp = this.getHelper('util').getUnixTimestamp();
         _appWrapper.emit('window:blur');
     }
 
@@ -934,7 +935,17 @@ class WindowManager extends AppBaseClass {
      */
     windowFocus (){
         appState.status.windowFocused = true;
+        appState.lastWindowFocusTimestamp = this.getHelper('util').getUnixTimestamp();
         _appWrapper.emit('window:focus');
+    }
+
+    /**
+     * Returns duration of app inactivity (app not focused) in seconds
+     *
+     * @return {Number} Inactivity duration in seconds
+     */
+    getInactiveDuration() {
+        return this.getHelper('util').getUnixTimestamp() - appState.lastWindowBlurTimestamp;
     }
 
     /**

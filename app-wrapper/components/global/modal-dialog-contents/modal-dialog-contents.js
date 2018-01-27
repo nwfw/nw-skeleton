@@ -316,6 +316,11 @@ component = {
     },
 
     watch: {
+        'currentModal.inlineConfirm': function() {
+            this.$nextTick(() => {
+                this.setFocus();
+            });
+        }
     }
 };
 

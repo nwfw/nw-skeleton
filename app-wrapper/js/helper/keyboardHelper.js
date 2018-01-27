@@ -50,7 +50,7 @@ class KeyboardHelper extends AppBaseClass {
         appState = this.getAppState();
 
         this.keyCodes = {
-            debugKeys: [68,69,66,85,71], // d,e,b,u,g
+            debugKeys: [84,79,71,71,76,69,68,69,66,85,71], // t,o,g,g,l,e,d,e,b,u,g
             commandKeyCodes: [224, 17, 91, 93],
             shiftKeyCodes: [16],
             altKeyCodes: [18],
@@ -234,9 +234,11 @@ class KeyboardHelper extends AppBaseClass {
                         fulfilled = true;
                         _appWrapper.appConfig.setConfigVar('debug.enabled', appState.config.debug.enabled);
                         if (appState.config.debug.enabled){
-                            this.addUserMessage('Debug mode enabled.', 'info', [], false);
+                            this.addNotification('Debug mode enabled.', 'info');
+                            this.addUserMessage('Debug mode enabled.', 'info', []);
                         } else {
-                            this.addUserMessage('Debug mode disabled.', 'info', [], false);
+                            this.addNotification('Debug mode disabled.', 'info');
+                            this.addUserMessage('Debug mode disabled.', 'info', []);
                         }
                     }
                 }

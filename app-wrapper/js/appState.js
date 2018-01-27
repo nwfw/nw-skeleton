@@ -184,6 +184,8 @@ exports.appState = {
         width: 0,
         height: 0
     },
+    lastWindowFocusTimestamp: 0,
+    lastWindowBlurTimestamp: 0,
     status: {
         appLoaded: false,
         appReady: false,
