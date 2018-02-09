@@ -351,7 +351,7 @@ class WindowManager extends AppBaseClass {
                         this.emit('winStateChange', { name: 'x', value: value});
                     }
                     if (this.propagateChange.x){
-                        this.win.moveTo(localState.x, localState.y);
+                        this.win.moveTo(Math.round(localState.x), Math.round(localState.y));
                     }
                 }
             },
@@ -367,7 +367,7 @@ class WindowManager extends AppBaseClass {
                         this.emit('winStateChange', { name: 'y', value: value});
                     }
                     if (this.propagateChange.y){
-                        this.win.moveTo(localState.x, localState.y);
+                        this.win.moveTo(Math.round(localState.x), Math.round(localState.y));
                     }
                 }
             },
@@ -824,8 +824,8 @@ class WindowManager extends AppBaseClass {
         var screenX = e.screenX;
         var screenY = e.screenY;
         /* mouse pointer position */
-        var windowX = screenX - offsetPosition.offsetLeft + widthAzimuth;
-        var windowY = screenY - offsetPosition.offsetTop + heightAzimuth;
+        var windowX = Math.round(screenX - offsetPosition.offsetLeft + widthAzimuth);
+        var windowY = Math.round(screenY - offsetPosition.offsetTop + heightAzimuth);
         this.win.moveTo(windowX, windowY);
     }
 

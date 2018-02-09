@@ -53,6 +53,8 @@ let getTooltipInnerHtml = function(el) {
     }
     if (showCloseLink) {
         innerHtml += '<a href="#" class="close-tooltip fa fa-times"></a>';
+    } else {
+        innerHtml += '<a href="#" class="close-tooltip fa fa-times" style="display: none;"></a>';
     }
     innerHtml += '<div class="nw-tooltip">' + getTooltipTextInnerHtml(el) + '</div>';
     return innerHtml;
@@ -66,7 +68,6 @@ let getTooltipTextInnerHtml = function(el) {
 };
 
 let createTooltip = function(el){
-    // let title = el.getAttribute('title');
     let identifier = el.getAttribute('data-identifier');
     let tooltip = document.createElement('div');
     let tooltipClassNames = ['nw-tooltip-wrapper'];
@@ -221,6 +222,7 @@ let showTooltip = function(e){
     if (identifier){
         let tooltip = getTooltip(identifier);
         if (tooltip){
+            clearTimeout(tooltip.closeLinkTimeout);
             let bindingValue = 1;
             if (el.nwTooltipBinding && el.nwTooltipBinding.value && _.isObject(el.nwTooltipBinding.value)){
                 bindingValue = el.nwTooltipBinding.value;
@@ -258,6 +260,29 @@ let showTooltip = function(e){
             }
             htmlHelper.setElementStyles(tooltip, tooltipStyles);
             htmlHelper.addClass(tooltip, 'visible-tooltip');
+            tooltip.closeLinkTimeout = setTimeout(() => { showCloseLink(el); }, 3000);
+        }
+    }
+};
+
+let showCloseLink = function(el) {
+    if (el.hasClass('nw-tooltip-wrapper')){
+        el = el.el;
+    } else if (!el.getAttribute('data-nwtooltip')){
+        while (el.parentNode && !el.getAttribute('data-nwtooltip')){
+            el = el.parentNode;
+        }
+    }
+    let identifier = el.getAttribute('data-identifier');
+    if (identifier){
+        let tooltip = getTooltip(identifier);
+        if (tooltip){
+            let closeLink = tooltip.querySelector('.close-tooltip');
+            if (closeLink) {
+                let htmlHelper = window.getAppWrapper().getHelper('html');
+                htmlHelper.removeElementStyles(closeLink, ['display']);
+                clearTimeout(tooltip.closeLinkTimeout);
+            }
         }
     }
 };

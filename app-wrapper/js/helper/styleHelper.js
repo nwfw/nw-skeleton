@@ -4,6 +4,7 @@
  * @version 1.3.1
  */
 
+const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 /**
@@ -43,6 +44,59 @@ class StyleHelper extends AppBaseClass {
             value = defaultValue;
         }
         return value;
+    }
+
+    getStylesheets () {
+        return window.document.styleSheets;
+    }
+
+    getRulesBySelector (selectorText, looseMatch = false) {
+        let stylesheets = this.getStylesheets();
+        let utilHelper = this.getHelper('util');
+        let selectorRegex = utilHelper.quoteRegex(selectorText);
+        if (!looseMatch) {
+            selectorRegex += '\\s?$';
+        }
+        for (let i=0; i<stylesheets.length; i++){
+            let rules = _.filter(stylesheets[i].rules, (rule) => { return rule && rule.selectorText && rule.selectorText.match && rule.selectorText.match(new RegExp(selectorRegex)); });
+            if (rules && rules.length){
+                return rules;
+            }
+        }
+        return false;
+    }
+
+    getRuleBySelector (selectorText, looseMatch = false) {
+        let rules = this.getRulesBySelector(selectorText, looseMatch);
+        if (rules && rules.length){
+            return rules[0];
+        }
+        return false;
+    }
+
+    getRuleStyles (rule) {
+        let styles = {};
+        if (rule && rule.style) {
+            let props = _.pickBy(rule.style, (val, key) => {
+                return (rule.style[val] != '' && key.match(/^\d\d+?$/));
+            });
+            let keys = _.values(props);
+            if (keys && keys.length){
+                styles = _.pick(rule.style, keys);
+            }
+        }
+        return styles;
+    }
+
+    getStylesBySelector(selectorText, looseMatch = false) {
+        let rules = this.getRulesBySelector(selectorText, looseMatch);
+        let styles = {};
+        if (rules && rules.length){
+            for (let i=0; i<rules.length; i++) {
+                styles = _.merge(styles, this.getRuleStyles(rules[i]));
+            }
+        }
+        return styles;
     }
 }
 

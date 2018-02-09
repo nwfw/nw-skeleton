@@ -40,6 +40,7 @@
     transition-duration: var(--short-animation-duration);
     display: flex;
     flex-flow: row;
+    outline: none;
 }
 
 .window-controls-wrapper .window-controls .window-control-wrapper .window-control.window-control-move {
