@@ -397,7 +397,7 @@ class UtilHelper extends AppBaseClass {
      * @return {string}        Save regex-quoted string
      */
     quoteRegex (string) {
-        return string.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&').replace(/\s/g, '\\s');
+        return string.replace(/[/.?*+^$[\]\\(){}|-]/g, '\\$&').replace(/\s/g, '\\s');
     }
 
     /**
