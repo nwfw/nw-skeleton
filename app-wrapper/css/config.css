@@ -133,34 +133,35 @@
     --app-notification-color: #000033;
     --app-notification-border-radius: 4px;
 
-    --app-notification-background-hovered: #88BBDD;
-    --app-notification-color-hovered: #000000;
+
+    --app-notification-background-hovered: #88BBDDCC;
+    --app-notification-color-hovered: #000033;
 
     --app-notification-debug-background: #CCCCCC;
     --app-notification-debug-color: #000033;
 
-    --app-notification-debug-background-hovered: #CCCCCC;
+    --app-notification-debug-background-hovered: #CCCCCCCC;
     --app-notification-debug-color-hovered: #000000;
 
 
     --app-notification-info-background: #009900;
     --app-notification-info-color: #99FF99;
 
-    --app-notification-info-background-hovered: #009900;
+    --app-notification-info-background-hovered: #009900CC;
     --app-notification-info-color-hovered: #66CC66;
 
 
     --app-notification-warning-background: #FFCC33;
     --app-notification-warning-color: #996633;
 
-    --app-notification-warning-background-hovered: #FFCC33;
+    --app-notification-warning-background-hovered: #FFCC33CC;
     --app-notification-warning-color-hovered: #663300;
 
 
     --app-notification-error-background: #FFCCCC;
     --app-notification-error-color: #990000;
 
-    --app-notification-error-background-hovered: #FFCCCC;
+    --app-notification-error-background-hovered: #FFCCCCCC;
     --app-notification-error-color-hovered: #660000;
 
 
@@ -169,6 +170,10 @@
     --app-notification-count-color: #000033;
     --app-notification-count-border: 1px solid #000000;
     --app-notification-count-border-radius: 50%;
+
+    --app-notification-more-box-shadow-color: #FFFFFF;
+
+
 
 
 

@@ -26,7 +26,7 @@
         "random-words": "0.0.1",
         "smoothie": "^1.29.1",
         "unzipper": "^0.8.9",
-        "vue2-dragula": "^2.5.0"
+        "vue2-dragula": "^2.5.4"
     },
     "devDependencies": {
         "google-translate-api": "git+ssh://git@github.com:nwfw/google-translate-api.git"

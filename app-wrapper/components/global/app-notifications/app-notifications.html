@@ -8,19 +8,19 @@
                 <div class="app-notification-text" v-if="notification.message" v-html="notification.message">
                 </div>
 
-                <a v-if="!notification.pinned" :title="translate('Pin notification')" class="app-notification-pin" @click.prevent="pinNotification">
+                <a v-if="!notification.pinned" :title="translate('Pin notification')" class="app-notification-icon app-notification-pin" @click.prevent="pinNotification">
                     <span class="fa fa-thumb-tack"></span>
                 </a>
-                <a v-else :title="translate('Unpin notification')" class="app-notification-pin" @click.prevent="pinNotification">
+                <a v-else :title="translate('Unpin notification')" class="app-notification-icon app-notification-pin" @click.prevent="pinNotification">
                     <span class="fa fa-thumb-tack"></span>
                 </a>
-                <a :title="translate('Remove notification')" class="app-notification-close" @click.prevent="removeNotification">
+                <a :title="translate('Remove notification')" class="app-notification-icon app-notification-close" @click.prevent="removeNotification">
                     <span class="fa fa-remove"></span>
                 </a>
             </div>
         </transition>
         <transition name="fade">
-            <span v-if="notification && notification.pinned && appState.appNotificationsData.newNotifications.length" :title="translate('You have {1} unseen {2}', null, [appState.appNotificationsData.newNotifications.length, appState.appNotificationsData.newNotifications.length>1 ? translate('notifications') : translate('notification')])" class="app-notification-more fa fa-info-circle"></span>
+            <span v-if="notification && notification.pinned && appState.appNotificationsData.newNotifications.length" :title="translate('You have {1} unseen {2}', null, [appState.appNotificationsData.newNotifications.length, appState.appNotificationsData.newNotifications.length>1 ? translate('notifications') : translate('notification')])" class="app-notification-more fa fa-info"></span>
         </transition>
     </div>
 </div>
