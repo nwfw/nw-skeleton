@@ -20,19 +20,23 @@
 
     --input-base-background: #FFFFFF;
     --input-base-color: #333333;
+    --input-base-placeholder-color: #666666;
     --input-base-border: 1px solid #CCCCCC;
     --input-base-padding: 2px 6px 3px 6px;
 
     --input-highlight-background: #FFFFCC;
     --input-highlight-color: #333333;
+    --input-highlight-placeholder-color: #666666;
     --input-highlight-border: 1px solid #CCCCCC;
 
     --input-hover-background: #CCCCCC;
     --input-hover-color: #333333;
+    --input-hover-placeholder-color: #666666;
     --input-hover-border: 1px solid #999999;
 
     --input-disabled-background: #999999;
     --input-disabled-color: #666666;
+    --input-disabled-placeholder-color: #333333;
     --input-disabled-border: 1px solid #CCCCCC;
     --input-disabled-padding: 2px 6px 3px 6px;
 
@@ -68,6 +72,10 @@
     --link-base-color-visited: #333D84;
     --link-base-cursor-visited: var(--link-base-cursor);
     --link-base-text-decoration-visited: var(--link-base-text-decoration);
+
+
+    --link-destructive-color: #FF6666;
+    --link-destructive-color-hovered: #FF3333;
 
     --safe-link-color: #00CC00;
     --unsafe-link-color: #FF0000;

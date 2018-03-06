@@ -590,12 +590,19 @@ class FileManager extends AppBaseClass {
      * @return {Boolean}         True if operation succeeded, false otherwise
      */
     async writeFileSync(file, data, options){
-        try {
-            fs.writeFileSync(file, data, options);
-        } catch (ex) {
-            console.log(ex);
-        }
-        return await this.isFile(file);
+        return new Promise((resolve, reject) => {
+            try {
+                fs.writeFile(file, data, options, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            } catch (ex) {
+                reject(ex);
+            }
+        });
     }
 
     /**
