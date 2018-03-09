@@ -402,6 +402,11 @@ exports.appState = {
             confirmDisabled: false,
             confirmSelected: true,
 
+            modalButtons: [
+                'cancel',
+                'confirm',
+            ],
+
             showCancelButton: true,
             cancelButtonText: 'Cancel',
             cancelDisabled: false,

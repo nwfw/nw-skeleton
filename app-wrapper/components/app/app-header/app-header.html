@@ -1,6 +1,6 @@
 <header class="app-header" v-bind:class="{'has-progress-bar': appState.progressData.inProgress, 'app-status-changing': appState.status.appStatusChanging, 'hide-fullscreen-header': appState.config.appConfig.hideFullscreenHeader && appState.windowState.fullscreen}">
 	<div class="header-top">
 		<div class="header-app-title" :title="translate(appState.config.appInfo.description)" v-html="translate(appState.config.appInfo.name)"></div>
-		<window-controls ref="windowControls"></window-controls>
+		<window-controls ref="windowControls" v-if="appState.config.appConfig.windowControls.display"></window-controls>
 	</div>
 </header>

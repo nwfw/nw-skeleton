@@ -166,6 +166,9 @@ exports.component = {
     computed: {
         appState: function() {
             return appState;
+        },
+        config: function() {
+            return appState.config.appConfig.windowControls;
         }
     }
 };

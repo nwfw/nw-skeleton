@@ -218,6 +218,20 @@ exports.config = {
         directiveRoot: './app/js/directive/',
         directiveExtensionRegex: /\.js$/,
 
+        windowControls: {
+            display: true,
+            controls: {
+                appInfo: true,
+                debugMenu: true,
+                configurationMenu: true,
+                moveWindow: true,
+                toggleFullscreen: true,
+                minimizeWindow: true,
+                maximizeWindow: true,
+                closeWindow: true,
+            }
+        },
+
         disableRightClick: true,
 
         hasAppMenu: false,

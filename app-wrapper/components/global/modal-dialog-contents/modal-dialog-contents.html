@@ -23,20 +23,22 @@
 					</div>
 					<template v-if="currentModal.showCancelButton || currentModal.showConfirmButton">
 						<div class="modal-dialog-buttons">
-							<template v-if="currentModal.showConfirmButton">
-								<template v-if="currentModal.confirmDisabled">
-									<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+							<template v-for="buttonType in currentModal.modalButtons">
+								<template v-if="buttonType == 'confirm' && currentModal.showConfirmButton">
+									<template v-if="currentModal.confirmDisabled">
+										<input disabled="disabled" type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+									</template>
+									<template v-else>
+										<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
+									</template>
 								</template>
-								<template v-else>
-									<input type="submit" class="modal-button modal-button-confirm" v-bind:value="currentModal.confirmButtonText" />
-								</template>
-							</template>
-							<template v-if="currentModal.showCancelButton">
-								<template v-if="currentModal.cancelDisabled">
-									<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
-								</template>
-								<template v-else>
-									<button class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+								<template v-if="buttonType == 'cancel' && currentModal.showCancelButton">
+									<template v-if="currentModal.cancelDisabled">
+										<button disabled="disabled" class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+									</template>
+									<template v-else>
+										<button class="modal-button modal-button-cancel" @click.prevent="cancelModalAction" v-text="currentModal.cancelButtonText"></button>
+									</template>
 								</template>
 							</template>
 						</div>
