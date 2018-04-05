@@ -524,6 +524,190 @@
 }
 
 
+
+
+
+
+/* transform-scale-from-top */
+
+.transform-scale-from-top-short-enter,
+.transform-scale-from-top-long-enter,
+.transform-scale-from-top-enter {
+    overflow: hidden !important;
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: top center;
+}
+
+.transform-scale-from-top-short-enter-to,
+.transform-scale-from-top-long-enter-to,
+.transform-scale-from-top-enter-to {
+    transform: scale(1, 1) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-short-leave,
+.transform-scale-from-top-long-leave,
+.transform-scale-from-top-leave {
+    transform: scale(1, 1) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-short-leave-to,
+.transform-scale-from-top-long-leave-to,
+.transform-scale-from-top-leave-to {
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: top center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-enter-active,
+.transform-scale-from-top-leave-active,
+.transform-scale-from-top-short-enter-active,
+.transform-scale-from-top-short-leave-active,
+.transform-scale-from-top-long-enter-active,
+.transform-scale-from-top-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-from-top-short-enter-active,
+.transform-scale-from-top-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-from-top-long-enter-active,
+.transform-scale-from-top-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+/* transform-scale-from-center */
+
+.transform-scale-from-center-short-enter,
+.transform-scale-from-center-long-enter,
+.transform-scale-from-center-enter {
+    overflow: hidden !important;
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: center center;
+}
+
+.transform-scale-from-center-short-enter-to,
+.transform-scale-from-center-long-enter-to,
+.transform-scale-from-center-enter-to {
+    transform: scale(1, 1) !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-center-short-leave,
+.transform-scale-from-center-long-leave,
+.transform-scale-from-center-leave {
+    transform: scale(1, 1) !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-center-short-leave-to,
+.transform-scale-from-center-long-leave-to,
+.transform-scale-from-center-leave-to {
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: center center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-center-enter-active,
+.transform-scale-from-center-leave-active,
+.transform-scale-from-center-short-enter-active,
+.transform-scale-from-center-short-leave-active,
+.transform-scale-from-center-long-enter-active,
+.transform-scale-from-center-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-from-center-short-enter-active,
+.transform-scale-from-center-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-from-center-long-enter-active,
+.transform-scale-from-center-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+/* transform-scale-from-bottom */
+
+.transform-scale-from-bottom-short-enter,
+.transform-scale-from-bottom-long-enter,
+.transform-scale-from-bottom-enter {
+    overflow: hidden !important;
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: bottom center;
+}
+
+.transform-scale-from-bottom-short-enter-to,
+.transform-scale-from-bottom-long-enter-to,
+.transform-scale-from-bottom-enter-to {
+    transform: scale(1, 1) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-short-leave,
+.transform-scale-from-bottom-long-leave,
+.transform-scale-from-bottom-leave {
+    transform: scale(1, 1) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-short-leave-to,
+.transform-scale-from-bottom-long-leave-to,
+.transform-scale-from-bottom-leave-to {
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: bottom center;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-enter-active,
+.transform-scale-from-bottom-leave-active,
+.transform-scale-from-bottom-short-enter-active,
+.transform-scale-from-bottom-short-leave-active,
+.transform-scale-from-bottom-long-enter-active,
+.transform-scale-from-bottom-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-from-bottom-short-enter-active,
+.transform-scale-from-bottom-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-from-bottom-long-enter-active,
+.transform-scale-from-bottom-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /* transform-scale-width */
 
 .transform-scale-width-short-enter,

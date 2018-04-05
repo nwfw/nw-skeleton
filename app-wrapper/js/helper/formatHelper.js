@@ -658,28 +658,67 @@ class FormatHelper extends AppBaseClass {
      * @param  {Integer} lesserUnits    Downscale unit by n
      * @return {string}                 Human-readable file size representation
      */
-    formatFileSize (bytes, lesserUnits) {
+    formatFileSize (bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false) {
+        let sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
+        let value;
+        let negative = false;
+        let unitIndex;
         if (!lesserUnits){
             lesserUnits = 0;
         }
-        let sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
+        if (isNaN(parseInt(minUnit, 10))) {
+            let minString = minUnit.toLowerCase();
+            let minSizes = _.map(sizes, (size) => {
+                return size.toLowerCase();
+            })
+            if (_.includes(minSizes, minString)) {
+                minUnit = _.indexOf(minSizes, minString);
+            } else {
+                minUnit = 0;
+            }
+        }
         if (bytes == 0) {
             return '0 B';
         }
-        let negative = false;
+
         if (bytes < 0){
             negative = true;
             bytes = Math.abs(bytes);
         }
-        let size = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        size -= lesserUnits;
-        if (size < 0){
-            size = 0;
+        unitIndex = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        if (lesserUnits) {
+            if (unitIndex - lesserUnits > minUnit) {
+                unitIndex -= lesserUnits;
+            } else {
+                unitIndex = minUnit;
+            }
         }
-        let value = Math.round(bytes / Math.pow(1024, size), 2) + ' ' + sizes[size];
+        if (unitIndex < minUnit) {
+            unitIndex = minUnit;
+        }
+        if (!floatValue) {
+            value = Math.round(bytes / Math.pow(1024, unitIndex));
+        } else {
+            value = bytes / Math.pow(1024, unitIndex);
+            if (value != parseInt(value, 10)) {
+                value = value.toFixed(2);
+            }
+        }
+        if (treshold && value >= treshold) {
+            unitIndex++;
+            if (!floatValue) {
+                value = Math.round(bytes / Math.pow(1024, unitIndex));
+            } else {
+                value = bytes / Math.pow(1024, unitIndex);
+                if (value != parseInt(value, 10)) {
+                    value = value.toFixed(2);
+                }
+            }
+        }
         if (negative){
             value = '-' + value;
         }
+        value += ' ' + sizes[unitIndex];
         return value;
     }
 
