@@ -272,13 +272,14 @@ class FormatHelper extends AppBaseClass {
     /**
      * Format time normalized (Y-m-d H:i:s format)
      *
-     * @param  {Date}       date            Date value to format
-     * @param  {Object}     options         Date format options
-     * @param  {Boolean}    includeDate     Flag to indicate whether to include date
-     * @param  {Boolean}    omitSeconds     Flag to indicate whether to omit seconds
-     * @return {string}                     Formatted time string
+     * @param  {Date}       date                Date value to format
+     * @param  {Object}     options             Date format options
+     * @param  {Boolean}    includeDate         Flag to indicate whether to include date
+     * @param  {Boolean}    omitSeconds         Flag to indicate whether to omit seconds
+     * @param  {Boolean}    omitMilliseconds    Flag to indicate whether to omit seconds
+     * @return {string}                         Formatted time string
      */
-    formatTimeNormalize (date, options, includeDate, omitSeconds){
+    formatTimeNormalize (date, options = null, includeDate = false, omitSeconds = false, omitMilliseconds = true){
 
         if (_.isString(date)){
             date = new Date(date);
@@ -291,7 +292,7 @@ class FormatHelper extends AppBaseClass {
         let hours = date.getHours();
         let minutes = date.getMinutes();
         let seconds = date.getSeconds();
-
+        let milliseconds = date.getMilliseconds();
 
         if (month < 10){
             month = '0' + month;
@@ -312,16 +313,25 @@ class FormatHelper extends AppBaseClass {
             seconds = '0' + seconds;
         }
 
-        let formattedTime = '';
-        if (includeDate){
-            formattedTime += year + '-' + month + '-' + day;
+        if (milliseconds < 100){
+            if (milliseconds < 10){
+                milliseconds = '0' + milliseconds;
+            }
+            milliseconds = '0' + milliseconds;
         }
 
-        formattedTime += ' ';
+        let formattedTime = '';
+        if (includeDate){
+            formattedTime += year + '-' + month + '-' + day + ' ';
+        }
+
         formattedTime += hours;
         formattedTime += ':' + minutes;
         if (!omitSeconds) {
             formattedTime += ':' + seconds;
+        }
+        if (!omitMilliseconds) {
+            formattedTime += '.' + milliseconds;
         }
 
         return formattedTime;

@@ -172,8 +172,8 @@ var MixinWrapperMethods  = {
          * @param  {Integer} bytes File size in bytes
          * @return {string}        Formatted file size
          */
-        formatFileSize: function(bytes){
-            return _appWrapper.getHelper('format').formatFileSize(bytes);
+        formatFileSize: function(bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false){
+            return _appWrapper.getHelper('format').formatFileSize(bytes, lesserUnits, minUnit, treshold, floatValue);
         },
 
         /**

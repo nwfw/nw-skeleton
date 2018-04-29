@@ -585,6 +585,72 @@
 }
 
 
+
+
+
+/* transform-scale-from-top */
+
+.transform-scale-from-top-right-short-enter,
+.transform-scale-from-top-right-long-enter,
+.transform-scale-from-top-right-enter {
+    overflow: hidden !important;
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: top right;
+}
+
+.transform-scale-from-top-right-short-enter-to,
+.transform-scale-from-top-right-long-enter-to,
+.transform-scale-from-top-right-enter-to {
+    transform: scale(1, 1) !important;
+    transform-origin: top right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-right-short-leave,
+.transform-scale-from-top-right-long-leave,
+.transform-scale-from-top-right-leave {
+    transform: scale(1, 1) !important;
+    transform-origin: top right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-right-short-leave-to,
+.transform-scale-from-top-right-long-leave-to,
+.transform-scale-from-top-right-leave-to {
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: top right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-top-right-enter-active,
+.transform-scale-from-top-right-leave-active,
+.transform-scale-from-top-right-short-enter-active,
+.transform-scale-from-top-right-short-leave-active,
+.transform-scale-from-top-right-long-enter-active,
+.transform-scale-from-top-right-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-from-top-right-short-enter-active,
+.transform-scale-from-top-right-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-from-top-right-long-enter-active,
+.transform-scale-from-top-right-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+
+
+
+
+
 /* transform-scale-from-center */
 
 .transform-scale-from-center-short-enter,
