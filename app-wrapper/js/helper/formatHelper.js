@@ -669,7 +669,7 @@ class FormatHelper extends AppBaseClass {
      * @return {string}                 Human-readable file size representation
      */
     formatFileSize (bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false) {
-        let sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
+        let sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let value;
         let negative = false;
         let unitIndex;
@@ -706,6 +706,9 @@ class FormatHelper extends AppBaseClass {
         if (unitIndex < minUnit) {
             unitIndex = minUnit;
         }
+        if (unitIndex >= sizes.length) {
+            unitIndex = sizes.length - 1;
+        }
         if (!floatValue) {
             value = Math.round(bytes / Math.pow(1024, unitIndex));
         } else {
@@ -716,6 +719,9 @@ class FormatHelper extends AppBaseClass {
         }
         if (treshold && value >= treshold) {
             unitIndex++;
+            if (unitIndex >= sizes.length) {
+                unitIndex = sizes.length - 1;
+            }
             if (!floatValue) {
                 value = Math.round(bytes / Math.pow(1024, unitIndex));
             } else {
