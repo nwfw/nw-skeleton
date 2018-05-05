@@ -14,6 +14,7 @@ const _ = require('lodash');
  *     classes: an array of classes to add to tooltip wrapper
  *     showCloseLink: bool to set close link rendering (default false)
  *     noAutoHide: bool to set auto hiding (default true)
+ *     showAbove: bool to show tooltip above element
  *
  * @name nw-tooltip
  * @memberOf directives
@@ -221,6 +222,7 @@ let showTooltip = function(e){
     let htmlHelper = window.getAppWrapper().getHelper('html');
     if (identifier){
         let tooltip = getTooltip(identifier);
+        let tooltipData = getTooltipData(el);
         if (tooltip){
             clearTimeout(tooltip.closeLinkTimeout);
             let bindingValue = 1;
@@ -242,6 +244,7 @@ let showTooltip = function(e){
             }
             let position = htmlHelper.getAbsolutePosition(el);
             let elDimensions = htmlHelper.getCloneRealDimensions(el);
+            let tooltipDimensions = htmlHelper.getRealDimensions(tooltip);
             let top = parseInt((position.offsetTop + elDimensions.height), 10);
             let left = parseInt((position.offsetLeft + (elDimensions.width / 2)), 10);
             let tooltipStyles = {
@@ -249,7 +252,7 @@ let showTooltip = function(e){
                 left: left + 'px',
             };
             let windowWidth = window.innerWidth;
-            let tooltipDimensions = htmlHelper.getRealDimensions(tooltip);
+
             if (tooltipDimensions.width + left > windowWidth){
                 delete tooltipStyles.left;
                 tooltip.addClass('stick-right');
@@ -257,6 +260,12 @@ let showTooltip = function(e){
             } else if (left - parseInt(tooltipDimensions.width / 2, 10) < 0){
                 tooltip.addClass('stick-left');
                 tooltipStyles.left = '5px';
+            }
+            if (tooltipData && tooltipData.showAbove) {
+                htmlHelper.addClass(tooltip, 'tooltip-above');
+                tooltipStyles['margin-top'] = '-' + (elDimensions.height + 5) + 'px';
+            } else {
+                htmlHelper.removeClass(tooltip, 'tooltip-above');
             }
             htmlHelper.setElementStyles(tooltip, tooltipStyles);
             htmlHelper.addClass(tooltip, 'visible-tooltip');

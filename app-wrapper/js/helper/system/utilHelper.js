@@ -192,6 +192,7 @@ class UtilHelper extends AppBaseClass {
         }
         let objValue;
         let configVar = {
+            wrapperClasses: [],
             fullPath: 'appState.' + path,
             path: path,
             readonly: options.readonly,

@@ -28,18 +28,23 @@ var utilHelper = _appWrapper.getHelper('util');
 exports.component = {
     name: 'checkbox-styled',
     template: '',
-    props: ['change', 'name', 'data', 'modelProperty'],
+    props: ['change', 'name', 'data', 'modelProperty', 'checked'],
     watchOn: false,
     data: function () {
         return {
-
+            fakeCbModel: null
         };
     },
     created: function() {
         // this.cbModel = utilHelper.getVar(this.modelProperty);
     },
+    beforeMount: function() {
+        if (!_.isUndefined(this.checked)) {
+            this.fakeCbModel = this.checked;
+        }
+    },
     mounted: function(){
-        if (!this.watchOn && window && window.feApp && window.feApp.$watch){
+        if (this.modelProperty && !this.watchOn && window && window.feApp && window.feApp.$watch){
             this.watchOn = window.feApp.$watch(this.modelProperty, this.modelPropertyChanged.bind(this));
         }
     },
@@ -57,10 +62,14 @@ exports.component = {
     },
     methods: {
         handleChange: function(e){
-            utilHelper.setVar(this.modelProperty, e.target.checked);
+            if (this.modelProperty) {
+                utilHelper.setVar(this.modelProperty, e.target.checked);
+            }
             if (this.change && _.isFunction(this.change)){
                 this.change(e);
             }
+
+            this.fakeCbModel = e.target.checked;
         },
         modelPropertyChanged: function(){
             // let newVal = utilHelper.getVar(this.modelProperty);
@@ -70,7 +79,13 @@ exports.component = {
     },
     computed: {
         cbModel: function(){
-            return utilHelper.getVar(this.modelProperty);
+            let model;
+            if (this.modelProperty) {
+                model = utilHelper.getVar(this.modelProperty);
+            } else {
+                model = this.fakeCbModel;
+            }
+            return model;
         }
     }
 };

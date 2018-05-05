@@ -672,6 +672,9 @@ class FormatHelper extends AppBaseClass {
         let sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let value;
         let negative = false;
+        if (isNaN(bytes)){
+            bytes = 0;
+        }
         let unitIndex;
         if (!lesserUnits){
             lesserUnits = 0;
@@ -734,7 +737,13 @@ class FormatHelper extends AppBaseClass {
         if (negative){
             value = '-' + value;
         }
-        value += ' ' + sizes[unitIndex];
+        let unit = sizes[unitIndex];
+        if (!unit) {
+            unit = '';
+        } else {
+            unit = ' ' + unit;
+        }
+        value += unit;
         return value;
     }
 

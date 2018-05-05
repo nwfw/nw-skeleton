@@ -50,10 +50,12 @@
     --selection-color: #DDDDDD;
 
     /* transition durations */
+    --min-animation-duration: 0.1s;
     --short-animation-duration: 0.2s;
     --medium-animation-duration: 0.4s;
     --long-animation-duration: 0.6s;
     --longest-animation-duration: 1s;
+    --max-animation-duration: 2s;
 
     /* links */
 

@@ -1213,6 +1213,14 @@ class HtmlHelper extends AppBaseClass {
             } else {
                 element.checked = false;
             }
+        } else if (element.tagName.toLowerCase() == 'select' && _.isArray(value)){
+            for (let i=0; i<element.options.length; i++) {
+                if (_.includes(value, element.options[i].getAttribute('value'))){
+                    element.options[i].selected = true;
+                } else {
+                    element.options[i].selected = false;
+                }
+            }
         } else {
             element.value = value;
         }

@@ -349,11 +349,6 @@ a:visited {
 		overflow: auto;
 	}
 
-	&.stick-right,
-	&.stick-left {
-		transform: translate(0, 10px);
-	}
-
 	&.prepared-tooltip {
 		display: block;
 		opacity: 0;
@@ -377,6 +372,30 @@ a:visited {
 	  	border-right: 8px solid transparent;
 	  	border-bottom: 8px solid var(--tooltip-background-color);
 	}
+
+	&.stick-right,
+	&.stick-left {
+		transform: translate(0, 10px);
+	}
+
+	&.tooltip-above {
+		transform: translate(-50%, calc(-100% - 8px));
+
+		&.prepared-tooltip:before {
+			border-left: 8px solid transparent;
+  			border-right: 8px solid transparent;
+  			border-top: 8px solid var(--tooltip-background-color);
+  			border-bottom: none;
+  			top: 100%;
+		}
+
+		&.stick-right,
+		&.stick-left {
+			transform: translate(0, -100%);
+		}
+	}
+
+
 
 	&.stick-right:before,
 	&.stick-left:before {
