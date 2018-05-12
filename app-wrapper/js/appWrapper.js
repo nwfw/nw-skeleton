@@ -41,10 +41,11 @@ class AppWrapper extends AppBaseClass {
      * Creates appWrapper instance using initial config object
      *
      * @constructor
-     * @param  {Object} initialAppConfig Initial config object
+     * @param  {Object} initialAppConfig    Initial config object
+     * @param  {Object} initialAppState     Initial appState object
      * @return {AppWrapper}              Instance of AppWrapper class
      */
-    constructor (initialAppConfig) {
+    constructor (initialAppConfig, initialAppState = {}) {
         super();
 
         this.needsConfig = false;
@@ -55,11 +56,16 @@ class AppWrapper extends AppBaseClass {
         this.appConfig = null;
 
         let isDebugWindow = false;
+        let notMainWindow = false;
         if (_.isUndefined(initialAppConfig) || !_.isObject(initialAppConfig)){
             initialAppConfig = {};
         } else {
-            if (initialAppConfig && initialAppConfig.isDebugWindow){
-                isDebugWindow = true;
+            if (initialAppConfig) {
+                if (initialAppConfig.isDebugWindow){
+                    isDebugWindow = true;
+                } else if (initialAppConfig.notMainWindow){
+                    notMainWindow = true;
+                }
             }
         }
 
@@ -67,6 +73,12 @@ class AppWrapper extends AppBaseClass {
 
         if (isDebugWindow){
             initialAppConfig.isDebugWindow = true;
+            initialAppState.isDebugWindow = true;
+        }
+
+        if (notMainWindow){
+            initialAppConfig.notMainWindow = true;
+            initialAppState.notMainWindow = true;
         }
 
         this.forceDebug = _.get(initialAppConfig, 'debug.forceDebug.AppWrapper') || false;
@@ -78,9 +90,9 @@ class AppWrapper extends AppBaseClass {
             onDebugWindowClose: null,
             handleMessageResponse: null,
             handleMainMessage: null,
+            onWindowMessage: null,
         };
 
-        this.debugWindow = null;
         this.mainWindow = null;
 
         this.initialAppConfig = initialAppConfig;
@@ -94,7 +106,8 @@ class AppWrapper extends AppBaseClass {
         };
 
         this.noop = _.noop;
-        appState = this.getAppState();
+        appState = this.getAppState(initialAppState);
+        this.subWindows = [];
         return this;
     }
 
@@ -112,6 +125,7 @@ class AppWrapper extends AppBaseClass {
         await super.initialize();
 
         this.checkDebugWindow();
+        this.checkOtherWindow();
 
         await this.initializeFileManager();
         await this.initializeConfig();
@@ -127,11 +141,13 @@ class AppWrapper extends AppBaseClass {
         await this.loadUserConfig();
         await this.initializeWindowManager();
 
+        await this.processCommandParams();
+
         if (!await this.setAppInstance()){
             return;
         }
 
-        if (!appState.isDebugWindow) {
+        if (!appState.isDebugWindow && !appState.notMainWindow) {
             await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
         }
 
@@ -151,7 +167,6 @@ class AppWrapper extends AppBaseClass {
         }
 
         await this.loadUserData();
-
         await staticFilesHelper.loadCssFiles();
 
         await this.setGlobalKeyHandlers();
@@ -162,13 +177,12 @@ class AppWrapper extends AppBaseClass {
             appState.windowState.title = this.translate(appState.windowState.title);
         }
 
-        await this.processCommandParams();
+
 
         await this.setupMenuAndTray();
 
         this.addWrapperEventListeners();
         await this.initializeApp();
-
         return this;
     }
 
@@ -197,7 +211,7 @@ class AppWrapper extends AppBaseClass {
             appState.status.appReady = true;
         }
         this.log('Initializing application wrapper.', 'groupend', []);
-        if (!appState.isDebugWindow){
+        if (!appState.isDebugWindow && !appState.notMainWindow){
             this.message({instruction: 'log', data: {type: 'debug', message: 'Application initialized', force: false}});
         }
         return retValue;
@@ -209,15 +223,15 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     addWrapperEventListeners() {
-        if (!appState.isDebugWindow){
+        window.addEventListener('message', this.boundMethods.onWindowMessage);
+        if (!appState.isDebugWindow && !appState.notMainWindow){
             this.windowManager.win.on('close', this.boundMethods.onWindowClose);
             this.windowManager.win.globalEmitter.on('messageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.on('asyncMessageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.on('mainMessage', this.boundMethods.handleMainMessage);
-        } else {
-            this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
+        } else if (appState.isDebugWindow) {
+            // this.windowManager.win.on('close', this.boundMethods.onDebugWindowClose);
         }
-
     }
 
     /**
@@ -226,15 +240,34 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     removeWrapperEventListeners() {
-        if (!appState.isDebugWindow){
+        window.removeEventListener('message', this.boundMethods.onWindowMessage);
+        if (!appState.isDebugWindow && !appState.notMainWindow){
             this.windowManager.win.removeListener('close', this.boundMethods.onWindowClose);
             this.windowManager.win.globalEmitter.removeListener('messageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.removeListener('asyncMessageResponse', this.boundMethods.handleMessageResponse);
             this.windowManager.win.globalEmitter.removeListener('mainMessage', this.boundMethods.handleMainMessage);
-        } else {
-            this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
+        } else if (appState.isDebugWindow) {
+            // this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
         }
+    }
 
+    /**
+     * Handler for window 'message' event
+     *
+     * @param  {Event} event Event that triggered the handler
+     *
+     * @return {undefined}
+     */
+    onWindowMessage (event) {
+        let message = event.data;
+        if (message) {
+            if (message.message) {
+                this.log('Received window post message "{1}"', 'warning', [message.message]);
+            }
+            if (message.data && message.data.appState){
+                _.extend(appState, message.data.appState);
+            }
+        }
     }
 
     /**
@@ -293,16 +326,17 @@ class AppWrapper extends AppBaseClass {
      */
     async initializeWindowManager() {
         this.windowManager = new WindowManager();
-        await this.windowManager.initialize();
+        let stateOverrides = {
+            devTools: false
+        };
         if (this.getConfig('debug.devTools')){
-            this.windowManager.winState.devTools = true;
-        } else {
-            this.windowManager.winState.devTools = false;
+            stateOverrides.devTools = true;
         }
+        await this.windowManager.initialize(stateOverrides);
     }
 
     async setupMenuAndTray(){
-        if (!appState.isDebugWindow){
+        if (!appState.isDebugWindow && !appState.notMainWindow){
             await this.asyncMessage({instruction: 'initializeTrayIcon', data: {}});
             await this.asyncMessage({instruction: 'initializeAppMenu', data: {}});
             await this.asyncMessage({instruction: 'setupAppMenu', data: {}});
@@ -333,6 +367,14 @@ class AppWrapper extends AppBaseClass {
         if (this.initialAppConfig.isDebugWindow){
             appState.isDebugWindow = true;
             delete this.initialAppConfig.isDebugWindow;
+            this.mainWindow = window.opener;
+        }
+    }
+
+    checkOtherWindow () {
+        if (this.initialAppConfig.notMainWindow){
+            appState.notMainWindow = true;
+            delete this.initialAppConfig.notMainWindow;
             this.mainWindow = window.opener;
         }
     }
@@ -554,9 +596,10 @@ class AppWrapper extends AppBaseClass {
             return;
         }
         if (confirmed){
+            this.closeAllSubWindows();
             appState.status.appShuttingDown = true;
             await this.cleanup();
-            if (!appState.isDebugWindow){
+            if (!appState.isDebugWindow && !appState.notMainWindow){
                 this.resetAppError();
                 await this.asyncMessage({instruction: 'removeAppMenu', data: {}});
                 await this.asyncMessage({instruction: 'removeTrayIcon', data: {}});
@@ -609,9 +652,6 @@ class AppWrapper extends AppBaseClass {
      */
     async shutdownApp () {
         this.log('Shutting down...', 'group', []);
-        if (this.debugWindow && this.debugWindow.getAppWrapper && _.isFunction(this.debugWindow.getAppWrapper)){
-            this.debugWindow.getAppWrapper().onDebugWindowClose();
-        }
         appState.mainLoaderTitle = this.appTranslations.translate('Please wait while application shuts down...');
         appState.status.appShuttingDown = true;
         this.addUserMessage('Shutting down...', 'info', [], true, false, true, false);
@@ -668,9 +708,10 @@ class AppWrapper extends AppBaseClass {
             return;
         }
         if (confirmed){
+            this.closeAllSubWindows();
             appState.status.appShuttingDown = true;
             await this.cleanup();
-            if (!appState.isDebugWindow){
+            if (!appState.isDebugWindow && !appState.notMainWindow){
                 this.resetAppError();
                 await this.finalizeLogs();
                 this.windowManager.reloadWindow(null, true);
@@ -687,7 +728,7 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     async onDebugWindowUnload (){
-        this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
+        // this.windowManager.win.removeListener('close', this.boundMethods.onDebugWindowClose);
     }
 
     /**
@@ -697,15 +738,15 @@ class AppWrapper extends AppBaseClass {
      * @return {undefined}
      */
     async onDebugWindowClose (){
-        this.log('Closing standalone debug window', 'info', []);
-        if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
-            this.mainWindow.appState.debugMessages = _.cloneDeep(appState.debugMessages);
-            this.mainWindow.appState.allDebugMessages = _.cloneDeep(appState.allDebugMessages);
-            this.mainWindow.appState.hasDebugWindow = false;
-            this.mainWindow.appWrapper.debugWindow = null;
-        }
-        this.windowManager.closeWindowForce();
-        this.addUserMessage('Debug window closed', 'info', [], false,  false);
+        // this.log('Closing standalone debug window', 'info', []);
+        // if (this.mainWindow && this.mainWindow.appState && this.mainWindow.appState.debugMessages){
+        //     this.mainWindow.appState.debugMessages = _.cloneDeep(appState.debugMessages);
+        //     this.mainWindow.appState.allDebugMessages = _.cloneDeep(appState.allDebugMessages);
+        //     this.mainWindow.appState.hasDebugWindow = false;
+        //     // this.mainWindow.appWrapper.debugWindow = null;
+        // }
+        // this.windowManager.closeWindowForce();
+        // this.addUserMessage('Debug window closed', 'info', [], false,  false);
     }
 
     /**
@@ -1087,14 +1128,22 @@ class AppWrapper extends AppBaseClass {
     /**
      * Returns appState object if exists, initializing it and returning it if it doesn't
      *
+     * @param {Object} appStateOverrides    An object with overrides for appState
+     *
      * @return {Object} appState object
      */
-    getAppState () {
+    getAppState (appStateOverrides = null) {
         let win = nw.Window.get().window;
         let appStateFile;
         let appAppState;
         let initialAppState;
         if (win && win.appState){
+            if (appStateOverrides && _.isObject(appStateOverrides)){
+                let keys = Object.keys(appStateOverrides);
+                for (let i=0; i<keys.length; i++){
+                    win.appState[keys[i]] = appStateOverrides[keys[i]];
+                }
+            }
             return win.appState;
         } else {
             initialAppState = require('./appState').appState;
@@ -1102,12 +1151,21 @@ class AppWrapper extends AppBaseClass {
             try {
                 appAppState = require(appStateFile).appState;
                 initialAppState = this.mergeDeep(initialAppState, appAppState);
+                if (win){
+                    if (appStateOverrides && _.isObject(appStateOverrides)){
+                        let keys = Object.keys(appStateOverrides);
+                        for (let i=0; i<keys.length; i++){
+                            initialAppState[keys[i]] = appStateOverrides[keys[i]];
+                        }
+                    }
+                    win.appState = initialAppState;
+                    // if (win.subWindowId && win._parentWindow) {
+                    //     win.appState.userData = win._parentWindow.appState.userData;
+                    //     win.appState.config = win._parentWindow.appState.config;
+                    // }
+                }
             } catch (ex) {
                 console.error(ex);
-            }
-
-            if (win){
-                win.appState = initialAppState;
             }
             return initialAppState;
         }
@@ -1573,6 +1631,288 @@ class AppWrapper extends AppBaseClass {
      */
     async reinitializeTrayIcon (){
         await this.asyncMessage({instruction: 'reinitializeTrayIcon', data: {}});
+    }
+
+    /**
+     * Opens new window with given parameters
+     *
+     * @param  {String}         url                 Url of new window
+     * @param  {String}         id                  Id of new window
+     * @param  {Object}         options             Options object
+     * @param  {Object}         additionalOptions   Additional options object
+     * @param  {Object}         windowCallbacks     Optional callbacks for new window nw.Window events
+     * @param  {Function}       callback            Optional callback called with new windows nw.Window instance as parameter
+     *
+     * @return {undefined}
+     */
+    openNewWindow(url, id, options, additionalOptions = {}, windowCallbacks = {}, callback){
+        let canOpen = true;
+        if (!id) {
+            this.log('Tried opening window with url "{1}" without id!', 'error', [url], this.forceDebug);
+            canOpen = false;
+        }
+        if (!url) {
+            this.log('Tried opening window with id "{1}" without url!', 'error', [id], this.forceDebug);
+            canOpen = false;
+        }
+
+        if (canOpen && this.getSubWindow(id)) {
+            this.getSubWindow(id).focus();
+            canOpen = false;
+        }
+
+        if (canOpen) {
+            if (options && _.isObject(options)) {
+                options.id = id;
+            } else {
+                options = {
+                    id
+                };
+            }
+            if (!(additionalOptions && _.isObject(additionalOptions))) {
+                additionalOptions = {};
+            }
+            let callbackWrapper = (win) => {
+                this.setNwSubWindow(id, win);
+                let newWindow = win.window;
+                newWindow._nwAdditionalOptions = additionalOptions;
+                newWindow._parentWrapper = this;
+                newWindow._parentWindow = window;
+
+                let bodyClassAdded = false;
+                let removedInitialLoader = false;
+
+                let addBodyClass = setInterval(() => {
+                    if (newWindow && newWindow.document && newWindow.document.querySelector('body') && newWindow.document.querySelector('body').className){
+                        clearInterval(addBodyClass);
+                        newWindow.document.querySelector('body').className += ' nw-not-main-body';
+                        let additionalClasses = '';
+                        if (additionalOptions.bodyClasses) {
+                            additionalClasses = additionalOptions.bodyClasses;
+                            if (_.isArray(additionalClasses)) {
+                                additionalClasses = additionalClasses.join(' ');
+                            }
+                        }
+                        if (additionalClasses) {
+                            newWindow.document.querySelector('body').className += ' ' + additionalClasses;
+                        }
+                        bodyClassAdded = true;
+                    }
+                }, 10);
+
+                let removeInitialLoader = setInterval(() => {
+                    if (newWindow && newWindow.document && newWindow.document.querySelector('.app-body')){
+                        if (newWindow.appState && newWindow.appState.status.appInitialized) {
+                            clearInterval(removeInitialLoader);
+                            setTimeout(() => {
+                                let newWindowLoader = newWindow.document.querySelector('.new-window-loader');
+                                if (newWindowLoader && newWindowLoader.parentNode) {
+                                    newWindowLoader.parentNode.removeChild(newWindowLoader);
+                                }
+                                removedInitialLoader = true;
+                            }, 100);
+                        }
+                    }
+                }, 10);
+
+                let windowMountDuration = parseInt(this.getConfig('newWindowInitTimeoutDuration'), 10);
+                if (!(windowMountDuration && !isNaN(windowMountDuration))) {
+                    windowMountDuration = 10000;
+                }
+
+                setTimeout(() => {
+                    let errorMessage = '';
+                    if (!bodyClassAdded) {
+                        this.log('Could not add body class to new window, giving up', 'warning', []);
+                    }
+                    if (!removedInitialLoader) {
+                        this.log('Could not remove initial loader from new window, giving up', 'warning', []);
+                    }
+                    if (!bodyClassAdded) {
+                        errorMessage = 'Could not add body class to new window';
+                        clearInterval(addBodyClass);
+                        clearInterval(removeInitialLoader);
+                    } else if (!removedInitialLoader) {
+                        errorMessage = 'Could not remove initial loader from new window';
+                        clearInterval(removeInitialLoader);
+                    }
+                    if (errorMessage) {
+                        newWindow.appState.appError.messages = 'debug';
+                        newWindow.appState.appError.text = errorMessage;
+                        newWindow.appState.appError.error = true;
+                    }
+                }, windowMountDuration);
+
+                let windowCallbackNames = Object.keys(windowCallbacks);
+                win.on('closed', () => {
+                    if (windowCallbacks.closed && _.isFunction(windowCallbacks.closed)) {
+                        windowCallbacks.closed();
+                    }
+                    for (let i=0; i<windowCallbackNames.length; i++){
+                        win.removeAllListeners(windowCallbackNames[i]);
+                    }
+                    this.deleteSubWindow(id);
+                });
+                for (let i=0; i<windowCallbackNames.length; i++){
+                    if (windowCallbackNames[i] != 'closed') {
+                        win.on(windowCallbackNames[i], windowCallbacks[windowCallbackNames[i]]);
+                    }
+                }
+                if (callback && _.isFunction(callback)) {
+                    callback(win);
+                }
+            };
+            this.windowManager.openNewWindow(url, options, callbackWrapper);
+        }
+    }
+
+    getSubWindowIdentifiers(){
+        return Object.keys(this.subWindows);
+    }
+
+    getNwSubWindow(id) {
+        if (this.subWindows[id]) {
+            return this.subWindows[id];
+        } else {
+            return false;
+        }
+    }
+
+    getSubWindow(id) {
+        let nwWindow = this.getNwSubWindow(id);
+        if (nwWindow && nwWindow.window) {
+            return nwWindow.window;
+        } else {
+            return false;
+        }
+    }
+
+    setNwSubWindow(id, win) {
+        if (this.getNwSubWindow(id)) {
+            this.log('Can not set window with id "{1}", window already exists', 'warning', [id]);
+        } else {
+            win.window.subWindowId = id;
+            this.subWindows[id] = win;
+        }
+    }
+
+    deleteSubWindow(id) {
+        if (this.getNwSubWindow(id)) {
+            delete this.subWindows[id];
+        } else {
+            this.log('Can not delete window with id "{1}", window does not exist', 'info', [id]);
+        }
+    }
+
+    closeAllSubWindows() {
+        let windowIdentifiers = this.getSubWindowIdentifiers();
+        for (let i=0; i<windowIdentifiers.length; i++) {
+            let subWindow = this.getSubWindow(windowIdentifiers[i]);
+            if (subWindow) {
+                subWindow.close();
+            }
+        }
+    }
+
+    /**
+     * Initializes other window, loading appWrapper and setting up global environment
+     *
+     * @async
+     *
+     * @param  {window} otherWindow    Other window
+     * @param  {Object} wrapperOptions Other window appWrapper options
+     *
+     * @return {window}                Other window
+     */
+    async initializeOtherWindow (otherWindow, wrapperOptions = {}) {
+        if (!(wrapperOptions && _.isObject(wrapperOptions))) {
+            wrapperOptions = {};
+        }
+        wrapperOptions.notMainWindow = true;
+        otherWindow.nws = otherWindow.require('nw-skeleton');
+        otherWindow.appWrapper = new otherWindow.nws.AppWrapper(wrapperOptions);
+        otherWindow.appState.newWindowInitialized = true;
+        return otherWindow;
+    }
+
+    /**
+     * Frees up memory and events before closing other window
+     *
+     * @async
+     *
+     * @param  {window} otherWindow Other window
+     *
+     * @return {undefined}
+     */
+    async destroyOtherWindow (otherWindow) {
+        if (otherWindow._postMessageMethods && otherWindow._postMessageMethods.length) {
+            for (let i=0; i<otherWindow._postMessageMethods.length; i++) {
+                let event = otherWindow._postMessageMethods[i].event;
+                let method = otherWindow._postMessageMethods[i].method;
+                this.removeListener(event, method);
+            }
+        }
+    }
+
+    /**
+     * Updates other window appState with fields from parameter and values from current appState
+     *
+     * @param  {window} otherWindow         Other window
+     * @param {String[]}    shareAppStateFields An array of paths under appState for data that will be shared across windows
+     *
+     * @return {undefined}
+     */
+    updateOtherWindowAppState(otherWindow, shareAppStateFields = []) {
+        if (shareAppStateFields && shareAppStateFields.length){
+            for (let i=0; i<shareAppStateFields.length; i++){
+                let fieldName = shareAppStateFields[i];
+                if (fieldName != 'appInfo'){
+                    if (!fieldName.match(/\./)) {
+                        otherWindow.appState[fieldName] = appState[fieldName];
+                    } else {
+                        _.set(otherWindow.appState, fieldName, _.get(appState, fieldName));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Prepares standalone window data and sets references to main window data based on parameter
+     *
+     * @async
+     *
+     * @param {window}      otherWindow         Other window object
+     * @param {String[]}    shareAppStateFields An array of paths under appState for data that will be shared across windows
+     *
+     * @return {window}             Reference to debug window
+     */
+    async prepareOtherWindow (otherWindow, shareAppStateFields = ['config', 'userData']) {
+        otherWindow.appState.hasOtherWindow = false;
+        otherWindow.appState.isOtherWindow = true;
+        appState.hasOtherWindow = true;
+        this.updateOtherWindowAppState(otherWindow, _.without(shareAppStateFields, 'config', 'userData'));
+        await otherWindow.appWrapper.initialize();
+        this.updateOtherWindowAppState(otherWindow, shareAppStateFields);
+        if (otherWindow._nwAdditionalOptions && otherWindow._nwAdditionalOptions.title) {
+            otherWindow.appState.appInfo.name += ' - ' + otherWindow._nwAdditionalOptions.title;
+        }
+        // otherWindow._postMessageMethods = [];
+        // otherWindow._postMessageMethods.push({
+        //     event: 'config:change',
+        //     method: () => {
+        //         otherWindow.postMessage({
+        //             message: 'Config changed',
+        //             data: {
+        //                 appState: {
+        //                     config: appState.config
+        //                 }
+        //             }
+        //         }, '*');
+        //     }
+        // });
+        otherWindow.focus();
+        return otherWindow;
     }
 }
 exports.AppWrapper = AppWrapper;

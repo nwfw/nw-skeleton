@@ -1,7 +1,7 @@
 <div class="window-controls-wrapper">
 	<span class="window-controls window-controls-info" v-if="config.controls.appInfo">
 		<transition name="width">
-			<span class="window-control-wrapper" v-if="!(appState.status.appShuttingDown || !appState.status.appInitialized)">
+			<span class="window-control-wrapper window-control-wrapper-app-info" v-if="!(appState.status.appShuttingDown || !appState.status.appInitialized)">
 				<a :title="translate('App info')" class="window-control window-control-app-info" @click.prevent="callViewHandler" data-click-handler="showAppInfo">
 					<span data-event-target="parent" class="fa fa-info-circle"></span>
 				</a>
@@ -179,7 +179,7 @@
 
 	<span class="window-controls window-controls-window" v-bind:class="{'window-control-hidden': appState.status.appShuttingDown || !appState.status.appInitialized}" v-if="config.controls.moveWindow">
 		<transition name="width">
-			<span class="window-control-wrapper" v-if="!appState.windowState.maximized && !appState.windowState.fullscreen && !(appState.status.appShuttingDown || !appState.status.appInitialized)">
+			<span class="window-control-wrapper window-control-wrapper-move" v-if="!appState.windowState.maximized && !appState.windowState.fullscreen && !(appState.status.appShuttingDown || !appState.status.appInitialized)">
 				<a :title="translate('Move window')" class="window-control window-control-move" v-bind:class="{'window-control-moving': appState.status.movingWindow}" v-on:mousedown="callViewHandler" data-mousedown-handler="windowManager.moveWindowMousedown" v-on:mouseup="callViewHandler" data-mouseup-handler="windowManager.moveWindowMouseup">
 					<span data-event-target="parent" class="fa fa-arrows"></span>
 				</a>
@@ -189,7 +189,7 @@
 
 	<span class="window-controls window-controls-main">
 		<transition name="fade-preset">
-			<span class="window-control-wrapper" v-if="appState.config.appConfig.allowFullscreen && !appState.status.appShuttingDown && config.controls.toggleFullscreen">
+			<span class="window-control-wrapper window-control-wrapper-fullscreen" v-if="appState.config.appConfig.allowFullscreen && !appState.status.appShuttingDown && config.controls.toggleFullscreen">
 				<a :title="appState.windowState.fullscreen ? translate('Exit full screen') : translate('Enter full screen')" class="window-control window-control-fullscreen" @click.prevent="callViewHandler" data-click-handler="windowManager.toggleFullScreen">
 					<transition name="fade" mode="out-in">
 						<span key="expand" v-if="!appState.windowState.fullscreen" data-event-target="parent" class="fa fa-expand"></span>
@@ -199,14 +199,14 @@
 			</span>
 		</transition>
 		<transition name="width">
-			<span class="window-control-wrapper" v-if="!appState.windowState.fullscreen && config.controls.minimizeWindow">
+			<span class="window-control-wrapper window-control-wrapper-minimize" v-if="!appState.windowState.fullscreen && config.controls.minimizeWindow">
 				<a :title="translate('Minimize window')" class="window-control window-control-minimize" @click.prevent="callViewHandler" data-click-handler="windowManager.minimizeWindow">
 					<span data-event-target="parent" class="fa fa-window-minimize"></span>
 				</a>
 			</span>
 		</transition>
 		<transition name="width">
-			<span class="window-control-wrapper" v-if="!appState.windowState.fullscreen && config.controls.maximizeWindow">
+			<span class="window-control-wrapper window-control-wrapper-maximize" v-if="!appState.windowState.fullscreen && config.controls.maximizeWindow">
 				<a :title="!appState.windowState.maximized ? translate('Maximize window'): translate('Restore window')" class="window-control" :class="{'window-control-maximize' : !appState.windowState.maximized, 'window-control-restore': appState.windowState.maximized}" @click.prevent="callViewHandler" data-click-handler="windowManager.toggleMaximize">
 				<transition name="width">
 					<span key="maximize" data-event-target="parent" class="fa fa-window-maximize" v-if="!appState.windowState.maximized"></span>
@@ -216,7 +216,7 @@
 			</span>
 		</transition>
 		<transition name="width">
-			<span class="window-control-wrapper" v-if="!(appState.preventClose || appState.status.appShuttingDown) && config.controls.closeWindow">
+			<span class="window-control-wrapper window-control-wrapper-close" v-if="!(appState.preventClose || appState.status.appShuttingDown) && config.controls.closeWindow">
 				<a :title="translate('Close window')" class="window-control window-control-destructive window-control-close " @click.prevent="callViewHandler" data-click-handler="windowManager.closeWindow">
 					<span data-event-target="parent" class="fa fa-remove"></span>
 				</a>

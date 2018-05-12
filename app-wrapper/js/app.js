@@ -72,7 +72,7 @@ class App extends AppBaseClass {
         if (!this.initialized){
             await super.initialize();
             this.addUserMessage('Initializing application', 'info');
-            if (!appState.isDebugWindow){
+            if (!(appState.isDebugWindow || appState.notMainWindow)){
                 setTimeout(() => {
                     _appWrapper.resetAppStatus();
                 }, 400);
@@ -106,7 +106,7 @@ class App extends AppBaseClass {
         let returnValue = true;
         this.addUserMessage('Finalizing application', 'debug', []);
         if (!this.finalized){
-            if (!appState.isDebugWindow){
+            if (!(appState.isDebugWindow || appState.notMainWindow)){
                 await this.finalizeSubFiles();
             } else {
                 returnValue = true;

@@ -181,6 +181,7 @@ exports.config = {
             height: null,
             fullscreen: false,
         },
+        subWindowConfigs: {},
 
         themeBaseDir: './app/css/themes',
 
@@ -623,6 +624,8 @@ exports.config = {
         gray: '\x1B[0;37m',
         reset: '\x1B[0m'
     },
+
+    newWindowInitTimeoutDuration: 30000,
 
     windowCloseTimeoutDuration: 15000,
     windowReloadTimeoutDuration: 15000,

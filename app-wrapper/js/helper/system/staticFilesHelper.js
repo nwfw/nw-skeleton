@@ -5,7 +5,7 @@
  */
 
 const _ = require('lodash');
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const postcssUrl = require('postcss-url');
@@ -378,20 +378,41 @@ class StaticFilesHelper extends AppBaseClass {
     }
 
     /**
+     * Removes initial CSS files, matching selector from parameter
+     *
+     * @param  {String} selector Selector for initial css files (default 'link[data-initial-style="1"]')
+     *
+     * @return {undefined}
+     */
+    removeInitialCssTags(selector = 'link[data-initial-style="1"]') {
+        let stylesToRemove = document.querySelectorAll(selector);
+        if (stylesToRemove && stylesToRemove.length) {
+            this.log('Removing {1} initial CSS tags', 'info', [stylesToRemove.length]);
+            for (let i=0; i<stylesToRemove.length; i++) {
+                stylesToRemove[i].parentNode.removeChild(stylesToRemove[i]);
+            }
+        } else {
+            this.log('No initial CSS tags to remove', 'info', []);
+        }
+    }
+
+    /**
      * Adds css files to head
      *
      * @async
      * @param {string[]}    cssFiles An array of css files to add
      * @param {Boolean}     noWatch  Flag to prevent filesystem watching of compiled files
      * @param {Boolean}     silent   Flag to prevent logging output
-     * @return {undefined}
+     * @return {Boolean}             True if successful, false if any of files fail
      */
     async addCssFiles(cssFiles, noWatch, silent){
+        let result = true;
         if (cssFiles && cssFiles.length){
             for (let i=0; i<cssFiles.length; i++){
-                await this.addCss(cssFiles[i], noWatch, silent);
+                result = result && await this.addCss(cssFiles[i], noWatch, silent);
             }
         }
+        return result;
     }
 
     /**
@@ -404,7 +425,7 @@ class StaticFilesHelper extends AppBaseClass {
      */
     async writeCss(filePath, cssContents){
         await _appWrapper.fileManager.createDirRecursive(path.dirname(filePath));
-        fs.writeFileSync(filePath, cssContents, {flag: 'w'});
+        await _appWrapper.fileManager.writeFileSync(filePath, cssContents, {flag: 'w'});
     }
 
     /**

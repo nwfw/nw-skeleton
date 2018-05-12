@@ -625,7 +625,8 @@ class AppTranslations extends AppBaseClass {
                 _appWrapper.mainWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.mainWindow.app, selectedName, selectedCode, selectedLocale, true);
             } else if (!skipOtherWindow && appState.hasDebugWindow){
                 this.addUserMessage('Changing language in debug window to "{1}".', 'info', [selectedName], false, false, true);
-                _appWrapper.debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(_appWrapper.debugWindow.app, selectedName, selectedCode, selectedLocale, true);
+                let debugWindow = _appWrapper.getSubWindow('debugWindow');
+                debugWindow.getAppWrapper().appTranslations.doChangeLanguage.call(debugWindow.app, selectedName, selectedCode, selectedLocale, true);
             }
             _appWrapper.reinitializeAppMenu();
             _appWrapper.reinitializeTrayIcon();

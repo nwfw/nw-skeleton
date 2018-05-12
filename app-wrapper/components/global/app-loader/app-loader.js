@@ -23,8 +23,20 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'app-loader',
     template: '',
+    props: ['title'],
     data: function () {
         return appState.appInfo;
+    },
+    methods: {
+        getTitle() {
+            if (this.title){
+                return this.title;
+            } else if (appState.mainLoaderTitle){
+                return appState.mainLoaderTitle;
+            } else {
+                return '';
+            }
+        }
     },
     computed: {
         appState: function(){

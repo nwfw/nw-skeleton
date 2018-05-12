@@ -205,6 +205,24 @@ var MixinWrapperMethods  = {
          */
         round: function(value, decimals){
             return _.round(value, decimals);
+        },
+
+        /**
+         * Checks whether current window is subwindow
+         *
+         * @return {Boolean} True if subwindow, false otherwise
+         */
+        isSubWindow(){
+            return window.subWindowId ? true : false;
+        },
+
+        /**
+         * Gets current subwindow id
+         *
+         * @return {String|null} Subwindow id or null if none
+         */
+        getSubWindowId(){
+            return window.subWindowId ? window.subWindowId : null;
         }
 
     }

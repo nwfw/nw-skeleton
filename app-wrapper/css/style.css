@@ -25,8 +25,12 @@ body.nw-body {
 }
 
 body.nw-body.nw-body-debug {
-	transition: none;
-	opacity: 1;
+	/*transition: none;*/
+	/*opacity: 1;*/
+}
+
+body.nw-not-main-body {
+    opacity: 0.5;
 }
 
 body.nw-body-initialized {

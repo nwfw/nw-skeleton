@@ -11,7 +11,7 @@
                 <span class="app-loader-spinner fa fa-spin fa-circle-o-notch"></span>
             </div>
         <div class="nw-app-wrapper">
-            <app-window ref="appWindow" v-bind:is-debug="true" v-if="appState.status.appInitialized"></app-window>
+            <app-window ref="appWindow" v-if="appState.status.appInitialized"></app-window>
             <modal-dialog ref="modalDialog" v-if="appState.status.appInitialized"></modal-dialog>
         </div>
     </body>

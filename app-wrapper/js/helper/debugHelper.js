@@ -58,28 +58,47 @@ class DebugHelper extends AppBaseClass {
      */
     openDebugWindow (){
         this.log('Opening standalone debug window', 'info', []);
-        _appWrapper.debugWindow = _appWrapper.windowManager.openNewWindow(this.getConfig('debug.debugWindowFile'), {
-            id: 'debugWindow',
-            frame: false
+        let debugWindowId = 'debugWindow';
+        appState.hasDebugWindow = true;
+        _appWrapper.openNewWindow(this.getConfig('debug.debugWindowFile'), debugWindowId, {
+            frame: false,
+            transparent: true,
+            focus: true,
+        }, {
+            title: 'debug'
+        }, {
+            loaded: async () => {
+                let debugWindow = _appWrapper.getSubWindow(debugWindowId);
+                try {
+                    await _appWrapper.initializeOtherWindow(debugWindow);
+                    debugWindow.appState.mainLoaderTitle = this.translate('Please wait');
+                    debugWindow.appState.hasDebugWindow = false;
+                    debugWindow.appState.isDebugWindow = true;
+                    await _appWrapper.prepareOtherWindow(debugWindow, ['config', 'debugMessages', 'allDebugMessages', '']);
+                    debugWindow.appState.hasDebugWindow = false;
+                    debugWindow.appState.isDebugWindow = true;
+                    debugWindow.appWrapper.getHelper('html').addClass(debugWindow.document.body, 'debug-window-initialized');
+                    debugWindow.appState.debugWindowInitialized = true;
+                } catch (ex) {
+                    debugWindow.appState.appError.messages = 'debug';
+                    debugWindow.appState.appError.text = ex.message;
+                    debugWindow.appState.appError.error = true;
+                }
+            },
+            close: async () => {
+                let debugWindow = _appWrapper.getSubWindow(debugWindowId);
+                if (debugWindow.appState.debugMessages){
+                    appState.debugMessages = _.cloneDeep(debugWindow.appState.debugMessages);
+                    appState.allDebugMessages = _.cloneDeep(debugWindow.appState.allDebugMessages);
+                    appState.hasDebugWindow = false;
+                }
+                await _appWrapper.destroyOtherWindow(debugWindow);
+                this.log('Closing standalone debug window', 'info', []);
+                debugWindow.close();
+                this.addUserMessage('Debug window closed', 'info', [], false,  false);
+            }
         });
         this.addUserMessage('Debug window opened', 'info', [], false,  false);
-    }
-
-    /**
-     * Prepares standalone debug window data and references to main window data
-     *
-     * @async
-     * @return {window} Reference to debug window
-     */
-    async prepareDebugWindow () {
-        _appWrapper.debugWindow.appState = _.cloneDeep(appState);
-        _appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
-        _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
-        _appWrapper.debugWindow.appState.hasDebugWindow = false;
-        _appWrapper.debugWindow.appState.config = appState.config;
-        _appWrapper.debugWindow.document.body.className += ' nw-body-initialized';
-        appState.hasDebugWindow = true;
-        return _appWrapper.debugWindow;
     }
 
     /**
@@ -123,9 +142,10 @@ class DebugHelper extends AppBaseClass {
         } else {
             appState.allDebugMessages = [];
             appState.debugMessages = [];
-            if (appState.hasDebugWindow){
-                _appWrapper.debugWindow.appState.allDebugMessages = appState.allDebugMessages;
-                _appWrapper.debugWindow.appState.debugMessages = appState.debugMessages;
+            let debugWindow = _appWrapper.getSubWindow('debugWindow');
+            if (debugWindow){
+                debugWindow.appState.allDebugMessages = appState.allDebugMessages;
+                debugWindow.appState.debugMessages = appState.debugMessages;
             }
         }
         this.addUserMessage('Debug messages cleared', 'debug', []);

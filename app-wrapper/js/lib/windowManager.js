@@ -72,17 +72,22 @@ class WindowManager extends AppBaseClass {
 
         this.ignoreResize = false;
 
-        this.initWinState();
+        this.initializeScreen();
     }
 
     /**
      * Initializes WindowManager object
      *
      * @async
+     *
+     * @param {Object} stateOverrides Overrides for window state
+     *
      * @return {WindowManager} Instance of WindowManager class
      */
-    async initialize(){
+    async initialize(stateOverrides = {}){
         await super.initialize();
+        this.log('Initializing window manager', 'info', []);
+        this.initWinState(stateOverrides);
         await this.initWindow();
         this.addEventListeners();
         return this;
@@ -150,8 +155,17 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     winStateChanged (data) {
-        this.log('WindowManager: winState changed listener: "{1}" to "{2}"', 'debug', [data.name, data.value]);
-        appState.windowState[data.name] = data.value;
+        let winState = this.getWindowState();
+        this.log('WindowManager: winState changed listener: "{1}" from "{2}" to "{3}"', 'debug', [data.name, winState[data.name], data.value]);
+        if (winState[data.name] != data.value) {
+            winState[data.name] = data.value;
+            let userDataHelper = _appWrapper.getHelper('userData');
+            if (userDataHelper && userDataHelper.saveUserData) {
+                userDataHelper.saveUserData(appState.userData);
+            }
+            this.saveWindowConfig();
+            this.saveWinState();
+        }
     }
 
     /**
@@ -168,9 +182,10 @@ class WindowManager extends AppBaseClass {
             this.winState.minimized = false;
             this.propagateChange.minimized = true;
         }
-        if (appState && appState.length && appState.windowState && appState.windowState.length){
-            appState.windowState.minimized = false;
-            appState.windowState.maximized = false;
+        let winState = this.getWindowState();
+        if (winState && _.isObject(winState)){
+            winState.minimized = false;
+            winState.maximized = false;
         }
     }
 
@@ -181,106 +196,111 @@ class WindowManager extends AppBaseClass {
      * @return {boolean} Window initialization result
      */
     async initWindow () {
+        this.log('Initializing window', 'info', []);
         var returnPromise;
         var resolveReference;
         returnPromise = new Promise((resolve) => {
             resolveReference = resolve;
         });
-        nw.Screen.Init();
-        this.screenWidth = nw.Screen.screens[0].bounds.width;
-        this.screenHeight = nw.Screen.screens[0].bounds.height;
-        var appW = parseInt(this.screenWidth * 0.50, 10);
-        var appH = parseInt(this.screenHeight * 0.66, 10);
-        var windowPosition = 'center';
-        var windowLeft;
-        var windowTop;
+        let winState = this.getWinState();
 
-        if (appState.isDebugWindow){
-            appW = 550;
-            appH = 400;
-            windowPosition = '';
+        if (!winState.devTools){
+            this.win.closeDevTools();
+            appState.status.devToolsOpened = false;
         } else {
-            if (appState.config.appConfig.windowConfig){
-                if (appState.config.appConfig.windowConfig.width){
-                    appW = appState.config.appConfig.windowConfig.width;
-                }
-                if (appState.config.appConfig.windowConfig.height){
-                    appH = appState.config.appConfig.windowConfig.height;
-                }
-                if (appState.config.appConfig.windowConfig.left){
-                    windowLeft = appState.config.appConfig.windowConfig.left;
-                }
-                if (appState.config.appConfig.windowConfig.top){
-                    windowTop = appState.config.appConfig.windowConfig.top;
-                }
-            }
+            this.win.showDevTools();
+            appState.status.devToolsOpened = true;
         }
+        this.win.moveTo(Math.round(winState.x), Math.round(winState.y));
+        this.win.resizeTo(winState.width, winState.height);
 
         if (appState.config.debug.enabled){
             this.document.body.className = this.document.body.className + ' nw-body-debug';
         }
 
         setTimeout(() => {
-            this.winState.width = appW;
-            this.winState.height = appH;
-            if (appState.config.debug.enabled){
-                if (appState.isDebugWindow){
-                    this.winState.x = 0;
-                    this.winState.y = 0;
-                } else {
-                    if (windowLeft && windowTop){
-                        this.winState.x = windowLeft;
-                        this.winState.y = windowTop;
-                    } else {
-                        this.winState.x = this.screenWidth - (this.winState.width + 5);
-                    }
-                    // if (this.getConfig('appConfig.windowConfig.fullscreen') != this.winState.fullscreen){
-                    //     this.win.toggleFullscreen();
-                    // }
-                }
-                // this.document.body.className = this.document.body.className + ' nw-body-initialized';
-                // this.win.focus();
-                // this.window.focus();
-            } else {
-                if (appState.isDebugWindow){
-                    this.winState.x = 0;
-                    this.winState.y = 0;
-                } else {
-                    if (windowLeft && windowTop){
-                        this.winState.x = windowLeft;
-                        this.winState.y = windowTop;
-                    } else {
-                        if (windowPosition){
-                            this.winState.position = windowPosition;
-                        } else {
-                            this.winState.x = this.screenWidth - (this.winState.width + 5);
-                        }
-                    }
-                    // if (this.getConfig('appConfig.windowConfig.fullscreen') != this.winState.fullscreen){
-                    //     this.win.toggleFullscreen();
-                    // }
-                }
-            }
             this.document.body.className = this.document.body.className + ' nw-body-initialized';
+            this.log('Window initialized', 'info', []);
             resolveReference(true);
         }, 200);
         return returnPromise;
     }
 
     /**
-     * Initializes winState object
+     * Initializes nw.screen
      *
      * @return {undefined}
      */
-    initWinState () {
+    initializeScreen() {
+        this.log('Initializing screen', 'debug', []);
+        if (this.screenWidth == null) {
+            nw.Screen.Init();
+            this.screenWidth = nw.Screen.screens[0].bounds.width;
+            this.screenHeight = nw.Screen.screens[0].bounds.height;
+        }
+    }
+
+    /**
+     * Returns initial state for window (loaded from user data or default if no saved state present)
+     *
+     * @return {Object} Window inital state object with width, height, x and y properties
+     */
+    getWindowInitialState(){
+        let initialState = {
+            width: parseInt(this.screenWidth * 0.50, 10),
+            height: parseInt(this.screenHeight * 0.66, 10),
+            x: 0,
+            y: 0
+        };
+
+        let windowConfig;
+
+        if (window.subWindowId){
+            if (appState.config.appConfig.subWindowConfigs && appState.config.appConfig.subWindowConfigs[window.subWindowId]){
+                windowConfig = appState.config.appConfig.subWindowConfigs[window.subWindowId];
+            }
+        } else {
+            windowConfig = appState.config.appConfig.windowConfig;
+        }
+
+        if (windowConfig) {
+            if (windowConfig.width){
+                initialState.width = windowConfig.width;
+            }
+            if (windowConfig.height){
+                initialState.height = windowConfig.height;
+            }
+            if (windowConfig.left){
+                initialState.x = windowConfig.left;
+            }
+            if (windowConfig.top){
+                initialState.y = windowConfig.top;
+            }
+        }
+        return initialState;
+    }
+
+    /**
+     * Initializes winState object
+     *
+     * @param {Object} stateOverrides Overrides for window state
+     *
+     * @return {undefined}
+     */
+    initWinState (stateOverrides = {}) {
+        this.log('Initializing window state', 'info', []);
+        let initialState = this.getWindowInitialState();
         var self = this;
+        if (!(stateOverrides && _.isObject(stateOverrides))){
+            stateOverrides = {};
+        }
 
         var propertiesEnumerable = true;
         var propertiesConfigurable = false;
 
         var localState = {
             title: '',
-            position: '',
+            position: null,
             x: 0,
             y: 0,
             maximized: false,
@@ -295,9 +315,11 @@ class WindowManager extends AppBaseClass {
             kiosk: false,
             frame: false,
             fullscreen: false,
-            width: 0,
-            height: 0
+            width: 550,
+            height: 900
         };
+
+        _.extend(localState, initialState, stateOverrides);
 
         this.listeningStatus = {};
         this.propagateChange = {};
@@ -623,13 +645,10 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     minimizeWindow (e) {
+        this.log('Toggling window minimized', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
-        // this.propagateChange.maximized = false;
-        // this.winState.maximized = false;
-        // this.propagateChange.maximized = true;
-
         this.winState.minimized = !this.winState.minimized;
     }
 
@@ -640,6 +659,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     toggleMaximize (e) {
+        this.log('Toggling window maximized', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
@@ -693,8 +713,10 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         if (appState.preventReload){
+            this.log('Window reload prevented due to appState.preventReload', 'warning', []);
             return false;
         }
+        this.log('Reloading window', 'info', []);
 
         if (!force){
             this.win.window.getAppWrapper().beforeUnload();
@@ -715,6 +737,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     toggleDevTools (e) {
+        this.log('Toggling window devtools', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
@@ -728,12 +751,12 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     toggleFullScreen (e) {
+        this.log('Toggling window fullscreen', 'info', []);
         if (e && e.preventDefault && _.isFunction(e.preventDefault)){
             e.preventDefault();
         }
         this.ignoreResize = true;
         this.winState.fullscreen =! this.winState.fullscreen;
-        // _appWrapper.appConfig.setConfigVar('appConfig.windowConfig.fullscreen', this.winState.fullscreen);
     }
 
     /**
@@ -747,7 +770,10 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         if (!appState.preventClose){
+            this.log('Closing window', 'info', []);
             this.win.close();
+        } else {
+            this.log('Not closing window due to appState.preventClose flag', 'warning', []);
         }
     }
 
@@ -762,7 +788,10 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         if (!appState.preventClose){
+            this.log('Closing window (forced)', 'info', []);
             this.win.close(true);
+        } else {
+            this.log('Not (force) closing window due to appState.preventClose flag', 'warning', []);
         }
     }
 
@@ -787,6 +816,7 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         appState.status.movingWindow = true;
+        this.log('Entering window move mode', 'info', []);
         this.window.addEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.addEventListener('mouseup', this.boundMethods.moveWindowMouseup);
     }
@@ -802,6 +832,7 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         appState.status.movingWindow = false;
+        this.log('Exiting window move mode', 'info', []);
         this.window.removeEventListener('mousemove', this.boundMethods.dragWindow);
         this.window.removeEventListener('mouseup', this.boundMethods.moveWindowMouseup);
         this.windowPositionSizeUpdated();
@@ -843,13 +874,14 @@ class WindowManager extends AppBaseClass {
     /**
      * Opens new window - see {@link http://docs.nwjs.io/en/latest/References/Window/#windowopenurl-options-callback}
      *
-     * @param  {string} url     Url to open
-     * @param  {Object} options New window options
-     * @return {window}         Reference to new window
+     * @param  {string}     url         Url to open
+     * @param  {Object}     options     New window options
+     * @param  {Function}   callback    Callback called with 'win' param
+     * @return {window}                 Reference to new window
      */
-    openNewWindow(url, options){
-        window._newWindow = nw.Window.open(url, options);
-        return window._newWindow;
+    openNewWindow(url, options, callback){
+        let newWindow = nw.Window.open(url, options, callback);
+        return newWindow;
     }
 
     /**
@@ -868,6 +900,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     windowResize () {
+        this.log('Handling window resize', 'info', []);
         clearTimeout(this.timeouts.resize);
         this.timeouts.resize = setTimeout( () => {
             if (!this.ignoreResize){
@@ -884,16 +917,34 @@ class WindowManager extends AppBaseClass {
     /**
      * Handler called when window position or size are updated. Saves current position and/or size to userConfig
      *
+     * @param {Boolean} clearResize Clear resize timeout flag
      * @return {undefined}
      */
-    windowPositionSizeUpdated () {
-        clearTimeout(this.timeouts.resize);
+    windowPositionSizeUpdated (clearResize = false) {
+        if (clearResize) {
+            clearTimeout(this.timeouts.resize);
+        }
         let newWidth = window.outerWidth;
         let newHeight = window.outerHeight;
         let newLeft = window.screenLeft;
         let newTop = window.screenTop;
         if (appState.status.appInitialized && !this.winState.fullscreen && !this.winState.maximized){
-            let config = _.cloneDeep(appState.config.appConfig.windowConfig);
+            let config;
+            if (window.subWindowId) {
+                if (appState.config.appConfig.subWindowConfigs[window.subWindowId]) {
+                    config = _.cloneDeep(appState.config.appConfig.subWindowConfigs[window.subWindowId]);
+                } else {
+                    config = {
+                        left: null,
+                        top: null,
+                        width: null,
+                        height: null,
+                        fullscreen: false,
+                    };
+                }
+            } else {
+                config = _.cloneDeep(appState.config.appConfig.windowConfig);
+            }
             let configChanged = false;
             if (newWidth && newWidth > 100){
                 config.width = newWidth;
@@ -903,16 +954,136 @@ class WindowManager extends AppBaseClass {
                 config.height = newHeight;
                 configChanged = true;
             }
-            if (newLeft && newLeft > 0){
+            if ((newLeft && newLeft > 0) || newLeft == 0) {
                 config.left = newLeft;
                 configChanged = true;
             }
-            if (newTop && newTop > 0){
+            if ((newTop && newTop > 0) || newTop == 0) {
                 config.top = newTop;
                 configChanged = true;
             }
             if (configChanged){
-                appState.config.appConfig.windowConfig = config;
+                if (!window.subWindowId) {
+                    appState.config.appConfig.windowConfig = config;
+                } else {
+                    appState.config.appConfig.subWindowConfigs[window.subWindowId] = config;
+                }
+                this.saveWindowConfig();
+            }
+
+        }
+    }
+
+    /**
+     * Handler called when window position or size are updated. Saves current position and/or size to userConfig
+     *
+     * @return {undefined}
+     */
+    saveWindowConfig () {
+        this.log('Saving window configuration', 'info', []);
+        let newWidth = window.outerWidth;
+        let newHeight = window.outerHeight;
+        let newLeft = window.screenLeft;
+        let newTop = window.screenTop;
+        if (appState.status.appInitialized && !this.winState.fullscreen && !this.winState.maximized){
+            let config = this.getWindowConfig();
+            let configChanged = false;
+            if (newWidth && newWidth > 100){
+                config.width = newWidth;
+                configChanged = true;
+            }
+            if (newHeight && newHeight > 100){
+                config.height = newHeight;
+                configChanged = true;
+            }
+            if ((newLeft && newLeft > 0) || newLeft == 0) {
+                config.left = newLeft;
+                configChanged = true;
+            }
+            if ((newTop && newTop > 0) || newTop == 0) {
+                config.top = newTop;
+                configChanged = true;
+            }
+            if (configChanged){
+                this.setWindowConfig(config);
+            }
+            _appWrapper.appConfig.saveUserConfig();
+
+        }
+    }
+
+    /**
+     * Returns current window configuration if saved or default values if not
+     *
+     * @return {Object} Window config object with left, top, width, height and fullscreen properties
+     */
+    getWindowConfig () {
+        let config;
+        if (window.subWindowId) {
+            if (appState.config.appConfig.subWindowConfigs[window.subWindowId]) {
+                config = _.cloneDeep(appState.config.appConfig.subWindowConfigs[window.subWindowId]);
+            } else {
+                config = {
+                    left: null,
+                    top: null,
+                    width: null,
+                    height: null,
+                    fullscreen: false,
+                };
+            }
+        } else {
+            config = _.cloneDeep(appState.config.appConfig.windowConfig);
+        }
+        return config;
+    }
+
+    /**
+     * Sets window configuration for current window
+     *
+     * @param {Object}  config   Window config object with left, top, width, height and fullscreen properties
+     *
+     * @return {undefined}
+     */
+    setWindowConfig (config) {
+        if (!window.subWindowId) {
+            appState.config.appConfig.windowConfig = config;
+        } else {
+            appState.config.appConfig.subWindowConfigs[window.subWindowId] = config;
+        }
+    }
+
+    /**
+     * Handler called when window position or size are updated. Saves current position and/or size to userConfig
+     *
+     * @return {undefined}
+     */
+    saveWinState () {
+        this.log('Saving window state', 'info', []);
+        let newWidth = window.outerWidth;
+        let newHeight = window.outerHeight;
+        let newLeft = window.screenLeft;
+        let newTop = window.screenTop;
+        if (appState.status.appInitialized && !this.winState.fullscreen && !this.winState.maximized){
+            let winState = this.getWinState();
+            let winStateChanged = false;
+            if (winState.width != newWidth) {
+                winState.width = newWidth;
+                winStateChanged = true;
+            }
+            if (winState.height != newHeight) {
+                winState.height = newHeight;
+                winStateChanged = true;
+            }
+            if (winState.y != newTop) {
+                winState.y = newTop;
+                winStateChanged = true;
+            }
+            if (winState.x != newLeft) {
+                winState.x = newLeft;
+                winStateChanged = true;
+            }
+            if (winStateChanged) {
+                this.setWinState(winState);
             }
         }
     }
@@ -923,6 +1094,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     windowBlur (){
+        this.log('Window lost focus', 'debug', []);
         appState.status.windowFocused = false;
         appState.lastWindowBlurTimestamp = this.getHelper('util').getUnixTimestamp();
         _appWrapper.emit('window:blur');
@@ -934,6 +1106,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     windowFocus (){
+        this.log('Window got focus', 'debug', []);
         appState.status.windowFocused = true;
         appState.lastWindowFocusTimestamp = this.getHelper('util').getUnixTimestamp();
         _appWrapper.emit('window:focus');
@@ -954,6 +1127,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     showWindow () {
+        this.log('Showing window', 'debug', []);
         this.win.show();
         this.focusWindow();
     }
@@ -964,6 +1138,7 @@ class WindowManager extends AppBaseClass {
      * @return {undefined}
      */
     hideWindow () {
+        this.log('Hiding window', 'debug', []);
         this.win.hide();
     }
 
@@ -1014,14 +1189,39 @@ class WindowManager extends AppBaseClass {
     }
 
     /**
-     * Focuses main window
+     * Focuses current window
      *
      * @return {undefined}
      */
     focusWindow () {
+        this.log('Focusing window', 'debug', []);
         this.win.focus();
         this.window.focus();
     }
+
+    /**
+     * Returns window appState object for current window
+     *
+     * @return {Object} AppState object
+     */
+    getWindowState () {
+        let windowState;
+        if (window.subWindowId) {
+            if (!appState.userData.subWindowStates) {
+                appState.userData.subWindowStates = {};
+            }
+            if (appState.userData.subWindowStates[window.subWindowId]) {
+                windowState = appState.userData.subWindowStates[window.subWindowId];
+            } else {
+                windowState = _.cloneDeep(appState.windowStateProto);
+                appState.userData.subWindowStates[window.subWindowId] = windowState;
+            }
+        } else {
+            windowState = appState.windowState;
+        }
+        return windowState;
+    }
+
 }
 
 exports.WindowManager = WindowManager;

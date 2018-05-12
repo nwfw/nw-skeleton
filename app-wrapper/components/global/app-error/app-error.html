@@ -15,11 +15,11 @@
                 </pre>
             </p>
             <transition name="size-height">
-                <div key="userMessages" v-if="messages == 'user'" class="app-error-message-list">
+                <div key="userMessages" v-if="messages && messages == 'user'" class="app-error-message-list">
                     <h3 class="app-error-messages-title" v-html="translate('User messages')"></h3>
                     <message-list v-bind:hide-stacks="true" v-bind:messages="appState.userMessages" v-bind:config="appState.config.userMessages" ref="appErrorUserMessageList"></message-list>
                 </div>
-                <div key="debugMessages" v-else-if="messages == 'debug'" class="app-error-message-list">
+                <div key="debugMessages" v-else-if="messages && messages == 'debug'" class="app-error-message-list">
                     <h3 class="app-error-messages-title" v-html="translate('Debug messages')"></h3>
                     <message-list v-bind:hide-stacks="true" v-bind:messages="appState.debugMessages" v-bind:config="appState.config.debug" ref="appErrorDebugMessageList"></message-list>
                 </div>

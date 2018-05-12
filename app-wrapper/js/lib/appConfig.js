@@ -462,19 +462,20 @@ class AppConfig extends AppBaseClass {
      * @return {undefined}
      */
     async configChanged (oldValue, newValue){
-        if (!appState.isDebugWindow){
+        if (!(appState.isDebugWindow || appState.notMainWindow)){
             await this.asyncMessage({instruction: 'setConfig', data: {config: appState.config}});
-            if (this.watchConfig){
-                let utilHelper = _appWrapper.getHelper('util');
-                let difference = utilHelper.difference(this.previousConfig, newValue);
-                let diffKeys = Object.keys(difference);
-                if (diffKeys && diffKeys.length){
-                    this.log('{1} config variables have changed: "{2}"', 'debug', [diffKeys.length, diffKeys.join(', ')]);
-                    await this.saveUserConfig();
-                }
-            }
-            this.previousConfig = _.cloneDeep(appState.config);
         }
+        if (this.watchConfig){
+            let utilHelper = _appWrapper.getHelper('util');
+            let difference = utilHelper.difference(this.previousConfig, newValue);
+            let diffKeys = Object.keys(difference);
+            if (diffKeys && diffKeys.length){
+                this.log('{1} config variables have changed: "{2}"', 'debug', [diffKeys.length, diffKeys.join(', ')]);
+                await this.saveUserConfig();
+            }
+        }
+        this.previousConfig = _.cloneDeep(appState.config);
+        _appWrapper.emit('config:change');
     }
 }
 

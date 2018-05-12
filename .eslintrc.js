@@ -40,6 +40,7 @@ module.exports = {
         'nw': true,
         'manifest': true,
         'mainScript': true,
-        'Vue': true
+        'Vue': true,
+        'chrome': true
     }
 };

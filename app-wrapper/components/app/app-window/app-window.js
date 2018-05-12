@@ -23,11 +23,33 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'app-window',
     template: '',
-    props: ['state','isDebug'],
+    props: [
+        'state',
+        'isDebug',
+        'mainComponent'
+    ],
+    mounted: function(){
+        _appWrapper.getHelper('staticFiles').removeInitialCssTags();
+    },
     data: function () {
         return appState.appData;
     },
-    methods: {},
+    methods: {
+        getMainComponent(){
+            if (this.mainComponent) {
+                return this.mainComponent;
+            } else {
+                return appState.config.appConfig.mainComponent;
+            }
+        },
+        getTransitionName(){
+            if (this.isDebug) {
+                return 'notransition';
+            } else {
+                return 'fade';
+            }
+        }
+    },
     watch: {},
     computed: {
         appState: function(){

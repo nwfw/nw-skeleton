@@ -22,12 +22,9 @@ const _ = require('lodash');
 
 
 let getTooltip = function(identifier){
-    let tooltips = document.querySelectorAll('.nw-tooltip-wrapper');
-    for(let i=0; i<tooltips.length; i++){
-        let tooltip = tooltips[i];
-        if (tooltip.getAttribute('data-tooltip-identifier') == identifier){
-            return tooltip;
-        }
+    let tooltips = document.querySelectorAll('.nw-tooltip-wrapper[data-tooltip-identifier=' + identifier + ']');
+    if (tooltips && tooltips.length) {
+        return tooltips[0];
     }
 };
 

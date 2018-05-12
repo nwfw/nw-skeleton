@@ -116,9 +116,9 @@ class UserDataHelper extends AppBaseClass {
         }
         if (!omitSettingAppState){
             appState.userData = _.cloneDeep(userData);
+            this.previousUserData = _.cloneDeep(userData);
         }
         this.log('Loading user data', 'groupend', []);
-        this.previousUserData = _.cloneDeep(userData);
         return userData;
     }
 

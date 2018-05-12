@@ -1018,5 +1018,9 @@ class AppBaseClass extends BaseClass {
         return this.getConfig('debug.enabled', false);
     }
 
+    async logSavedUserData (force = false) {
+        this.log(await this.getHelper('userData').loadUserData(true), 'info', [], force);
+    }
+
 }
 exports.AppBaseClass = AppBaseClass;
