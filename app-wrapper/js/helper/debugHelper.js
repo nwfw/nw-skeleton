@@ -65,7 +65,8 @@ class DebugHelper extends AppBaseClass {
             transparent: true,
             focus: true,
         }, {
-            title: 'debug'
+            name: appState.appInfo.name + ' debug',
+            nameVars: []
         }, {
             loaded: async () => {
                 let debugWindow = _appWrapper.getSubWindow(debugWindowId);

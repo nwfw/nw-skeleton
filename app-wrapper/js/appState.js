@@ -284,7 +284,12 @@ exports.appState = {
 
     availableThemes: [],
 
-    appInfo: {},
+    appInfo: {
+        name: '',
+        description: '',
+        nameVars: [],
+        descriptionVars: []
+    },
     progressData: {
         animated: true,
         inProgress: false,

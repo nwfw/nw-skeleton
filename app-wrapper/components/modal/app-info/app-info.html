@@ -3,20 +3,20 @@
         <span class="fa fa-info-circle"></span>
         {{ translate('Application data') }}
     </li>
-    <li class="app-info-list-item" v-if="appState.config.appInfo.name">
+    <li class="app-info-list-item" v-if="appState.appInfo.name">
         <span class="app-info-list-item-name">
             {{ translate('Application name') }}
         </span>
         <span class="app-info-list-item-value">
-            {{ appState.config.appInfo.name }}
+            {{ appState.appInfo.name }}
         </span>
     </li>
-    <li class="app-info-list-item" v-if="appState.config.appInfo.description">
+    <li class="app-info-list-item" v-if="appState.appInfo.description">
         <span class="app-info-list-item-name">
             {{ translate('Application description') }}
         </span>
         <span class="app-info-list-item-value">
-            {{ appState.config.appInfo.description }}
+            {{ appState.appInfo.description }}
         </span>
     </li>
     <li class="app-info-list-item" v-if="appState.manifest.version">

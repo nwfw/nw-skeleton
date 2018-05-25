@@ -11,7 +11,7 @@
 
 	<span class="window-controls window-controls-debug">
 		<transition name="width">
-			<span class="window-control-wrapper window-control-menu-wrapper" v-if="appState.config.debug.enabled && !appState.isDebugWindow && config.controls.debugMenu" data-submenu="debug">
+			<span class="window-control-wrapper window-control-menu-wrapper" v-if="appState.config.debug.enabled && appState.config.debug.devMode && !appState.isDebugWindow && config.controls.debugMenu" data-submenu="debug">
 				<a :title="translate('Debug')" class="window-control window-control-submenu-link window-control-debug" @mouseover="openSubmenu" @mouseout="closeSubmenuIntent" @click.prevent="callViewHandler" data-click-handler="helpers.debugHelper.toggleDebug" v-if="appState.config.debug.enabled && !appState.isDebugWindow">
 					<span class="fa fa-bug"></span>
 				</a>

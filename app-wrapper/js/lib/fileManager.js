@@ -859,7 +859,7 @@ class FileManager extends AppBaseClass {
                 if (notSilent) {
                     this.log('Problem loading file (does not exist) "{1}" from "{2}".', 'error', [fileName, directory]);
                 }
-                throw new Error('Problem loading file (does not exist).');
+                throw new Error('Problem loading file ' + directory + '/' + fileName + ' (does not exist).');
             }
         } else {
             try {

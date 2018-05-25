@@ -734,6 +734,7 @@ class FormatHelper extends AppBaseClass {
                 }
             }
         }
+        // value = Number(value).toLocaleString('en-US');
         if (negative){
             value = '-' + value;
         }

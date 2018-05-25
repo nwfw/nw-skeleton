@@ -9,7 +9,6 @@ const _ = require('lodash');
 const path = require('path');
 const postcss = require('postcss');
 const postcssUrl = require('postcss-url');
-const postcssNesting = require('postcss-nesting');
 const postcssNext = require('postcss-cssnext');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
@@ -54,6 +53,10 @@ class StaticFilesHelper extends AppBaseClass {
 
         this.watchedFiles = [];
 
+        this.variableNames = [];
+        this.missingVariableNames = [];
+        this.unusedVariableNames = [];
+
         return this;
     }
 
@@ -77,14 +80,15 @@ class StaticFilesHelper extends AppBaseClass {
      * Loads css file, returning its contents
      *
      * @async
-     * @param  {string}     href    Relative or absolute path to css file
-     * @param  {Boolean}    noWatch Flag that prevents file watching
-     * @return {string}             Css file contents
+     * @param  {string}     href        Relative or absolute path to css file
+     * @param  {string}     targetPath  Absolute path to target css file
+     * @param  {Boolean}    noWatch     Flag that prevents file watching
+     * @return {string}                 Css file contents
      */
-    async loadCss (href, noWatch) {
+    async loadCss (href, targetPath, noWatch) {
         let cssFilePath = href;
         let cssContents = '';
-        let compiledCssPath = this.getCompiledCssPath();
+        // let compiledCssPath = this.getCompiledCssPath();
 
 
         if (!await _appWrapper.fileManager.isFile(cssFilePath)){
@@ -96,16 +100,12 @@ class StaticFilesHelper extends AppBaseClass {
 
             if (cssContents){
                 let pcu = postcssUrl({url: this.rebaseAsset});
-                let pcn = postcssNesting();
                 let pcNext = postcssNext({
                     browsers: [
                         'Chrome >= 60'
-                    ],
-                    features: {
-                        nesting: pcn
-                    }
+                    ]
                 });
-                cssContents = await postcss([pcu,pcNext]).process(cssContents, { from: cssFilePath, to: compiledCssPath });
+                cssContents = await postcss([pcu,pcNext]).process(cssContents, { from: cssFilePath, to: targetPath });
             }
 
             if (!noWatch && this.getConfig('liveCss') && this.getConfig('debug.enabled')){
@@ -288,7 +288,9 @@ class StaticFilesHelper extends AppBaseClass {
                 this.log('Problem Rremoving old CSS file "{1}" tag (no link parent node)', 'warning', [links[i].href]);
             }
         }
+        this.allVariables = await this.getAllVariableNames();
         this.detectMissingVariables();
+        this.detectUnusedVariables();
         this.log('Removing old CSS tags', 'groupend', []);
 
     }
@@ -312,7 +314,9 @@ class StaticFilesHelper extends AppBaseClass {
             this.cssFileLoadResolves[cssFile] = null;
             delete this.cssFileLoadResolves[cssFile];
         }
+        this.allVariables = await this.getAllVariableNames();
         this.detectMissingVariables();
+        this.detectUnusedVariables();
         this.log('Preparing css files...', 'groupend', []);
     }
 
@@ -325,6 +329,7 @@ class StaticFilesHelper extends AppBaseClass {
      * @return {undefined}
      */
     async generateCss(noWatch, silent) {
+        await this.cleanupVarDir();
         if (this.getConfig('compileCss')){
             let compiledCss = await this.compileCss(noWatch, silent);
             if (compiledCss) {
@@ -333,7 +338,7 @@ class StaticFilesHelper extends AppBaseClass {
                 await this.writeCss(compiledCssPath, compiledCss);
             }
         } else {
-            var cssFileData = await this.getCssFileData();
+            let cssFileData = await this.getCssFileData();
             if (cssFileData.counts.totalCssFileCount){
                 if (!silent){
                     this.log('Adding {1} CSS files', 'group', [cssFileData.counts.totalCssFileCount]);
@@ -354,20 +359,21 @@ class StaticFilesHelper extends AppBaseClass {
                 let overrideTypes = [
                     'componentCssFiles',
                     'themeOverrideCssFiles',
+                    'overrideCssFiles',
                 ];
 
                 for (let j=0;j<basicTypes.length;j++){
-                    await this.addCssFiles(cssFileData.files[basicTypes[j]], noWatch, silent);
+                    await this.addSourceCssFiles(cssFileData.files[basicTypes[j]], noWatch, silent);
                 }
 
                 if (appState.isDebugWindow){
                     for (let j=0;j<debugTypes.length;j++){
-                        await this.addCssFiles(cssFileData.files[debugTypes[j]], noWatch, silent);
+                        await this.addSourceCssFiles(cssFileData.files[debugTypes[j]], noWatch, silent);
                     }
                 }
 
                 for (let j=0;j<overrideTypes.length;j++){
-                    await this.addCssFiles(cssFileData.files[overrideTypes[j]], noWatch, silent);
+                    await this.addSourceCssFiles(cssFileData.files[overrideTypes[j]], noWatch, silent);
                 }
 
                 if (!silent){
@@ -416,6 +422,32 @@ class StaticFilesHelper extends AppBaseClass {
     }
 
     /**
+     * Adds css files to head
+     *
+     * @async
+     * @param {string[]}    cssFiles An array of css files to add
+     * @param {Boolean}     noWatch  Flag to prevent filesystem watching of compiled files
+     * @param {Boolean}     silent   Flag to prevent logging output
+     * @return {Boolean}             True if successful, false if any of files fail
+     */
+    async addSourceCssFiles(cssFiles, noWatch, silent){
+        let result = true;
+        if (cssFiles && cssFiles.length){
+            for (let i=0; i<cssFiles.length; i++){
+                let cssFilePath = cssFiles[i];
+                if (!await _appWrapper.fileManager.fileExists(cssFilePath)){
+                    cssFilePath = path.resolve(path.join('.' + cssFilePath));
+                }
+                let processedCssPath = this.getProcessedCssPath(cssFilePath);
+                let cssString = await this.loadCss(cssFilePath, processedCssPath, noWatch);
+                await this.writeCss(processedCssPath, cssString);
+                result = result && await this.addCss(processedCssPath, noWatch, silent);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Writes css contents to file from argument
      *
      * @async
@@ -441,6 +473,7 @@ class StaticFilesHelper extends AppBaseClass {
         let appCssFiles = this.getConfig('appConfig.cssFiles') || [];
         let debugCssFiles = this.getConfig('appConfig.debugCssFiles') || [];
         let appDebugCssFiles = this.getConfig('appConfig.appDebugCssFiles') || [];
+        let overrideCssFiles = this.getConfig('appConfig.overrideCssFiles') || [];
         let componentCssFiles = appState.componentCssFiles || [];
 
         initCssFiles = _.uniq(_.compact(initCssFiles));
@@ -460,6 +493,7 @@ class StaticFilesHelper extends AppBaseClass {
         let debugCssFileCount = 0;
         let appDebugCssFileCount = 0;
         let componentCssFileCount = 0;
+        let overrideCssFileCount = 0;
 
         let themeInitCssFileCount = 0;
         let themeCssFileCount = 0;
@@ -510,6 +544,10 @@ class StaticFilesHelper extends AppBaseClass {
             componentCssFileCount = componentCssFiles.length;
         }
 
+        if (overrideCssFiles && overrideCssFiles.length){
+            overrideCssFileCount = overrideCssFiles.length;
+        }
+
         totalCssFileCount += initCssFileCount + appCssFileCount + componentCssFileCount;
 
         if (appState.isDebugWindow){
@@ -525,7 +563,8 @@ class StaticFilesHelper extends AppBaseClass {
                 componentCssFiles,
                 themeInitCssFiles,
                 themeCssFiles,
-                themeOverrideCssFiles
+                themeOverrideCssFiles,
+                overrideCssFiles
             },
             counts: {
                 initCssFileCount,
@@ -536,7 +575,8 @@ class StaticFilesHelper extends AppBaseClass {
                 themeInitCssFileCount,
                 themeCssFileCount,
                 themeOverrideCssFileCount,
-                totalCssFileCount
+                totalCssFileCount,
+                overrideCssFileCount,
             }
         };
 
@@ -579,13 +619,17 @@ class StaticFilesHelper extends AppBaseClass {
         }
         let compiledCss = '';
         let cssFileCount = cssFiles.length;
+        let compiledCssPath = this.getCompiledCssPath();
 
         if (cssFileCount){
             if (!silent){
-                this.log('Compiling {1} {2} CSS files', 'group', [cssFileCount, type]);
+                this.log('Compiling {1} {2} CSS files', 'groupcollapsed', [cssFileCount, type]);
             }
             for (let i=0; i<cssFileCount; i++){
-                let cssResult = await this.loadCss(cssFiles[i], noWatch);
+                if (!silent){
+                    this.log('Compiling {1} CSS file "{2}"', 'info', [type, cssFiles[i]]);
+                }
+                let cssResult = await this.loadCss(cssFiles[i], compiledCssPath, noWatch);
                 if (cssResult && cssResult.css){
                     let cssContents = cssResult.css;
                     compiledCss += cssContents;
@@ -627,6 +671,8 @@ class StaticFilesHelper extends AppBaseClass {
 
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.componentCssFiles, 'component', noWatch, silent);
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeOverrideCssFiles, 'theme override', noWatch, silent);
+
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.overrideCssFiles, 'override', noWatch, silent);
 
             if (!silent){
                 this.log('{1} CSS files compiled, total size: {2}', 'info', [cssFileData.counts.totalCssFileCount, _appWrapper.getHelper('format').formatFileSize(compiledCss.length)]);
@@ -684,7 +730,7 @@ class StaticFilesHelper extends AppBaseClass {
         }
         let jsFileCount = jsFiles.length;
         if (jsFileCount){
-            this.log('Loading {1} {2} JS files', 'group', [jsFileCount, type]);
+            this.log('Loading {1} {2} JS files', 'groupcollapsed', [jsFileCount, type]);
             for (let i=0; i<jsFileCount; i++){
                 let result = await this.loadJs(jsFiles[i]);
                 if (!result){
@@ -825,43 +871,193 @@ class StaticFilesHelper extends AppBaseClass {
     }
 
     /**
+     * Returns an array of absolute paths for all css files
+     *
+     * @async
+     *
+     * @return {String[]} Array of absolute paths to css files
+     */
+    async getAllCssFileAbsolutePaths() {
+        let filePaths = [];
+        let cssFileData = await this.getCssFileData();
+        let files = [];
+        let groupKeys = Object.keys(cssFileData.files);
+        for (let i=0; i<groupKeys.length; i++){
+            files = files.concat(cssFileData.files[groupKeys[i]]);
+        }
+        for (let i=0; i<files.length; i++){
+            let cssFilePath = files[i];
+            if (!await _appWrapper.fileManager.fileExists(cssFilePath)){
+                cssFilePath = path.resolve(path.join('.' + files[i]));
+                if (await _appWrapper.fileManager.fileExists(cssFilePath)){
+                    filePaths.push(cssFilePath);
+                }
+            } else {
+                filePaths.push(cssFilePath);
+            }
+        }
+        return filePaths;
+    }
+
+    /**
      * Detects eventual missing css variables
      *
      * @param  {Boolean} silent Flag to prevent logging
      * @return {string[]}       All missing css variable names
      */
     async detectMissingVariables (silent){
-        let missingVariables = [];
-        if (!this.getConfig('compileCss')){
-            this.log('Missing css variables detection only works with compiled css', 'info');
-        } else {
-            let styleHelper = _appWrapper.getHelper('style');
-            let allVariables = [];
-            let cssString = await this.compileCss(true, true);
-            let matches = cssString.match(/var\((--[^)]+)/g);
-            if (matches){
-                let fixedMatches = _.map(matches, (item) => {
-                    return item.replace(/var\(/gm, '');
-                });
-                allVariables = _.concat(allVariables, fixedMatches);
+        let missingVariableFiles = {};
+        this.missingVariableNames = [];
+        let utilHelper = this.getHelper('util');
+        let appRootRegex = new RegExp(utilHelper.quoteRegex(appState.appRootDir, 'i'));
+        let files = await this.getAllCssFileAbsolutePaths();
+
+        for (let i=0; i<files.length; i++){
+            let cssFilePath = files[i];
+            let relativePath = cssFilePath.replace(appRootRegex, '/');
+            let cssString = await _appWrapper.fileManager.loadFile(cssFilePath);
+            let missingFileVariables = this.detectMissingVariablesString(cssString);
+            if (missingFileVariables && missingFileVariables.length) {
+                this.missingVariableNames = _.uniq(this.missingVariableNames.concat(missingFileVariables));
+                missingVariableFiles[relativePath] = missingFileVariables;
             }
-            allVariables = _.uniq(allVariables);
-            allVariables = allVariables.sort();
-            for (let i=0; i<allVariables.length; i++){
-                let value = styleHelper.getCssVarValue(allVariables[i]);
-                if (!value){
-                    missingVariables.push(allVariables[i]);
-                }
-            }
-            if (!silent){
-                if (missingVariables && missingVariables.length){
-                    this.log('Missing css variables found - "{1}"', 'warning', [missingVariables.join('", "')]);
-                } else {
-                    this.log('No missing css variables found', 'info', []);
+        }
+        let missingVariableData = {};
+        let missingVariableDataNames = [];
+        let fileNames = Object.keys(missingVariableFiles);
+        for (let i=0; i<this.missingVariableNames.length; i++){
+            let varName = this.missingVariableNames[i];
+            for (let j=0; j<fileNames.length; j++) {
+                let fileName = fileNames[j];
+                let fileVars = missingVariableFiles[fileName];
+                if (fileVars && fileVars.length && fileVars.indexOf(varName) !== -1) {
+                    if (!missingVariableData[varName]) {
+                        missingVariableData[varName] = [];
+                    }
+                    missingVariableData[varName].push(fileName);
+                    if (missingVariableDataNames.indexOf(varName) === -1) {
+                        missingVariableDataNames.push(varName);
+                    }
                 }
             }
         }
+        if (!silent && missingVariableDataNames.length) {
+            this.log('{1} missing CSS variables found in {2} files', 'group', [missingVariableDataNames.length, fileNames.length], true);
+            for (let i=0; i<missingVariableDataNames.length; i++){
+                let varName = missingVariableDataNames[i];
+                let message = '{1} css variable missing ';
+                let messageData = [varName];
+                if (missingVariableData[varName].length === 1) {
+                    message += 'in "{2}"';
+                    messageData.push(missingVariableData[varName][0]);
+                } else {
+                    message += 'in files\n\n- {2}';
+                    messageData.push(missingVariableData[varName].join('\n- '));
+                }
+                this.log(message, 'warning', messageData, true);
+            }
+            this.log('{1} missing CSS variables found in {2} files', 'groupend', [missingVariableDataNames.length, fileNames.length], true);
+        }
+        return missingVariableData;
+    }
+
+    /**
+     * Detects eventual missing css variables in css string from argument and returns missing variable names
+     *
+     * @param  {String}  cssString Css styles string
+     * @return {string[]}          All missing css variable names
+     */
+    detectMissingVariablesString (cssString){
+        let allVariables = [];
+        let missingVariables = [];
+        let styleHelper = _appWrapper.getHelper('style');
+        let matches = cssString.match(/var\((--[^)]+)/g);
+        if (matches){
+            let fixedMatches = _.map(matches, (item) => {
+                return item.replace(/var\(/gm, '');
+            });
+            allVariables = _.concat(allVariables, fixedMatches);
+        }
+        allVariables = _.uniq(_.compact(allVariables));
+        allVariables = allVariables.sort();
+        for (let i=0; i<allVariables.length; i++){
+            let value = styleHelper.getCssVarValue(allVariables[i]);
+            if (!value){
+                missingVariables.push(allVariables[i]);
+            }
+        }
         return missingVariables;
+    }
+
+    /**
+     * Returns all CSS variable names
+     *
+     * @return {string[]}       All css variable names
+     */
+    async getAllVariableNames (){
+        let allVariables = [];
+        let cssString = await this.compileCss(true, true);
+        let matches = cssString.match(/(--[\w][^)\s:;]+)/g);
+        if (matches){
+            allVariables = _.uniq(_.compact(matches)).sort();
+        }
+        return allVariables;
+    }
+
+    /**
+     * Detects eventual unused css variables
+     *
+     * @param  {Boolean} silent Flag to prevent logging
+     * @return {string[]}       All unused css variable names
+     */
+    async detectUnusedVariables (silent){
+        this.unusedVariableNames = [];
+        let foundVariables = [];
+        if (!(this.allVariables && this.allVariables.length)) {
+            this.allVariables = await this.getAllVariableNames();
+        }
+        let cssString = await this.compileCss(true, true);
+        let matches = cssString.match(/var\((--[^)]+)/g);
+        if (matches){
+            let fixedMatches = _.map(matches, (item) => {
+                let returnValue = item.replace(/var\(/gm, '');
+                return returnValue;
+            });
+            foundVariables = _.uniq(_.concat(foundVariables, fixedMatches));
+        }
+        this.unusedVariableNames = _.difference(this.allVariables, foundVariables);
+        if (this.unusedVariableNames && this.unusedVariableNames.length && !silent) {
+            // this.log('{1} unused CSS variables found \n\n{2}', 'warning', [this.unusedVariableNames.length, this.unusedVariableNames.join('\n')], true);
+        }
+    }
+
+    /**
+     * Returns path to var css directory
+     *
+     * @return {string}               Compiled css file path
+     */
+    getVarDirPath (){
+        return path.join(_appWrapper.getExecPath(), this.getConfig('varDir'), 'css');
+    }
+
+    /**
+     * Deletes all existing files from var dir
+     *
+     * @async
+     *
+     * @return {undefined}
+     */
+    async cleanupVarDir() {
+        let varDir = this.getVarDirPath();
+        let varDirFiles = await _appWrapper.fileManager.readDir(varDir);
+        for (let i=0; i<varDirFiles.length; i++) {
+            let filePath = path.join(varDir, varDirFiles[i]);
+            if (await _appWrapper.fileManager.isFile(filePath)) {
+                await _appWrapper.fileManager.deleteFile(filePath);
+            } else if (await _appWrapper.fileManager.isDir(filePath)) {
+                await _appWrapper.fileManager.deleteDir(filePath);
+            }
+        }
     }
 
     /**
@@ -876,6 +1072,20 @@ class StaticFilesHelper extends AppBaseClass {
             compiledCssPath = path.resolve(compiledCssPath);
         }
         return compiledCssPath;
+    }
+
+    /**
+     * Returns path to processed css file
+     *
+     * @param  {String}  cssFilePath  Path to css file to process
+     * @return {string}               Compiled css file path
+     */
+    getProcessedCssPath (cssFilePath){
+        let utilHelper = this.getHelper('util');
+        let appRootRegex = new RegExp(utilHelper.quoteRegex(appState.appRootDir, 'i'));
+        let relativeCssFilePath = cssFilePath.replace(appRootRegex, '/');
+        let processedCssPath = path.join(this.getVarDirPath(), relativeCssFilePath);
+        return processedCssPath;
     }
 }
 

@@ -13,6 +13,7 @@ const _ = require('lodash');
  * Additional options can be passed by setting "data-tooltip-data" attribute to JSON object that can contain following properties:
  *     classes: an array of classes to add to tooltip wrapper
  *     showCloseLink: bool to set close link rendering (default false)
+ *     immediate: bool to set whether tooltip should show/hide immediately on element mouseover/mouseout
  *     noAutoHide: bool to set auto hiding (default true)
  *     showAbove: bool to show tooltip above element
  *
@@ -145,6 +146,7 @@ let handleMouseOut = function(e) {
             el = el.parentNode;
         }
     }
+    let duration = window.getAppWrapper().getConfig('appConfig.tooltipTTL');
     clearTimeouts(el);
     el.setAttribute('title', el.getAttribute('data-title'));
     el.removeAttribute('data-title');
@@ -154,16 +156,18 @@ let handleMouseOut = function(e) {
         if (tooltipData.noAutoHide) {
             autoHide = false;
         }
+        if (tooltipData.immediate) {
+            duration = 1;
+        }
     }
     if (autoHide) {
         el.outTimeout = setTimeout(() => {
             hideTooltip(el);
-        }, window.getAppWrapper().getConfig('appConfig.tooltipTTL'));
+        }, duration);
     }
 };
 
 let handleTooltipMouseOver = function(e) {
-
     let tooltip = e.target;
     if (!tooltip.hasClass('nw-tooltip-wrapper')){
         while (tooltip.parentNode && !tooltip.hasClass('nw-tooltip-wrapper')){
@@ -171,15 +175,27 @@ let handleTooltipMouseOver = function(e) {
         }
     }
     let el = tooltip.el;
+    let tooltipData = getTooltipData(el);
+    if (tooltipData){
+        if (tooltipData.immediate) {
+            return;
+        }
+    }
     clearTimeout(el.outTimeout);
 };
 
 let handleTooltipMouseOut = function(e) {
     let tooltip = e.target;
+
     if (tooltip.hasClass('nw-tooltip-wrapper')){
         let el = tooltip.el;
-        clearTimeout(el.outTimeout);
         let tooltipData = getTooltipData(el);
+        if (tooltipData){
+            if (tooltipData.immediate) {
+                return;
+            }
+        }
+        clearTimeout(el.outTimeout);
         let autoHide = true;
         if (tooltipData){
             if (tooltipData.noAutoHide) {

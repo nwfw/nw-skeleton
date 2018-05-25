@@ -125,7 +125,7 @@ class AppWrapper extends AppBaseClass {
         await super.initialize();
 
         this.checkDebugWindow();
-        this.checkOtherWindow();
+        // this.checkOtherWindow();
 
         await this.initializeFileManager();
         await this.initializeConfig();
@@ -354,6 +354,11 @@ class AppWrapper extends AppBaseClass {
         appState.userData = await this.getHelper('userData').loadUserData();
     }
 
+    /**
+     * Sets base (default) values for appError view
+     *
+     * @return {undefined}
+     */
     setBaseAppErrorValues () {
         if (!appState.appError.title){
             appState.appError.title = this.translate(appState.appError.defaultTitle);
@@ -1766,10 +1771,22 @@ class AppWrapper extends AppBaseClass {
         }
     }
 
+    /**
+     * Returns all identifiers for currently open sub windows
+     *
+     * @return {String[]} Open subWindow identifiers
+     */
     getSubWindowIdentifiers(){
         return Object.keys(this.subWindows);
     }
 
+    /**
+     * Gets nw.Window for subwindow with id from parameter
+     *
+     * @param  {String} id Subwindow id
+     *
+     * @return {nw.Window}    Subwindow nw.Window object
+     */
     getNwSubWindow(id) {
         if (this.subWindows[id]) {
             return this.subWindows[id];
@@ -1778,6 +1795,13 @@ class AppWrapper extends AppBaseClass {
         }
     }
 
+    /**
+     * Gets window (global) object for given subwindow id
+     *
+     * @param  {String} id Subwindow id
+     *
+     * @return {window}    Subwindow window (global) object
+     */
     getSubWindow(id) {
         let nwWindow = this.getNwSubWindow(id);
         if (nwWindow && nwWindow.window) {
@@ -1787,6 +1811,14 @@ class AppWrapper extends AppBaseClass {
         }
     }
 
+    /**
+     * Sets subWindow reference for given subWindow id to nw.Window instance
+     *
+     * @param {String}      id  Subwindow id
+     * @param {nw.Window}   win nw.Window instance for new subWindow
+     *
+     * @return {undefined}
+     */
     setNwSubWindow(id, win) {
         if (this.getNwSubWindow(id)) {
             this.log('Can not set window with id "{1}", window already exists', 'warning', [id]);
@@ -1796,6 +1828,13 @@ class AppWrapper extends AppBaseClass {
         }
     }
 
+    /**
+     * Deletes subwindow reference for given id
+     *
+     * @param  {String} id Subwindow id
+     *
+     * @return {undefined}
+     */
     deleteSubWindow(id) {
         if (this.getNwSubWindow(id)) {
             delete this.subWindows[id];
@@ -1804,6 +1843,25 @@ class AppWrapper extends AppBaseClass {
         }
     }
 
+    /**
+     * Closes subwindow with given id
+     *
+     * @param  {String} id Subwindow id
+     *
+     * @return {undefined}
+     */
+    closeSubWindow(id) {
+        let subWindow = this.getNwSubWindow(id);
+        if (subWindow && subWindow.close) {
+            subWindow.close();
+        }
+    }
+
+    /**
+     * Closes all open subwindows
+     *
+     * @return {undefined}
+     */
     closeAllSubWindows() {
         let windowIdentifiers = this.getSubWindowIdentifiers();
         for (let i=0; i<windowIdentifiers.length; i++) {
@@ -1894,8 +1952,11 @@ class AppWrapper extends AppBaseClass {
         this.updateOtherWindowAppState(otherWindow, _.without(shareAppStateFields, 'config', 'userData'));
         await otherWindow.appWrapper.initialize();
         this.updateOtherWindowAppState(otherWindow, shareAppStateFields);
-        if (otherWindow._nwAdditionalOptions && otherWindow._nwAdditionalOptions.title) {
-            otherWindow.appState.appInfo.name += ' - ' + otherWindow._nwAdditionalOptions.title;
+        if (otherWindow._nwAdditionalOptions && otherWindow._nwAdditionalOptions.name) {
+            otherWindow.appState.appInfo.name = otherWindow._nwAdditionalOptions.name;
+        }
+        if (otherWindow._nwAdditionalOptions && otherWindow._nwAdditionalOptions.nameVars) {
+            otherWindow.appState.appInfo.nameVars = otherWindow._nwAdditionalOptions.nameVars;
         }
         // otherWindow._postMessageMethods = [];
         // otherWindow._postMessageMethods.push({

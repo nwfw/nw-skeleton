@@ -223,6 +223,17 @@ var MixinWrapperMethods  = {
          */
         getSubWindowId(){
             return window.subWindowId ? window.subWindowId : null;
+        },
+
+        /**
+         * Returns object JSON representation - useful for nw tooltip data passing
+         *
+         * @param  {Mixed}  obj  Data for json encoding
+         *
+         * @return {String}      JSON encoded data representation
+         */
+        getObjectJson(obj) {
+            return JSON.stringify(obj);
         }
 
     }
