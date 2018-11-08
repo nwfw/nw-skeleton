@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
@@ -645,6 +644,29 @@ class FileManager extends AppBaseClass {
             console.log(ex);
         }
         return data;
+    }
+
+    /**
+     * Reads file from disk
+     *
+     * @param  {string} file  Absolute path to file
+     * @param  {Object} options  Options object for fs.writeFileSync
+     * @return {(string|null)}   File contents if operation succeeded, null otherwise
+     */
+    async readFile(file, options = {encoding: null, flag: 'r'}){
+        return new Promise((resolve, reject) => {
+            try {
+                fs.readFile(file, options, (err, fileData) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(fileData);
+                    }
+                });
+            } catch (ex) {
+                console.log(ex);
+            }
+        });
     }
 
     /**

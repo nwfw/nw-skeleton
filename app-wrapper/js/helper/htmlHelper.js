@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -608,12 +607,13 @@ class HtmlHelper extends AppBaseClass {
      * Scrolls element to its child element
      *
      * @param {HTMLElement} element     Element to scroll
-     * @param  {Number} childSelector   Child element selector to scroll to
-     * @param  {Number} duration        Duration for animated scrolls
-     * @param  {Number} offset          Offset for fine tuning
+     * @param  {Number}     childSelector   Child element selector to scroll to
+     * @param  {Number}     duration        Duration for animated scrolls
+     * @param  {Number}     offset          Offset for fine tuning
+     * @param  {Function}   callback        Callback
      * @return {undefined}
      */
-    scrollElementToSelector (element, childSelector, duration, offset = 0) {
+    scrollElementToSelector (element, childSelector, duration, offset = 0, callback) {
         if (!element && this instanceof Element){
             element = this;
         }
@@ -631,7 +631,7 @@ class HtmlHelper extends AppBaseClass {
             if (finalTop < 0){
                 finalTop = 0;
             }
-            this.scrollElementTo(element, finalTop, duration);
+            this.scrollElementTo(element, finalTop, duration, callback);
         }
     }
 
@@ -639,49 +639,61 @@ class HtmlHelper extends AppBaseClass {
      * Scrolls element to given value
      *
      * @param {HTMLElement} element Element to scroll
-     * @param  {Number} to          Value to scroll to
-     * @param  {Number} duration    Duration for animated scrolls
+     * @param  {Number}     to          Value to scroll to
+     * @param  {Number}     duration    Duration for animated scrolls
+     * @param  {Function}   callback    Callback
      * @return {undefined}
      */
-    scrollElementTo (element, to, duration) {
+    scrollElementTo (element, to, duration, callback) {
         let identifier = this.getUniqueElementIdentifier(element, true);
         let frameDuration = parseInt(1000/60, 10);
         let maxScrollHeight = element.scrollHeight - element.clientHeight;
-        clearInterval(this.intervals.scrollTo[identifier]);
+        clearInterval(element.scrollToInterval);
+        element._scrollCallback = callback;
+        let finished = false;
 
         if (duration <= 0) {
             if (to > maxScrollHeight){
                 to = maxScrollHeight;
             }
             element.scrollTop = to;
-            return;
+            finished = true;
         }
 
-        if (element.scrollHeight <= element.clientHeight){
-            return;
+        if (!finished && element.scrollHeight <= element.clientHeight){
+            finished = true;
         }
 
-        let finalValue = to;
-        let difference = finalValue - element.scrollTop;
-        if (difference > 0 && finalValue >= maxScrollHeight){
-            finalValue = maxScrollHeight;
-            difference = finalValue - element.scrollTop;
-        }
+        if (!finished) {
+            let finalValue = to;
+            let difference = finalValue - element.scrollTop;
+            if (difference > 0 && finalValue >= maxScrollHeight){
+                finalValue = maxScrollHeight;
+                difference = finalValue - element.scrollTop;
+            }
 
-        if (finalValue < 0){
-            finalValue = 0;
-        }
+            if (finalValue < 0){
+                finalValue = 0;
+            }
 
-        let frameCount = parseInt(duration/frameDuration, 10);
-        let stepIncrease = parseInt(difference / frameCount, 10);
-        if (!stepIncrease){
-            stepIncrease = difference > 0 ? 1 : -1;
-        }
+            let frameCount = parseInt(duration/frameDuration, 10);
+            let stepIncrease = parseInt(difference / frameCount, 10);
+            if (!stepIncrease){
+                stepIncrease = difference > 0 ? 1 : -1;
+            }
 
-        if (stepIncrease != 0){
-            this.intervals.scrollTo[identifier] = setInterval(() => {
-                this.scrollElementStep(element, stepIncrease, finalValue, identifier);
-            }, frameDuration);
+            if (stepIncrease != 0){
+                element.scrollToInterval = setInterval(() => {
+                    this.scrollElementStep(element, stepIncrease, finalValue, identifier);
+                }, frameDuration);
+            } else {
+                finished = true;
+            }
+        }
+        if (finished) {
+            if (element._scrollCallback && _.isFunction(element._scrollCallback)){
+                element._scrollCallback();
+            }
         }
     }
 
@@ -719,9 +731,15 @@ class HtmlHelper extends AppBaseClass {
         element.scrollTop = nextValue;
 
         if (stepIncrease >= 0 && nextValue >= finalValue){
-            clearInterval(this.intervals.scrollTo[identifier]);
+            clearInterval(element.scrollToInterval);
+            if (element._scrollCallback && _.isFunction(element._scrollCallback)){
+                element._scrollCallback();
+            }
         } else if (stepIncrease < 0 && nextValue <= finalValue){
-            clearInterval(this.intervals.scrollTo[identifier]);
+            clearInterval(element.scrollToInterval);
+            if (element._scrollCallback && _.isFunction(element._scrollCallback)){
+                element._scrollCallback();
+            }
         }
     }
 
@@ -730,15 +748,35 @@ class HtmlHelper extends AppBaseClass {
      *
      * @param {HTMLElement} element    Element whose parent will be scrolled
      * @param {Number}      duration   Duration for animated scrolls
+     * @param {Boolean}     center     Center child vertically
+     * @param {Function}    callback   Callback
      * @return {undefined}
      */
-    scrollParentToElement (element, duration) {
+    scrollParentToElement (element, duration, center = false, callback) {
         let parentElement = element.parentNode;
         let currentParentScrollTop = parentElement.scrollTop;
-        element.scrollIntoView();
+        element.scrollIntoViewIfNeeded(center);
         let newParentScrollTop = parentElement.scrollTop;
         parentElement.scrollTop = currentParentScrollTop;
-        return this.scrollElementTo(parentElement, newParentScrollTop, duration);
+        return this.scrollElementTo(parentElement, newParentScrollTop, duration, callback);
+    }
+
+    /**
+     * Scrolls parent until its child element is visible
+     *
+     * @param {HTMLElement} parent     Element to scroll
+     * @param {HTMLElement} element    Element to which to scroll
+     * @param {Number}      duration   Duration for animated scrolls
+     * @param {Boolean}     center     Center child vertically
+     * @param {Function}    callback   Callback
+     * @return {undefined}
+     */
+    scrollElementToChild (parent, child, duration, center = false, callback) {
+        let currentParentScrollTop = parent.scrollTop;
+        child.scrollIntoViewIfNeeded(center);
+        let newParentScrollTop = parent.scrollTop;
+        parent.scrollTop = currentParentScrollTop;
+        return this.scrollElementTo(parent, newParentScrollTop, duration, callback);
     }
 
     /**
@@ -751,7 +789,7 @@ class HtmlHelper extends AppBaseClass {
             element = this;
         }
         let identifier = this.getUniqueElementIdentifier(element, true);
-        clearInterval(this.intervals.scrollTo[identifier]);
+        clearInterval(element.scrollToInterval);
     }
 
     /**

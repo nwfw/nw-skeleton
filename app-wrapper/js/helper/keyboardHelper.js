@@ -18,7 +18,6 @@
  * @property {Number[]} reloadCssKeyCodes   An array of key codes for CSS reloading
  */
 
-const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -212,7 +211,7 @@ class KeyboardHelper extends AppBaseClass {
                 } else if (appState && appState.status.ctrlPressed && _.includes(this.keyCodes.reloadCssKeyCodes, keyCode)){
                     this.getHelper('staticFiles').reloadCss();
                     fulfilled = true;
-                } else if ( appState.status.ctrlPressed && appState && appState.config.debug.enabled && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
+                } else if ( appState.status.ctrlPressed && appState.status.shiftPressed && appState && appState.config.debug.enabled && e.type == 'keydown' && _.includes(this.keyCodes.reloadKeyCodes, keyCode)){
                     if (!this.checkNoHandlingKeys()){
                         this.pressedKeys = [];
                         _appWrapper.windowManager.reloadWindow();

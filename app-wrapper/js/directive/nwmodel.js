@@ -3,7 +3,6 @@
  * @author Dino Ivankov <dinoivankov@gmail.com>
  * @version 1.3.1
  */
-const _ = require('lodash');
 
 /**
  * NW-model directive

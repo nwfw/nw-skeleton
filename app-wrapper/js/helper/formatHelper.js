@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;
@@ -549,7 +548,11 @@ class FormatHelper extends AppBaseClass {
      * @return {string}       Formatted currency value
      */
     formatCurrency (value){
-        let returnValue = Intl.NumberFormat(appState.languageData.currentLocale, {maximumFractionDigits: 2}).format(value);
+        let locale = appState.languageData.currentLocale;
+        if (!locale) {
+            locale = 'en';
+        }
+        let returnValue = Intl.NumberFormat(locale, {maximumFractionDigits: 2}).format(value);
         return returnValue;
     }
 

@@ -6,7 +6,7 @@
 		<ul>
 			<template v-for="subControl in control.value">
 				<li class="object-li">
-					<form-control v-bind:control="subControl"></form-control>
+					<form-control :class="[{'no-display-element': subControl.hide}]" v-bind:control="subControl"></form-control>
 					<a @click="removeObjectRow" class="row-tools-link remove-row remove-row-object fa fa-minus"></a>
 				</li>
 			</template>

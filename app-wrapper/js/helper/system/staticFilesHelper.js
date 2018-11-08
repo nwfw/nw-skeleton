@@ -4,8 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
-// const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const postcssUrl = require('postcss-url');

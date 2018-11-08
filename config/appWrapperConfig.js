@@ -454,8 +454,8 @@ exports.config = {
                 controlData: {
                     items: {
                         'en-US': 'English',
-                        'sr-Latn': 'Srpski',
-                        'sr-Cyrl': 'Српски',
+                        'sr-Latn-RS': 'Srpski',
+                        'sr-Cyrl-RS': 'Српски',
                     }
                 }
             },

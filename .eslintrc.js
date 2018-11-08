@@ -36,6 +36,7 @@ module.exports = {
         'valid-jsdoc': 'error',
     },
     'globals': {
+        '_': true,
         'appState': true,
         'nw': true,
         'manifest': true,

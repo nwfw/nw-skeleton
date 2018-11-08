@@ -19,7 +19,6 @@
  * @property {string[]}     jsFiles             Array of theme js files
  */
 
-const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;

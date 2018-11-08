@@ -5,7 +5,7 @@
  */
 
 var _appWrapper = window.getAppWrapper();
-var appState = _appWrapper.getAppState();
+// var appState = _appWrapper.getAppState();
 
 /**
  * Base component mixin
@@ -19,9 +19,5 @@ exports.component = {
     methods: {
         callViewHandler: _appWrapper.callViewHandler.bind(_appWrapper)
     },
-    computed: {
-        appState: function(){
-            return appState;
-        }
-    }
+    computed: {}
 };

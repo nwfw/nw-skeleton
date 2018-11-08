@@ -48,6 +48,9 @@ class AppWrapper extends AppBaseClass {
     constructor (initialAppConfig, initialAppState = {}) {
         super();
 
+        window._ = _;
+        global._ = _;
+
         this.needsConfig = false;
         this.app = null;
         this.helpers = {};

@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 const AppBaseClass = require('../../lib/appBase').AppBaseClass;
 
 /**

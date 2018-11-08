@@ -4,8 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
-
 var _appWrapper = window.getAppWrapper();
 var appState = _appWrapper.getAppState();
 

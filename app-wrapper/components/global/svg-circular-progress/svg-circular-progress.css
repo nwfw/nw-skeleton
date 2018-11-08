@@ -70,6 +70,16 @@
     overflow: ellipsis;
 }
 
+.svg-circular-progress-wrapper .cancel-wrapper {
+    font-size: 0.8em;
+    display: inline-block;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
 
 @keyframes pulse {
   from {

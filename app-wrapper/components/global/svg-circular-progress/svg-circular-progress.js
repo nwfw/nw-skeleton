@@ -23,7 +23,15 @@ var appState = _appWrapper.getAppState();
 exports.component = {
     name: 'svg-circular-progress',
     template: '',
-    props: ['circularProgressData'],
+    props: {
+        circularProgressData: {
+            type: Object,
+            required: true
+        },
+        onCancel: {
+            type: Function,
+        },
+    },
     currentData: {},
     previousProgress: 0,
     created: function(){
@@ -31,7 +39,8 @@ exports.component = {
     },
     data: function () {
         return {
-            progressData: this.circularProgressData
+            progressData: this.circularProgressData,
+            cancelling: false,
         };
     },
     methods: {
@@ -67,6 +76,11 @@ exports.component = {
                 return this.progressData.progress;
             }
         },
+        handleCancelClick (e) {
+            if (this.onCancel && this.onCancel.call){
+                this.onCancel(e);
+            }
+        }
     },
     computed: {
         appState: function(){

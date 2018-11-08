@@ -5,7 +5,6 @@
  */
 
 const path = require('path');
-const _ = require('lodash');
 const pusage = require('pidusage');
 
 const AppBaseClass = require('../lib/appBase').AppBaseClass;

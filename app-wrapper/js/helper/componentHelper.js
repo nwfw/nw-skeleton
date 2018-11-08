@@ -6,7 +6,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const _ = require('lodash');
 const AppBaseClass = require('../lib/appBase').AppBaseClass;
 
 var _appWrapper;

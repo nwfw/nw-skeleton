@@ -6,7 +6,7 @@
 		<ul>
 			<template v-for="subControl in control.value">
 				<li class="object-li array-li" v-bind:data-name="subControl.name">
-					<form-control v-bind:control="subControl"></form-control>
+					<form-control :class="[{'no-display-element': subControl.hide}]" v-bind:control="subControl"></form-control>
 					<a href="#" v-on:click="removeArrayRow" class="remove-row remove-row-array fa fa-minus"></a>
 				</li>
 			</template>

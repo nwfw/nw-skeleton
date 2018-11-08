@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 const nodeCrypto = require('crypto');
 // const os = require('os');
 const randomWords = require('random-words');
@@ -254,6 +253,144 @@ class UtilHelper extends AppBaseClass {
         }
         return configVar;
     }
+
+    /**
+     * Returns control object to be used in form-control component
+     *
+     * @param  {mixed}   value      Value of variable
+     * @param  {string}  name       Name of variable
+     * @param  {Object}  options    Object with additional control options
+     * @return {Object}             Form control object for the var
+     */
+    getFormControl (value, name, options){
+        if (!options){
+            options = {};
+        }
+
+        options = _.defaults(options, {
+            disabled: false,
+            required: false,
+            readonly: false,
+            type: undefined,
+            options: [],
+            rowErrorText: ''
+        });
+
+        let objValue;
+        let controlObj = {
+            wrapperClasses: [],
+            readonly: options.readonly,
+            disabled: options.disabled,
+            required: options.required,
+            rowErrorText: options.rowErrorText,
+            error: false,
+            name: name,
+            value: _.cloneDeep(value),
+            options: [],
+            subControls: [],
+            controlData: null
+        };
+
+        let type;
+
+        if (options.type){
+            type = options.type;
+        } else {
+            if (_.isBoolean(value)){
+                type = 'boolean';
+            } else if (_.isString(value)){
+                type = 'string';
+            } else if (_.isArray(value)){
+                type = 'array';
+            } else if (_.isObject(value) && value instanceof RegExp){
+                type = 'string';
+            } else if (_.isObject(value)){
+                type = 'object';
+            }
+        }
+
+        if (type == 'select') {
+            controlObj.formControl = 'ui-form-control-select';
+            controlObj.type = 'select';
+            if (options.options && options.options.length) {
+                controlObj.options = options.options;
+            } else {
+                controlObj.options = [value];
+            }
+        } else if (type == 'boolean') {
+            controlObj.formControl = 'ui-form-control-checkbox';
+            controlObj.type = 'boolean';
+        } else if (type == 'array') {
+            // controlObj.formControl = 'ui-form-control-array';
+            controlObj.formControl = 'ui-form-control-text';
+            controlObj.type = 'array';
+            objValue = [];
+            let values = _.cloneDeep(value);
+            _.each(values, (innerValue, innerName) => {
+                objValue.push(this.getFormControl(innerValue, innerName, options));
+            });
+            controlObj.value = _.cloneDeep(objValue);
+        } else if (type == 'object') {
+            controlObj.formControl = 'ui-form-control-object';
+            controlObj.type = 'object';
+            let subControls = [];
+            let keys = _.keys(value);
+            for(let i=0; i<keys.length;i++){
+                let innerName = keys[i];
+                let innerValue;
+                try {
+                    innerValue = value[innerName];
+                } catch (ex){
+                    innerValue = value[innerName];
+                }
+                let newSubControl = this.getFormControl(innerValue, innerName, options);
+                subControls.push(newSubControl);
+            }
+            controlObj.subControls = subControls;
+        } else {
+            controlObj.formControl = 'ui-form-control-text';
+            controlObj.type = 'string';
+        }
+        return controlObj;
+    }
+
+    // getObjectPropertyPaths (obj, startPath = '', includeArrayMemberPaths = false) {
+    //     let validId = /^[a-z_$][a-z0-9_$]*$/i;
+    //     let result = [];
+    //     let startPathName = startPath.replace(/^\./, '');
+    //     if (!_.isUndefined(obj)) {
+    //         if (Array.isArray(obj)) {
+    //             if (startPathName){
+    //                 result.push(startPathName);
+    //             }
+    //             for (let i = 0; i < obj.length; i++) {
+    //                 result = _.concat(result, this.getObjectPropertyPaths(obj[i], startPath + "[" + i + "]"));
+    //             }
+    //         } else if (_.isObject(obj)) {
+    //             if (startPathName){
+    //                 result.push(startPathName);
+    //             }
+    //             let propertyNames = Object.keys(obj);
+    //             for (let i=0; i<propertyNames.length; i++) {
+    //                 let propertyName = propertyNames[i];
+    //                 if (validId.test(propertyName)) {
+    //                     result = _.concat(result, this.getObjectPropertyPaths(obj[propertyName], startPath + "." + propertyName));
+    //                 } else {
+    //                     result = _.concat(result, this.getObjectPropertyPaths(obj[propertyName], startPath + "[\"" + propertyName + "\"]"));
+    //                 }
+    //             }
+    //         } else {
+    //             if (startPathName){
+    //                 result.push(startPathName);
+    //             }
+    //         }
+    //     } else {
+    //         if (startPathName){
+    //             result.push(startPathName);
+    //         }
+    //     }
+    //     return _.compact(result);
+    // }
 
     /**
      * Calculates deep difference between objects or arrays
@@ -976,6 +1113,7 @@ class UtilHelper extends AppBaseClass {
      * @param  {String} text      Text to encrypt
      * @param  {String} password  Encryption password
      * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     *
      * @return {String}           Encrypted text
      */
     encryptText(text, password, algorithm = 'aes-256-ctr') {
@@ -991,10 +1129,45 @@ class UtilHelper extends AppBaseClass {
      * @param  {String} text      Text to decrypt
      * @param  {String} password  Decryption password
      * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     *
      * @return {String}           decrypted text
      */
     decryptText(text, password, algorithm = 'aes-256-ctr') {
         let decipher = nodeCrypto.createDecipher(algorithm, password);
+        let decrypted = decipher.update(text, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    }
+
+    /**
+     * Encrypts text with initialization vector and returns encrypted value
+     *
+     * @param  {String} text      Text to encrypt
+     * @param  {String} password  Encryption password
+     * @param  {String} iv        Initialization vector
+     * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     *
+     * @return {String}           Encrypted text
+     */
+    encryptTextIv(text, password, iv = null, algorithm = 'aes-256-ctr') {
+        let cipher = nodeCrypto.createCipheriv(algorithm, Buffer.from(password), Buffer.from(iv));
+        let encrypted = cipher.update(text, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        return encrypted;
+    }
+
+    /**
+     * Decrypts text with initialization vector and returns decrypted value
+     *
+     * @param  {String} text      Text to decrypt
+     * @param  {String} password  Decryption password
+     * @param  {String} iv        Initialization vector
+     * @param  {String} algorithm Algorhitm (default 'aes-256-ctr')
+     *
+     * @return {String}           decrypted text
+     */
+    decryptTextIv(text, password, iv = null, algorithm = 'aes-256-ctr') {
+        let decipher = nodeCrypto.createDecipheriv(algorithm, Buffer.from(password), Buffer.from(iv));
         let decrypted = decipher.update(text, 'hex', 'utf8');
         decrypted += decipher.final('utf8');
         return decrypted;

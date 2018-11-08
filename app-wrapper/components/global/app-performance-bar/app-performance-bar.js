@@ -9,7 +9,6 @@ var appState = _appWrapper.getAppState();
 
 const SmoothieChart = require('smoothie').SmoothieChart;
 const TimeSeries = require('smoothie').TimeSeries;
-const _ = require('lodash');
 
 /**
  * App performance bar component

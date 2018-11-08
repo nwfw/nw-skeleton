@@ -6,14 +6,18 @@
         <circle class="arc-value" cx="50" cy="50" r="45" :stroke-dasharray="getDashArray(45)" :stroke-dashoffset="getDashOffset(45)" />
     </svg>
     <div class="progress-data" v-if="progressData.progress || progressData.progress == 0 || progressData.title || progressData.info">
+        <div key="progressTitleCancelling" class="progress-title" v-if="progressData.cancelling" v-html="translate('Cancelling')"></div>
         <transition name="size">
-            <div key="progressTitle" class="progress-title" v-if="progressData.title" v-html="progressData.title"></div>
+            <div key="progressTitle" class="progress-title" v-if="!progressData.cancelling && progressData.title" v-html="progressData.title"></div>
         </transition>
         <transition name="size">
-            <div key="progressValue" v-if="progressData.progress || progressData.progress === 0" class="progress-value" v-html="getProgressValue()"></div>
+            <div key="progressValue" v-if="!progressData.cancelling && (progressData.progress || progressData.progress === 0)" class="progress-value" v-html="getProgressValue()"></div>
         </transition>
         <transition name="size">
-            <div key="progressInfo" class="progress-text" v-if="progressData.info" v-html="progressData.info"></div>
+            <div key="progressInfo" class="progress-text" v-if="!progressData.cancelling && progressData.info" v-html="progressData.info"></div>
         </transition>
+    </div>
+    <div key="cancelWrapper" class="cancel-wrapper" v-if="progressData.cancellable && onCancel && !progressData.cancelling">
+        <a href="#" class="cancel-link" @click.prevent="handleCancelClick" v-html="translate('Cancel')"></a>
     </div>
 </div>

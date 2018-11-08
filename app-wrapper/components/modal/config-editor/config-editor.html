@@ -1,5 +1,12 @@
 <div class="config-editor">
-	<template v-for="configVar in config">
-		<form-control v-bind:control="configVar"></form-control>
+    <div class="config-editor-tools">
+        <span class="config-editor-search">
+            <label v-html="translate('Search')"></label>
+            <input class="section-search-input" v-model="searchQuery" />
+            <a href="#" :class="['clear-editor-search fa fa-times']" :title="translate('Clear search')" v-show="searchQuery" @click.prevent="clearSearch"></a>
+        </span>
+    </div>
+	<template v-for="configVar in getConfigObjects()">
+		<form-control :class="[{'no-display-element': configVar.hide}]" v-bind:control="configVar"></form-control>
 	</template>
 </div>

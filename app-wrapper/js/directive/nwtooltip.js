@@ -4,7 +4,6 @@
  * @version 1.3.1
  */
 
-const _ = require('lodash');
 
 /**
  * NW-tooltip directive
@@ -123,18 +122,25 @@ let handleMouseOver = function(e) {
     e.stopImmediatePropagation();
     let identifier = el.getAttribute('data-identifier');
     let htmlHelper = window.getAppWrapper().getHelper('html');
+
     if (identifier){
         let tooltip = createTooltip(el);
         if (tooltip){
+            let tooltipData = getTooltipData(el);
+            let delay = window.getAppWrapper().getConfig('appConfig.tooltipDelay');
+            if (tooltipData){
+                if (tooltipData.immediate) {
+                    delay = 1;
+                }
+            }
             let title = el.getAttribute('title');
-            // tooltip.innerHTML = getTooltipInnerHtml(el);
             htmlHelper.addClass(tooltip, 'prepared-tooltip');
             el.setAttribute('data-title', title);
             el.removeAttribute('title');
             clearTimeouts(el);
             el.overTimeout = setTimeout(() => {
                 showTooltip(e);
-            }, window.getAppWrapper().getConfig('appConfig.tooltipDelay'));
+            }, delay);
         }
     }
 };
