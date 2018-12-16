@@ -20,11 +20,13 @@
  * @memberOf directives
  */
 
-
-let getTooltip = function(identifier){
-    let tooltips = document.querySelectorAll('.nw-tooltip-wrapper[data-tooltip-identifier=' + identifier + ']');
-    if (tooltips && tooltips.length) {
-        return tooltips[0];
+let getTooltip = function(el){
+    let identifier = el.getAttribute('data-identifier');
+    if (identifier) {
+        let tooltips = el.ownerDocument.querySelectorAll('.nw-tooltip-wrapper[data-tooltip-identifier=' + identifier + ']');
+        if (tooltips && tooltips.length) {
+            return tooltips[0];
+        }
     }
 };
 
@@ -67,7 +69,7 @@ let getTooltipTextInnerHtml = function(el) {
 
 let createTooltip = function(el){
     let identifier = el.getAttribute('data-identifier');
-    let tooltip = document.createElement('div');
+    let tooltip = el.ownerDocument.createElement('div');
     let tooltipClassNames = ['nw-tooltip-wrapper'];
     let tooltipData = getTooltipData(el);
     if (tooltipData){
@@ -81,7 +83,7 @@ let createTooltip = function(el){
     tooltip.el = el;
     tooltip.addEventListener('mouseover', handleTooltipMouseOver, false);
     tooltip.addEventListener('mouseout', handleTooltipMouseOut, false);
-    document.body.appendChild(tooltip);
+    el.ownerDocument.body.appendChild(tooltip);
     let closeLink = tooltip.querySelector('.close-tooltip');
     if (closeLink) {
         closeLink.addEventListener('click', handleTooltipCloseClick);
@@ -92,7 +94,7 @@ let createTooltip = function(el){
 let removeTooltip = function(el){
     delete el.nwTooltipBinding;
     let identifier = el.getAttribute('data-identifier');
-    let tooltips = document.querySelectorAll('.nw-tooltip-wrapper[data-tooltip-identifier=' + identifier + ']');
+    let tooltips = el.ownerDocument.querySelectorAll('.nw-tooltip-wrapper[data-tooltip-identifier=' + identifier + ']');
     for (let i=0; i<tooltips.length; i++){
         let tooltip = tooltips[i];
         if (tooltip){
@@ -175,8 +177,9 @@ let handleMouseOut = function(e) {
 
 let handleTooltipMouseOver = function(e) {
     let tooltip = e.target;
-    if (!tooltip.hasClass('nw-tooltip-wrapper')){
-        while (tooltip.parentNode && !tooltip.hasClass('nw-tooltip-wrapper')){
+    let htmlHelper = window.getAppWrapper().getHelper('html');
+    if (!htmlHelper.hasClass(tooltip, 'nw-tooltip-wrapper')){
+        while (tooltip.parentNode && !htmlHelper.hasClass(tooltip, 'nw-tooltip-wrapper')){
             tooltip = tooltip.parentNode;
         }
     }
@@ -192,8 +195,8 @@ let handleTooltipMouseOver = function(e) {
 
 let handleTooltipMouseOut = function(e) {
     let tooltip = e.target;
-
-    if (tooltip.hasClass('nw-tooltip-wrapper')){
+    let htmlHelper = window.getAppWrapper().getHelper('html');
+    if (htmlHelper.hasClass(tooltip, 'nw-tooltip-wrapper')){
         let el = tooltip.el;
         let tooltipData = getTooltipData(el);
         if (tooltipData){
@@ -240,7 +243,7 @@ let showTooltip = function(e){
     let identifier = el.getAttribute('data-identifier');
     let htmlHelper = window.getAppWrapper().getHelper('html');
     if (identifier){
-        let tooltip = getTooltip(identifier);
+        let tooltip = getTooltip(el);
         let tooltipData = getTooltipData(el);
         if (tooltip){
             clearTimeout(tooltip.closeLinkTimeout);
@@ -254,8 +257,8 @@ let showTooltip = function(e){
                             classes = bindingValue.classes.split(',');
                         }
                         for( let i=0; i<classes.length; i++){
-                            if (!tooltip.hasClass(classes[i])){
-                                tooltip.addClass(classes[i]);
+                            if (!htmlHelper.hasClass(tooltip, classes[i])){
+                                htmlHelper.addClasstooltip, (classes[i]);
                             }
                         }
                     }
@@ -270,14 +273,14 @@ let showTooltip = function(e){
                 top: top + 'px',
                 left: left + 'px',
             };
-            let windowWidth = window.innerWidth;
+            let windowWidth = el.ownerDocument.defaultView.innerWidth;
 
             if (tooltipDimensions.width + left > windowWidth){
                 delete tooltipStyles.left;
-                tooltip.addClass('stick-right');
+                htmlHelper.addClass(tooltip, 'stick-right');
                 tooltipStyles.right = '5px';
             } else if (left - parseInt(tooltipDimensions.width / 2, 10) < 0){
-                tooltip.addClass('stick-left');
+                htmlHelper.addClass(tooltip, 'stick-left');
                 tooltipStyles.left = '5px';
             }
             if (tooltipData && tooltipData.showAbove) {
@@ -303,7 +306,7 @@ let showCloseLink = function(el) {
     }
     let identifier = el.getAttribute('data-identifier');
     if (identifier){
-        let tooltip = getTooltip(identifier);
+        let tooltip = getTooltip(el);
         if (tooltip){
             let closeLink = tooltip.querySelector('.close-tooltip');
             if (closeLink) {
@@ -325,7 +328,7 @@ let hideTooltip = function(el){
     }
     let identifier = el.getAttribute('data-identifier');
     if (identifier){
-        let tooltip = getTooltip(identifier);
+        let tooltip = getTooltip(el);
         if (tooltip){
             let htmlHelper = window.getAppWrapper().getHelper('html');
             htmlHelper.removeClass(tooltip, 'visible-tooltip');
@@ -353,7 +356,7 @@ let initializeTooltip = function(el, binding) {
 let updateTooltip = function(el) {
     let identifier = el.getAttribute('data-identifier');
     if (identifier){
-        let tooltip = getTooltip(identifier);
+        let tooltip = getTooltip(el);
         if (tooltip){
             let title = el.getAttribute('title');
             if (title){

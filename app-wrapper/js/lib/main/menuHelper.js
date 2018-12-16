@@ -61,40 +61,35 @@ class MenuHelper extends MainBaseClass {
             this.log('Initializing app menu', 'debug', []);
             let _appWrapper = this.getAppWrapper();
             if (!(!_.isUndefined(this.menu) && this.menu)){
-                let menuData = this.getConfig('appConfig.menuData');
                 let hasAppMenu = this.getConfig('appConfig.hasAppMenu');
-                if (hasAppMenu){
-                    if (menuData && menuData.mainItemName && menuData.options){
-                        if (!this.menu){
-                            this.menu = new nw.Menu({type: 'menubar'});
-                            if (_appWrapper.isMac() && !this.hasMacBuiltin){
-                                this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
-                                this.hasMacBuiltin = true;
-                            }
-                            this.hasEditMenu = !menuData.options.hideEdit;
-                            this.hasWindowMenu = !menuData.options.hideWindow;
-                        }
-                    }
-                } else {
-                    if (_appWrapper.isMac()){
-                        if (menuData && menuData.mainItemName && menuData.options){
-                            if (!this.menu){
-                                this.menu = new nw.Menu({type: 'menubar'});
-                                if (!this.hasMacBuiltin){
-                                    this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
-                                    this.hasMacBuiltin = true;
-                                }
-                                this.hasEditMenu = !menuData.options.hideEdit;
-                                this.hasWindowMenu = !menuData.options.hideWindow;
-                            }
-                        }
-                    }
+                let menuData = this.getConfig('appConfig.menuData');
+                let shouldCreateMenu = ((hasAppMenu || _appWrapper.isMac()) && menuData && menuData.mainItemName && menuData.options && !this.menu);
+                if (shouldCreateMenu) {
+                    this.createAppMenu(menuData);
                 }
             }
             this.menuInitialized = true;
         } else {
             this.log('App menu already initialized', 'debug', []);
         }
+    }
+
+    /**
+     * Creates menu object and initializes it according to passed menuData parameter
+     *
+     * @param  {Object} menuData Menu data object (properties: string 'mainItemName' and object 'options')
+     *
+     * @return {undefined}
+     */
+    createAppMenu (menuData) {
+        let _appWrapper = this.getAppWrapper();
+        this.menu = new nw.Menu({type: 'menubar'});
+        if (_appWrapper.isMac() && !this.hasMacBuiltin){
+            this.menu.createMacBuiltin(menuData.mainItemName, menuData.options);
+            this.hasMacBuiltin = true;
+        }
+        this.hasEditMenu = !menuData.options.hideEdit;
+        this.hasWindowMenu = !menuData.options.hideWindow;
     }
 
     /**
@@ -411,9 +406,9 @@ class MenuHelper extends MainBaseClass {
         }
         this.menuSetup = false;
         this.menuInitialized = false;
-        // this.hasMacBuiltin = false;
-        // this.hasEditMenu = false;
-        // this.menu = null;
+        this.hasMacBuiltin = false;
+        this.hasEditMenu = false;
+        this.menu = null;
         this.menuMethodMap = [];
         this.menuShortcutMap = [];
         this.usedShortcuts = [];
@@ -709,17 +704,19 @@ class MenuHelper extends MainBaseClass {
      * @return {(Object|undefined)}         MenuItem object or undefined if none found
      */
     getAppMenuItem(menuItemIndex, menuItems){
-        if (!menuItems){
+        let menuItem;
+        let indexChunks = menuItemIndex.split('_');
+        if (!menuItems && this.menu && this.menu.items){
             menuItems = this.menu.items;
         }
-        let indexChunks = menuItemIndex.split('_');
-        let menuItem;
         if (indexChunks && indexChunks.length){
-            menuItem = menuItems[indexChunks[0]];
-            if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
-                menuItemIndex = _.tail(indexChunks).join('_');
-                menuItems = menuItem.submenu.items;
-                menuItem = this.getAppMenuItem(menuItemIndex, menuItems);
+            if (menuItems && menuItems[indexChunks[0]]) {
+                menuItem = menuItems[indexChunks[0]];
+                if (indexChunks.length > 1 && menuItem && menuItem.submenu && menuItem.submenu.items){
+                    menuItemIndex = _.tail(indexChunks).join('_');
+                    menuItems = menuItem.submenu.items;
+                    menuItem = this.getAppMenuItem(menuItemIndex, menuItems);
+                }
             }
         }
         if (!menuItem){

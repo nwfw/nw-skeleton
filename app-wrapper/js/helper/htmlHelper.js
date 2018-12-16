@@ -284,7 +284,7 @@ class HtmlHelper extends AppBaseClass {
                 dimsElement = dimsElement.querySelector(selector);
             }
 
-            var dimsElementStyles = dimsElement.getComputedStyles();
+            var dimsElementStyles = this.getComputedStyles(dimsElement);
             dimensions.height = parseFloat(dimsElementStyles.height, 10);
             dimensions.width = parseFloat(dimsElementStyles.width, 10);
 
@@ -342,7 +342,7 @@ class HtmlHelper extends AppBaseClass {
             if (!selector && element && element.parentNode){
                 element.parentNode.appendChild(clonedEl);
             } else {
-                document.body.appendChild(clonedEl);
+                element.ownerDocument.body.appendChild(clonedEl);
             }
 
             let originalCloned = clonedEl;
@@ -573,7 +573,7 @@ class HtmlHelper extends AppBaseClass {
             element = this;
         }
         if (element){
-            let styles = element.getComputedStyles();
+            let styles = this.getComputedStyles(element);
             if (styles && styles.visibility){
                 if (styles.visibility == 'hidden'){
                     _appWrapper.getHelper('html').makeVisible(element);
@@ -593,12 +593,12 @@ class HtmlHelper extends AppBaseClass {
     getElementDefaultDisplay(element) {
         var tag = element.tagName;
         var cStyle;
-        var newElement = document.createElement(tag);
-        var gcs = 'getComputedStyle' in window;
+        var newElement = element.ownerDocument.createElement(tag);
+        var gcs = 'getComputedStyle' in element.ownerDocument.defaultView;
 
-        document.body.appendChild(newElement);
-        cStyle = (gcs ? window.getComputedStyle(newElement, '') : newElement.currentStyle).display;
-        document.body.removeChild(newElement);
+        element.ownerDocument.body.appendChild(newElement);
+        cStyle = (gcs ? element.ownerDocument.defaultView.getComputedStyle(newElement, '') : newElement.currentStyle).display;
+        element.ownerDocument.body.removeChild(newElement);
 
         return cStyle;
     }
@@ -825,9 +825,9 @@ class HtmlHelper extends AppBaseClass {
         if (!element && this instanceof Element){
             element = this;
         }
-        var selection = window.getSelection();
+        var selection = element.ownerDocument.defaultView.getSelection();
         selection.removeAllRanges();
-        var range = document.createRange();
+        var range = element.ownerDocument.createRange();
         range.selectNode(element);
         selection.addRange(range);
     }
@@ -843,7 +843,7 @@ class HtmlHelper extends AppBaseClass {
         if (!element && this instanceof Element){
             element = this;
         }
-        var selection = window.getSelection();
+        var selection = element.ownerDocument.defaultView.getSelection();
         selection.removeAllRanges();
         let elementValue = element.value;
         element.focus();
@@ -870,7 +870,7 @@ class HtmlHelper extends AppBaseClass {
         if (!element && this instanceof Element){
             element = this;
         }
-        var selection = window.getSelection();
+        var selection = element.ownerDocument.defaultView.getSelection();
         selection.removeAllRanges();
         element.focus();
         element.setSelectionRange(start, end);
@@ -886,7 +886,7 @@ class HtmlHelper extends AppBaseClass {
         var style;
         var returns = {};
         if (element && element.tagName){
-            style = window.getComputedStyle(element, null);
+            style = element.ownerDocument.defaultView.getComputedStyle(element, null);
             for(let i=0; i<style.length; i++){
                 var prop = style[i];
                 var val = style.getPropertyValue(prop);
@@ -907,7 +907,7 @@ class HtmlHelper extends AppBaseClass {
         let style;
         let val = '';
         if (propName && element && element.tagName){
-            style = window.getComputedStyle(element, null);
+            style = element.ownerDocument.defaultView.getComputedStyle(element, null);
             for(let i=0; i<style.length; i++){
                 if (style[i] == propName){
                     val = style.getPropertyValue(style[i]);
@@ -1278,7 +1278,7 @@ class HtmlHelper extends AppBaseClass {
             element = this;
         }
 
-        let styles = element.getComputedStyles();
+        let styles = this.getComputedStyles(element);
         if (styles && styles['transition-duration']){
             let newDuration = parseFloat(styles['transition-duration']);
             if (newDuration && !isNaN(newDuration)){

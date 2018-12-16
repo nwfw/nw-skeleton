@@ -54,7 +54,7 @@ class KeyboardHelper extends AppBaseClass {
             shiftKeyCodes: [16],
             altKeyCodes: [18],
             reloadKeyCodes: [82], // 'r'
-            closeKeyCodes: [87], // 'w'
+            closeKeyCodes: [87, 81], // 'w', 'q'
             escKeyCodes: [27],
             reloadCssKeyCodes: [85], // 'u'
             reinitializeFeAppKeyCodes: [85], // 'u'

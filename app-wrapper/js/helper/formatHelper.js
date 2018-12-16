@@ -280,6 +280,10 @@ class FormatHelper extends AppBaseClass {
      */
     formatTimeNormalize (date, options = null, includeDate = false, omitSeconds = false, omitMilliseconds = true){
 
+        if (!options) {
+            options = {};
+        }
+
         if (_.isString(date)){
             date = new Date(date);
         }
@@ -669,7 +673,11 @@ class FormatHelper extends AppBaseClass {
      *
      * @param  {Integer} bytes          File size in bytes
      * @param  {Integer} lesserUnits    Downscale unit by n
-     * @return {string}                 Human-readable file size representation
+     * @param  {Integer} minUnit        Min unit index
+     * @param  {Integer} treshold       Treshold that indicates size unit should be one larger
+     * @param  {Boolean} floatValue     Flag to indicate whether to leave size as float value or round it to integer
+     *
+     * @return {String}                 Human-readable file size representation
      */
     formatFileSize (bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false) {
         let sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -686,7 +694,7 @@ class FormatHelper extends AppBaseClass {
             let minString = minUnit.toLowerCase();
             let minSizes = _.map(sizes, (size) => {
                 return size.toLowerCase();
-            })
+            });
             if (_.includes(minSizes, minString)) {
                 minUnit = _.indexOf(minSizes, minString);
             } else {
@@ -777,6 +785,16 @@ class FormatHelper extends AppBaseClass {
         return formattedSize;
     }
 
+    /**
+     * Adds thousands and decimal separators to numeric value, returning formatted separated value
+     *
+     * @param {String} string            Initial value to format
+     * @param {String} inputDecimalChar  Character that initial value uses as decimal delimiter
+     * @param {String} outputDecimalChar New decimal delimiter
+     * @param {String} separator         Thousand separator
+     *
+     * @return {String} Formatted value
+     */
     addSeparators (string, inputDecimalChar, outputDecimalChar, separator) {
         string += '';
         let decimalPosition = string.indexOf(inputDecimalChar);
@@ -792,12 +810,78 @@ class FormatHelper extends AppBaseClass {
         return string + stringEnd;
     }
 
+    /**
+     * Capitalizes first character in passed text argument
+     *
+     * @param  {String}     text    Text to capitalize
+     * @return {String}             Capitalized text
+     */
     capitalize (text) {
         let capitalized = '';
         if (_.isString(text) && text) {
             capitalized = text.substr(0, 1).toUpperCase() + text.substr(1);
         }
         return capitalized;
+    }
+
+    /**
+     * Returns difference between two dates in (milli)seconds
+     *
+     * @param  {Date}       start           Start date
+     * @param  {Date}       end             End date
+     * @param  {Boolean}    milliseconds    Flag to indicate millisecond precision
+     *
+     * @return {Number}                     Difference between dates
+     */
+    diffDates(start, end, milliseconds = false) {
+        let diff = 0;
+        let endSeconds = end.getTime() / 1000;
+        let startSeconds = start.getTime() / 1000;
+        diff = endSeconds - startSeconds;
+        if (!milliseconds){
+            diff = parseInt(diff, 10);
+        }
+        return diff;
+    }
+
+    /**
+     * Gets hash from passed value
+     *
+     * @param  {Mixed}  value       Value to hash
+     *
+     * @return {String}             Value hash
+     */
+    getHash(value) {
+        let src = value;
+        if (!_.isString(value)){
+            try {
+                src = JSON.stringify(value);
+            } catch (ex) {
+                src = new String(value);
+                console.log(ex);
+            }
+        }
+        return this.hashString(src);
+    }
+
+    /**
+     * Gets hash for passsed string value
+     *
+     * @param  {String}  value      Value to hash
+     *
+     * @return {String}             Value hash
+     */
+    hashString(value) {
+        let hash = 0;
+        if (value.length === 0){
+            return hash;
+        }
+        for (let i=0; i<value.length; i++) {
+            let chr = value.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0;
+        }
+        return hash;
     }
 }
 

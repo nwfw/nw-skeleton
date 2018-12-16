@@ -1172,6 +1172,26 @@ class UtilHelper extends AppBaseClass {
         decrypted += decipher.final('utf8');
         return decrypted;
     }
+
+    /**
+     * Creates and returns unique string hash for passed string parameter
+     *
+     * @param  {String} value String value to hash
+     *
+     * @return {Number}       Hash
+     */
+    getStringHash(value) {
+        let hash = 0;
+        if (value.length == 0 || !value.charCodeAt) {
+            return hash;
+        }
+        for (let i=0; i<value.length; i++) {
+            let chr = value.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0;
+        }
+        return hash;
+    }
 }
 
 exports.UtilHelper = UtilHelper;

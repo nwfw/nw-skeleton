@@ -97,11 +97,11 @@ class FileManager extends AppBaseClass {
         if (!file){
             return false;
         }
-        var filePath = path.resolve(file);
-        var isFile = true;
-        var exists = this.fileExists(filePath);
+        let filePath = path.resolve(file);
+        let isFile = true;
+        let exists = this.fileExists(filePath);
         if (exists){
-            var fileStat = fs.statSync(filePath);
+            let fileStat = fs.statSync(filePath);
             if (!fileStat.isFile()){
                 isFile = false;
             }
@@ -118,11 +118,11 @@ class FileManager extends AppBaseClass {
      * @return {Boolean}     True if file is a directory, false otherwise
      */
     isDir(dir){
-        var dirPath = path.resolve(dir);
-        var isDir = true;
-        var exists = this.fileExists(dirPath);
+        let dirPath = path.resolve(dir);
+        let isDir = true;
+        let exists = this.fileExists(dirPath);
         if (exists){
-            var fileStat = fs.statSync(dirPath);
+            let fileStat = fs.statSync(dirPath);
             if (!fileStat.isDirectory()){
                 isDir = false;
             }
@@ -325,7 +325,7 @@ class FileManager extends AppBaseClass {
             targetDir = path.dirname(archive);
         }
 
-        if (!await this.isDir(targetDir)){
+        if (!this.isDir(targetDir)){
             this.log('Error unzipping file "{1}" - target dir "{2}" is not a directory', 'error', [archive, targetDir]);
             return false;
         }
@@ -364,7 +364,7 @@ class FileManager extends AppBaseClass {
      * @return {(string|Boolean)}   Zip archive path or false if compression failed
      */
     async compressDir(dir, archive){
-        if (!await this.isDir(dir)){
+        if (!this.isDir(dir)){
             this.log('Error zipping dir "{1}" - not a directory', 'error', [dir]);
             return false;
         }
@@ -470,7 +470,7 @@ class FileManager extends AppBaseClass {
                 archive.append(fs.createReadStream(filePath), {
                     name: fileName
                 });
-            } else if (await this.isDir(path.join(baseDir, filePath))){
+            } else if (this.isDir(path.join(baseDir, filePath))){
                 let archiveDirName = filePath.replace(/\/?$/, '/');
                 archive.directory(archiveDirName, {
                     name: archiveDirName
@@ -484,6 +484,32 @@ class FileManager extends AppBaseClass {
     }
 
     /**
+     * Empties directory (deletes all files and subdirectories recursively)
+     *
+     * @async
+     * @param  {String}     directory   Absolute path of directory that should be deleted
+     *
+     * @return {Boolean}                Operation result
+     */
+    async emptyDir (directory) {
+        let result = true;
+        if(this.isDir(directory)) {
+            let files = this.readDir(directory);
+            for (let i=0; i<files.length; i++){
+                let currentFile = path.join(directory, files[i]);
+                if (this.isDir(currentFile)) {
+                    result = result && await this.deleteDir(currentFile);
+                } else {
+                    result = result && await this.deleteFile(currentFile);
+                }
+            }
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    /**
      * Deletes directory recursively
      *
      * @async
@@ -492,18 +518,18 @@ class FileManager extends AppBaseClass {
      */
     async deleteDir (directory) {
         let result = true;
-        if(await this.isDir(directory)) {
-            let files = await this.readDir(directory);
+        if(this.isDir(directory)) {
+            let files = this.readDir(directory);
             for (let i=0; i<files.length; i++){
                 let currentFile = path.join(directory, files[i]);
-                if (await this.isDir(currentFile)) {
+                if (this.isDir(currentFile)) {
                     result = result && await this.deleteDir(currentFile);
                 } else {
                     result = result && await this.deleteFile(currentFile);
                 }
             }
             fs.rmdirSync(directory);
-            result = result && !await this.isDir(directory);
+            result = result && !this.isDir(directory);
         } else {
             result = false;
         }
@@ -539,7 +565,7 @@ class FileManager extends AppBaseClass {
                 }
             }
         }
-        return await this.isDir(dirName);
+        return this.isDir(dirName);
     }
 
     /**
@@ -954,9 +980,9 @@ class FileManager extends AppBaseClass {
      * @param  {string} path Absolute directory path
      * @return {string[]}  An array of entries from directory
      */
-    async readDir(path){
+    readDir(path){
         let files = [];
-        if (await this.isDir(path)){
+        if (this.isDir(path)){
             files = fs.readdirSync(path);
         }
         return files;
@@ -965,18 +991,17 @@ class FileManager extends AppBaseClass {
     /**
      * Reads recursive file list from dir and returns it, excluding all '.' and '..' entries
      *
-     * @async
      * @param  {string} dirPath         Absolute directory path
      * @param  {string} extensionRegex  Regex for extension matching
      * @return {string[]}  An array of entries from directory and its subdirectories
      */
-    async readDirRecursive(dirPath, extensionRegex){
+    readDirRecursive(dirPath, extensionRegex){
         let files = [];
-        let rootFiles = await this.readDir(dirPath);
+        let rootFiles = this.readDir(dirPath);
         for (let i=0; i < rootFiles.length; i++){
             let filePath = path.join(dirPath, rootFiles[i]);
-            if (await this.isDir(filePath)){
-                files = _.union(files, await this.readDirRecursive(filePath, extensionRegex));
+            if (this.isDir(filePath)){
+                files = _.union(files, this.readDirRecursive(filePath, extensionRegex));
             } else {
                 if (extensionRegex) {
                     if (filePath.match(extensionRegex)){
@@ -1102,13 +1127,20 @@ class FileManager extends AppBaseClass {
         let copiedFiles = 0;
         if (canCopy && this.isDir(sourceDir)){
             let relativePath = path.relative(sourceDir, destinationDir);
-            let fileList = await this.readDirRecursive(sourceDir);
+            let fileList = this.readDir(sourceDir);
             totalFiles = fileList.length;
             for (let i=0; i<totalFiles;i++){
-                let sourceFile = fileList[i];
-                let destinationFile = path.resolve(path.join(path.dirname(sourceFile), relativePath, path.basename(sourceFile)));
-                if (await this.copyFile(sourceFile, destinationFile)){
-                    copiedFiles++;
+                let sourceFile = path.join(sourceDir, fileList[i]);
+                if (this.isDir(sourceFile)) {
+                    let destinationFile = path.join(destinationDir, fileList[i]);
+                    if (await this.copyDirRecursive(sourceFile, destinationFile)){
+                        copiedFiles++;
+                    }
+                } else {
+                    let destinationFile = path.join(destinationDir, fileList[i]);
+                    if (await this.copyFile(sourceFile, destinationFile)){
+                        copiedFiles++;
+                    }
                 }
             }
             if (totalFiles == 0 || copiedFiles > 0){
@@ -1221,6 +1253,29 @@ class FileManager extends AppBaseClass {
             result = false;
         }
         return result;
+    }
+
+    /**
+     * Reads directory size recursively
+     *
+     * @param  {String}     dirPath     Path of directory
+     *
+     * @return {Number}                 Total size in bytes
+     */
+    readDirSize(dirPath) {
+        let total = 0;
+        let stat = fs.statSync(dirPath);
+        if (stat.isDirectory()){
+            total = stat.size;
+            let files = _.map(this.readDir(dirPath), (file) => { return path.join(dirPath, file); });
+            for (let i=0; i<files.length; i++){
+                total += this.readDirSize(files[i]);
+            }
+        } else {
+            total = stat.size;
+            // this.log('Path {1} is not a directory!', 'warning', [dirPath]);
+        }
+        return total;
     }
 }
 

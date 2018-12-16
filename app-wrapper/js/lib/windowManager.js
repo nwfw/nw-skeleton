@@ -65,6 +65,7 @@ class WindowManager extends AppBaseClass {
         this.timeouts = {
             resize: null,
             showHeader: null,
+            saveConfig: null,
         };
 
         this.headerTimer = null;
@@ -88,7 +89,7 @@ class WindowManager extends AppBaseClass {
         this.log('Initializing window manager', 'info', []);
         this.initWinState(stateOverrides);
         await this.initWindow();
-        this.addEventListeners();
+        this.addWindowEventListeners();
         return this;
     }
 
@@ -97,14 +98,17 @@ class WindowManager extends AppBaseClass {
      *
      * @return {undefined}
      */
-    addEventListeners () {
+    addWindowEventListeners () {
         this.on('winStateChange', this.boundMethods.winStateChanged);
         this.win.on('restore', this.boundMethods.windowRestored);
         this.window.addEventListener('resize', this.boundMethods.windowResize);
         this.window.addEventListener('blur', this.boundMethods.windowBlur);
         this.window.addEventListener('focus', this.boundMethods.windowFocus);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
-        this.window.addEventListener('mousemove', this.boundMethods.mouseMoveHandler);
+        console.log(this.winState);
+        if (this.winState.fullscreen) {
+            this.addFullScreenEventListeners();
+        }
     }
 
     /**
@@ -112,20 +116,39 @@ class WindowManager extends AppBaseClass {
      *
      * @return {undefined}
      */
-    removeEventListeners () {
+    removeWindowEventListeners () {
         this.removeListener('winStateChange', this.boundMethods.winStateChanged);
         this.win.removeListener('restore', this.boundMethods.windowRestored);
         this.window.removeEventListener('resize', this.boundMethods.windowResize);
         this.window.removeEventListener('blur', this.boundMethods.windowBlur);
         this.window.removeEventListener('focus', this.boundMethods.windowFocus);
         this.window.removeEventListener('beforeunload', this.boundMethods.beforeUnload);
-        this.window.removeEventListener('mousemove', this.boundMethods.mouseMoveHandler);
+        this.removeFullScreenEventListeners();
 
         Object.keys(this.boundMethods).forEach((key) => {
             this.boundMethods[key] = null;
         });
 
         this.boundMethods = null;
+    }
+
+    /**
+     * Adds event listeners for the WindowManager instance when window is full screen
+     *
+     * @return {undefined}
+     */
+    addFullScreenEventListeners () {
+        this.removeFullScreenEventListeners();
+        this.window.addEventListener('mousemove', this.boundMethods.mouseMoveHandler);
+    }
+
+    /**
+     * Removes event listeners for the WindowManager instance when window is full screen
+     *
+     * @return {undefined}
+     */
+    removeFullScreenEventListeners () {
+        this.window.removeEventListener('mousemove', this.boundMethods.mouseMoveHandler);
     }
 
     /**
@@ -162,7 +185,7 @@ class WindowManager extends AppBaseClass {
             if (userDataHelper && userDataHelper.saveUserData) {
                 userDataHelper.saveUserData(appState.userData);
             }
-            this.saveWindowConfig();
+            this.saveWindowConfigDelayed();
             this.saveWinState();
         }
     }
@@ -755,7 +778,13 @@ class WindowManager extends AppBaseClass {
             e.preventDefault();
         }
         this.ignoreResize = true;
+        if (!this.winState.fullscreen) {
+            this.addFullScreenEventListeners();
+        } else {
+            this.removeFullScreenEventListeners();
+        }
         this.winState.fullscreen =! this.winState.fullscreen;
+
     }
 
     /**
@@ -866,7 +895,7 @@ class WindowManager extends AppBaseClass {
      */
     beforeUnload (){
         this.document.body.className = this.document.body.className.replace(/nw-body-initialized/, '');
-        this.removeEventListeners();
+        this.removeWindowEventListeners();
 
     }
 
@@ -967,10 +996,24 @@ class WindowManager extends AppBaseClass {
                 } else {
                     appState.config.appConfig.subWindowConfigs[window.subWindowId] = config;
                 }
-                this.saveWindowConfig();
+                this.saveWindowConfigDelayed();
             }
 
         }
+    }
+
+    /**
+     * Delayed handler called when window position or size are updated. Saves current position and/or size to userConfig
+     *
+     * @param {Number}  duration     Delay duration in milliseconds
+     *
+     * @return {undefined}
+     */
+    saveWindowConfigDelayed (duration = 1000) {
+        clearTimeout(this.timeouts.saveConfig);
+        this.timeouts.saveConfig = setTimeout(() => {
+            this.saveWindowConfig();
+        }, duration);
     }
 
     /**
