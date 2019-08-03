@@ -1,19 +1,88 @@
 .config-editor-modal .modal-dialog-body {
     max-height: 70vh;
     overflow: auto;
+    display: flex;
+    flex-flow: column;
 }
 
 .config-editor-modal .form-control-row ul {
-    min-width: 50vw;
+    /*min-width: 50vw;*/
 }
 
 
 .config-editor {
     width: 80vw;
-    height: 80vh;
+    /*height: 80vh;*/
+    display: flex;
+    flex-flow: column;
+    /*flex: 0 0 auto;*/
 }
 
 .config-editor-tools {
     position: fixed;
     top: 5px;
+}
+
+.config-editor-body {
+    display: flex;
+    height: inherit;
+    font-size: 0.8em;
+
+
+    & .config-editor-body-left {
+        flex: 0 0 20vw;
+        overflow: auto;
+        height: inherit;
+        margin-right: 5px;
+        padding-right: 5px;
+        border-right: 1px solid;
+    }
+
+    & .config-editor-body-right {
+        flex: 1 1 auto;
+        overflow: auto;
+        height: inherit;
+    }
+}
+
+.form-control-field {
+    padding: 3px 2px;
+}
+
+
+
+.form-control-row.active-config-path,
+.form-control-row.active-config-path:last-of-type {
+    border-bottom: 1px solid #CCCCCC;
+
+    & .form-row-label {
+        color: #FFFFFF;
+        font-weight: 700;
+    }
+}
+
+.form-control-row-form-control-object, .form-control-row-form-control-array {
+    & .form-control-subrow:last-of-type {
+        border-bottom: 1px solid;
+    }
+
+    &.active-config-path {
+        border-bottom: unset;
+        background: transparent;
+        & > .form-control-field {
+            & > .form-control-row {
+                & .form-row-label {
+                    font-weight: unset;
+                    color: unset;
+                }
+
+                & > .object-label,
+                & > .array-label {
+                    background: #FFFFFF;
+                    color: #333333;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
 }

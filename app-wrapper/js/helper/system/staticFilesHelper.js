@@ -659,15 +659,19 @@ class StaticFilesHelper extends AppBaseClass {
 
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.initCssFiles, 'init', noWatch, silent);
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeInitCssFiles, 'theme init', noWatch, silent);
-            compiledCss += await this.compileCssTypeGroup(cssFileData.files.appCssFiles, 'app', noWatch, silent);
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeCssFiles, 'theme', noWatch, silent);
 
             if (appState.isDebugWindow){
                 compiledCss += await this.compileCssTypeGroup(cssFileData.files.debugCssFiles, 'app-debug', noWatch, silent);
-                compiledCss += await this.compileCssTypeGroup(cssFileData.files.appDebugCssFiles, 'debug', noWatch, silent);
             }
 
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.componentCssFiles, 'component', noWatch, silent);
+
+            compiledCss += await this.compileCssTypeGroup(cssFileData.files.appCssFiles, 'app', noWatch, silent);
+            if (appState.isDebugWindow){
+                compiledCss += await this.compileCssTypeGroup(cssFileData.files.appDebugCssFiles, 'debug', noWatch, silent);
+            }
+
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.themeOverrideCssFiles, 'theme override', noWatch, silent);
 
             compiledCss += await this.compileCssTypeGroup(cssFileData.files.overrideCssFiles, 'override', noWatch, silent);

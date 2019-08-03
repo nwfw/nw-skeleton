@@ -13,14 +13,14 @@ const MainBaseClass = require('./mainBase').MainBaseClass;
  * @class
  * @extends {mainScript.MainBaseClass}
  * @memberof mainScript
- * @property {boolean}  hasMacBuiltin   Flag to indicate whether the app has mac builtin menu
- * @property {boolean}  hasEditMenu     Flag to indicate whether the app has "Edit" menu
- * @property {Object}   tray             Object containing nw.tray instance - see {@link http://docs.nwjs.io/en/latest/References/Tray/}
- * @property {Object}   trayMenu         Object containing tray menu data - see {@link http://docs.nwjs.io/en/latest/References/Tray/#traymenu}
- * @property {Object}   menu             Object containing nw.menu instance - see {@link http://docs.nwjs.io/en/latest/References/Menu/}
- * @property {array}    menuMethodMap    Array containing map of handlers by menu position
- * @property {array}    menuShortcutMap  Array containing map of key shortcuts by menu position
- * @property {array}    userShortcuts    Array with all used shortcuts so far (used to warn about duplicate shortcuts)
+ * @property {Boolean}  hasMacBuiltin       Flag to indicate whether the app has mac builtin menu
+ * @property {Boolean}  hasEditMenu         Flag to indicate whether the app has "Edit" menu
+ * @property {Object}   tray                Object containing nw.tray instance - see {@link http://docs.nwjs.io/en/latest/References/Tray/}
+ * @property {Object}   trayMenu            Object containing tray menu data - see {@link http://docs.nwjs.io/en/latest/References/Tray/#traymenu}
+ * @property {Object}   menu                Object containing nw.menu instance - see {@link http://docs.nwjs.io/en/latest/References/Menu/}
+ * @property {Array}    menuMethodMap       Array containing map of handlers by menu position
+ * @property {Array}    menuShortcutMap     Array containing map of key shortcuts by menu position
+ * @property {Array}    userShortcuts       Array with all used shortcuts so far (used to warn about duplicate shortcuts)
  */
 class MenuHelper extends MainBaseClass {
 
@@ -670,7 +670,7 @@ class MenuHelper extends MainBaseClass {
                 }
             }
             if (!menuItem){
-                this.log('Can not find tray menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+                this.log('Can not find tray menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : ''], false, true);
             }
             return menuItem;
         } else {
@@ -704,6 +704,7 @@ class MenuHelper extends MainBaseClass {
      * @return {(Object|undefined)}         MenuItem object or undefined if none found
      */
     getAppMenuItem(menuItemIndex, menuItems){
+        menuItemIndex = menuItemIndex + '';
         let menuItem;
         let indexChunks = menuItemIndex.split('_');
         if (!menuItems && this.menu && this.menu.items){
@@ -720,7 +721,7 @@ class MenuHelper extends MainBaseClass {
             }
         }
         if (!menuItem){
-            this.log('Can not find app menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : '']);
+            this.log('Can not find app menu item for index "{1}" {2}', 'error', [menuItemIndex, menuItems && menuItems.length ? 'has menuItems' : ''], false, true);
         }
         return menuItem;
     }

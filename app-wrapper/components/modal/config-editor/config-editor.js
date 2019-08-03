@@ -25,14 +25,43 @@ exports.component = {
     template: '',
     data: function () {
         let utilHelper = _appWrapper.getHelper('util');
-        var appConfig = _.cloneDeep(appState.configEditorData);
-        var config = _.map(appConfig, function(value, name){
-            return utilHelper.getControlObject(value, name, 'config');
+        let configTree = {
+            item: {
+                data: {},
+                node: {
+                    name: 'Root',
+                    open: true,
+                    busy: false,
+                    readonly: false,
+                    disabled: false,
+                    selected: false,
+                    classes: [],
+                },
+                children:[]
+            }
+        };
+        let appConfig = _.cloneDeep(appState.configEditorData);
+        let config = _.map(appConfig, function(value, name){
+            let overrides = {
+                node: {
+                    open: true,
+                    selected: false,
+                }
+            };
+            if (configTree.item.children.length == 0) {
+                overrides.node.selected = true;
+            }
+            let co = utilHelper.getControlObject(value, name, 'config');
+            configTree.item.children.push(utilHelper.getTreeNode(name, value, 'config.' + name, overrides));
+            return co;
         });
-        console.log(config.slice(0, 10));
-        var data = {
+        // console.log(config.slice(0, 10));
+        // console.log(configTree);
+        let data = {
             searchQuery: '',
-            config: config
+            activePath: '',
+            config: config,
+            configTree: configTree,
         };
 
         return data;
@@ -85,11 +114,31 @@ exports.component = {
             }
             return objects;
         },
-        getTree(){
-            let item = this.getConfigObjects()[2];
-            item.children = item.value;
-            return item;
-        }
+        // getTree(){
+        //     let item = this.getConfigObjects()[2];
+        //     item.children = item.value;
+        //     return item;
+        // },
+        handleTreeClick (data) {
+            if (data && data.node && data.node.path){
+                this.activePath = data.node.path;
+                let activeEls = Array.from(this.$el.querySelectorAll('.active-config-path'));
+                if (activeEls && activeEls.length) {
+                    for (let i=0; i < activeEls.length; i++){
+                        activeEls[i].removeClass(activeEls[i], 'active-config-path');
+                    }
+                }
+                let el = this.$el.querySelector('[data-form-field-path=\'' + data.node.path + '\']');
+                if (el && el.scrollIntoView){
+                    // console.log(el);
+                    el.addClass(el, 'active-config-path');
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
+                }
+            }
+        },
     },
     computed: {
         appState: function(){

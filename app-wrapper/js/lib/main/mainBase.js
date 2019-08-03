@@ -116,22 +116,24 @@ class MainBaseClass extends BaseClass {
         }
         logMethod(message, type);
         let mainWindow = this.getMainWindow();
-        if ((forceToWindow || this.getConfig('main.debug.debugToWindow')) && mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper) && mainWindow.window.getAppWrapper()){
-            setTimeout( () => {
-                if (clearLastLine){
-                    process.stdout.write('\x1B[s');
-                }
-                let aw = mainWindow.window.getAppWrapper();
-                if (_.isObject(sourceMessage) || _.isArray(sourceMessage)){
-                    mainWindow.window.console.log('MAINSCRIPT: ', sourceMessage);
-                } else {
-                    aw.log('MAINSCRIPT: ' + message, type, data, true);
-                }
-                if (clearLastLine){
-                    process.stdout.write('\x1B[u');
-                    process.stdout.write('\x1B[J');
-                }
-            }, 0);
+        if ((forceToWindow || this.getConfig('main.debug.debugToWindow'))){
+            if (mainWindow && mainWindow.window && mainWindow.window.getAppWrapper && _.isFunction(mainWindow.window.getAppWrapper) && mainWindow.window.getAppWrapper()) {
+                setTimeout( () => {
+                    if (clearLastLine){
+                        process.stdout.write('\x1B[s');
+                    }
+                    let aw = mainWindow.window.getAppWrapper();
+                    if (_.isObject(sourceMessage) || _.isArray(sourceMessage)){
+                        mainWindow.window.console.log('MAINSCRIPT: ', sourceMessage);
+                    } else {
+                        aw.log('MAINSCRIPT: ' + message, type, data, true);
+                    }
+                    if (clearLastLine){
+                        process.stdout.write('\x1B[u');
+                        process.stdout.write('\x1B[J');
+                    }
+                }, 0);
+            }
         }
         if (this.getConfig('main.debug.debugToFile')){
             let messageObj = {};

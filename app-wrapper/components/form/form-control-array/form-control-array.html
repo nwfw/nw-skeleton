@@ -3,7 +3,7 @@
 		<form-control-label ref="controlLabel" v-bind:control="control" v-bind:show-type="true">
 			<a slot="tools" @click="addNewArrayRow" class="label-tools-link add-new-row add-new-row-array fa fa-plus"></a>
 		</form-control-label>
-		<ul>
+		<ul class="form-control-child-items form-control-array-child-items">
 			<template v-for="subControl in control.value">
 				<li class="object-li array-li" v-bind:data-name="subControl.name">
 					<form-control :class="[{'no-display-element': subControl.hide}]" v-bind:control="subControl"></form-control>

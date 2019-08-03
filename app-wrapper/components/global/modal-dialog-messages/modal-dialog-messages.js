@@ -34,6 +34,7 @@ component = {
     },
     methods: {
         addModalMessage: function(messageObject){
+            messageObject.id = 'message_' + appState.modalData.currentModal.messages.length;
             this.messageAdded = true;
             appState.modalData.currentModal.messages.push(messageObject);
             appState.modalData.currentModal.currentMessageIndex = appState.modalData.currentModal.messages.length - 1;

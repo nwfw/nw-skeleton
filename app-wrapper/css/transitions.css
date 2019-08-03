@@ -767,6 +767,66 @@
 
 
 
+/* transform-scale-from-bottom-right */
+
+.transform-scale-from-bottom-right-short-enter,
+.transform-scale-from-bottom-right-long-enter,
+.transform-scale-from-bottom-right-enter {
+    overflow: hidden !important;
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: bottom right;
+}
+
+.transform-scale-from-bottom-right-short-enter-to,
+.transform-scale-from-bottom-right-long-enter-to,
+.transform-scale-from-bottom-right-enter-to {
+    transform: scale(1, 1) !important;
+    transform-origin: bottom right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-right-short-leave,
+.transform-scale-from-bottom-right-long-leave,
+.transform-scale-from-bottom-right-leave {
+    transform: scale(1, 1) !important;
+    transform-origin: bottom right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-right-short-leave-to,
+.transform-scale-from-bottom-right-long-leave-to,
+.transform-scale-from-bottom-right-leave-to {
+    transform: scale(0.001, 0.001) !important;
+    transform-origin: bottom right;
+    overflow: hidden !important;
+}
+
+.transform-scale-from-bottom-right-enter-active,
+.transform-scale-from-bottom-right-leave-active,
+.transform-scale-from-bottom-right-short-enter-active,
+.transform-scale-from-bottom-right-short-leave-active,
+.transform-scale-from-bottom-right-long-enter-active,
+.transform-scale-from-bottom-right-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-from-bottom-right-short-enter-active,
+.transform-scale-from-bottom-right-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-from-bottom-right-long-enter-active,
+.transform-scale-from-bottom-right-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+
+
 
 
 
@@ -1091,6 +1151,66 @@
 
 .transform-scale-height-from-bottom-long-enter-active,
 .transform-scale-height-from-bottom-long-leave-active {
+    transition-duration: var(--long-animation-duration) !important;
+}
+
+
+
+
+
+/* transform-scale-height-from-bottom */
+
+.transform-scale-width-short-enter,
+.transform-scale-width-long-enter,
+.transform-scale-width-enter {
+    overflow: hidden !important;
+    transform: scaleX(0.001) !important;
+    transform-origin: top left;
+}
+
+.transform-scale-width-short-enter-to,
+.transform-scale-width-long-enter-to,
+.transform-scale-width-enter-to {
+    transform: scaleX(1) !important;
+    transform-origin: top left;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-short-leave,
+.transform-scale-width-long-leave,
+.transform-scale-width-leave {
+    transform: scaleX(1) !important;
+    transform-origin: top left;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-short-leave-to,
+.transform-scale-width-long-leave-to,
+.transform-scale-width-leave-to {
+    transform: scaleX(0.001) !important;
+    transform-origin: top left;
+    overflow: hidden !important;
+}
+
+.transform-scale-width-enter-active,
+.transform-scale-width-leave-active,
+.transform-scale-width-short-enter-active,
+.transform-scale-width-short-leave-active,
+.transform-scale-width-long-enter-active,
+.transform-scale-width-long-leave-active {
+    overflow: hidden !important;
+    transition-property: transform !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: var(--medium-animation-duration) !important;
+}
+
+.transform-scale-width-short-enter-active,
+.transform-scale-width-short-leave-active {
+    transition-duration: var(--short-animation-duration) !important;
+}
+
+.transform-scale-width-long-enter-active,
+.transform-scale-width-long-leave-active {
     transition-duration: var(--long-animation-duration) !important;
 }
 

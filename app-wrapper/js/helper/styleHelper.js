@@ -30,7 +30,7 @@ class StyleHelper extends AppBaseClass {
      *
      * @param  {string}         name         Name of CSS variable
      * @param  {string}         defaultValue Default value to return if var not found
-     * @param  {HTMLElement}    element      HTML element for which to return variable value (windwo by default)
+     * @param  {HTMLElement}    element      HTML element for which to return variable value (window by default)
      * @return {string}                      CSS variable value
      */
     getCssVarValue (name, defaultValue, element) {

@@ -1,16 +1,10 @@
-<div class="window-control" :title="translate('Choose language')">
-	<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-language">
-	</span>
-	<span class="window-control-submenu-item-section window-control-submenu-item-text">
-		<select name="app-language" v-on:change="callViewHandler" data-change-handler="appTranslations.changeLanguage">
-			<template v-for="_language in availableLanguages">
-				<template v-if="_language.code == currentLanguage">
-					<option selected="selected" v-bind:value="_language.code" v-bind:data-locale="_language.locale">{{ _language.name }}</option>
-				</template>
-				<template v-else>
-					<option v-bind:value="_language.code" v-bind:data-locale="_language.locale">{{ _language.name }}</option>
-				</template>
-			</template>
-		</select>
-	</span>
-</div>
+<select name="app-language" v-on:change="callViewHandler" data-change-handler="appTranslations.changeLanguage">
+	<template v-for="_language in availableLanguages">
+		<template v-if="_language.code == currentLanguage">
+			<option selected="selected" v-bind:value="_language.code" v-bind:data-locale="_language.locale">{{ _language.name }}</option>
+		</template>
+		<template v-else>
+			<option v-bind:value="_language.code" v-bind:data-locale="_language.locale">{{ _language.name }}</option>
+		</template>
+	</template>
+</select>

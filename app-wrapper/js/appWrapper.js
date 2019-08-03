@@ -1192,6 +1192,9 @@ class AppWrapper extends AppBaseClass {
         let destination = arguments[0];
         let sources = Array.prototype.slice.call(arguments, 1);
         let result = _.cloneDeep(destination);
+        if (!_.isObject(result)){
+            result = {};
+        }
 
         for (let i=0; i < sources.length; i++){
             let source = sources[i];
@@ -1207,6 +1210,7 @@ class AppWrapper extends AppBaseClass {
             for (let j=0; j<oldKeys.length; j++){
                 if (_.isArray(source[oldKeys[j]])){
                     result[oldKeys[j]] = _.concat(result[oldKeys[j]], source[oldKeys[j]]);
+                    // result[oldKeys[j]] = this.mergeDeep(result[oldKeys[j]], source[oldKeys[j]]);
                 } else if (_.isObject(source[oldKeys[j]])){
                     result[oldKeys[j]] = this.mergeDeep(result[oldKeys[j]], source[oldKeys[j]]);
                 } else if (_.isFunction(source[oldKeys[j]])){
@@ -1486,6 +1490,7 @@ class AppWrapper extends AppBaseClass {
             let tabs = new Array(tabCount).join('\t');
             helpText += '\t' + colors.yellow + paramData[i].paramName +  colors.reset + tabs + paramData[i].paramDescription + '\n';
         }
+        helpText += '\n\n';
         this.stdLog(helpText);
         this.exitApp(true);
     }

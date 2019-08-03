@@ -30,6 +30,9 @@ exports.component = {
     computed: {
         progressData: function(){
             return appState.progressData;
+        },
+        appState: function(){
+            return appState;
         }
     }
 };

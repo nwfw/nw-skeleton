@@ -105,7 +105,6 @@ class WindowManager extends AppBaseClass {
         this.window.addEventListener('blur', this.boundMethods.windowBlur);
         this.window.addEventListener('focus', this.boundMethods.windowFocus);
         this.window.addEventListener('beforeunload', this.boundMethods.beforeUnload);
-        console.log(this.winState);
         if (this.winState.fullscreen) {
             this.addFullScreenEventListeners();
         }
@@ -945,10 +944,13 @@ class WindowManager extends AppBaseClass {
     /**
      * Handler called when window position or size are updated. Saves current position and/or size to userConfig
      *
-     * @param {Boolean} clearResize Clear resize timeout flag
+     * @param {Boolean} clearResize     Clear resize timeout flag
+     * @param {Boolean} force           Force update (ignore app initialized status)
+     * @param {Boolean} noDelay         No delay for config save
+     *
      * @return {undefined}
      */
-    windowPositionSizeUpdated (clearResize = false) {
+    windowPositionSizeUpdated (clearResize = false, force = false, noDelay = false) {
         if (clearResize) {
             clearTimeout(this.timeouts.resize);
         }
@@ -996,7 +998,11 @@ class WindowManager extends AppBaseClass {
                 } else {
                     appState.config.appConfig.subWindowConfigs[window.subWindowId] = config;
                 }
-                this.saveWindowConfigDelayed();
+                if (!noDelay) {
+                    this.saveWindowConfigDelayed();
+                } else {
+                    this.saveWindowConfig(force);
+                }
             }
 
         }
@@ -1019,15 +1025,17 @@ class WindowManager extends AppBaseClass {
     /**
      * Handler called when window position or size are updated. Saves current position and/or size to userConfig
      *
+     * @param {Boolean} force           Force update (ignore app initialized status)
+     *
      * @return {undefined}
      */
-    saveWindowConfig () {
+    saveWindowConfig (force = false) {
         this.log('Saving window configuration', 'info', []);
         let newWidth = window.outerWidth;
         let newHeight = window.outerHeight;
         let newLeft = window.screenLeft;
         let newTop = window.screenTop;
-        if (appState.status.appInitialized && !this.winState.fullscreen && !this.winState.maximized){
+        if ((force || appState.status.appInitialized) && !this.winState.fullscreen && !this.winState.maximized){
             let config = this.getWindowConfig();
             let configChanged = false;
             if (newWidth && newWidth > 100){

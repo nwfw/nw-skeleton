@@ -168,10 +168,10 @@ class HtmlHelper extends AppBaseClass {
             element = this;
         }
         if (element && element.offsetHeight){
-            if (_.isUndefined(elementHeight)){
+            if (!(!_.isUndefined(elementHeight) && _.isFinite(elementHeight))){
                 elementHeight = parseInt(element.offsetHeight, 10);
             }
-            if (_.isUndefined(elementWidth)){
+            if (!(!_.isUndefined(elementWidth) && _.isFinite(elementWidth))){
                 elementWidth = parseInt(element.offsetWidth, 10);
             }
 
@@ -180,7 +180,6 @@ class HtmlHelper extends AppBaseClass {
             elementStyles.height = elementHeight + 'px';
             elementStyles.width = elementWidth + 'px';
             elementStyles.overflow = 'hidden';
-
             this.setElementStyles(element, elementStyles);
         }
     }
@@ -704,6 +703,7 @@ class HtmlHelper extends AppBaseClass {
      * @param {Number} stepIncrease    Value for each scrolling step
      * @param {Number} finalValue      Final element scroll value
      * @param {String} identifier      Unique element identifier
+     *
      * @return {undefined}
      */
     scrollElementStep (element, stepIncrease, finalValue, identifier){
@@ -711,6 +711,9 @@ class HtmlHelper extends AppBaseClass {
         let nextValue = currentValue + stepIncrease;
         let maxValue = element.scrollHeight;
         let minValue = 0;
+        if (!identifier){
+            identifier = this.getUniqueElementIdentifier(element, false);
+        }
 
         if (stepIncrease >= 0){
             if (currentValue >= maxValue){
@@ -764,8 +767,8 @@ class HtmlHelper extends AppBaseClass {
     /**
      * Scrolls parent until its child element is visible
      *
-     * @param {HTMLElement} parent     Element to scroll
-     * @param {HTMLElement} element    Element to which to scroll
+     * @param {HTMLElement} parent     Parent element to scroll
+     * @param {HTMLElement} child      Child element to which to scroll
      * @param {Number}      duration   Duration for animated scrolls
      * @param {Boolean}     center     Center child vertically
      * @param {Function}    callback   Callback
@@ -788,7 +791,7 @@ class HtmlHelper extends AppBaseClass {
         if (!element && this instanceof Element){
             element = this;
         }
-        let identifier = this.getUniqueElementIdentifier(element, true);
+        // let identifier = this.getUniqueElementIdentifier(element, true);
         clearInterval(element.scrollToInterval);
     }
 
@@ -1286,6 +1289,78 @@ class HtmlHelper extends AppBaseClass {
             }
         }
         return duration;
+    }
+
+    /**
+     * Returns value depending on whether element is on its scroll bottom
+     *
+     * @param {HTMLElement}    element  Element for which should transition-duration be returned
+     *
+     * @return {Boolean}                'true' if element is at bottom, 'false' otherwise
+     */
+    isAtScrollBottom(element){
+        if (this instanceof Element){
+            element = this;
+        }
+        let atBottom = false;
+        if (element.scrollHeight - (element.scrollTop + element.clientHeight) == 0){
+            atBottom = true;
+        }
+        return atBottom;
+    }
+
+    /**
+     * Returns value depending on whether element is on its scroll top
+     *
+     * @param {HTMLElement}    element  Element for which should transition-duration be returned
+     *
+     * @return {Boolean}                'true' if element is at bottom, 'false' otherwise
+     */
+    isAtScrollTop(element){
+        if (this instanceof Element){
+            element = this;
+        }
+        let atTop = false;
+        if (element.scrollTop == 0){
+            atTop = true;
+        }
+        return atTop;
+    }
+
+    /**
+     * Returns value depending on whether element is on its scroll bottom
+     *
+     * @param {HTMLElement}    element  Element for which should transition-duration be returned
+     *
+     * @return {Boolean}                'true' if element is at bottom, 'false' otherwise
+     */
+    isAtScrollRight(element){
+        if (this instanceof Element){
+            element = this;
+        }
+        let atRight = false;
+        if (element.scrollWidth - (element.scrollLeft + element.clientWidth) == 0){
+            atRight = true;
+        }
+        return atRight;
+    }
+
+    /**
+     * Returns value depending on whether element is on its scroll top
+     *
+     * @param {HTMLElement}    element  Element for which should transition-duration be returned
+     *
+     * @return {Boolean}                'true' if element is at bottom, 'false' otherwise
+     */
+    isAtScrollLeft(element){
+        if (this instanceof Element){
+            element = this;
+        }
+        let atLeft = false;
+        if (element.scrollLeft == 0){
+            atLeft = true;
+        }
+        return atLeft;
     }
 }
 

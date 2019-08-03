@@ -71,6 +71,7 @@ class App extends AppBaseClass {
     async initialize () {
         if (!this.initialized){
             await super.initialize();
+            this.initializeAppData();
             this.addUserMessage('Initializing application', 'info');
             if (!(appState.isDebugWindow || appState.notMainWindow)){
                 setTimeout(() => {
@@ -90,6 +91,27 @@ class App extends AppBaseClass {
             await this.initializeFeApp();
         }
         return this;
+    }
+
+    /**
+     * Initializes appData under appState global object
+     *
+     * @return {undefined}
+     */
+    initializeAppData () {
+        if (!(_.isObject(appState.appData)) || (_.isObject(appState.appData) && Object.keys(appState.appData).length == 0)) {
+            appState.appData = {};
+            let appDataFile = path.resolve('./app/js/appData');
+            let initialAppData;
+            try {
+                initialAppData = require(appDataFile).appData;
+                if (initialAppData && _.isObject(initialAppData)){
+                    _.merge(appState.appData, initialAppData);
+                }
+            } catch (ex) {
+                console.error(ex);
+            }
+        }
     }
 
     /**
@@ -115,6 +137,12 @@ class App extends AppBaseClass {
             if (returnValue){
                 await _appWrapper.wait(appState.config.shortPauseDuration);
             }
+        }
+        if (appState.config.debug.devTools){
+            // let __c = console;
+            _appWrapper.windowManager.win.showDevTools('', function(dtw, a, b) {
+                // __c.dir(this);
+            });
         }
         this.addUserMessage('Application finalized.', 'debug', []);
         return returnValue;
@@ -367,7 +395,7 @@ class App extends AppBaseClass {
         appState.config.debug.devMode = mode;
         if (appState.config.debug.devTools != mode){
             appState.config.debug.devTools = mode;
-            _appWrapper.windowManager.toggleDevTools();
+            // _appWrapper.windowManager.toggleDevTools();
         }
         if (mode){
             this.log('Dev mode enabled', 'info');

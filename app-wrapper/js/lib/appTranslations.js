@@ -948,7 +948,11 @@ class AppTranslations extends AppBaseClass {
             Gta(text, options).then(res => {
                 resolve(res.text);
             }).catch(err => {
-                this.log('Error translating "{1}" - "{2}"', 'error', [text, err]);
+                let txt = text;
+                if (txt.length > 50) {
+                    txt = txt.substring(0, 50);
+                }
+                this.log('Error translating "{1}" - "{2}"', 'error', [txt, err]);
                 resolve(text);
             });
         });

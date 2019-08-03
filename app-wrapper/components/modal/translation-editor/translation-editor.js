@@ -232,42 +232,183 @@ exports.component = {
         googleTranslateTab: async function(e) {
             if (!this.tabTranslationInProgress){
                 let target = e.target;
-                target.addClass(['fa-spinner', 'fa-spin']);
-                let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
                 let locale = target.getAttribute('data-locale');
+
+                let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
+
                 let labels = Object.keys(appState.modalData.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated);
                 let total = labels.length;
                 let count = 0;
+
                 if (total){
+                    target.addClass(['fa-spinner', 'fa-spin']);
+
                     _appWrapper.addModalMessage('Translation in progress...', 'info');
                     this.tabTranslationInProgress = true;
-                }
-                _appWrapper.getHelper('appOperation').operationStart(_appWrapper.translate('Translating'), false, true, true, _appWrapper.translate('Label'));
-                _appWrapper.getHelper('appOperation').operationUpdate(0, total);
 
-                for (let i=0; i<total;i++){
-                    let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
-                    if (textarea){
-                        let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], locale);
-                        _appWrapper.getHelper('appOperation').operationUpdate(i+1, total);
-                        await _appWrapper.wait(100);
-                        if (translated){
-                            textarea.setInputValue(translated);
-                            this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
-                            count++;
-                        } else {
-                            _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
-                        }
+                    _appWrapper.getHelper('appOperation').operationStart(_appWrapper.translate('Translating'), false, true, true, _appWrapper.translate('Label'));
+                    _appWrapper.getHelper('appOperation').operationUpdate(0, total);
+
+
+                    let groups;
+                    if (labels.length > 50){
+                        groups = this.splitLabelGroup(labels);
                     } else {
-                        _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                        groups = [labels];
                     }
+
+                    let groupCount = groups.length;
+
+                    // let result = [];
+
+                    for (let i=0; i<groupCount;i++){
+                        let group = groups[i];
+                        // let groupSize = group.length;
+                        let source = group.join('\n\n----\n\n');
+                        let translated = await _appWrapper.appTranslations.googleTranslate(source, locale);
+                        let destination = translated.split('\n\n----\n\n');
+
+                        let translatedLabels = _.map(group, (gr, index) => {
+                            return {
+                                original: gr,
+                                translated: destination[index],
+                                index: count + index,
+                            };
+                        });
+
+                        count += translatedLabels.length;
+
+                        for (let j=0; j<translatedLabels.length;j++){
+
+                            let label = translatedLabels[j].original;
+                            let translated = translatedLabels[j].translated;
+                            if (translated && translated != label){
+                                let textarea = fieldset.querySelector('textarea[name="' + label.replace(/"/g, '\\"') + '"]');
+                                if (textarea){
+                                    if (translated){
+                                        textarea.setInputValue(translated);
+                                        this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[label] = translated;
+                                        count++;
+                                    } else {
+                                        _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [label], false, false, false, true);
+                                    }
+                                } else {
+                                    _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [label], false, false, false, true);
+                                }
+                            }
+                        }
+                        _appWrapper.getHelper('appOperation').operationUpdate(count, total);
+                        await _appWrapper.wait(100);
+                    }
+
+                    target.removeClass(['fa-spinner', 'fa-spin']);
+                    _appWrapper.setAppStatus(false, 'success');
+                    _appWrapper.getHelper('appOperation').operationUpdate(total, total);
+                    _appWrapper.getHelper('appOperation').operationFinish(_appWrapper.translate('Translation finished'));
+                    _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
+                    this.tabTranslationInProgress = false;
                 }
-                target.removeClass(['fa-spinner', 'fa-spin']);
-                _appWrapper.setAppStatus(false, 'success');
-                _appWrapper.getHelper('appOperation').operationUpdate(total, total);
-                _appWrapper.getHelper('appOperation').operationFinish(_appWrapper.translate('Translation finished'));
-                _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
-                this.tabTranslationInProgress = false;
+
+
+
+
+                // target.addClass(['fa-spinner', 'fa-spin']);
+                // let fieldset = this.$el.querySelector('.tab-item.active').querySelector('.translation-fieldset');
+                // // let labels = Object.keys(appState.modalData.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated);
+
+
+                // if (total){
+                //     _appWrapper.addModalMessage('Translation in progress...', 'info');
+                //     this.tabTranslationInProgress = true;
+                // }
+                // _appWrapper.getHelper('appOperation').operationStart(_appWrapper.translate('Translating'), false, true, true, _appWrapper.translate('Label'));
+                // _appWrapper.getHelper('appOperation').operationUpdate(0, total);
+
+
+
+                // for (let i=0; i<total;i++){
+                //     let textarea = fieldset.querySelector('textarea[name="' + labels[i].replace(/"/g, '\\"') + '"]');
+                //     if (textarea){
+                //         let translated = await _appWrapper.appTranslations.googleTranslate(labels[i], locale);
+                //         _appWrapper.getHelper('appOperation').operationUpdate(i+1, total);
+                //         await _appWrapper.wait(100);
+                //         if (translated){
+                //             textarea.setInputValue(translated);
+                //             this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
+                //             count++;
+                //         } else {
+                //             _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                //         }
+                //     } else {
+                //         _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                //     }
+                // }
+                // target.removeClass(['fa-spinner', 'fa-spin']);
+                // _appWrapper.setAppStatus(false, 'success');
+                // _appWrapper.getHelper('appOperation').operationUpdate(total, total);
+                // _appWrapper.getHelper('appOperation').operationFinish(_appWrapper.translate('Translation finished'));
+                // _appWrapper.addModalMessage('Translated {1} of {2} labels', 'info', [count, total], false, false, false, true);
+                // this.tabTranslationInProgress = false;
+            }
+        },
+
+        splitLabelGroup (labels, chunkSize = 50) {
+            const chunks = [];
+            let source = _.cloneDeep(labels);
+            while(source.length) {
+                // const chunkSize = Math.ceil(source.length / groupCount--);
+                const chunk = source.slice(0, chunkSize);
+                chunks.push(chunk);
+                source = source.slice(chunkSize);
+            }
+            return chunks;
+        },
+
+        googleTranslateBulk: async function(labels = [], from = '') {
+            let count = 0;
+            // let labelIndex = 0;
+            let groups;
+            if (labels.length > 50){
+                groups = this.splitLabelGroup(labels);
+            } else {
+                groups = [labels];
+            }
+
+            let groupCount = groups.length;
+
+            let result = [];
+
+            for (let i=0; i<groupCount;i++){
+                let group = groups[i];
+                let groupSize = group.length;
+                let source = group.join('\n\n----\n\n');
+                let translated = await _appWrapper.appTranslations.googleTranslate(source, from);
+                let destination = translated.split('\n\n----\n\n');
+
+                let translatedLabels = _.map(group, (gr, index) => {
+                    return {
+                        original: gr,
+                        translated: destination[index],
+                        index: count + index,
+                    };
+                });
+
+                result = result.concat(translatedLabels);
+                count += groupSize;
+                console.warn(result);
+                // if (textarea){
+                //     _appWrapper.getHelper('appOperation').operationUpdate(i+1, total);
+                //     await _appWrapper.wait(100);
+                //     if (translated){
+                //         textarea.setInputValue(translated);
+                //         this.currentModal.translationData[this.currentModal.currentModule][target.getAttribute('data-code')].notTranslated[labels[i]] = translated;
+                //         count++;
+                //     } else {
+                //         _appWrapper.addModalMessage('Could not translate label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                //     }
+                // } else {
+                //     _appWrapper.addModalMessage('Could not find textarea for label "{1}"', 'warning', [labels[i]], false, false, false, true);
+                // }
             }
         },
 

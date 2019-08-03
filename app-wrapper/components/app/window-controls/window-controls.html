@@ -138,7 +138,13 @@
 						</div>
 						<div class="window-control-submenu-item-wrapper window-control-submenu-item-separator" v-if="!appState.appError.error"></div>
 						<div v-if="appState.config.allowLanguageChange && appState.languageData.availableLanguages.length > 1 && !appState.appError.error" class="window-control-submenu-item-wrapper">
-							<language-select ref="languageSelect"></language-select>
+							<div class="window-control" :title="translate('Choose language')">
+								<span class="window-control-submenu-item-section window-control-submenu-item-icon fa fa-language">
+								</span>
+								<span class="window-control-submenu-item-section window-control-submenu-item-text">
+									<language-select ref="languageSelect"></language-select>
+								</span>
+							</div>
 						</div>
 						<div class="window-control-submenu-item-wrapper" v-if="!appState.appError.error">
 							<a class="window-control window-control-open-language-editor" @mousedown.prevent="closeAllSubmenus" @click.prevent="callViewHandler" data-click-handler="appTranslations.openLanguageEditor">

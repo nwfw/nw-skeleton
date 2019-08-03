@@ -52,7 +52,7 @@
 exports.config = {
     main : {
         debug: {
-            enabled: true,
+            enabled: false,
             rotateLogs: true,
             debugToWindow: false,
             debugLevel: 2,
@@ -529,6 +529,7 @@ exports.config = {
         rotateLogs: true,
         animateMessages: true,
         hideUserMessages: false,
+        notifyWhenHidden: false,
         userMessageLevel: 3,
         maxVisibleUserMessages: 200,
         maxUserMessages: 5000,

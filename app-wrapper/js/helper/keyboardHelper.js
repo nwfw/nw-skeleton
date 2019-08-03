@@ -56,8 +56,9 @@ class KeyboardHelper extends AppBaseClass {
             reloadKeyCodes: [82], // 'r'
             closeKeyCodes: [87, 81], // 'w', 'q'
             escKeyCodes: [27],
-            reloadCssKeyCodes: [85], // 'u'
-            reinitializeFeAppKeyCodes: [85], // 'u'
+            clearConsoleCodes: [186], // ';' semicolon
+            reloadCssKeyCodes: [222], // '\'' singlequote
+            reinitializeFeAppKeyCodes: [222], // '\'' singlequote
         };
 
         this.keyCodeNames = {
@@ -203,7 +204,17 @@ class KeyboardHelper extends AppBaseClass {
                     }
                 } else if (appState && appState.status.ctrlPressed && appState.status.shiftPressed && _.includes(this.keyCodes.reinitializeFeAppKeyCodes, keyCode)){
                     if (!this.checkNoHandlingKeys()){
+                        if (!appState.status.altPressed){
+                            console.clear();
+                        }
                         _appWrapper.app.reinitializeFeApp();
+                        fulfilled = true;
+                    } else {
+                        e.stopImmediatePropagation();
+                    }
+                } else if (appState && appState.status.ctrlPressed && appState.status.shiftPressed && _.includes(this.keyCodes.clearConsoleCodes, keyCode)){
+                    if (!this.checkNoHandlingKeys()){
+                        console.clear();
                         fulfilled = true;
                     } else {
                         e.stopImmediatePropagation();

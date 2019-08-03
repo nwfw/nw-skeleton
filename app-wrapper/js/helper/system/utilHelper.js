@@ -160,6 +160,46 @@ class UtilHelper extends AppBaseClass {
     }
 
     /**
+     * Returns tree node for tree component
+     *
+     * @param  {String} name        Name of variable
+     * @param  {mixed}  value       Value of variable
+     * @param  {String} varPath     Path to variable
+     * @param  {Object} overrides   Overrids for node
+     * @return {Object}             Tree node object
+     */
+    getTreeNode (name, value, varPath = '', overrides){
+        let result = {
+            data: {},
+            node: {
+                name: name,
+                path: varPath,
+                open: false,
+                busy: false,
+                readonly: false,
+                disabled: false,
+                selected: false,
+                classes: [],
+            },
+            children: [],
+        };
+        if (_.isObject(overrides)){
+            result = _appWrapper.mergeDeep(result, overrides);
+            // console.log(_.toPlainObject(result));
+            // result = _.merge(result, overrides);
+            // console.log(_.toPlainObject(result));
+        }
+        if (_.isObject(value) || Array.isArray(value)) {
+            for (let propName in value) {
+                let childPath = varPath + '.' + propName;
+                result.children.push(this.getTreeNode(propName, value[propName], childPath, overrides));
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns control object to be used in form-control component
      *
      * @param  {mixed}  configValue     Value of variable
@@ -208,7 +248,7 @@ class UtilHelper extends AppBaseClass {
             configVar.formControl = 'form-control-' + appState.config.configData.vars[innerPath]['control'];
             configVar.type = appState.config.configData.vars[innerPath]['type'];
             if (appState.config.configData.vars[innerPath]['controlData']){
-                configVar.controlData = appState.config.configData.vars[innerPath]['controlData'];
+                configVar.controlData = _.cloneDeep(appState.config.configData.vars[innerPath]['controlData']);
             }
         } else {
             if (_.isBoolean(configValue)){
@@ -395,30 +435,80 @@ class UtilHelper extends AppBaseClass {
     /**
      * Calculates deep difference between objects or arrays
      *
-     * @param  {(Object|array)} original Original array or object
-     * @param  {(Object|array)} modified Modified array or object
-     * @return {(Object|array)}          Differences in arrays or objects
+     * @param  {(Object|array)}     original    Original array or object
+     * @param  {(Object|array)}     modified    Modified array or object
+     * @param  {Array}              ignorePaths Paths to ignore when comparing
+     * @param  {Boolean}            debug       Debug flag
+     *
+     * @return {(Object|array)}                 Differences in arrays or objects
      */
-    difference (original, modified) {
+    difference (original, modified, ignorePaths = [], debug = false) {
+        let ret = {};
+        if (Array.isArray(original)){
+            ret = [];
+        }
+        let diff;
+        for (let name in modified) {
+            if (ignorePaths.indexOf(name) == -1) {
+                if ((_.isObject(original) && original !== null) || Array.isArray(original)) {
+                    if (name in original) {
+                        if ((_.isObject(modified[name]) && modified[name] !== null) || Array.isArray(modified[name])) {
+                            diff = this.difference(original[name], modified[name], [], debug);
+                            if (!_.isEmpty(diff)) {
+                                if (debug){
+                                    console.warn({name, diff, orig: original[name], modified: modified[name]});
+                                }
+                                ret[name] = diff;
+                            } else {
+                                if (debug){
+                                    console.warn({name, diff, orig: original[name], modified: modified[name]});
+                                }
+                            }
+                        } else if (!_.isEqualWith(original[name], modified[name], function(originalValue, modifiedValue){ return originalValue == modifiedValue; })) {
+                            ret[name] = modified[name];
+                        }
+                    } else {
+                        ret[name] = modified[name];
+                    }
+                } else {
+                    ret[name] = modified[name];
+                }
+            } else if ((_.isObject(modified) && modified !== null) || Array.isArray(modified)) {
+                // console.trace(modified);
+                ret = modified;
+            }
+        }
+        return ret;
+    }
+
+    _difference (original, modified, ignorePaths = [], debug = true) {
         let ret = {};
         let diff;
         for (let name in modified) {
-            if (name in original) {
-                if (_.isObject(modified[name]) && !_.isArray(modified[name])) {
-                    diff = this.difference(original[name], modified[name]);
-                    if (!_.isEmpty(diff)) {
-                        ret[name] = diff;
+            if (ignorePaths.indexOf(name) == -1) {
+                if ((_.isObject(original) && original !== null) || Array.isArray(original)) {
+                    if (name in original) {
+                        if ((_.isObject(modified[name]) && modified[name] !== null) || Array.isArray(modified[name])) {
+                            diff = this.difference(original[name], modified[name], [], debug);
+                            if (!_.isEmpty(diff)) {
+                                if (debug){
+                                    console.warn({name, diff, orig: original[name], modified: modified[name]});
+                                }
+                                ret[name] = diff;
+                            } else {
+                                if (debug){
+                                    console.warn({name, diff, orig: original[name], modified: modified[name]});
+                                }
+                            }
+                        } else if (!_.isEqualWith(original[name], modified[name], function(originalValue, modifiedValue){ return originalValue == modifiedValue; })) {
+                            ret[name] = modified[name];
+                        }
+                    } else {
+                        ret[name] = modified[name];
                     }
-                } else if (_.isArray(modified[name])) {
-                    diff = this.difference(original[name], modified[name]);
-                    if (!_.isEmpty(diff)) {
-                        ret[name] = diff;
-                    }
-                } else if (!_.isEqualWith(original[name], modified[name], function(originalValue, modifiedValue){ return originalValue == modifiedValue; })) {
+                } else {
                     ret[name] = modified[name];
                 }
-            } else {
-                ret[name] = modified[name];
             }
         }
         return ret;

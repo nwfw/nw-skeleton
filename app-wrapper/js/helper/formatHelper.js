@@ -161,7 +161,7 @@ class FormatHelper extends AppBaseClass {
             dateOptions = _.defaults(defaultOptions, options);
         }
 
-        if (_.isString(date)){
+        if (!_.isDate(date)){
             date = new Date(date);
         }
 
@@ -179,7 +179,7 @@ class FormatHelper extends AppBaseClass {
      */
     formatTime  (date, options, includeDate) {
 
-        if (_.isString(date)){
+        if (!_.isDate(date)){
             date = new Date(date);
         }
         let time = + new Date(date);
@@ -222,7 +222,7 @@ class FormatHelper extends AppBaseClass {
      */
     formatDateNormalize (date, options, includeTime, omitSeconds){
 
-        if (_.isString(date)){
+        if (!_.isDate(date)){
             date = new Date(date);
         }
 
@@ -284,7 +284,7 @@ class FormatHelper extends AppBaseClass {
             options = {};
         }
 
-        if (_.isString(date)){
+        if (!_.isDate(date)){
             date = new Date(date);
         }
 
@@ -296,6 +296,8 @@ class FormatHelper extends AppBaseClass {
         let minutes = date.getMinutes();
         let seconds = date.getSeconds();
         let milliseconds = date.getMilliseconds();
+
+        // console.log({year, month, day, hours, minutes, seconds, milliseconds});
 
         if (month < 10){
             month = '0' + month;
@@ -676,19 +678,24 @@ class FormatHelper extends AppBaseClass {
      * @param  {Integer} minUnit        Min unit index
      * @param  {Integer} treshold       Treshold that indicates size unit should be one larger
      * @param  {Boolean} floatValue     Flag to indicate whether to leave size as float value or round it to integer
+     * @param  {Boolean} formatNumber   Flag to indicate whether to format numeric value
+     * @param  {Boolean} returnObject   Flag to indicate whether to return object with values or string
      *
      * @return {String}                 Human-readable file size representation
      */
-    formatFileSize (bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false) {
+    formatFileSize (bytes, lesserUnits = 0, minUnit = 0, treshold = 0, floatValue = false, formatNumber = false, returnObject = false) {
         let sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let value;
         let negative = false;
+        let result;
         if (isNaN(bytes)){
             bytes = 0;
         }
         let unitIndex;
-        if (!lesserUnits){
+        if (!lesserUnits || isNaN(lesserUnits)){
             lesserUnits = 0;
+        } else {
+            lesserUnits = Math.abs(lesserUnits);
         }
         if (isNaN(parseInt(minUnit, 10))) {
             let minString = minUnit.toLowerCase();
@@ -701,38 +708,37 @@ class FormatHelper extends AppBaseClass {
                 minUnit = 0;
             }
         }
-        if (bytes == 0) {
-            return '0 B';
-        }
 
-        if (bytes < 0){
-            negative = true;
-            bytes = Math.abs(bytes);
-        }
-        unitIndex = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        if (lesserUnits) {
-            if (unitIndex - lesserUnits > minUnit) {
-                unitIndex -= lesserUnits;
-            } else {
+
+        let resultString = '0 B';
+        let resultObject = {
+            bytes: bytes,
+            unitSize: 0,
+            negative: false,
+            formattedUnitSize: '0',
+            unit: 'B',
+            formattedSize: '0 B',
+        };
+
+
+        if (bytes != 0) {
+            // resultObject.bytes = bytes;
+            if (bytes < 0){
+                negative = true;
+                resultObject.negative = true;
+                bytes = Math.abs(bytes);
+            }
+            unitIndex = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            if (lesserUnits) {
+                if (unitIndex - lesserUnits > minUnit) {
+                    unitIndex -= lesserUnits;
+                } else {
+                    unitIndex = minUnit;
+                }
+            }
+            if (unitIndex < minUnit) {
                 unitIndex = minUnit;
             }
-        }
-        if (unitIndex < minUnit) {
-            unitIndex = minUnit;
-        }
-        if (unitIndex >= sizes.length) {
-            unitIndex = sizes.length - 1;
-        }
-        if (!floatValue) {
-            value = Math.round(bytes / Math.pow(1024, unitIndex));
-        } else {
-            value = bytes / Math.pow(1024, unitIndex);
-            if (value != parseInt(value, 10)) {
-                value = value.toFixed(2);
-            }
-        }
-        if (treshold && value >= treshold) {
-            unitIndex++;
             if (unitIndex >= sizes.length) {
                 unitIndex = sizes.length - 1;
             }
@@ -744,19 +750,52 @@ class FormatHelper extends AppBaseClass {
                     value = value.toFixed(2);
                 }
             }
+            if (treshold && value >= treshold) {
+                unitIndex++;
+                if (unitIndex >= sizes.length) {
+                    unitIndex = sizes.length - 1;
+                }
+                if (!floatValue) {
+                    value = Math.round(bytes / Math.pow(1024, unitIndex));
+                } else {
+                    value = bytes / Math.pow(1024, unitIndex);
+                    if (value != parseInt(value, 10)) {
+                        value = value.toFixed(2);
+                    }
+                }
+            }
+
+            resultObject.unitSize = value;
+            resultObject.formattedUnitSize = this.formatCurrency(value);
+
+            let formattedNumber = value + '';
+            if (formatNumber) {
+                formattedNumber = this.formatCurrency(value);
+            }
+            // value = Number(value).toLocaleString('en-US');
+            if (negative){
+                formattedNumber = '-' + formattedNumber;
+            }
+            let unit = sizes[unitIndex];
+            if (!unit) {
+                resultObject.unit = '';
+                unit = '';
+            } else {
+                // unit = ' ' + _appWrapper.apptranslate('__unit__ ' + unit);
+                resultObject.unit = unit;
+                unit = ' ' + unit;
+            }
+
+            formattedNumber += unit;
+            resultObject.formattedSize = formattedNumber;
+            resultString = formattedNumber;
         }
-        // value = Number(value).toLocaleString('en-US');
-        if (negative){
-            value = '-' + value;
-        }
-        let unit = sizes[unitIndex];
-        if (!unit) {
-            unit = '';
+        if (returnObject){
+            result = resultObject;
         } else {
-            unit = ' ' + unit;
+            result = resultString;
         }
-        value += unit;
-        return value;
+        return result;
     }
 
     /**

@@ -159,7 +159,7 @@
  */
 exports.appState = {
     platformData: {},
-    appData: {},
+    appData: null,
     userData: {},
     config: {},
     userConfig: {},

@@ -1,6 +1,6 @@
 <div class="modal-dialog-messages">
 	<transition-group name="highlight" tag="div" class="modal-dialog-message-list">
-		<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.message" v-bind:class="'modal-dialog-' + modalMessage.type">
+		<div class="modal-dialog-message" v-for="modalMessage in currentModal.messages" v-bind:key="modalMessage.id" v-bind:class="'modal-dialog-' + modalMessage.type">
 			{{ modalMessage.message }}
 		</div>
 	</transition-group>

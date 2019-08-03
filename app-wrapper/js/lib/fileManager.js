@@ -69,7 +69,7 @@ class FileManager extends AppBaseClass {
      * @param  {string} file Absolute file path
      * @return {Boolean}     True if file is file, false otherwise
      */
-    async isFile(file){
+    isFile(file){
         if (!file){
             return false;
         }
@@ -1040,12 +1040,12 @@ class FileManager extends AppBaseClass {
      * @param  {string}     filePath Absolute path to file
      * @return {Boolean}             Operation result
      */
-    async deleteFile(filePath) {
+    deleteFile(filePath) {
         let deleted = false;
-        if (await this.isFile(filePath)){
+        if (this.isFile(filePath)){
             fs.unlinkSync(filePath);
         }
-        deleted = !await this.isFile(filePath);
+        deleted = !this.isFile(filePath);
         return deleted;
     }
 

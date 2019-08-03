@@ -355,7 +355,7 @@ class AppBaseClass extends BaseClass {
                 appState.userMessageQueue.push(userMessage);
             }
 
-            if (appState.config.userMessages.hideUserMessages && type !== 'delimiter' && appState.status.appInitialized && !appState.status.appShuttingDown && !appState.appError.error){
+            if (appState.config.userMessages.notifyWhenHidden && appState.config.userMessages.hideUserMessages && type !== 'delimiter' && appState.status.appInitialized && !appState.status.appShuttingDown && !appState.appError.error){
                 let notificationDuration = this.getConfig('appNotifications.userMessageDuration');
                 if (type == 'warning' || type == 'error'){
                     notificationDuration *= 2;
@@ -621,6 +621,7 @@ class AppBaseClass extends BaseClass {
      * @return {undefined}
      */
     async addNotification (message, type, data, dontTranslate, options){
+        console.warn(message);
         let notification = await this.getMessageObject(0, message, type, data, false, dontTranslate);
         let duration = _appWrapper.getConfig('appNotifications.duration');
         if (options && !_.isUndefined(options.duration)){

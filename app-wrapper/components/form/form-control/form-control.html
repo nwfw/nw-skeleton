@@ -1,4 +1,4 @@
-<div class="form-row form-control-row" v-bind:class="['form-control-row-' + control.formControl, {'form-row-has-error': control.error, 'required-row': control.required}]">
+<div :data-form-field-path="control.path" :class="['form-row form-control-row form-control-row-' + control.formControl, {'form-row-has-error': control.error, 'required-row': control.required}]">
 	<component ref="innerControl" v-bind:is="control.formControl" v-bind:control="control"></component>
     <div class="form-row-error" v-html="control.rowErrorText"></div>
 </div>
